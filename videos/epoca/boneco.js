@@ -24,7 +24,8 @@
   const lerp = (a, b, u) => a + (b - a) * u;
   const smooth = u => u * u * (3 - 2 * u);
   const frac = v => v - Math.floor(v);
-  const norm = a => ((a + 540) % 360) - 180;   // ângulo em (-180, 180]
+  const norm = a => ((a + 540) % 360) - 180;
+  const P_lin = (a, b, u) => [a[0] + (b[0] - a[0]) * u, a[1] + (b[1] - a[1]) * u];   // ângulo em (-180, 180]
   const NS = 'http://www.w3.org/2000/svg';
 
   // Medidas do corpo em unidades locais (altura total ≈ 560 com escala 1)
@@ -107,7 +108,10 @@
       this.cor = opts.cor ?? '#FFFFFF';
       this.corLonge = opts.corLonge ?? '#D9D9E3';
       this.tinta = opts.tinta ?? '#1D1D2B';
-      this.roupa = opts.roupa ?? null;          // cor da túnica/camisa, ou null
+      this.roupa = opts.roupa ?? null;          // cor da túnica/camisa, ou null (atalho antigo)
+      // figurino: { tronco, cor, cor2, mangas, pernas, corPernas, pes, corPes, cabelo, corCabelo, chapeu, corChapeu, extras, corCapa }
+      this.fig = Boneco.figurino(opts.figurino, this.roupa);
+      if (opts.figurino && this.fig.tronco) this.roupa = this.fig.cor;   // figurino manda na cor da roupa
       this.cinto = opts.cinto ?? '#7A2E1F';
       this.bochecha = opts.bochecha ?? '#FF6B5B';
       this.acoes = [];      // base: pernas + tronco
@@ -138,18 +142,32 @@
       const sw = 16 * this.s;
       const linha = c => ({ fill: 'none', stroke: c, 'stroke-width': sw, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' });
       this.el = {};
+      const F = this.fig;
+      const tecido = (c, w) => ({ fill: 'none', stroke: c, 'stroke-width': w * this.s, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' });
+      this.el.capa = mk('path', { fill: F.corCapa || '#7A3A2A', stroke: 'none' });
       this.el.bracoLonge = mk('path', linha(this.corLonge));
+      this.el.mangaLonge = mk('path', tecido(F.corManga || F.cor || '#888', 30));
       this.el.maoLonge = mk('circle', { r: 11 * this.s, fill: this.corLonge });
       this.el.pernaLonge = mk('path', linha(this.corLonge));
+      this.el.calcaLonge = mk('path', tecido(F.corPernas || '#3A4A6A', 30));
+      this.el.peLonge = mk('g', {});
+      // pernas ficam atrás da roupa: só aparecem abaixo da barra
+      this.el.pernaPerto = mk('path', linha(this.cor));
+      this.el.calcaPerto = mk('path', tecido(F.corPernas || '#3A4A6A', 30));
+      this.el.pePerto = mk('g', {});
       this.el.tronco = mk('path', linha(this.cor));
       if (this.roupa) {
         this.el.roupa = mk('path', { fill: this.roupa });
-        this.el.cinto = mk('path', { fill: 'none', stroke: this.cinto, 'stroke-width': 10 * this.s, 'stroke-linecap': 'round' });
+        this.el.cinto = mk('path', { fill: 'none', stroke: F.cinto || this.cinto, 'stroke-width': 10 * this.s, 'stroke-linecap': 'round' });
+        this.el.detalhe = mk('path', { fill: 'none', stroke: F.cor2 || 'none', 'stroke-width': 14 * this.s, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' });
+        this.el.avental = mk('path', { fill: '#E8DCC4', stroke: 'none' });
       }
-      this.el.pernaPerto = mk('path', linha(this.cor));
+      this.el.bolsa = mk('path', { fill: '#8A5A33', stroke: 'none' });
       // cabeça
       const h = this.el.cab = mk('g', {});
+      this.el.cabeloTras = mk('path', { fill: F.corCabelo || '#3A2A20' }, h);
       this.el.cranio = mk('circle', { r: M.cabeca * this.s, fill: this.cor }, h);
+      this.el.cabelo = mk('path', { fill: F.corCabelo || '#3A2A20' }, h);
       this.el.rosto = mk('g', {}, h);
       this.el.manchas = [[-26, -30, 18, 11], [30, 30, 15, 8], [6, -48, 10, 6]].map(([x, y, rx, ry]) => mk('ellipse', { rx: rx * this.s, ry: ry * this.s, fill: '#3A3A3A', opacity: 0.55, 'data-x': x, 'data-y': y }, this.el.rosto));
       this.el.bochechas = [0, 1].map(() => mk('ellipse', { rx: 11 * this.s, ry: 8 * this.s, fill: this.bochecha, opacity: 0.45 }, this.el.rosto));
@@ -170,7 +188,9 @@
       this.el.veia = mk('path', { fill: 'none', stroke: '#D7263D', 'stroke-width': 4.5 * this.s, 'stroke-linecap': 'round' }, this.el.extras);
       this.el.choque = mk('path', { fill: 'none', stroke: this.tinta, 'stroke-width': 5 * this.s, 'stroke-linecap': 'round' }, this.el.extras);
       this.el.zzz = mk('path', { fill: 'none', stroke: this.tinta, 'stroke-width': 4 * this.s, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, this.el.extras);
+      this.el.chapeu = mk('g', {}, h);
       this.el.bracoPerto = mk('path', linha(this.cor));
+      this.el.mangaPerto = mk('path', tecido(F.corManga || F.cor || '#888', 30));
       this.el.maoPerto = mk('circle', { r: 11 * this.s, fill: this.cor });
     }
 
@@ -308,6 +328,82 @@
       return null;
     }
 
+
+    // Roupas que dependem das articulações: mangas, calças, calçados, capa, bolsa, cabelo e chapéu
+    desenharFigurino({ pernas, bracos, perto, longe, top, H, inc, vista, dir, f, rot, s }) {
+      const F = this.fig, el = this.el;
+      const P_ = (a, b, u) => [lerp(a[0], b[0], u), lerp(a[1], b[1], u)];
+      // mangas
+      const manga = B => {
+        if (!F.mangas || F.mangas === 'nenhuma') return '';
+        if (F.mangas === 'longa') return `M${f(B.o)} L${f(B.c)} L${f(P_(B.c, B.m, 0.85))}`;
+        return `M${f(B.o)} L${f(P_(B.o, B.c, 0.48))}`;
+      };
+      el.mangaLonge.setAttribute('d', manga(bracos[longe.braco]));
+      el.mangaPerto.setAttribute('d', manga(bracos[perto.braco]));
+      // calças
+      const calca = L => {
+        if (!F.pernas || F.pernas === 'nua') return '';
+        if (F.pernas === 'bermuda') return `M${f(L.q)} L${f(P_(L.q, L.j, 1.05))}`;
+        return `M${f(L.q)} L${f(L.j)} L${f(P_(L.j, L.tz, 0.9))}`;
+      };
+      el.calcaLonge.setAttribute('d', calca(pernas[longe.perna]));
+      el.calcaPerto.setAttribute('d', calca(pernas[perto.perna]));
+      // calçados
+      el.peLonge.innerHTML = this.calcado(pernas[longe.perna], vista, dir, f, true);
+      el.pePerto.innerHTML = this.calcado(pernas[perto.perna], vista, dir, f, false);
+      // capa (paenula/manto): atrás do corpo, do ombro até abaixo do joelho
+      if ((F.extras || []).includes('capa')) {
+        const w = (vista === 'frente' ? 48 : 30) * s, joelho = Math.max(pernas[0].j[1], pernas[1].j[1]) + 30 * s;
+        const tras = vista === 'perfil' ? -dir * 26 * s : 0;
+        el.capa.setAttribute('d', `M${f([top[0] - w, top[1] + 10 * s])} Q${f([top[0], top[1] - 14 * s])} ${f([top[0] + w, top[1] + 10 * s])} L${f([top[0] + w * 1.25 + tras, joelho])} L${f([top[0] - w * 1.25 + tras, joelho])}Z`);
+      } else el.capa.setAttribute('d', '');
+      // bolsa a tiracolo
+      if ((F.extras || []).includes('bolsa')) {
+        const bx = H[0] + (vista === 'perfil' ? -dir * 30 : 46) * s, by = H[1] - 10 * s;
+        el.bolsa.setAttribute('d', `M${f([bx - 26 * s, by])} h${52 * s} v${44 * s} h${-52 * s}Z M${f(top)} L${f([bx, by])}`);
+        el.bolsa.setAttribute('stroke', '#5E3B1C'); el.bolsa.setAttribute('stroke-width', 6 * s);
+      } else el.bolsa.setAttribute('d', '');
+    }
+
+    // Calçado desenhado sobre o pé (calcanhar → ponta), apontando para onde o pé aponta
+    calcado(L, vista, dir, f, longe) {
+      const F = this.fig, s = this.s, tipo = F.pes || 'descalco';
+      if (tipo === 'descalco') return '';
+      const T = '#1D1D2B';
+      const a = L.calc, b = L.ponta, len = Math.hypot(b[0] - a[0], b[1] - a[1]) || 1;
+      const u = [(b[0] - a[0]) / len, (b[1] - a[1]) / len];
+      let n = vista === 'frente' ? [0, -1] : (dir > 0 ? [u[1], -u[0]] : [-u[1], u[0]]);
+      if (n[1] > 0) n = [-n[0], -n[1]];
+      const p = (x, y) => [a[0] + u[0] * x * s + n[0] * y * s, a[1] + u[1] * x * s + n[1] * y * s];
+      const ll = len / s;
+      const cor = longe ? Boneco.tomLonge(F.corPes || '#8A5A33') : (F.corPes || '#8A5A33');
+      const pts = arr => arr.map(q => f(p(q[0], q[1]))).join(' L');
+      if (tipo === 'tenis' || tipo === 'sapato' || tipo === 'bota') {
+        let d = `M${pts([[-9, -6], [ll + 12, -6], [ll + 14, 6], [ll + 2, 16], [10, 26], [-8, 22]])}Z`;
+        let s2 = `<path d="${d}" fill="${cor}" stroke="${T}" stroke-width="${4 * s}" stroke-linejoin="round"/>`;
+        if (tipo === 'tenis') {
+          const sola = longe ? '#D9D9E3' : '#FFFFFF', det = F.corPes2 || '#111111';
+          s2 += `<path d="M${pts([[-10, -7], [ll + 13, -7], [ll + 15, 1], [-10, 1]])}Z" fill="${sola}" stroke="${T}" stroke-width="${3 * s}"/>`;
+          s2 += `<path d="M${pts([[2, 4], [ll * 0.55, 16]])}" stroke="${det}" stroke-width="${5 * s}" stroke-linecap="round"/><path d="M${pts([[ll * 0.35, 18], [ll * 0.75, 12]])}" stroke="#FFFFFF" stroke-width="${3 * s}" stroke-linecap="round"/>`;
+        }
+        if (tipo === 'bota') {
+          const q1 = P_lin(L.tz, L.j, 0.55);
+          s2 = `<path d="M${f(P_lin(L.tz, L.j, -0.05))} L${f(q1)}" stroke="${cor}" stroke-width="${30 * s}" stroke-linecap="round"/><path d="M${f(P_lin(L.tz, L.j, -0.05))} L${f(q1)}" stroke="${T}" stroke-width="${3 * s}" stroke-opacity=".0"/>` + s2;
+        }
+        return s2;
+      }
+      // sandálias: sola + tiras sobre o pé; caliga = tiras subindo pela canela
+      let s2 = `<path d="M${pts([[-9, -4], [ll + 10, -4], [ll + 10, 2], [-9, 2]])}Z" fill="${cor}" stroke="${T}" stroke-width="${3 * s}"/>`;
+      const tira = (x) => `<path d="M${f(p(x, 0))} L${f(p(x - 4, 14))}" stroke="${cor}" stroke-width="${5 * s}" stroke-linecap="round"/>`;
+      s2 += tira(ll * 0.35) + tira(ll * 0.7) + `<path d="M${f(p(-2, 6))} L${f(L.tz)} L${f(p(ll * 0.35, 12))}" stroke="${cor}" stroke-width="${4.5 * s}" fill="none" stroke-linecap="round"/>`;
+      if (tipo === 'caliga') {
+        for (let k = 1; k <= 3; k++) { const q = P_lin(L.tz, L.j, k * 0.13); s2 += `<path d="M${f([q[0] - 12 * s, q[1]])} L${f([q[0] + 12 * s, q[1] - 6 * s])}" stroke="${cor}" stroke-width="${5 * s}" stroke-linecap="round"/>`; }
+        s2 = `<path d="M${pts([[-9, -6], [ll + 10, -6], [ll + 10, 0], [-9, 0]])}Z" fill="#3A2A1A"/>` + s2;
+      }
+      return s2;
+    }
+
     // ---------- avaliação no tempo t ----------
     acaoEm(lista, t) {
       let atual = null, anterior = null;
@@ -408,6 +504,7 @@
       this.el.pernaPerto.setAttribute('d', legPath(pernas[perto.perna]));
       this.el.bracoLonge.setAttribute('d', armPath(bracos[longe.braco]));
       this.el.bracoPerto.setAttribute('d', armPath(bracos[perto.braco]));
+      this.desenharFigurino({ pernas, bracos, perto, longe, top, H, inc, vista, dir, f, rot, s });
       const mL = rot(maos[longe.braco]), mP = rot(maos[perto.braco]);
       this.el.maoLonge.setAttribute('cx', mL[0]); this.el.maoLonge.setAttribute('cy', mL[1]);
       this.el.maoPerto.setAttribute('cx', mP[0]); this.el.maoPerto.setAttribute('cy', mP[1]);
@@ -416,7 +513,11 @@
       if (this.el.roupa) {
         const up = [Math.sin(inc * RAD) * (vista === 'perfil' ? dir : 0), -Math.cos(inc * RAD)];
         const lat = [-up[1], up[0]];
-        const wO = (vista === 'frente' ? 34 : 20) * s, wB = (vista === 'frente' ? 58 : 44) * s, desce = 46 * s;
+        const T = Boneco.TRONCOS[this.fig.tronco] || Boneco.TRONCOS.tunica;
+        const abertura = Math.abs(pernas[0].tz[0] - pernas[1].tz[0]) / 2;
+        const desce = T.desce * s;
+        const wO = (vista === 'frente' ? 34 : 20) * s * (T.ombro || 1);
+        const wB = Math.max((vista === 'frente' ? T.barra : T.barra * 0.76) * s, T.desce > 120 ? abertura + 26 * s : 0);
         const o0 = add(top, [lat[0] * -wO, lat[1] * -wO]), o1 = add(top, [lat[0] * wO, lat[1] * wO]);
         const bc = add(H, [-up[0] * desce, -up[1] * desce]);
         // no perfil/sentado a barra segue a coxa da frente
@@ -424,13 +525,66 @@
         this.el.roupa.setAttribute('d', `M${f(o0)} L${f(o1)} L${f(b1)} L${f(b0)} Z`);
         const c0 = add(H, [up[0] * 60 * s + lat[0] * -wB * 0.82, up[1] * 60 * s + lat[1] * -wB * 0.82]);
         const c1 = add(H, [up[0] * 60 * s + lat[0] * wB * 0.82, up[1] * 60 * s + lat[1] * wB * 0.82]);
-        this.el.cinto.setAttribute('d', `M${f(c0)} L${f(c1)}`);
+        this.el.cinto.setAttribute('d', T.cinto === false && !this.fig.cinto ? '' : `M${f(c0)} L${f(c1)}`);
+        // detalhes por tipo: faixa da toga, bordas, listras da armadura, gola
+        const P_ = (a, b, u) => [lerp(a[0], b[0], u), lerp(a[1], b[1], u)];
+        let det = '';
+        if (this.fig.tronco === 'toga') det = `M${f(P_(o1, o0, 0.15))} Q${f(P_(H, b0, 0.2))} ${f(P_(b0, b1, 0.12))}`;
+        else if (this.fig.tronco === 'armadura') det = [0.25, 0.42, 0.59, 0.76].map(u => `M${f(P_(o0, b0, u))} L${f(P_(o1, b1, u))}`).join(' ');
+        else if (this.fig.cor2) det = `M${f(P_(b0, o0, 0.04))} L${f(P_(b1, o1, 0.04))}` + (this.fig.tronco === 'camiseta' || this.fig.tronco === 'moletom' ? ` M${f(P_(o0, o1, 0.3))} Q${f(add(top, [0, 22 * s]))} ${f(P_(o0, o1, 0.7))}` : '');
+        this.el.detalhe.setAttribute('d', det);
+        if (this.fig.tronco === 'armadura') this.el.detalhe.setAttribute('stroke', '#5A5A62');
+        const temAvental = (this.fig.extras || []).includes('avental');
+        this.el.avental.setAttribute('d', temAvental ? `M${f(P_(c0, c1, 0.18))} L${f(P_(c0, c1, 0.82))} L${f(P_(b0, b1, 0.86))} L${f(P_(b0, b1, 0.14))}Z` : '');
       }
       this._maos = { e: rot(maos.e), d: rot(maos.d) };
       // cabeça e rosto
       const C = rot(cab);
       this.el.cranio.setAttribute('cx', C[0]); this.el.cranio.setAttribute('cy', C[1]);
-      this.desenharRosto(t, C, cabeca, P, (giro || 0) - sxCab * inclCab);
+      const rotRosto = (giro || 0) - sxCab * inclCab;
+      this.desenharCabeca(C, cabeca.yaw, rotRosto, s);
+      this.desenharRosto(t, C, cabeca, P, rotRosto);
+    }
+
+
+    // Cabelo e chapéu: giram com a cabeça e deslizam para trás quando ela vira de perfil
+    desenharCabeca(C, yaw, rot, s) {
+      const F = this.fig, el = this.el, r = M.cabeca * s, T = '#1D1D2B';
+      const tr = `rotate(${rot.toFixed(2)} ${C[0].toFixed(1)} ${C[1].toFixed(1)})`;
+      [el.cabelo, el.cabeloTras, el.chapeu].forEach(e => e.setAttribute('transform', tr));
+      const tras = -yaw * 14 * s;            // cabelo se concentra atrás da cabeça no perfil
+      const arc = (a0, a1, rr, dx = 0) => { const p0 = [C[0] + dx + Math.cos(a0) * rr, C[1] + Math.sin(a0) * rr], p1 = [C[0] + dx + Math.cos(a1) * rr, C[1] + Math.sin(a1) * rr]; return [p0, p1]; };
+      let d = '', dT = '';
+      const est = F.cabelo || 'nenhum';
+      if (est !== 'nenhum' && est !== 'careca') {
+        const [p0, p1] = arc(Math.PI * 1.08, Math.PI * 1.92, r * 1.04, tras);
+        const fundo = est === 'curto' ? 0.42 : 0.55;
+        d = `M${p0[0]} ${p0[1]} A${r * 1.04} ${r * 1.04} 0 0 1 ${p1[0]} ${p1[1]} Q${C[0] + tras} ${C[1] - r * fundo} ${p0[0]} ${p0[1]}Z`;
+        if (est === 'longo') dT = `M${C[0] - r * 1.02 + tras} ${C[1] - r * 0.2} Q${C[0] - r * 1.15 + tras} ${C[1] + r * 1.2} ${C[0] - r * 0.6 + tras} ${C[1] + r * 1.35} H${C[0] + r * 0.6 + tras} Q${C[0] + r * 1.15 + tras} ${C[1] + r * 1.2} ${C[0] + r * 1.02 + tras} ${C[1] - r * 0.2}Z`;
+        if (est === 'coque') dT = `M${C[0] + tras * 2.2 - r * 0.36} ${C[1] - r * 0.95} a${r * 0.36} ${r * 0.32} 0 1 0 ${r * 0.72} 0 a${r * 0.36} ${r * 0.32} 0 1 0 ${-r * 0.72} 0Z`;
+        if (est === 'cacheado') { d = ''; for (let k = 0; k < 9; k++) { const a = Math.PI * (1.05 + k * 0.11); d += `M${C[0] + tras + Math.cos(a) * r * 0.98 - r * 0.2} ${C[1] + Math.sin(a) * r * 0.98} a${r * 0.2} ${r * 0.2} 0 1 0 ${r * 0.4} 0 a${r * 0.2} ${r * 0.2} 0 1 0 ${-r * 0.4} 0Z`; } }
+      }
+      el.cabelo.setAttribute('d', d); el.cabeloTras.setAttribute('d', dT);
+      // chapéus / adornos
+      const ch = F.chapeu || 'nenhum', cc = F.corChapeu || '#9E2A22';
+      let h = '';
+      if (ch === 'louros') { for (let k = 0; k < 10; k++) { const a = Math.PI * (1.0 + k * 0.11), x = C[0] + Math.cos(a) * r * 0.98, y = C[1] + Math.sin(a) * r * 0.98 + r * 0.25; h += `<ellipse cx="${x}" cy="${y}" rx="${10 * s}" ry="${5 * s}" fill="${k % 2 ? '#5C7A3A' : '#7A9A4A'}" stroke="${T}" stroke-width="${2 * s}" transform="rotate(${a * 57.3 + 90} ${x} ${y})"/>`; } }
+      else if (ch === 'capacete') {
+        h = `<path d="M${C[0] - r * 1.05} ${C[1] - r * 0.05} A${r * 1.05} ${r * 1.1} 0 0 1 ${C[0] + r * 1.05} ${C[1] - r * 0.05} L${C[0] + r * 1.12} ${C[1] + r * 0.12} H${C[0] - r * 1.12}Z" fill="#B9BCC4" stroke="${T}" stroke-width="${4 * s}"/>`;
+        h += `<path d="M${C[0] - r * 0.95} ${C[1]} L${C[0] - r * 0.95} ${C[1] + r * 0.62} L${C[0] - r * 0.62} ${C[1] + r * 0.5} L${C[0] - r * 0.7} ${C[1]}Z M${C[0] + r * 0.95} ${C[1]} L${C[0] + r * 0.95} ${C[1] + r * 0.62} L${C[0] + r * 0.62} ${C[1] + r * 0.5} L${C[0] + r * 0.7} ${C[1]}Z" fill="#A9ACB4" stroke="${T}" stroke-width="${3 * s}"/>`;
+        h += `<path d="M${C[0] - r * 0.7} ${C[1] - r * 1.0} Q${C[0]} ${C[1] - r * 1.75} ${C[0] + r * 0.7} ${C[1] - r * 1.0} Q${C[0]} ${C[1] - r * 1.25} ${C[0] - r * 0.7} ${C[1] - r * 1.0}Z" fill="${cc}" stroke="${T}" stroke-width="${3 * s}"/>`;
+      } else if (ch === 'bone') {
+        const fr = yaw === 0 ? 0 : Math.sign(yaw);
+        h = `<path d="M${C[0] - r * 1.0} ${C[1] - r * 0.25} A${r} ${r * 1.0} 0 0 1 ${C[0] + r * 1.0} ${C[1] - r * 0.25}Z" fill="${cc}" stroke="${T}" stroke-width="${4 * s}"/>`;
+        h += fr === 0 ? `<ellipse cx="${C[0]}" cy="${C[1] - r * 0.22}" rx="${r * 0.9}" ry="${r * 0.18}" fill="${Boneco.tomLonge(cc)}" stroke="${T}" stroke-width="${3 * s}"/>`
+                      : `<path d="M${C[0] + fr * r * 0.6} ${C[1] - r * 0.28} L${C[0] + fr * r * 1.7} ${C[1] - r * 0.18} L${C[0] + fr * r * 0.6} ${C[1] - r * 0.1}Z" fill="${Boneco.tomLonge(cc)}" stroke="${T}" stroke-width="${3 * s}"/>`;
+      } else if (ch === 'capuz' || ch === 'palla') {
+        const c2 = ch === 'palla' ? (F.corChapeu || '#E8DCC4') : cc;
+        h = `<path d="M${C[0] - r * 1.18} ${C[1] + r * 0.9} Q${C[0] - r * 1.3} ${C[1] - r * 1.35} ${C[0]} ${C[1] - r * 1.25} Q${C[0] + r * 1.3} ${C[1] - r * 1.35} ${C[0] + r * 1.18} ${C[1] + r * 0.9} L${C[0] + r * 0.9} ${C[1] + r * 0.9} Q${C[0] + r * 1.0} ${C[1] - r * 1.0} ${C[0]} ${C[1] - r * 1.02} Q${C[0] - r * 1.0} ${C[1] - r * 1.0} ${C[0] - r * 0.9} ${C[1] + r * 0.9}Z" fill="${c2}" stroke="${T}" stroke-width="${3 * s}"/>`;
+      } else if (ch === 'chapeu') {
+        h = `<ellipse cx="${C[0]}" cy="${C[1] - r * 0.6}" rx="${r * 1.6}" ry="${r * 0.22}" fill="${cc}" stroke="${T}" stroke-width="${4 * s}"/><path d="M${C[0] - r * 0.75} ${C[1] - r * 0.6} L${C[0] - r * 0.6} ${C[1] - r * 1.45} H${C[0] + r * 0.6} L${C[0] + r * 0.75} ${C[1] - r * 0.6}Z" fill="${cc}" stroke="${T}" stroke-width="${4 * s}"/>`;
+      }
+      el.chapeu.innerHTML = h;
     }
 
     // Orientação da cabeça em t. virar: 0 = de frente, ±1 = perfil olhando para ±x (valores no meio = ¾).
@@ -629,6 +783,47 @@
   }
 
   // Chão em degraus: escada(x0, y0, largura, altura, n, sobe=+1 para direita)
+
+  // Tipos de roupa do tronco: desce = quanto passa do quadril; barra = meia-largura da barra (de frente)
+  Boneco.TRONCOS = {
+    tunica:      { desce: 46, barra: 58 },
+    tunicaLonga: { desce: 170, barra: 64 },
+    toga:        { desce: 190, barra: 72, ombro: 1.15 },
+    estola:      { desce: 215, barra: 66 },
+    vestido:     { desce: 120, barra: 76 },
+    armadura:    { desce: 52, barra: 60, ombro: 1.1 },
+    camiseta:    { desce: 14, barra: 50, cinto: false },
+    moletom:     { desce: 22, barra: 54, cinto: false }
+  };
+  const _hex = h => { h = h.replace('#', ''); const n = parseInt(h, 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; };
+  Boneco.tomLonge = c => { const v = _hex(c).map(x => Math.round(x * 0.78 + 20)); return '#' + v.map(x => Math.min(255, x).toString(16).padStart(2, '0')).join(''); };
+  // Figurinos prontos (ver references/figurino.md). Qualquer campo pode ser sobrescrito.
+  Boneco.FIGURINOS = {
+    // --- Roma Antiga ---
+    'romano':        { tronco: 'tunica', cor: '#B89A6A', mangas: 'curta', pes: 'sandalia', corPes: '#7A4E2C', cabelo: 'curto', corCabelo: '#3A2A20' },
+    'romano-cidadao':{ tronco: 'toga', cor: '#F2EBDA', mangas: 'curta', pes: 'sapato', corPes: '#7A2E1F', cabelo: 'curto', corCabelo: '#4A3A2A', cinto: 'none' },
+    'senador':       { tronco: 'toga', cor: '#F2EBDA', cor2: '#6B2A6B', mangas: 'curta', pes: 'sapato', corPes: '#7A2E1F', cabelo: 'curto', corCabelo: '#8A8A8A', cinto: 'none' },
+    'romana':        { tronco: 'estola', cor: '#3B5E8C', mangas: 'curta', pes: 'sandalia', corPes: '#7A4E2C', cabelo: 'coque', corCabelo: '#3A2418', chapeu: 'palla', corChapeu: '#E8DCC4', cinto: 'none' },
+    'legionario':    { tronco: 'armadura', cor: '#9E2A22', mangas: 'curta', pes: 'caliga', corPes: '#6B4A2E', chapeu: 'capacete', corChapeu: '#9E2A22', extras: ['capa'], corCapa: '#9E2A22', cinto: '#5E3B1C' },
+    'vendedor':      { tronco: 'tunica', cor: '#7A6A4A', mangas: 'curta', pes: 'sandalia', corPes: '#5E3B1C', cabelo: 'cacheado', corCabelo: '#2A1E16', extras: ['avental'] },
+    'trabalhador':   { tronco: 'tunica', cor: '#A08A68', mangas: 'nenhuma', pes: 'descalco', cabelo: 'curto', corCabelo: '#2A1E16', cinto: '#5E3B1C' },
+    // --- hoje ---
+    'casual':        { tronco: 'camiseta', cor: '#3B7DD8', mangas: 'curta', pernas: 'calca', corPernas: '#2E4A7A', pes: 'tenis', corPes: '#FFFFFF', corPes2: '#3B7DD8', cabelo: 'curto', corCabelo: '#3A2A20' },
+    'moletom':       { tronco: 'moletom', cor: '#6A6E78', mangas: 'longa', pernas: 'calca', corPernas: '#2A2C32', pes: 'tenis', corPes: '#FFFFFF', corPes2: '#2A2C32', cabelo: 'curto', corCabelo: '#2A1E16' },
+    // --- marca do usuário (personagem principal) ---
+    'marca':         { tronco: 'camiseta', cor: '#111111', cor2: '#FF7A00', mangas: 'curta', pernas: 'calca', corPernas: '#24242A', pes: 'tenis', corPes: '#FF7A00', corPes2: '#111111' }
+  };
+  // O personagem principal leva SEMPRE o tênis laranja e preto, qualquer que seja a época.
+  Boneco.PROTAGONISTA = { pes: 'tenis', corPes: '#FF7A00', corPes2: '#111111' };
+  Boneco.figurino = (f, roupaAntiga) => {
+    if (!f) return roupaAntiga ? { tronco: 'tunica', cor: roupaAntiga } : {};
+    if (typeof f === 'string') return { ...(Boneco.FIGURINOS[f] || {}) };
+    const base = f.preset ? Boneco.FIGURINOS[f.preset] || {} : {};
+    const r = { ...base, ...f };
+    if (f.protagonista) Object.assign(r, Boneco.PROTAGONISTA);
+    return r;
+  };
+
   Boneco.escada = (x0, y0, larg, alt, n) => x => {
     const k = clamp(Math.floor((x - x0) / larg), 0, n - 1);
     return y0 - k * alt;

@@ -284,6 +284,9 @@ function formaBoca(t) {
   return String(LS.frames[Math.min(LS.frames.length - 1, Math.floor((t - LS.offset) * LS.fps))] ?? 0);
 }
 const ROUPA = COR.terracota;
+// figurino (skill figurino): protagonista careca, túnica preta, cinto laranja e o tênis laranja de sempre
+const PROT = { preset: 'romano', cor: '#2A2A30', cinto: '#FF7A00', cabelo: 'nenhum', protagonista: true };
+const MARCA = { preset: 'marca', protagonista: true };
 const ATORES = [];   // { b, janelas: [[t0, t1], ...] }
 function ator(escala, janelas, opts = {}) {
   const g = document.createElementNS(NS, 'g'); $('#atores').appendChild(g);
@@ -293,56 +296,59 @@ function ator(escala, janelas, opts = {}) {
 const escada = x => 1800 - Math.max(0, Math.min(11, Math.floor(x / 90))) * 92;   // degraus desenhados em s5c/s7b
 
 // figurantes (atrás do herói)
-const pass = ator(0.55, [[18.6, 25.2]], { roupa: '#3B7DD8', seed: 9 });
+const pass = ator(0.55, [[18.6, 25.2]], { figurino: { preset: 'romano-cidadao', cor: '#EDE3CF' }, seed: 9 });
 pass.base(18.6, 25.2, 'andar', { de: [1150, 1760], ate: [-150, 1760] });
 pass.braco('ambos', 20.75, 21.4, 'cima'); pass.expressao(20.8, 22.6, 'espanto');
-const vend = ator(0.6, [[30.5, 40.9]], { roupa: '#5C8A3A', seed: 12 });
+const vend = ator(0.6, [[30.5, 40.9]], { figurino: 'vendedor', seed: 12 });
 vend.base(30.5, 40.9, 'parado', { x: 820, y: 1470 }); vend.braco('e', 32.7, 33.4, 'estender'); vend.expressao(32.8, 40.9, 'feliz');
-const lat = [[150, '#3B7DD8', 10], [360, '#5C8A3A', -10], [930, '#E0A030', 10]].map(([x, roupa, inc], i) => {
-  const b = ator(0.62, [[52.5, 65.5]], { roupa, seed: 20 + i });
+const lat = [[150, { preset: 'romano', cor: '#8A6A4A' }, 10], [360, { preset: 'trabalhador', cor: '#5C7A3A', cabelo: 'cacheado' }, -10], [930, { preset: 'romano', cor: '#C9A24A', corCabelo: '#7A5A3A' }, 10]].map(([x, figurino, inc], i) => {
+  const b = ator(0.62, [[52.5, 65.5]], { figurino, seed: 20 + i });
   b.base(52.5, 65.5, 'parado', { x, y: 1590 }); b.cabeca(58.1 + i * 0.05, 62, { virar: inc > 0 ? 0.6 : -0.6, inclinar: inc * 0.4 }); b.expressao(58.1, 60.2, 'feliz');
   return b;
 });
 lat[1].braco('d', 58.3, 59.6, 'acenar');
 
+const guarda = ator(0.5, [[43.2, 46.6]], { figurino: 'legionario', seed: 31 });
+guarda.base(43.2, 46.6, 'parado', { x: 330, y: 1300 }); guarda.expressao(43.2, 46.6, 'serio'); guarda.braco('d', 43.2, 46.6, 'pose', { o: 30, c: 70, entrada: 0.01 });
 // herói — um boneco por escala de cena
 const boca = formaBoca;
-const H1 = ator(0.95, [[0, 6.9]], { boca });                       // quarto
+const H1 = ator(0.95, [[0, 6.9]], { boca, figurino: PROT });                       // quarto
 H1.base(0, 1.0, 'deitado', { x: 800, y: 1515, dir: 1 }); H1.expressao(0, 0.8, 'dormindo');
 H1.base(1.0, 2.0, 'parado', { x: 800, y: 1620, vista: 'perfil', dir: 1, transicao: 0.9 });
 H1.base(2.0, 6.9, 'parado', { x: 800, y: 1620, vista: 'frente' });
 H1.cabeca(2.1, 2.7, { virar: -0.7, inclinar: 5 }); H1.cabeca(2.7, 3.4, { virar: 0.7, inclinar: -5 }); H1.expressao(1.6, 3.4, 'confuso'); H1.expressao(3.4, 5.0, 'desconfiado');
 H1.expressao(5.1, 6.9, 'nojo'); H1.braco('d', 5.3, 6.6, 'nariz'); H1.braco('e', 5.6, 6.6, 'abanar');
-const H2 = ator(0.72, [[6.9, 11.1]], { boca });                     // janela
+const H2 = ator(0.72, [[6.9, 11.1]], { boca, figurino: PROT });                     // janela
 H2.base(6.9, 9.0, 'parado', { x: 180, y: 1730, vista: 'perfil', dir: 1 });
 H2.base(9.0, 9.7, 'pular', { x: 180, y: 1730, vista: 'perfil', dir: 1, altura: 60 });
 H2.base(9.7, 11.1, 'parado', { x: 180, y: 1730, vista: 'perfil', dir: 1 });
 H2.cabeca(7.2, 11.1, { inclinar: 12, olhar: [2, -4] }); H2.expressao(7.2, 9.0, 'surpreso'); H2.expressao(9.0, 10.6, 'espanto'); H2.expressao(10.6, 11.1, 'feliz');
-const H3 = ator(0.42, [[11.1, 25.2], [65.5, 71.8]], { boca });     // janela do 3º andar (dia e noite)
+const H3 = ator(0.42, [[11.1, 25.2], [65.5, 71.8]], { boca, figurino: PROT });     // janela do 3º andar (dia e noite)
 H3.base(11.1, 71.8, 'parado', { x: 320, y: 702 });
 H3.expressao(12.5, 15.6, 'cansado'); H3.cabeca(15.9, 18.3, { baixar: 12, olhar: [0, 5] }); H3.cabeca(19.4, 21.5, { virar: 0.5, baixar: 10, olhar: [3, 5] }); H3.expressao(15.9, 18.3, 'susto'); H3.expressao(20.8, 21.8, 'espanto'); H3.expressao(21.8, 25.0, 'nojo');
 H3.expressao(65.5, 65.9, 'dormindo'); H3.expressao(65.9, 68.0, 'medo'); H3.expressao(68.0, 71.8, 'gritando'); H3.braco('ambos', 68.1, 71.5, 'desespero');
-const H4 = ator(0.62, [[27.2, 30.5], [52.5, 65.5], [86.45, 999]], { boca });
+const H4 = ator(0.62, [[27.2, 30.5], [52.5, 65.5]], { boca, figurino: PROT });
 H4.base(27.2, 30.5, 'parado', { x: 540, y: 1800 }); H4.braco('ambos', 29.5, 30.3, 'encolher'); H4.expressao(27.6, 30.4, 'triste');
 H4.base(52.5, 65.5, 'parado', { x: 570, y: 1590 }); H4.braco('ambos', 58.4, 59.4, 'encolher'); H4.expressao(52.8, 55.0, 'confuso'); H4.expressao(55.0, 59.6, 'envergonhado'); H4.expressao(60.6, 62.2, 'espanto'); H4.expressao(62.2, 65.5, 'nojo');
-H4.base(86.45, 999, 'parado', { x: 540, y: 1640 }); H4.braco('d', 87.0, 999, 'acenar'); H4.expressao(86.5, 999, 'alegre');
-const H5 = ator(0.85, [[30.5, 40.9]], { boca });                    // banca
+const H9 = ator(0.62, [[86.45, 999]], { boca, figurino: MARCA });
+H9.base(86.45, 999, 'parado', { x: 540, y: 1640 }); H9.braco('d', 87.0, 999, 'acenar'); H9.expressao(86.5, 999, 'alegre');
+const H5 = ator(0.85, [[30.5, 40.9]], { boca, figurino: PROT });                    // banca
 H5.base(30.5, 31.9, 'andar', { de: [-120, 1700], ate: [300, 1700] });
 H5.base(31.9, 40.9, 'parado', { x: 300, y: 1700, vista: 'perfil', dir: 1 });
 H5.braco('e', 31.9, 32.5, 'estender'); H5.expressao(30.5, 31.9, 'determinado'); H5.expressao(31.9, 33.3, 'serio'); H5.expressao(33.4, 34.7, 'desconfiado'); H5.expressao(34.8, 37.2, 'confuso');
 H5.expressao(37.3, 38.8, 'nojo'); H5.cabeca(37.4, 38.6, { gesto: 'nao' }); H5.braco('e', 37.4, 38.7, 'abanar'); H5.braco('e', 38.9, 40.5, 'comer'); H5.expressao(38.9, 40.6, 'determinado');
-const H6 = ator(0.8, [[43.2, 46.6]], { boca });                     // fonte
+const H6 = ator(0.8, [[43.2, 46.6]], { boca, figurino: PROT });                     // fonte
 H6.base(43.2, 44.7, 'andar', { de: [-100, 1700], ate: [520, 1700] });
 H6.base(44.7, 46.6, 'parado', { x: 520, y: 1700, vista: 'perfil', dir: 1 });
 H6.braco('e', 44.8, 46.6, 'alcancar', { alvo: [650, 1470] }); H6.expressao(43.3, 46.6, 'serio');
-const H7 = ator(0.6, [[46.6, 50.0], [71.8, 77.0]], { boca });       // escadas
+const H7 = ator(0.6, [[46.6, 50.0], [71.8, 77.0]], { boca, figurino: PROT });       // escadas
 H7.base(46.6, 49.6, 'subir', { de: [-4, escada(0)], ate: [716, escada(716)], chao: escada, passo: 90 });
 H7.base(49.6, 71.8, 'parado', { x: 716, y: escada(716), vista: 'perfil', dir: 1 });
 H7.braco('e', 46.6, 50.0, 'segurar'); H7.expressao(46.6, 49.3, 'cansado'); H7.expressao(49.4, 50.0, 'triste');
 H7.base(71.8, 76.9, 'correr', { de: [1044, escada(1044)], ate: [-36, escada(0)], chao: escada, passo: 90, transicao: 0.01 });
 H7.base(76.9, 77.0, 'parado', { x: -36, y: escada(0), vista: 'perfil', dir: -1, transicao: 0.01 });
 H7.expressao(71.8, 77.0, 'medo');
-const H8 = ator(0.9, [[77.0, 86.45]], { boca });                    // amanhecer
+const H8 = ator(0.9, [[77.0, 86.45]], { boca, figurino: PROT });                    // amanhecer
 H8.base(77.0, 77.9, 'pular', { x: 540, y: 1700, vista: 'frente', altura: 90 });
 H8.braco('ambos', 77.0, 78.0, 'cima'); H8.expressao(77.0, 78.2, 'alegre'); H8.expressao(78.2, 79.6, 'cansado');
 H8.base(77.9, 78.2, 'parado', { x: 540, y: 1700, vista: 'frente' });
