@@ -11,12 +11,15 @@
 <style>
   html, body { margin: 0; background: #000; overflow: hidden; }
   #stage { width: 1080px; height: 1920px; display: block; }
-  text { font-family: Inter, 'DejaVu Sans', sans-serif; font-weight: 800; }
+  @font-face { font-family: 'Luckiest Guy'; src: url(fontes/luckiest-guy.woff2); }
+  /* identidade-visual: Luckiest Guy em todo texto que não define a própria fonte (cenário mantém a sua) */
+  text:not([font-family]) { font-family: 'Luckiest Guy', 'DejaVu Sans', sans-serif; }
 </style>
 <script src="gsap.min.js"></script>
 <script src="lipsync.js" onerror="window.LIPSYNC = null"></script>
 <script src="boneco.js"></script>
 <script src="cenario.js"></script>
+<script src="marca.js"></script>
 </head>
 <body>
 <svg id="stage" viewBox="0 0 1080 1920" xmlns="http://www.w3.org/2000/svg">
@@ -68,7 +71,7 @@
 <script>
 // ===================== CONFIG =====================
 const CONFIG = { fps: 30, palavrasPorLinha: 4, seed: 11, cauda: 2.2 };
-const COR = { tinta: '#1D1D2B', branco: '#FFFFFF', destaque: '#FFC24B', apagado: '#9C9AB0', terracota: '#C8553D', ouro: '#F2C14E' };
+const COR = { tinta: '#1D1D2B', branco: '#FFFFFF', destaque: '#FFC24B', apagado: '#9C9AB0', terracota: '#C8553D', ouro: '#FF7A00' };
 const NS = 'http://www.w3.org/2000/svg';
 function mulberry32(a) { return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
 const rand = mulberry32(CONFIG.seed);
@@ -97,17 +100,8 @@ function insula(p, x, w, top, night) {
 function flame(x, y, s, i) {
   return `<g class="flame" data-i="${i}" transform="translate(${x} ${y}) scale(${s})"><path d="M0 0 C-60 -10 -50 -90 -10 -150 C-15 -100 20 -90 15 -150 C60 -90 60 -10 0 0Z" fill="#FF6A2B"/><path d="M0 -6 C-30 -10 -28 -60 -4 -90 C0 -60 20 -55 14 -85 C38 -50 30 -10 0 -6Z" fill="#FFD24B"/></g>`;
 }
-function stamp(id, x, y, txt, cor, rot = -8, fs = 92) {
-  return `<g id="${id}" transform="translate(${x} ${y}) rotate(${rot})"><rect x="-${txt.length * fs * 0.36 + 40}" y="-${fs * 0.85}" width="${txt.length * fs * 0.72 + 80}" height="${fs * 1.35}" rx="18" fill="none" stroke="${cor}" stroke-width="12"/><text x="0" y="${fs * 0.3}" font-size="${fs}" fill="${cor}" text-anchor="middle">${txt}</text></g>`;
-}
-function card(id, bg, n, titulo, icone) {
-  return `<g id="${id}" class="scene"><rect width="1080" height="1920" fill="${bg}"/>
-    <g opacity=".12" fill="#fff">${[0, 1, 2, 3, 4].map(k => `<rect x="${60 + k * 230}" y="0" width="70" height="1920"/>`).join('')}</g>
-    <g id="${id}-n"><circle cx="540" cy="760" r="170" fill="#1D1D2B"/><text x="540" y="820" font-size="180" fill="${COR.ouro}" text-anchor="middle">${n}º</text></g>
-    <text id="${id}-d" x="540" y="1040" font-size="80" fill="#1D1D2B" text-anchor="middle" letter-spacing="8">DESAFIO</text>
-    <g id="${id}-t"><text x="540" y="1200" font-size="128" fill="#FFF" text-anchor="middle" stroke="#1D1D2B" stroke-width="12" paint-order="stroke">${titulo}</text></g>
-    <g id="${id}-i" transform="translate(540 1420)">${icone}</g></g>`;
-}
+function stamp(id, x, y, txt, cor, rot = -8, fs = 92) { return `<g id="${id}">${Marca.carimbo(x, y, txt, { fs, rot })}</g>`; }
+function card(id, bg, n, titulo, icone) { return Marca.cartao({ id, numero: `${n}º`, titulo, icone }); }
 
 // ===================== CENAS =====================
 const scenes = [];
@@ -144,7 +138,7 @@ const degraus = (cor, luzCor) => { let d = ''; for (let k = 0; k < 12; k++) { co
   v += `<path d="M200 1450 V700 Q200 420 600 420 Q1000 420 1000 700 V1450Z" fill="none" stroke="#5A4632" stroke-width="34"/><path d="M215 1450 V700 Q215 436 600 436" fill="none" stroke="#7A5E44" stroke-width="8"/>`;
   v += `<rect x="150" y="1440" width="900" height="56" fill="#8A7458" stroke="#1D1D2B" stroke-width="6"/><rect x="150" y="1440" width="900" height="12" fill="#B29A7A"/></g>`;
   v += C.piso({ y: 1490, h: 430, cor: '#8E877C' }) + C.vaso(1000, 1440, '#D7263D');
-  v += `  <g id="s2-banner" transform="translate(610 1330) scale(.8)"><path d="M-380 -110 H380 L340 0 L380 110 H-380 L-340 0Z" fill="#B3261E" stroke="#1D1D2B" stroke-width="10"/><text x="0" y="-5" font-size="100" fill="${COR.ouro}" text-anchor="middle">ROMA ANTIGA</text><text x="0" y="80" font-size="52" fill="#FFF" text-anchor="middle" letter-spacing="20">SPQR</text></g>` + C.atmosfera({ grao: 0.3 }) + `</g>`;
+  v += `  <g id="s2-banner" transform="translate(600 1250)">${Marca.faixa(0, 0, 'ROMA ANTIGA', { fs: 100 })}</g>` + C.atmosfera({ grao: 0.3 }) + `</g>`;
   scenes.push(v); }
 // S3 — rua com prédios romanos (insulae)
 const ruaS3 = (noite) => {
@@ -163,15 +157,15 @@ const ruaS3 = (noite) => {
 { const { C, v } = ruaS3(false); scenes.push(`<g id="s3" class="scene">${v}  <g id="s3-balde"><g id="s3-bucket"><path d="M830 820 h90 l-10 80 h-70z" fill="#8A6A3A" stroke="#1D1D2B" stroke-width="6"/><path d="M830 820 q45 -40 90 0" stroke="#1D1D2B" stroke-width="5" fill="none"/></g></g>
   <ellipse id="s3-blob" cx="0" cy="0" rx="34" ry="44" fill="#6B4A1F" stroke="#1D1D2B" stroke-width="5"/>
   <g id="s3-splat" transform="translate(800 1755)"><ellipse rx="130" ry="26" fill="#6B4A1F" stroke="#1D1D2B" stroke-width="5"/><circle cx="-110" cy="-60" r="14" fill="#6B4A1F"/><circle cx="90" cy="-80" r="12" fill="#6B4A1F"/><circle cx="20" cy="-110" r="10" fill="#6B4A1F"/></g>
-  <g id="s3-grito" transform="translate(300 1420)"><path d="M-230 -90 H230 Q260 -90 260 -60 V40 Q260 70 230 70 H-40 L-90 140 L-100 70 H-230 Q-260 70 -260 40 V-60 Q-260 -90 -230 -90Z" fill="#FFF" stroke="#1D1D2B" stroke-width="8"/><text y="12" font-size="86" fill="#B3261E" text-anchor="middle">CUIDADO!</text></g>
-  <g id="s3-andar" transform="translate(320 830)"><rect x="-150" y="-50" width="300" height="80" rx="40" fill="#1D1D2B"/><text y="12" font-size="44" fill="${COR.ouro}" text-anchor="middle">3º ANDAR</text></g>${C.atmosfera({ grao: 0.3, raios: true })}</g>`); }
+  <g id="s3-grito" transform="translate(330 1420)">${Marca.balao(0, 0, 'CUIDADO!', { ponta: [-80, 150] })}</g>
+  <g id="s3-andar" transform="translate(320 860)">${Marca.etiqueta(0, 0, '3º ANDAR')}</g>${C.atmosfera({ grao: 0.3, raios: true })}</g>`); }
 // S4 — desafio 1: fome
 scenes.push(card('c1', '#F2A541', 1, 'A FOME', `<ellipse cx="0" cy="40" rx="150" ry="40" fill="#8A5A2E" stroke="#1D1D2B" stroke-width="8"/><path d="M-150 40 Q0 200 150 40" fill="#A8743F" stroke="#1D1D2B" stroke-width="8"/>`));
 scenes.push(`<g id="s4b" class="scene"><rect width="1080" height="1920" fill="#F7D9A8"/>
   <g id="s4-gel" transform="translate(300 900)"><rect x="-130" y="-230" width="260" height="460" rx="24" fill="#FFF" stroke="#1D1D2B" stroke-width="10"/><path d="M-130 -60 H130" stroke="#1D1D2B" stroke-width="8"/><rect x="80" y="-180" width="16" height="80" rx="8" fill="#1D1D2B"/><rect x="80" y="-20" width="16" height="120" rx="8" fill="#1D1D2B"/>
-    <g id="s4-x1" stroke="#D7263D" stroke-width="34" stroke-linecap="round"><path d="M-170 -250 L170 250 M170 -250 L-170 250"/></g></g>
+    <g id="s4-x1" stroke-linecap="round"><path d="M-170 -250 L170 250 M170 -250 L-170 250" stroke="#111111" stroke-width="52"/><path d="M-170 -250 L170 250 M170 -250 L-170 250" stroke="#FF7A00" stroke-width="32"/></g></g>
   <g id="s4-merc" transform="translate(780 900)"><path d="M-170 -60 H170 L140 140 H-140Z" fill="#FFF" stroke="#1D1D2B" stroke-width="10"/><path d="M-200 -140 H-150 L-110 140" stroke="#1D1D2B" stroke-width="10" fill="none"/><circle cx="-100" cy="200" r="30" fill="#1D1D2B"/><circle cx="110" cy="200" r="30" fill="#1D1D2B"/>
-    <g id="s4-x2" stroke="#D7263D" stroke-width="34" stroke-linecap="round"><path d="M-190 -200 L190 250 M190 -200 L-190 250"/></g></g>
+    <g id="s4-x2" stroke-linecap="round"><path d="M-190 -200 L190 250 M190 -200 L-190 250" stroke="#111111" stroke-width="52"/><path d="M-190 -200 L190 250 M190 -200 L-190 250" stroke="#FF7A00" stroke-width="32"/></g></g>
   <rect y="1700" width="1080" height="220" fill="#E0B97F"/>
 </g>`);
 // S4c — banca do mercado
@@ -184,12 +178,12 @@ scenes.push(`<g id="s4b" class="scene"><rect width="1080" height="1920" fill="#F
   v += C.anfora(80, 1700, 0.8) + C.anfora(150, 1712, 0.65) + `<path d="M380 1700 l40 -70 h120 l40 70Z" fill="#B07A48" stroke="#1D1D2B" stroke-width="5"/>` + [0, 1, 2, 3, 4].map(k => `<circle cx="${430 + k * 22}" cy="${1622 - (k % 2) * 12}" r="16" fill="${['#E0A030', '#D7263D', '#8CC74A'][k % 3]}" stroke="#1D1D2B" stroke-width="3"/>`).join('');
   v += C.calcada({ y: 1700, h: 220 }) + C.pombo(330, 1760, 1) + C.sombraChao(-10, 1100, 1700, 80);
   v += `  <g id="s4-pao" transform="translate(690 1235)"><ellipse rx="70" ry="38" fill="#D9A15B" stroke="#1D1D2B" stroke-width="6"/><path d="M-40 -18 l16 22 M-5 -28 l16 22 M30 -18 l14 20" stroke="#A56E2E" stroke-width="7"/>
-    <g transform="translate(0 -90)"><rect x="-80" y="-34" width="160" height="56" rx="28" fill="#1D1D2B"/><text y="10" font-size="34" fill="#FFF" text-anchor="middle">DURO</text></g></g>
+    ${Marca.etiqueta(0, -90, 'DURO', { fs: 36 })}</g>
   <g id="s4-garum" transform="translate(920 1270)"><path d="M-45 -150 Q-80 -60 -40 0 H40 Q80 -60 45 -150 Z" fill="#B8613A" stroke="#1D1D2B" stroke-width="6"/><rect x="-26" y="-180" width="52" height="34" rx="8" fill="#9A4E2D" stroke="#1D1D2B" stroke-width="5"/>
-    <g transform="translate(0 -250)"><rect x="-100" y="-36" width="200" height="60" rx="30" fill="#1D1D2B"/><text y="10" font-size="38" fill="${COR.ouro}" text-anchor="middle">GARUM</text></g>
+    ${Marca.etiqueta(0, -250, 'GARUM', { fs: 40 })}
     <g id="s4-stink" stroke="#7CC46A" stroke-width="12" fill="none" stroke-linecap="round" transform="translate(-140 -200)"><path d="M-40 0 q25 -35 0 -70 q-25 -35 0 -70"/><path d="M20 -10 q25 -35 0 -70 q-25 -35 0 -70"/></g></g>
   <g id="s4-moeda"><circle r="34" fill="${COR.ouro}" stroke="#1D1D2B" stroke-width="6"/><circle r="20" fill="none" stroke="#B88A1E" stroke-width="5"/></g>
-  <g id="s4-eca" transform="translate(300 900)"><text font-size="110" fill="#5DAA4A" text-anchor="middle" stroke="#1D1D2B" stroke-width="10" paint-order="stroke" transform="rotate(-10)">ECA!</text></g>` + C.atmosfera({ grao: 0.3, raios: true }) + `</g>`;
+  <g id="s4-eca" transform="translate(300 900)">${Marca.impacto(0, 0, 'ECA!', { fs: 140, rot: -10 })}</g>` + C.atmosfera({ grao: 0.3, raios: true }) + `</g>`;
   scenes.push(v); }
 // S5 — desafio 2: água
 scenes.push(card('c2', '#4DA6E8', 2, 'A ÁGUA', `<path d="M0 -120 C60 -40 110 20 110 70 A110 110 0 0 1 -110 70 C-110 20 -60 -40 0 -120Z" fill="#BDE6FF" stroke="#1D1D2B" stroke-width="10"/>`));
@@ -220,9 +214,9 @@ const escadaria = (noite) => {
   v += `<path d="M20 1600 L1060 540" stroke="${noite ? '#4A3A5A' : '#5E3B1C'}" stroke-width="14"/>` + [...Array(9)].map((_, k) => `<path d="M${60 + k * 115} ${1560 - k * 117} V${1660 - k * 117}" stroke="${noite ? '#4A3A5A' : '#5E3B1C'}" stroke-width="8"/>`).join('');
   return { C, v };
 };
-{ const { C, v } = escadaria(false); scenes.push(`<g id="s5c" class="scene">${v}  <g id="s5-a1" transform="translate(200 1300)"><rect x="-80" y="-50" width="160" height="80" rx="40" fill="#1D1D2B"/><text y="12" font-size="44" fill="#FFF" text-anchor="middle">1º</text></g>
-  <g id="s5-a2" transform="translate(470 1000)"><rect x="-80" y="-50" width="160" height="80" rx="40" fill="#1D1D2B"/><text y="12" font-size="44" fill="#FFF" text-anchor="middle">2º</text></g>
-  <g id="s5-a3" transform="translate(740 700)"><rect x="-80" y="-50" width="160" height="80" rx="40" fill="#1D1D2B"/><text y="12" font-size="44" fill="${COR.ouro}" text-anchor="middle">3º</text></g>
+{ const { C, v } = escadaria(false); scenes.push(`<g id="s5c" class="scene">${v}  <g id="s5-a1" transform="translate(200 1300)">${Marca.etiqueta(0, 0, '1º ANDAR', { fs: 38 })}</g>
+  <g id="s5-a2" transform="translate(470 1000)">${Marca.etiqueta(0, 0, '2º ANDAR', { fs: 38 })}</g>
+  <g id="s5-a3" transform="translate(740 700)">${Marca.etiqueta(0, 0, '3º ANDAR', { fs: 38 })}</g>
   <g id="s5-todo">${stamp('s5-stamp', 540, 1560, 'TODO DIA!', '#D7263D', -10, 110)}</g>${C.atmosfera({ grao: 0.3 })}</g>`); }
 // S6 — desafio 3: banheiro
 scenes.push(card('c3', '#9B7BDB', 3, 'O BANHEIRO', `<rect x="-170" y="-40" width="340" height="120" rx="16" fill="#D8CBB3" stroke="#1D1D2B" stroke-width="8"/><ellipse cx="-80" cy="-10" rx="40" ry="16" fill="#1D1D2B"/><ellipse cx="80" cy="-10" rx="40" ry="16" fill="#1D1D2B"/>`));
@@ -234,15 +228,15 @@ scenes.push(card('c3', '#9B7BDB', 3, 'O BANHEIRO', `<rect x="-170" y="-40" width
   v += C.coluna({ x: 570, base: 1100, h: 620, r: 28, ordem: 'jonica', cor: '#EDE3CF' }) + C.coluna({ x: 60, base: 1100, h: 620, r: 28, ordem: 'jonica' }) + C.coluna({ x: 1040, base: 1100, h: 620, r: 28, ordem: 'jonica' });
   v += C.piso({ y: 1700, h: 220, cor: '#B3A894' }) + `<rect y="1700" width="1080" height="30" fill="#5DB7EE" opacity=".8"/>`;
   v += `  <g id="s6-sponge" transform="translate(860 1100) rotate(18)"><rect x="-10" y="-330" width="20" height="380" rx="8" fill="#8A5A2E" stroke="#1D1D2B" stroke-width="6"/><ellipse cx="0" cy="-350" rx="70" ry="54" fill="#E8C75A" stroke="#1D1D2B" stroke-width="7"/>${[0, 1, 2, 3, 4].map(k => `<circle cx="${-35 + k * 18}" cy="${-360 + (k % 2) * 22}" r="7" fill="#B8962E"/>`).join('')}</g>
-  <g id="s6-label" transform="translate(540 760)"><rect x="-230" y="-56" width="460" height="92" rx="46" fill="#1D1D2B"/><text y="16" font-size="56" fill="${COR.ouro}" text-anchor="middle">TERSORIUM</text></g>
+  <g id="s6-label" transform="translate(540 760)">${Marca.etiqueta(0, 0, 'TERSORIUM', { fs: 56 })}</g>
   <g id="s6-comp">${stamp('s6-stamp', 540, 940, 'COMPARTILHADO', '#D7263D', -8, 70)}</g>` + C.atmosfera({ grao: 0.3 }) + `</g>`;
   scenes.push(v); }
 // S7a — a mesma rua à noite, pegando fogo
 { const { C, v } = ruaS3(true); scenes.push(`<g id="s7a" class="scene">${v}  <rect id="s7-glow" x="-200" y="700" width="1480" height="1220" fill="url(#fireGlow)"/>
   <g id="s7-flames">${flame(140, 1420, 1.3, 0)}${flame(330, 1430, 1.6, 1)}${flame(520, 1400, 1.2, 2)}${flame(250, 1100, 1.1, 3)}${flame(470, 1090, 1.3, 4)}${flame(780, 1460, 1.2, 5)}${flame(980, 1440, 1.4, 6)}</g>
-  <g id="s7-g1" transform="translate(820 780)"><text font-size="80" fill="#FFF" text-anchor="middle" stroke="#1D1D2B" stroke-width="10" paint-order="stroke" transform="rotate(8)">AAAH!</text></g>
-  <g id="s7-g2" transform="translate(860 1200)"><text font-size="64" fill="#FFF" text-anchor="middle" stroke="#1D1D2B" stroke-width="10" paint-order="stroke" transform="rotate(-6)">SOCORRO!</text></g>
-  <g id="s7-fogo" transform="translate(540 1000)"><text font-size="210" fill="#FF6A2B" text-anchor="middle" stroke="#1D1D2B" stroke-width="16" paint-order="stroke">FOGO!</text></g>${C.atmosfera({ grao: 0.25 })}</g>`); }
+  <g id="s7-g1" transform="translate(820 780)">${Marca.apoio(0, 0, 'AAAH!', { fs: 80, rot: 8 })}</g>
+  <g id="s7-g2" transform="translate(860 1200)">${Marca.apoio(0, 0, 'SOCORRO!', { fs: 64, rot: -6 })}</g>
+  <g id="s7-fogo" transform="translate(540 1000)">${Marca.impacto(0, 0, 'FOGO!', { fs: 210 })}</g>${C.atmosfera({ grao: 0.25 })}</g>`); }
 { const { C, v } = escadaria(true); scenes.push(`<g id="s7b" class="scene">${v}  <rect id="s7b-glow" x="-300" y="1200" width="1000" height="900" fill="url(#fireGlow)"/>
   <g id="s7b-smoke" fill="#4A4458" opacity=".9">${[0, 1, 2, 3].map(k => `<circle class="smk" cx="${700 + k * 110}" cy="${640 - (k % 2) * 60}" r="${90 + k * 15}"/>`).join('')}</g>${C.atmosfera({ grao: 0.25 })}</g>`); }
 // S8 — amanhecer: o prédio queimado ainda soltando fumaça
@@ -256,20 +250,14 @@ scenes.push(card('c3', '#9B7BDB', 3, 'O BANHEIRO', `<rect x="-170" y="-40" width
   v += `<g><rect x="380" y="1590" width="320" height="115" rx="10" fill="#B5AEA2" stroke="#1D1D2B" stroke-width="8"/><rect x="380" y="1590" width="320" height="20" rx="8" fill="#D5CFC4"/><path d="M420 1640 l40 10 M560 1630 l60 -6" stroke="#8E877C" stroke-width="4"/></g>`;
   v += C.sombraChao(380, 320, 1705, -90);
   v += `  <g id="s8-fumaca" fill="#8C8288" opacity=".75">${[0, 1, 2].map(k => `<circle class="smk8" cx="${700 + k * 120}" cy="${780 - k * 40}" r="${70 + k * 18}"/>`).join('')}</g>
-  <g id="s8-ok" transform="translate(540 1050)"><text font-size="140" fill="#FFF" text-anchor="middle" stroke="#1D1D2B" stroke-width="14" paint-order="stroke">CONSEGUI!</text></g>
+  <g id="s8-ok" transform="translate(540 1050)">${Marca.impacto(0, 0, 'CONSEGUI!', { fs: 140 })}</g>
   <g id="s8-pensa"><circle cx="760" cy="1060" r="18" fill="#FFF" stroke="#1D1D2B" stroke-width="6"/><circle cx="800" cy="990" r="28" fill="#FFF" stroke="#1D1D2B" stroke-width="6"/>
     <path d="M560 940 Q480 940 490 860 Q470 760 590 760 Q620 680 740 700 Q830 650 900 730 Q1010 730 990 840 Q1020 940 900 950 Q840 1000 740 960 Q640 990 560 940Z" fill="#FFF" stroke="#1D1D2B" stroke-width="8"/>
-    <g id="s8-dia"><text x="740" y="830" font-size="64" fill="#2E8B57" text-anchor="middle">1 DIA ✓</text></g>
-    <g id="s8-sem"><text x="740" y="915" font-size="64" fill="#D7263D" text-anchor="middle">1 SEMANA?</text></g></g>
-  <g id="s8-voce" transform="translate(540 1000)"><text font-size="150" fill="${COR.ouro}" text-anchor="middle" stroke="#1D1D2B" stroke-width="14" paint-order="stroke">E VOCÊ?</text></g>` + C.atmosfera({ grao: 0.3, raios: true }) + `</g>`;
+    <g id="s8-dia"><text x="740" y="830" font-size="64" fill="#111111" text-anchor="middle">1 DIA ✓</text></g>
+    <g id="s8-sem"><text x="740" y="915" font-size="64" fill="#FF7A00" stroke="#111111" stroke-width="8" paint-order="stroke" text-anchor="middle">1 SEMANA?</text></g></g>
+  <g id="s8-voce" transform="translate(540 1000)">${Marca.impacto(0, 0, 'E VOCÊ?', { fs: 160 })}</g>` + C.atmosfera({ grao: 0.3, raios: true }) + `</g>`;
   scenes.push(v); }
-scenes.push(`<g id="fim" class="scene">
-  <rect width="1080" height="1920" fill="#B3261E"/>
-  <g fill="#8E1E18">${[0, 1].map(k => `<rect x="${k ? 900 : 60}" y="0" width="120" height="1920"/>`).join('')}</g>
-  <g fill="#D8CBB3" stroke="#1D1D2B" stroke-width="6">${[0, 1].map(k => `<g transform="translate(${k ? 960 : 120} 0)"><rect x="-55" y="300" width="110" height="1300"/><rect x="-75" y="260" width="150" height="50"/><rect x="-75" y="1590" width="150" height="50"/></g>`).join('')}</g>
-  <g id="fim-t"><text x="540" y="760" font-size="92" fill="#FFF" text-anchor="middle">QUANTO TEMPO</text><text x="540" y="870" font-size="92" fill="#FFF" text-anchor="middle">VOCÊ DURARIA</text><text x="540" y="1010" font-size="104" fill="${COR.ouro}" text-anchor="middle" stroke="#1D1D2B" stroke-width="10" paint-order="stroke">NA ROMA ANTIGA?</text></g>
-  <g id="fim-c" transform="translate(540 1180)"><rect x="-250" y="-56" width="500" height="96" rx="48" fill="#1D1D2B"/><text y="10" font-size="50" fill="#FFF" text-anchor="middle">Comente aqui ↓</text></g>
-</g>`);
+scenes.push(Marca.final({ linhas: ['QUANTO TEMPO', 'VOCÊ DURARIA'], destaque: 'NA ROMA ANTIGA?', chamada: 'COMENTE AQUI ↓' }));
 $('#scenes').innerHTML = scenes.join('');
 // primeiros planos (na frente do herói)
 $('#fgs').innerHTML = `
