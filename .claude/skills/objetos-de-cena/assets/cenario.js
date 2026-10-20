@@ -257,7 +257,7 @@
       s += `<rect x="${x}" y="${base - h}" width="${w}" height="${h - 60}" fill="${tom(cor, -0.3)}"/>`;
       for (let k = 0; k < colunas; k++) s += C.coluna({ x: x + 40 + k * (w - 80) / (colunas - 1), base: base - 60, h: h - 160, r: 30, ordem, cor });
       const ty = base - h + 100 - 60;
-      s += `<rect x="${x - 20}" y="${ty - 50}" width="${w + 40}" height="50" fill="${cor}" stroke="#1D1D2B" stroke-width="6"/><text x="${x + w / 2}" y="${ty - 14}" font-size="30" font-family="serif" font-weight="700" text-anchor="middle" fill="${tom(cor, -0.5)}" letter-spacing="6">SENATVS·POPVLVSQVE</text>`;
+      s += `<rect x="${x - 20}" y="${ty - 50}" width="${w + 40}" height="50" fill="${cor}" stroke="#1D1D2B" stroke-width="6"/><text x="${x + w / 2}" y="${ty - 14}" font-size="30" font-family="serif" font-weight="700" text-anchor="middle" fill="${tom(cor, -0.5)}" letter-spacing="6">SENADO E POVO</text>`;
       s += `<path d="M${x - 40} ${ty - 50} L${x + w / 2} ${ty - 190} L${x + w + 40} ${ty - 50}Z" fill="${cor}" stroke="#1D1D2B" stroke-width="6"/><path d="M${x + 20} ${ty - 62} L${x + w / 2} ${ty - 170} L${x + w - 20} ${ty - 62}Z" fill="${tom(cor, -0.15)}"/>`;
       return s;
     };

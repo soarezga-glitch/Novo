@@ -46,6 +46,10 @@ templo, pichação, placa) com a fonte própria deles.
 ## Regras
 - **Pouco texto**: só palavras de impacto e rótulos; nada de legenda do que está sendo falado
   (o usuário não quer legenda).
+- **Tudo em PORTUGUÊS** — qualquer palavra que aparece na tela (etiquetas, placas, pichações no muro,
+  inscrições em templo/estátua/estandarte, nomes de objetos) é escrita em português, mesmo em cena
+  de outra época. Nada de latim ou outra língua (ex.: TERSORIUM → ESPONJA, GARUM → MOLHO DE PEIXE,
+  THERMOPOLIVM → LANCHONETE, SPQR → ROMA, CAVE CANEM → CUIDADO: CÃO BRAVO).
 - **Tudo em MAIÚSCULAS**, no máximo 3–4 palavras por elemento.
 - **Nada de letras espaçadas** (tracking largo) nem linhas de texto decorativo embaixo de títulos.
 - Texto sempre com **contorno preto** ou sobre **fundo preto/laranja** — nunca solto sobre o cenário.

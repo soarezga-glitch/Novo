@@ -6,11 +6,11 @@ Use como lista de compras ao montar um cenário. Em **negrito**, o que mais iden
 - Arquitetura: **insula** (prédio de 3–6 andares, térreo com lojas/tabernae em arco), domus com
   átrio e impluvium, **telhas de barro** (tegula + imbrex), reboco ocre/creme, tijolo fino
   (opus latericium), **colunas** (dórica, jônica, coríntia), arcos, **aqueduto**, **Coliseu**,
-  templo com frontão e inscrição (SPQR, SENATVS POPVLVSQVE), fórum, termas.
+  templo com frontão e inscrição (sempre em português: SENADO E POVO), fórum, termas.
 - Objetos: **ânforas**, lamparina de óleo (lucerna), braseiro, mosaico, afresco (vermelho
   pompeiano), thermopolium (balcão com potes), bancos de mármore, toga/túnica, sandálias.
 - Natureza: **cipreste**, **pinheiro-manso** (copa em guarda-chuva), oliveira, louro.
-- Vida: pichação em latim (CAVE CANEM, AVE, VALE), varal, pombos, cachorros.
+- Vida: pichação (escrita em PORTUGUÊS: CUIDADO: CÃO BRAVO, VIVA ROMA, VENDO MOLHO), varal, pombos, cachorros.
 - Paleta: ocre, terracota, creme, vermelho pompeiano, verde-oliva, céu azul forte.
 
 ## Egito Antigo

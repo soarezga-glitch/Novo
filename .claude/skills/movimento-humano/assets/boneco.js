@@ -552,17 +552,34 @@
       const F = this.fig, el = this.el, r = M.cabeca * s, T = '#1D1D2B';
       const tr = `rotate(${rot.toFixed(2)} ${C[0].toFixed(1)} ${C[1].toFixed(1)})`;
       [el.cabelo, el.cabeloTras, el.chapeu].forEach(e => e.setAttribute('transform', tr));
-      const tras = -yaw * 14 * s;            // cabelo se concentra atrás da cabeça no perfil
-      const arc = (a0, a1, rr, dx = 0) => { const p0 = [C[0] + dx + Math.cos(a0) * rr, C[1] + Math.sin(a0) * rr], p1 = [C[0] + dx + Math.cos(a1) * rr, C[1] + Math.sin(a1) * rr]; return [p0, p1]; };
+      const TH = yaw * 1.35, giroX = Math.sin(TH);          // mesma rotação do rosto
       let d = '', dT = '';
       const est = F.cabelo || 'nenhum';
       if (est !== 'nenhum' && est !== 'careca') {
-        const [p0, p1] = arc(Math.PI * 1.08, Math.PI * 1.92, r * 1.04, tras);
-        const fundo = est === 'curto' ? 0.42 : 0.55;
-        d = `M${p0[0]} ${p0[1]} A${r * 1.04} ${r * 1.04} 0 0 1 ${p1[0]} ${p1[1]} Q${C[0] + tras} ${C[1] - r * fundo} ${p0[0]} ${p0[1]}Z`;
-        if (est === 'longo') dT = `M${C[0] - r * 1.02 + tras} ${C[1] - r * 0.2} Q${C[0] - r * 1.15 + tras} ${C[1] + r * 1.2} ${C[0] - r * 0.6 + tras} ${C[1] + r * 1.35} H${C[0] + r * 0.6 + tras} Q${C[0] + r * 1.15 + tras} ${C[1] + r * 1.2} ${C[0] + r * 1.02 + tras} ${C[1] - r * 0.2}Z`;
-        if (est === 'coque') dT = `M${C[0] + tras * 2.2 - r * 0.36} ${C[1] - r * 0.95} a${r * 0.36} ${r * 0.32} 0 1 0 ${r * 0.72} 0 a${r * 0.36} ${r * 0.32} 0 1 0 ${-r * 0.72} 0Z`;
-        if (est === 'cacheado') { d = ''; for (let k = 0; k < 9; k++) { const a = Math.PI * (1.05 + k * 0.11); d += `M${C[0] + tras + Math.cos(a) * r * 0.98 - r * 0.2} ${C[1] + Math.sin(a) * r * 0.98} a${r * 0.2} ${r * 0.2} 0 1 0 ${r * 0.4} 0 a${r * 0.2} ${r * 0.2} 0 1 0 ${-r * 0.4} 0Z`; } }
+        // Cabelo = "touca" numa esfera que gira junto com o rosto (mesma conta do desenharRosto).
+        // Linha do cabelo h(lon): latitude (rad) onde o cabelo começa; lon 0 = testa, ±π = nuca.
+        // Parte visível = arco da silhueta (por cima da cabeça) + linha do cabelo no lado visível.
+        const R = r * 1.05;
+        const H = { curto: [0.02, 0.5], cacheado: [0.12, 0.52], coque: [0.0, 0.52], longo: [-0.05, 0.5] }[est] || [0.02, 0.5];
+        const h = lon => H[0] + H[1] * Math.cos(lon);
+        const pt = (lon, lat) => [C[0] + R * Math.cos(lat) * Math.sin(lon + TH), C[1] - R * Math.sin(lat)];
+        const lonD = Math.PI / 2 - TH, lonE = -Math.PI / 2 - TH;          // longitudes na borda direita/esquerda da tela
+        const pts = [];
+        const latE = h(lonE), latD = h(lonD);
+        for (let k = 0; k <= 16; k++) { const lat = latE + (Math.PI - latD - latE) * (k / 16);   // silhueta: sobe pela esquerda, passa no topo, desce pela direita
+          pts.push([C[0] - R * Math.cos(lat), C[1] - R * Math.sin(lat)]); }
+        for (let k = 0; k <= 24; k++) { const lon = lonD + (lonE - lonD) * (k / 24); pts.push(pt(lon, h(lon))); }
+        d = 'M' + pts.map(p => p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join(' L') + 'Z';
+        if (est === 'cacheado') {            // cachos: bolinhas ao longo da borda do cabelo
+          const bol = (x, y) => `M${(x - r * 0.19).toFixed(1)} ${y.toFixed(1)} a${r * 0.19} ${r * 0.19} 0 1 1 ${r * 0.38} 0 a${r * 0.19} ${r * 0.19} 0 1 1 ${-r * 0.38} 0Z`;
+          pts.forEach((p, k) => { if (k % 3 === 0) d += bol(p[0], p[1]); });
+        }
+        if (est === 'longo') { const dx = -giroX * r * 0.55;
+          dT = `M${C[0] - r * 1.02 + dx} ${C[1] - r * 0.2} Q${C[0] - r * 1.15 + dx} ${C[1] + r * 1.2} ${C[0] - r * 0.6 + dx} ${C[1] + r * 1.35} H${C[0] + r * 0.6 + dx} Q${C[0] + r * 1.15 + dx} ${C[1] + r * 1.2} ${C[0] + r * 1.02 + dx} ${C[1] - r * 0.2}Z`; }
+        if (est === 'coque') {               // coque preso atrás e em cima: ponto da esfera (lon π, lat 0.7) um pouco para fora
+          const lat = 0.7, x = C[0] + r * 1.12 * Math.cos(lat) * Math.sin(Math.PI + TH), y = C[1] - r * 1.12 * Math.sin(lat);
+          dT = `M${x - r * 0.36} ${y} a${r * 0.36} ${r * 0.32} 0 1 0 ${r * 0.72} 0 a${r * 0.36} ${r * 0.32} 0 1 0 ${-r * 0.72} 0Z`;
+        }
       }
       el.cabelo.setAttribute('d', d); el.cabeloTras.setAttribute('d', dT);
       // chapéus / adornos
@@ -580,7 +597,7 @@
                       : `<path d="M${C[0] + fr * r * 0.6} ${C[1] - r * 0.28} L${C[0] + fr * r * 1.7} ${C[1] - r * 0.18} L${C[0] + fr * r * 0.6} ${C[1] - r * 0.1}Z" fill="${Boneco.tomLonge(cc)}" stroke="${T}" stroke-width="${3 * s}"/>`;
       } else if (ch === 'capuz' || ch === 'palla') {
         const c2 = ch === 'palla' ? (F.corChapeu || '#E8DCC4') : cc;
-        h = `<path d="M${C[0] - r * 1.18} ${C[1] + r * 0.9} Q${C[0] - r * 1.3} ${C[1] - r * 1.35} ${C[0]} ${C[1] - r * 1.25} Q${C[0] + r * 1.3} ${C[1] - r * 1.35} ${C[0] + r * 1.18} ${C[1] + r * 0.9} L${C[0] + r * 0.9} ${C[1] + r * 0.9} Q${C[0] + r * 1.0} ${C[1] - r * 1.0} ${C[0]} ${C[1] - r * 1.02} Q${C[0] - r * 1.0} ${C[1] - r * 1.0} ${C[0] - r * 0.9} ${C[1] + r * 0.9}Z" fill="${c2}" stroke="${T}" stroke-width="${3 * s}"/>`;
+        h = `<path transform="translate(${(-giroX * r * 0.22).toFixed(1)} 0)" d="M${C[0] - r * 1.18} ${C[1] + r * 0.9} Q${C[0] - r * 1.3} ${C[1] - r * 1.35} ${C[0]} ${C[1] - r * 1.25} Q${C[0] + r * 1.3} ${C[1] - r * 1.35} ${C[0] + r * 1.18} ${C[1] + r * 0.9} L${C[0] + r * 0.9} ${C[1] + r * 0.9} Q${C[0] + r * 1.0} ${C[1] - r * 1.0} ${C[0]} ${C[1] - r * 1.02} Q${C[0] - r * 1.0} ${C[1] - r * 1.0} ${C[0] - r * 0.9} ${C[1] + r * 0.9}Z" fill="${c2}" stroke="${T}" stroke-width="${3 * s}"/>`;
       } else if (ch === 'chapeu') {
         h = `<ellipse cx="${C[0]}" cy="${C[1] - r * 0.6}" rx="${r * 1.6}" ry="${r * 0.22}" fill="${cc}" stroke="${T}" stroke-width="${4 * s}"/><path d="M${C[0] - r * 0.75} ${C[1] - r * 0.6} L${C[0] - r * 0.6} ${C[1] - r * 1.45} H${C[0] + r * 0.6} L${C[0] + r * 0.75} ${C[1] - r * 0.6}Z" fill="${cc}" stroke="${T}" stroke-width="${4 * s}"/>`;
       }
@@ -637,15 +654,25 @@
       const tremor = disc('tremer') ? Math.sin(t * 2 * Math.PI * 14) * 2.2 * s : 0;
       const C = [C0[0] + tremor, C0[1] + cabeca.baixar * 0.45 * s];
       const frente = vista === 'frente';
-      const perto = dir > 0 ? 1 : 0;                       // olho/bochecha do lado para onde ele vira
-      const visivel = i => a < 0.62 || i === perto;
-      const mix = (f, pf) => lerp(f, pf, a);
+      // Rosto numa esfera: cada traço tem uma "longitude" (rad) e gira com a cabeça (yaw).
+      // x na tela = RF·sen(long + θ); some quando passa para trás (cos < 0,12) e estreita perto da borda.
+      const RF = 54, TH = yaw * 1.35;
+      const LONG_OLHO = [-0.42, 0.42], LONG_BOCH = [-0.83, 0.83];
+      const proj = lg => RF * Math.sin(lg + TH);
+      const face = lg => Math.cos(lg + TH);                 // 1 = de frente para a câmera, ≤0 = atrás
+      const visivel = i => face(LONG_OLHO[i]) > 0.12;
+      const estreita = lg => Math.max(0.4, face(lg));
+      const xNariz = proj(0);
+      // borda da cabeça na altura dy (traços não podem sair do crânio quando ela gira)
+      const borda = (dy, folga) => Math.sqrt(Math.max(0, (M.cabeca - folga) ** 2 - dy * dy)) * s;
+      const prender = (x, dy, folga) => { const b = borda(dy, folga); return Math.max(C[0] - b, Math.min(C[0] + b, x)); };
       const sujo = this.sujo.some(q => t >= q.t0 && t <= q.t1);
-      el.manchas.forEach(m => { m.style.display = sujo ? '' : 'none'; m.setAttribute('cx', C[0] + m.dataset.x * s * (frente ? 1 : dir) + yaw * 14 * s); m.setAttribute('cy', C[1] + m.dataset.y * s); });
+      el.manchas.forEach(m => { m.style.display = sujo ? '' : 'none'; m.setAttribute('cx', C[0] + proj(Math.asin(Math.max(-1, Math.min(1, m.dataset.x / RF)))) * s); m.setAttribute('cy', C[1] + m.dataset.y * s); });
       const pisca = this.piscadas.some(p => t >= p && t < p + 0.12);
       const olhar = [(num('olharX', 0) + cabeca.olhar[0]) * s, (num('olharY', 0) + cabeca.olhar[1]) * s];
-      const ladoOlho = i => (frente ? (i === 0 ? -1 : 1) : dir);
-      const posOlho = i => [C[0] + mix(i === 0 ? -22 : 22, i === perto ? 26 * dir : 34 * dir) * s, C[1] - 16 * s];
+      // lado de fora do olho (oposto ao nariz) — vale de frente, de ¾ e de perfil
+      const ladoOlho = i => { const d = proj(LONG_OLHO[i]) - xNariz; return Math.abs(d) < 0.5 ? (i === 0 ? -1 : 1) : Math.sign(d); };
+      const posOlho = i => [C[0] + proj(LONG_OLHO[i]) * s, C[1] - 16 * s];
       // ---- olhos
       const tipo = disc('olho');
       el.olhos.forEach((o, i) => {
@@ -666,14 +693,14 @@
           return;
         }
         // olho sólido com pálpebra (lid: 0 aberto … 1 fechado; slant: + abaixa o lado de dentro)
-        const rx = 7.5 * s, ry = num('olhoTam', 0) * s;
+        const rx = 7.5 * s * estreita(LONG_OLHO[i]), ry = num('olhoTam', 0) * s;
         const lid = num('palpebra', 0), slant = num('palpebraInc', 0);
         const ox2 = ox + olhar[0] * 0.6, oy2 = oy + olhar[1] * 0.6;
         const pts = [];
         for (let k = 0; k <= 24; k++) {
           const a = (k / 24) * Math.PI * 2;
           let x = ox2 + Math.cos(a) * rx, y = oy2 + Math.sin(a) * ry;
-          const dentro = frente ? -lado * (x - ox2) / rx : dir * (x - ox2) / rx;   // +1 = canto interno (perto do nariz)
+          const dentro = -lado * (x - ox2) / rx;   // +1 = canto interno (perto do nariz)
           const linhaLid = oy2 - ry + 2 * ry * lid + dentro * slant * ry * 0.9;
           if (y < linhaLid) y = Math.min(linhaLid, oy2 + ry);
           pts.push([x, y]);
@@ -687,15 +714,15 @@
         const vis = visivel(i); sb.style.display = vis ? '' : 'none'; if (!vis) return;
         const [ox, oy] = posOlho(i), lado = ladoOlho(i);
         const alt = num('sobAlt', i) * s, inn = num('sobInt', i) * s, cur = num('sobCurva', 0) * s;
-        const y = oy - 21 * s - alt, wv = 12 * s;   // ponta interna = lado do nariz
-        const xi = frente ? ox - lado * wv : ox + dir * wv, xo = frente ? ox + lado * wv : ox - dir * wv;
+        const y = oy - 21 * s - alt, wv = 12 * s * estreita(LONG_OLHO[i]);   // ponta interna = lado do nariz
+        const dyS = (y - C[1]) / s, xi = prender(ox - lado * wv, dyS, 6), xo = prender(ox + lado * wv, dyS, 6);
         sb.setAttribute('d', `M${xo} ${y - inn * 0.4} Q${ox} ${y - cur} ${xi} ${y + inn}`);
       });
       // ---- bochechas
       const corada = num('rubor', 0);
       el.bochechas.forEach((b, i) => {
-        const vis = visivel(i); b.style.display = vis ? '' : 'none'; if (!vis) return;
-        const bx = C[0] + mix(i === 0 ? -40 : 40, i === perto ? 22 * dir : 46 * dir) * s;
+        const vis = face(LONG_BOCH[i]) > 0.15; b.style.display = vis ? '' : 'none'; if (!vis) return;
+        const bx = C[0] + proj(LONG_BOCH[i]) * s;
         b.setAttribute('cx', bx); b.setAttribute('cy', C[1] + 12 * s);
         const verde = disc('verde');
         b.setAttribute('fill', verde ? '#6DBE45' : corada > 0.5 ? '#FF3B4E' : this.bochecha);
@@ -705,8 +732,9 @@
       // ---- boca
       const falando = this.boca ? this.boca(t) : 'smile';
       const abre = { '0': 0, '1': 0.3, '2': 0.6, '3': 1, '4': 0.85 }[falando];
-      const bx = C[0] + mix(0, dir * 40) * s, by = C[1] + 26 * s;
-      const W = mix(18, 13) * s * num('bocaLarg', 0);
+      let bx = C[0] + proj(0) * s; const by = C[1] + 26 * s;
+      const W = 18 * s * Math.max(0.62, face(0)) * num('bocaLarg', 0);
+      { const b = borda(26, 5); if (Math.abs(bx - C[0]) + W > b) bx = C[0] + Math.sign(bx - C[0]) * Math.max(0, b - W); }
       const B = el.boca, D = el.dentes, Lg = el.lingua;
       D.setAttribute('d', ''); Lg.setAttribute('d', '');
       const formaFala = disc('fala');

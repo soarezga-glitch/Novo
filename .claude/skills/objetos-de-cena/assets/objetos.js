@@ -28,7 +28,7 @@
       // estátua de mármore de um romano de toga sobre pedestal (≈ 2,6 m com pedestal)
       estatua: (x, y, k = 1, { pose = 'orador', cor = marmore } = {}) => grupo(x, y, k, `
         ${caixa(-90, -230, 180, 230, tom(cor, -0.05))}<rect x="-104" y="-250" width="208" height="24" fill="${tom(cor, 0.1)}" stroke="${L}" stroke-width="5"/><rect x="-104" y="-18" width="208" height="18" fill="${tom(cor, -0.12)}" stroke="${L}" stroke-width="5"/>
-        <text x="0" y="-110" font-family="serif" font-size="30" font-weight="700" text-anchor="middle" fill="${tom(cor, -0.45)}">AVGVSTVS</text>
+        <text x="0" y="-110" font-family="serif" font-size="30" font-weight="700" text-anchor="middle" fill="${tom(cor, -0.45)}">AUGUSTO</text>
         <path d="M-46 -250 L-56 -520 Q-20 -560 40 -540 L58 -250Z" fill="${cor}" stroke="${L}" stroke-width="6"/>
         <path d="M-40 -500 Q10 -440 50 -380 M-30 -440 Q10 -380 30 -300 M20 -520 Q40 -440 46 -260" stroke="${tom(cor, -0.25)}" stroke-width="4" fill="none"/>
         <path d="M${luz > 0 ? -56 : 20} -520 L${luz > 0 ? -46 : 58} -250 L${luz > 0 ? -10 : 30} -250 L${luz > 0 ? -30 : 40} -520Z" fill="${C.hora.sombra}" opacity=".18"/>
@@ -95,7 +95,7 @@
       escudo: (x, y, k = 1) => grupo(x, y, k, `<path d="M-100 -360 Q0 -380 100 -360 V-20 Q0 0 -100 -20Z" fill="#9E2A22" stroke="${L}" stroke-width="6"/><path d="M-80 -340 Q0 -356 80 -340 V-40 Q0 -22 -80 -40Z" fill="none" stroke="#C9A24A" stroke-width="6"/><circle cx="0" cy="-190" r="34" fill="${bronze}" stroke="${L}" stroke-width="5"/><path d="M-60 -300 l30 30 M60 -300 l-30 30 M-60 -80 l30 -30 M60 -80 l-30 -30" stroke="#C9A24A" stroke-width="6"/><rect x="${luz > 0 ? -100 : 40}" y="-360" width="60" height="340" fill="${C.hora.sombra}" opacity=".15"/>`, 0.5),
       // estandarte com águia (aquila) — ≈ 2,6 m
       estandarte: (x, y, k = 1) => grupo(x, y, k, `<path d="M0 0 V-820" stroke="${madeira}" stroke-width="16"/>
-        <path d="M-90 -660 H90 V-520 L0 -470 L-90 -520Z" fill="#9E2A22" stroke="${L}" stroke-width="5"/><text x="0" y="-560" font-family="serif" font-size="56" font-weight="700" text-anchor="middle" fill="#E8C060">SPQR</text>
+        <path d="M-90 -660 H90 V-520 L0 -470 L-90 -520Z" fill="#9E2A22" stroke="${L}" stroke-width="5"/><text x="0" y="-560" font-family="serif" font-size="56" font-weight="700" text-anchor="middle" fill="#E8C060">ROMA</text>
         <path d="M-90 -660 H90" stroke="#C9A24A" stroke-width="10"/>${[-60, -20, 20, 60].map(px => `<path d="M${px} -470 v30" stroke="#C9A24A" stroke-width="5"/>`).join('')}
         <path d="M0 -830 Q-80 -880 -110 -850 Q-60 -850 -40 -820 Q-20 -860 0 -840 Q20 -860 40 -820 Q60 -850 110 -850 Q80 -880 0 -830Z" fill="#C9A24A" stroke="${L}" stroke-width="5"/><circle cx="0" cy="-850" r="14" fill="#C9A24A" stroke="${L}" stroke-width="4"/>`, 0.3),
       // carroça de madeira com sacos (≈ 1,3 m de altura)

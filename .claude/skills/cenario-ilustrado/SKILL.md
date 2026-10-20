@@ -58,6 +58,12 @@ Horas: `dia`, `tarde`, `amanhecer`, `noite`, `interior`.
   balcão, mureta) a um retângulo da cor da parede.
 - Elementos animados (fogo, fumaça, objetos que caem) ficam fora das peças, em grupos com id.
 
+## Texto no cenário = português
+
+Placas, pichações, inscrições e letreiros do cenário são sempre escritos em **português**
+(pedido do usuário), mesmo numa cena de Roma ou de outra época: `grafite: 'VIVA ROMA'`,
+templo com `SENADO E POVO`, placa `LANCHONETE`. Nunca latim nem outra língua.
+
 ## Outras épocas
 
 `references/epocas.md` lista o vocabulário visual por época (Roma, Egito, Grécia, Idade Média,

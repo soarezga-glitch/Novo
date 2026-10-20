@@ -38,7 +38,7 @@
       if (subtitulo) s += texto(0, h / 2 + fs * 0.62, subtitulo, { fs: fs * 0.42, cor: COR.branco, sombra: false });
       return s + `</g>`;
     },
-    // Etiqueta pequena: 3º ANDAR, GARUM, DURO — pílula preta, texto laranja
+    // Etiqueta pequena: 3º ANDAR, MOLHO, DURO — pílula preta, texto laranja
     etiqueta: (x, y, t, { fs = 46, cor = COR.laranja } = {}) => {
       const w = largura(t, fs) + fs * 1.1, h = fs * 1.55;
       return `<g transform="translate(${x} ${y})"><rect x="${-w / 2}" y="${-h / 2}" width="${w}" height="${h}" rx="${h / 2}" fill="${COR.preto}"/><text y="${fs * 0.36}" font-family="${FONTE}" font-size="${fs}" text-anchor="middle" fill="${cor}">${esc(t)}</text></g>`;

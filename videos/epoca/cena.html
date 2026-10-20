@@ -148,9 +148,9 @@ const ruaS3 = (noite) => {
   const C = Cenario({ epoca: 'roma', seed: 8, luz: 1, hora: noite ? 'noite' : 'dia', prefixo: noite ? 'k7' : 'k3' });
   let v = `<defs>${C.defs()}</defs>` + C.ceu({ astroX: 900, astroY: 230, nuvens: noite ? 0 : 3 });
   v += C.distante({ y: 760, tipo: 'roma', profundidade: 0.15 }) + C.distante({ y: 900, tipo: 'roma', profundidade: 0.45, cor: '#C9A27C' });
-  v += `<g id="${noite ? 's7-insula' : 's3-insula'}">` + C.insula({ x: 40, base: 1700, w: 600, top: 330, andares: 4, pular: ['0-0', '0-1'], noite, luzes: noite ? ['1-0', '2-1'] : [], grafite: 'CAVE CANEM' });
+  v += `<g id="${noite ? 's7-insula' : 's3-insula'}">` + C.insula({ x: 40, base: 1700, w: 600, top: 330, andares: 4, pular: ['0-0', '0-1'], noite, luzes: noite ? ['1-0', '2-1'] : [], grafite: 'CUIDADO: CÃO BRAVO' });
   v += C.janela({ x: 190, y: 460, w: 260, h: 190, cor: '#E3C9A0', aberta: true, noite, luzAcesa: noite }) + (noite ? '' : C.hera(60, 1080, 420)) + `</g>`;
-  v += `<g id="${noite ? 's7-direita' : 's3-direita'}">` + C.insula({ x: 690, base: 1700, w: 420, top: 640, andares: 3, cor: '#D9B48A', pular: ['0-0', '0-1'], sacada: 0, noite, luzes: noite ? ['1-1'] : [], grafite: noite ? null : 'SPQR' });
+  v += `<g id="${noite ? 's7-direita' : 's3-direita'}">` + C.insula({ x: 690, base: 1700, w: 420, top: 640, andares: 3, cor: '#D9B48A', pular: ['0-0', '0-1'], sacada: 0, noite, luzes: noite ? ['1-1'] : [], grafite: noite ? null : 'VIVA ROMA' });
   v += C.janela({ x: 780, y: 740, w: 190, h: 160, cor: '#D9B48A', aberta: true, noite, luzAcesa: noite }) + `</g>`;
   if (!noite) v += C.varal(640, 1060, 690, 1080) + C.toldo(740, 1440, 300);
   v += C.calcada({ y: 1700, h: 220 }) + C.sombraChao(40, 600, 1700, 100) + C.sombraChao(690, 420, 1700, 100);
@@ -176,7 +176,7 @@ scenes.push(`<g id="s4b" class="scene"><rect width="1080" height="1920" fill="#F
 { const C = Cenario({ epoca: 'roma', seed: 12, luz: 1, hora: 'dia', prefixo: 'k4' });
   let v = `<g id="s4c" class="scene"><defs>${C.defs()}</defs>` + C.ceu({ astroX: 950, astroY: 260, nuvens: 2 });
   v += C.distante({ y: 700, tipo: 'roma', profundidade: 0.2 });
-  v += C.insula({ x: -10, base: 1700, w: 1100, top: 560, andares: 3, cor: '#E6CFA6', pular: ['0-1', '0-2', '1-1', '1-2', '1-3'], sacada: 0, grafite: 'VENDO GARVM' });
+  v += C.insula({ x: -10, base: 1700, w: 1100, top: 560, andares: 3, cor: '#E6CFA6', pular: ['0-1', '0-2', '1-1', '1-2', '1-3'], sacada: 0, grafite: 'VENDO MOLHO' });
   v += C.toldo(580, 880, 440, ['#D7263D', '#F2E6C9']);
   v += `<path d="M590 1010 V1270 M1030 1010 V1270" stroke="#5E3B1C" stroke-width="16"/>`;
   v += C.anfora(80, 1700, 0.8) + C.anfora(150, 1712, 0.65) + `<path d="M380 1700 l40 -70 h120 l40 70Z" fill="#B07A48" stroke="#1D1D2B" stroke-width="5"/>` + [0, 1, 2, 3, 4].map(k => `<circle cx="${430 + k * 22}" cy="${1622 - (k % 2) * 12}" r="16" fill="${['#E0A030', '#D7263D', '#8CC74A'][k % 3]}" stroke="#1D1D2B" stroke-width="3"/>`).join('');
@@ -184,7 +184,7 @@ scenes.push(`<g id="s4b" class="scene"><rect width="1080" height="1920" fill="#F
   v += `  <g id="s4-pao" transform="translate(690 1235)"><ellipse rx="70" ry="38" fill="#D9A15B" stroke="#1D1D2B" stroke-width="6"/><path d="M-40 -18 l16 22 M-5 -28 l16 22 M30 -18 l14 20" stroke="#A56E2E" stroke-width="7"/>
     ${Marca.etiqueta(0, -90, 'DURO', { fs: 36 })}</g>
   <g id="s4-garum" transform="translate(920 1270)"><path d="M-45 -150 Q-80 -60 -40 0 H40 Q80 -60 45 -150 Z" fill="#B8613A" stroke="#1D1D2B" stroke-width="6"/><rect x="-26" y="-180" width="52" height="34" rx="8" fill="#9A4E2D" stroke="#1D1D2B" stroke-width="5"/>
-    ${Marca.etiqueta(0, -250, 'GARUM', { fs: 40 })}
+    ${Marca.etiqueta(0, -250, 'MOLHO DE PEIXE', { fs: 40 })}
     <g id="s4-stink" stroke="#7CC46A" stroke-width="12" fill="none" stroke-linecap="round" transform="translate(-140 -200)"><path d="M-40 0 q25 -35 0 -70 q-25 -35 0 -70"/><path d="M20 -10 q25 -35 0 -70 q-25 -35 0 -70"/></g></g>
   <g id="s4-moeda"><circle r="34" fill="${COR.ouro}" stroke="#1D1D2B" stroke-width="6"/><circle r="20" fill="none" stroke="#B88A1E" stroke-width="5"/></g>
   <g id="s4-eca" transform="translate(300 900)">${Marca.impacto(0, 0, 'ECA!', { fs: 140, rot: -10 })}</g>` + Paleta.grade('rotina') + `<g id="s4-nojo">${Paleta.grade('nojo')}</g>` + C.atmosfera({ grao: 0.3, raios: true }) + `</g>`;
@@ -234,7 +234,7 @@ scenes.push(card('c3', '#9B7BDB', 3, 'O BANHEIRO', `<rect x="-170" y="-40" width
   v += C.piso({ y: 1700, h: 220, cor: '#B3A894' }) + `<rect y="1700" width="1080" height="30" fill="#5DB7EE" opacity=".8"/>`;
   v += Objetos(C).mosaico(30, 1730, 1020, 180);
   v += `  <g id="s6-sponge" transform="translate(860 1100) rotate(18)"><rect x="-10" y="-330" width="20" height="380" rx="8" fill="#8A5A2E" stroke="#1D1D2B" stroke-width="6"/><ellipse cx="0" cy="-350" rx="70" ry="54" fill="#E8C75A" stroke="#1D1D2B" stroke-width="7"/>${[0, 1, 2, 3, 4].map(k => `<circle cx="${-35 + k * 18}" cy="${-360 + (k % 2) * 22}" r="7" fill="#B8962E"/>`).join('')}</g>
-  <g id="s6-label" transform="translate(540 760)">${Marca.etiqueta(0, 0, 'TERSORIUM', { fs: 56 })}</g>
+  <g id="s6-label" transform="translate(540 760)">${Marca.etiqueta(0, 0, 'ESPONJA', { fs: 56 })}</g>
   <g id="s6-comp">${stamp('s6-stamp', 540, 940, 'COMPARTILHADO', '#D7263D', -8, 70)}</g>` + Paleta.grade('nojo') + C.atmosfera({ grao: 0.3 }) + `</g>`;
   scenes.push(v); }
 // S7a — a mesma rua à noite, pegando fogo
@@ -275,7 +275,7 @@ $('#fgs').innerHTML = `
     <ellipse cx="740" cy="1450" rx="50" ry="14" fill="#1D1D2B"/><path d="M0 1520 H1080" stroke="#CFC4B0" stroke-width="5"/><path d="M120 1600 l60 40 M640 1580 l30 70" stroke="#BDB09A" stroke-width="3"/></g>
   <g id="fg-s4"><rect x="580" y="1300" width="460" height="400" fill="#9A6A40" stroke="#1D1D2B" stroke-width="8"/>${[...Array(7)].map((_, k) => `<path d="M${610 + k * 64} 1305 V1695" stroke="#7A5030" stroke-width="5"/>`).join('')}<rect x="580" y="1300" width="460" height="400" fill="url(#k4fg)" opacity=".0"/><rect x="560" y="1270" width="500" height="50" fill="#D8CBB3" stroke="#1D1D2B" stroke-width="8"/><rect x="560" y="1270" width="500" height="12" fill="#EDE3CF"/><rect x="580" y="1320" width="460" height="26" fill="#000" opacity=".22"/>
     ${(() => { const O = Objetos(Cenario({ epoca: 'roma', seed: 40, luz: 1, prefixo: 'kf' })); return O.balanca(1005, 1272, 0.38) + O.moedas(625, 1276, 0.45); })()}
-    <text x="810" y="1520" font-size="64" font-family="serif" font-weight="700" text-anchor="middle" fill="#F2C14E" stroke="#1D1D2B" stroke-width="4" paint-order="stroke">THERMOPOLIVM</text></g>`;
+    <text x="810" y="1520" font-size="64" font-family="serif" font-weight="700" text-anchor="middle" fill="#F2C14E" stroke="#1D1D2B" stroke-width="4" paint-order="stroke">LANCHONETE</text></g>`;
 
 // ===================== ATORES (skill movimento-humano) =====================
 const LS = window.LIPSYNC;
@@ -310,6 +310,35 @@ lat[1].braco('d', 58.3, 59.6, 'acenar');
 
 const guarda = ator(0.5, [[43.2, 46.6]], { figurino: 'legionario', seed: 31 });
 guarda.base(43.2, 46.6, 'parado', { x: 330, y: 1300 }); guarda.expressao(43.2, 46.6, 'serio'); guarda.braco('d', 43.2, 46.6, 'pose', { o: 30, c: 70, entrada: 0.01 });
+// mais romanos na cidade (todos com a roupa completa da época)
+const grit = ator(0.55, [[11.1, 25.2]], { figurino: 'romano', seed: 41 });            // quem grita "CUIDADO!" lá embaixo
+grit.base(11.1, 25.2, 'parado', { x: 240, y: 1790, vista: 'frente' });
+grit.cabeca(15.6, 18.6, { virar: 0.4, inclinar: -8, olhar: [2, -6] }); grit.braco('d', 15.7, 18.4, 'apontar'); grit.braco('e', 16.4, 18.2, 'cima');
+grit.expressao(15.7, 18.4, 'gritando'); grit.expressao(20.8, 22.6, 'espanto'); grit.expressao(22.6, 25.2, 'nojo');
+const ana = ator(0.5, [[11.1, 19.6]], { figurino: 'romana', seed: 42 });
+ana.base(11.1, 19.6, 'andar', { de: [-120, 1745], ate: [1180, 1745] });
+const cli = ator(0.72, [[30.5, 40.9]], { figurino: { preset: 'romana', cor: '#9E2A22' }, seed: 43 });   // freguesa na banca
+cli.base(30.5, 40.9, 'parado', { x: 110, y: 1690, vista: 'frente' }); cli.cabeca(31.0, 37.2, { virar: 0.6 });
+cli.expressao(37.3, 39.0, 'nojo'); cli.cabeca(37.3, 39.0, { virar: 0.6, gesto: 'nao' }); cli.braco('d', 37.4, 38.9, 'nariz');
+const cid = ator(0.5, [[33.0, 40.9]], { figurino: 'romano-cidadao', seed: 44 });
+cid.base(33.0, 40.9, 'andar', { de: [1180, 1610], ate: [-150, 1610] });
+const agua = ator(0.72, [[43.2, 46.6]], { figurino: { preset: 'romana', cor: '#5C7A3A' }, seed: 45 });  // esperando a vez na fonte
+agua.base(43.2, 46.6, 'parado', { x: 980, y: 1720, vista: 'perfil', dir: -1 }); agua.expressao(43.2, 46.6, 'cansado');
+const carreg = ator(0.45, [[43.2, 46.6]], { figurino: 'trabalhador', seed: 46 });
+carreg.base(43.2, 46.6, 'andar', { de: [640, 1420], ate: [-140, 1420] });
+const fug = [[1200, -160, 0], [1260, -120, 0.45]].map(([x0, x1, atraso], i) => {   // vizinhos fugindo do fogo
+  const b = ator(0.55, [[68.5, 71.8]], { figurino: i ? { preset: 'romana', cor: '#C9A24A' } : { preset: 'romano', cor: '#3B5E8C' }, seed: 47 + i });
+  b.base(68.5, 71.8, 'correr', { de: [x0 + atraso * 300, 1765 - i * 12], ate: [x1, 1765 - i * 12] });
+  b.braco('ambos', 68.5, 71.8, 'desespero'); b.expressao(68.5, 71.8, i ? 'gritando' : 'medo');
+  return b;
+});
+const viz = [[850, 1765, 'romano', -1], [985, 1750, 'romana', -1]].map(([x, y, f, dir], i) => {   // vizinhos sujos de fuligem no amanhecer
+  const b = ator(0.62, [[77.0, 86.45]], { figurino: f, seed: 50 + i });
+  b.base(77.0, 86.45, 'parado', { x, y, vista: 'perfil', dir }); b.sujeira(77.0, 86.45); b.expressao(77.0, 86.45, 'triste');
+  if (i) b.braco('e', 79.0, 86.45, 'queixo');
+  return b;
+});
+
 // herói — um boneco por escala de cena
 const boca = formaBoca;
 const H1 = ator(0.95, [[0, 6.9]], { boca, figurino: PROT });                       // quarto
