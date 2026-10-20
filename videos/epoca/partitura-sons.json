@@ -1,0 +1,417 @@
+{
+ "duracao": 91.733,
+ "voz": "fala_master.wav",
+ "biblioteca": [
+  "../../.claude/skills/sons-de-ambiente/biblioteca/roma",
+  "../../.claude/skills/sons-de-ambiente/biblioteca/ui"
+ ],
+ "ambientes": [
+  {
+   "som": "amb_quarto",
+   "de": 0,
+   "ate": 7.1,
+   "db": -15,
+   "fade": 0.5
+  },
+  {
+   "som": "amb_rua",
+   "de": 6.8,
+   "ate": 11.3,
+   "db": -19,
+   "fade": 0.6,
+   "automacao": [
+    [
+     6.8,
+     -25
+    ],
+    [
+     8.9,
+     -21
+    ],
+    [
+     9.3,
+     -12
+    ],
+    [
+     11.3,
+     -13
+    ]
+   ]
+  },
+  {
+   "som": "amb_rua",
+   "de": 11.0,
+   "ate": 25.3,
+   "db": -12,
+   "fade": 0.4,
+   "offset": 5
+  },
+  {
+   "som": "amb_quarto",
+   "de": 25.1,
+   "ate": 30.6,
+   "db": -25,
+   "fade": 0.4
+  },
+  {
+   "som": "amb_mercado",
+   "de": 30.4,
+   "ate": 41.0,
+   "db": -11,
+   "fade": 0.5
+  },
+  {
+   "som": "amb_quarto",
+   "de": 40.8,
+   "ate": 43.3,
+   "db": -27,
+   "fade": 0.4
+  },
+  {
+   "som": "amb_praca_fonte",
+   "de": 43.1,
+   "ate": 46.7,
+   "db": -10,
+   "fade": 0.4
+  },
+  {
+   "som": "amb_escada",
+   "de": 46.5,
+   "ate": 50.1,
+   "db": -14,
+   "fade": 0.3
+  },
+  {
+   "som": "amb_quarto",
+   "de": 49.9,
+   "ate": 52.6,
+   "db": -27,
+   "fade": 0.3
+  },
+  {
+   "som": "amb_latrina",
+   "de": 52.4,
+   "ate": 65.6,
+   "db": -12,
+   "fade": 0.5
+  },
+  {
+   "som": "amb_noite",
+   "de": 65.4,
+   "ate": 68.4,
+   "db": -11,
+   "fade": 0.5
+  },
+  {
+   "som": "amb_fogo",
+   "de": 67.9,
+   "ate": 72.0,
+   "db": -7,
+   "fade": 0.4
+  },
+  {
+   "som": "amb_fuga",
+   "de": 71.7,
+   "ate": 77.2,
+   "db": -8,
+   "fade": 0.3
+  },
+  {
+   "som": "amb_amanhecer",
+   "de": 76.9,
+   "ate": 86.6,
+   "db": -10,
+   "fade": 0.8
+  },
+  {
+   "som": "amb_quarto",
+   "de": 86.4,
+   "ate": 91.7,
+   "db": -29,
+   "fade": 0.5
+  }
+ ],
+ "efeitos": [
+  {
+   "som": "pop",
+   "em": 2.0,
+   "db": -18
+  },
+  {
+   "som": "pop",
+   "em": 2.2,
+   "db": -18
+  },
+  {
+   "som": "pop",
+   "em": 2.4,
+   "db": -18
+  },
+  {
+   "som": "whoosh",
+   "em": 8.85,
+   "db": -14
+  },
+  {
+   "som": "sparkle",
+   "em": 9.0,
+   "db": -16
+  },
+  {
+   "som": "pop",
+   "em": 11.6,
+   "db": -16
+  },
+  {
+   "som": "pop",
+   "em": 15.9,
+   "db": -12
+  },
+  {
+   "som": "sfx_baque_madeira",
+   "em": 19.55,
+   "db": -10
+  },
+  {
+   "som": "sfx_splash",
+   "em": 20.7,
+   "db": -6
+  },
+  {
+   "som": "whoosh-cinematic",
+   "em": 25.15,
+   "db": -12
+  },
+  {
+   "som": "impact-bass-1",
+   "em": 25.3,
+   "db": -12
+  },
+  {
+   "som": "pop",
+   "em": 25.9,
+   "db": -14
+  },
+  {
+   "som": "pop",
+   "em": 27.3,
+   "db": -14
+  },
+  {
+   "som": "impact-bass-2",
+   "em": 28.1,
+   "db": -16
+  },
+  {
+   "som": "pop",
+   "em": 28.7,
+   "db": -14
+  },
+  {
+   "som": "impact-bass-2",
+   "em": 29.3,
+   "db": -16
+  },
+  {
+   "som": "sfx_moeda",
+   "em": 32.05,
+   "db": -12
+  },
+  {
+   "som": "sfx_moeda",
+   "em": 32.9,
+   "db": -16
+  },
+  {
+   "som": "pop",
+   "em": 33.4,
+   "db": -14
+  },
+  {
+   "som": "pop",
+   "em": 34.8,
+   "db": -14
+  },
+  {
+   "som": "pop",
+   "em": 37.6,
+   "db": -12
+  },
+  {
+   "som": "whoosh-cinematic",
+   "em": 40.85,
+   "db": -12
+  },
+  {
+   "som": "impact-bass-1",
+   "em": 41.0,
+   "db": -12
+  },
+  {
+   "som": "pop",
+   "em": 41.6,
+   "db": -14
+  },
+  {
+   "som": "click-soft",
+   "em": 47.1,
+   "db": -14
+  },
+  {
+   "som": "click-soft",
+   "em": 47.9,
+   "db": -14
+  },
+  {
+   "som": "click-soft",
+   "em": 48.8,
+   "db": -14
+  },
+  {
+   "som": "impact-bass-2",
+   "em": 49.35,
+   "db": -10
+  },
+  {
+   "som": "whoosh-cinematic",
+   "em": 49.95,
+   "db": -12
+  },
+  {
+   "som": "impact-bass-1",
+   "em": 50.1,
+   "db": -12
+  },
+  {
+   "som": "pop",
+   "em": 50.7,
+   "db": -14
+  },
+  {
+   "som": "pop",
+   "em": 60.6,
+   "db": -14
+  },
+  {
+   "som": "pop",
+   "em": 61.0,
+   "db": -14
+  },
+  {
+   "som": "impact-bass-2",
+   "em": 63.6,
+   "db": -10
+  },
+  {
+   "som": "pop",
+   "em": 66.0,
+   "db": -14
+  },
+  {
+   "som": "pop",
+   "em": 66.6,
+   "db": -14
+  },
+  {
+   "som": "sfx_rugido_fogo",
+   "em": 67.95,
+   "db": -6
+  },
+  {
+   "som": "impact-bass-1",
+   "em": 68.0,
+   "db": -8
+  },
+  {
+   "som": "sfx_ofegante",
+   "em": 72.2,
+   "db": -16
+  },
+  {
+   "som": "impact-bass-2",
+   "em": 77.0,
+   "db": -10
+  },
+  {
+   "som": "chime",
+   "em": 77.05,
+   "db": -14
+  },
+  {
+   "som": "sfx_passo_pedra",
+   "em": 77.72,
+   "db": -8
+  },
+  {
+   "som": "pop",
+   "em": 80.2,
+   "db": -14
+  },
+  {
+   "som": "pop",
+   "em": 81.6,
+   "db": -14
+  },
+  {
+   "som": "pop",
+   "em": 83.3,
+   "db": -14
+  },
+  {
+   "som": "whoosh",
+   "em": 85.7,
+   "db": -12
+  },
+  {
+   "som": "whoosh-cinematic",
+   "em": 86.4,
+   "db": -12
+  },
+  {
+   "som": "chime",
+   "em": 87.6,
+   "db": -12
+  }
+ ],
+ "passos": [
+  {
+   "som": "sfx_passo_pedra",
+   "de": 18.7,
+   "ate": 25.2,
+   "intervalo": 0.33,
+   "db": -30
+  },
+  {
+   "som": "sfx_passo_pedra",
+   "de": 30.5,
+   "ate": 31.9,
+   "intervalo": 0.35,
+   "db": -15
+  },
+  {
+   "som": "sfx_passo_pedra",
+   "de": 43.2,
+   "ate": 44.7,
+   "intervalo": 0.25,
+   "db": -16
+  },
+  {
+   "som": "sfx_passo_madeira",
+   "de": 46.6,
+   "ate": 49.6,
+   "intervalo": 0.375,
+   "db": -13
+  },
+  {
+   "som": "sfx_passo_madeira",
+   "de": 71.8,
+   "ate": 76.9,
+   "intervalo": 0.425,
+   "db": -10
+  }
+ ],
+ "ducking": {
+  "db": 6
+ },
+ "volume_final_lufs": -10
+}
