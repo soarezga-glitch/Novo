@@ -43,6 +43,40 @@
     subir:  { passo: 120, apoio: 0.62, quadril: 226, balanco: 4, elevar: 42, bracos: 16, cotovelo: 20, inclina: 9, calcanhar: false }
   };
 
+
+  // Expressões faciais. Números se misturam com 'normal' (entrada/saída 0,15 s); o resto troca no meio.
+  //  sobAlt [esq, dir]: sobe a sobrancelha · sobInt [esq, dir]: + abaixa a ponta de dentro (bravo), − levanta (preocupado)
+  //  olho: 'solido' | 'branco' (arregalado, pupila pequena) | 'feliz' (^) | 'fechado' | 'x'
+  //  palpebra 0..1 (desce a pálpebra) · palpebraInc: + abaixa o canto de dentro (raiva/desconfiança)
+  //  boca (calado): sorriso, sorrisao, reta, triste, o, grito, dentes, nojo, torta, tremula
+  //  fala (falando): normal, feliz, triste, dentes, grito · falaAbre multiplica a abertura do lipsync
+  const EXPR = {
+    normal:      { sobAlt: [0, 0], sobInt: [0, 0], sobCurva: 3, olho: 'solido', olhoTam: 11, palpebra: 0, palpebraInc: 0, olharX: 0, olharY: 0, boca: 'sorriso', fala: 'normal', falaAbre: 1, bocaLarg: 1, rubor: 0 },
+    feliz:       { sobAlt: [3, 3], sobCurva: 5, olho: 'feliz', boca: 'sorriso', fala: 'feliz', bocaLarg: 1.1 },
+    alegre:      { sobAlt: [6, 6], sobCurva: 6, olho: 'feliz', boca: 'sorrisao', fala: 'feliz', falaAbre: 1.2, bocaLarg: 1.2, rubor: 0.6 },
+    serio:       { sobAlt: [-3, -3], sobInt: [3, 3], sobCurva: 0, palpebra: 0.22, boca: 'reta', fala: 'normal', falaAbre: 0.8, bocaLarg: 0.9 },
+    bravo:       { sobAlt: [-5, -5], sobInt: [9, 9], sobCurva: -1, palpebra: 0.3, palpebraInc: 0.5, boca: 'dentes', fala: 'dentes', falaAbre: 1.1, extras: ['veia'] },
+    furioso:     { sobAlt: [-7, -7], sobInt: [12, 12], sobCurva: -2, palpebra: 0.35, palpebraInc: 0.7, boca: 'grito', fala: 'grito', falaAbre: 1.8, bocaLarg: 1.3, rubor: 1, tremer: true, extras: ['veia'] },
+    gritando:    { sobAlt: [6, 6], sobInt: [4, 4], olho: 'branco', olhoTam: 15, boca: 'grito', fala: 'grito', falaAbre: 1.9, bocaLarg: 1.3, tremer: true },
+    susto:       { sobAlt: [13, 13], sobInt: [-3, -3], sobCurva: 6, olho: 'branco', olhoTam: 16, boca: 'o', fala: 'normal', falaAbre: 1.3, extras: ['choque'] },
+    espanto:     { sobAlt: [15, 15], sobInt: [-4, -4], sobCurva: 7, olho: 'branco', olhoTam: 17, boca: 'grito', fala: 'grito', falaAbre: 1.5, extras: ['choque', 'suor'] },
+    surpreso:    { sobAlt: [11, 11], sobCurva: 6, olhoTam: 14, boca: 'o', fala: 'normal', falaAbre: 1.2 },
+    medo:        { sobAlt: [8, 8], sobInt: [-9, -9], sobCurva: 2, olho: 'branco', olhoTam: 14, olharX: -3, boca: 'tremula', fala: 'triste', tremer: true, extras: ['suor'] },
+    preocupado:  { sobAlt: [4, 4], sobInt: [-7, -7], boca: 'tremula', fala: 'triste', extras: ['suor'] },
+    triste:      { sobAlt: [2, 2], sobInt: [-8, -8], palpebra: 0.25, palpebraInc: -0.4, olharY: 2, boca: 'triste', fala: 'triste', falaAbre: 0.8 },
+    chorando:    { sobAlt: [4, 4], sobInt: [-10, -10], olho: 'fechado', boca: 'triste', fala: 'triste', falaAbre: 1.3, extras: ['lagrimas'] },
+    nojo:        { sobAlt: [-3, 2], sobInt: [7, 4], palpebra: 0.3, boca: 'nojo', fala: 'triste', verde: true },
+    pensando:    { sobAlt: [9, -2], sobInt: [-2, 3], olharX: 3, olharY: -3, boca: 'torta', fala: 'normal' },
+    confuso:     { sobAlt: [10, -4], sobInt: [-4, 6], olhoTam: 12, boca: 'torta', fala: 'normal' },
+    desconfiado: { sobAlt: [-4, 4], sobInt: [6, 0], palpebra: 0.45, palpebraInc: 0.3, olharX: 3, boca: 'torta', fala: 'normal' },
+    cansado:     { sobAlt: [-1, -1], sobInt: [-4, -4], palpebra: 0.55, palpebraInc: -0.3, boca: 'reta', fala: 'normal', falaAbre: 0.7, extras: ['suor'] },
+    envergonhado:{ sobAlt: [3, 3], sobInt: [-5, -5], olharY: 3, olharX: -3, boca: 'tremula', rubor: 1 },
+    determinado: { sobAlt: [-4, -4], sobInt: [6, 6], palpebra: 0.2, palpebraInc: 0.3, boca: 'torta', fala: 'dentes' },
+    aliviado:    { sobAlt: [3, 3], sobInt: [-4, -4], olho: 'fechado', boca: 'sorriso', fala: 'feliz', extras: ['suor'] },
+    tonto:       { olho: 'x', boca: 'tremula', fala: 'normal' },
+    dormindo:    { olho: 'fechado', boca: 'reta', extras: ['zzz'] }
+  };
+
   function mulberry32(a) { return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
 
   // vetor de comprimento L num ângulo a (graus, a partir de "para baixo"), sx = sinal horizontal
@@ -118,10 +152,24 @@
       this.el.cranio = mk('circle', { r: M.cabeca * this.s, fill: this.cor }, h);
       this.el.rosto = mk('g', {}, h);
       this.el.manchas = [[-26, -30, 18, 11], [30, 30, 15, 8], [6, -48, 10, 6]].map(([x, y, rx, ry]) => mk('ellipse', { rx: rx * this.s, ry: ry * this.s, fill: '#3A3A3A', opacity: 0.55, 'data-x': x, 'data-y': y }, this.el.rosto));
-      this.el.bochechas = [0, 1].map(() => mk('circle', { r: 10 * this.s, fill: this.bochecha, opacity: 0.45 }, this.el.rosto));
-      this.el.olhos = [0, 1].map(() => mk('ellipse', { rx: 7.5 * this.s, ry: 11 * this.s, fill: this.tinta }, this.el.rosto));
-      this.el.sobrancelhas = [0, 1].map(() => mk('path', { fill: 'none', stroke: this.tinta, 'stroke-width': 6 * this.s, 'stroke-linecap': 'round' }, this.el.rosto));
-      this.el.boca = mk('path', { fill: this.tinta, stroke: this.tinta, 'stroke-width': 6 * this.s, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, this.el.rosto);
+      this.el.bochechas = [0, 1].map(() => mk('ellipse', { rx: 11 * this.s, ry: 8 * this.s, fill: this.bochecha, opacity: 0.45 }, this.el.rosto));
+      const sw6 = 6 * this.s;
+      this.el.olhos = [0, 1].map(() => ({
+        esclera: mk('circle', { r: 15 * this.s, fill: '#FFFFFF', stroke: this.tinta, 'stroke-width': 4 * this.s }, this.el.rosto),
+        cheio: mk('path', { fill: this.tinta }, this.el.rosto),
+        brilho: mk('circle', { r: 3 * this.s, fill: '#FFFFFF' }, this.el.rosto),
+        linha: mk('path', { fill: 'none', stroke: this.tinta, 'stroke-width': sw6, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, this.el.rosto)
+      }));
+      this.el.sobrancelhas = [0, 1].map(() => mk('path', { fill: 'none', stroke: this.tinta, 'stroke-width': 6.5 * this.s, 'stroke-linecap': 'round' }, this.el.rosto));
+      this.el.boca = mk('path', { fill: this.tinta, stroke: this.tinta, 'stroke-width': sw6, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, this.el.rosto);
+      this.el.dentes = mk('path', { fill: '#FFFFFF', stroke: 'none' }, this.el.rosto);
+      this.el.lingua = mk('path', { fill: '#FF6B5B', stroke: 'none' }, this.el.rosto);
+      this.el.extras = mk('g', {}, parent);   // fora do filtro de contorno: traços finos ficam nítidos
+      this.el.suor = mk('path', { fill: '#8FD3FF', stroke: this.tinta, 'stroke-width': 3 * this.s }, this.el.extras);
+      this.el.lagrimas = [0, 1].map(() => mk('path', { fill: '#8FD3FF', stroke: this.tinta, 'stroke-width': 3 * this.s }, this.el.extras));
+      this.el.veia = mk('path', { fill: 'none', stroke: '#D7263D', 'stroke-width': 4.5 * this.s, 'stroke-linecap': 'round' }, this.el.extras);
+      this.el.choque = mk('path', { fill: 'none', stroke: this.tinta, 'stroke-width': 5 * this.s, 'stroke-linecap': 'round' }, this.el.extras);
+      this.el.zzz = mk('path', { fill: 'none', stroke: this.tinta, 'stroke-width': 4 * this.s, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, this.el.extras);
       this.el.bracoPerto = mk('path', linha(this.cor));
       this.el.maoPerto = mk('circle', { r: 11 * this.s, fill: this.cor });
     }
@@ -287,8 +335,8 @@
     desenhar(t) {
       const s = this.s;
       const P = this.pose(t);
-      if (!P) { this.g.style.display = 'none'; return; }
-      this.g.style.display = '';
+      if (!P) { this.g.style.display = 'none'; this.el.extras.style.display = 'none'; return; }
+      this.g.style.display = ''; this.el.extras.style.display = '';
       const { vista, dir } = P;
       // tronco
       const inc = P.inclina;
@@ -385,57 +433,153 @@
       this.desenharRosto(t, C, vistaCab, P, giro);
     }
 
-    desenharRosto(t, C, vista, P, giro) {
-      const s = this.s, dir = P.dir;
-      const ex = this.acaoEm(this.expr, t).atual;
-      const nome = ex && t <= ex.t1 ? ex.nome : 'normal';
+    // Expressão ativa em t, com entrada/saída de 0,15 s (mistura numérica com 'normal')
+    expressaoEm(t) {
+      let ex = null;
+      for (const e of this.expr) if (t >= e.t0 - 0.0001 && t <= e.t1 + 0.15) ex = e;
+      if (!ex) return { E: EXPR.normal, w: 0, nome: 'normal' };
+      const w = Math.min(1, (t - ex.t0) / 0.15, t <= ex.t1 ? 1 : 1 - (t - ex.t1) / 0.15);
+      return { E: EXPR[ex.nome] || EXPR.normal, w: clamp(w, 0, 1), nome: ex.nome };
+    }
+
+    desenharRosto(t, C0, vista, P, giro) {
+      const s = this.s, dir = P.dir, el = this.el;
+      const { E, w, nome } = this.expressaoEm(t);
+      const N = EXPR.normal;
+      const num = (k, i) => { const a = Array.isArray(N[k]) ? N[k][i] : N[k], b = Array.isArray(E[k]) ? E[k][i] : E[k]; return lerp(a ?? 0, b ?? (a ?? 0), w); };
+      const disc = k => (w > 0.5 ? (E[k] ?? N[k]) : N[k]);
+      const tremor = disc('tremer') ? Math.sin(t * 2 * Math.PI * 14) * 2.2 * s : 0;
+      const C = [C0[0] + tremor, C0[1]];
+      const frente = vista === 'frente';
       const sujo = this.sujo.some(q => t >= q.t0 && t <= q.t1);
-      this.el.manchas.forEach(m => { m.style.display = sujo ? '' : 'none'; m.setAttribute('cx', C[0] + m.dataset.x * s * (vista === 'frente' ? 1 : dir)); m.setAttribute('cy', C[1] + m.dataset.y * s); });
-      const pisca = this.piscadas.some(p => t >= p && t < p + 0.12) || nome === 'dormindo';
-      const k = vista === 'frente' ? 1 : 0;
-      const pos = vista === 'frente'
-        ? { olhos: [[-22, -16], [22, -16]], boca: [0, 26], bochechas: [[-40, 12], [40, 12]], sob: [[-22, -36], [22, -36]] }
-        : { olhos: [[dir * 26, -16], [dir * 26, -16]], boca: [dir * 40, 26], bochechas: [[dir * 22, 12], [dir * 22, 12]], sob: [[dir * 26, -36], [dir * 26, -36]] };
-      const ry = nome === 'susto' ? 15 : nome === 'feliz' ? 6 : 11;
-      this.el.olhos.forEach((o, i) => {
-        o.setAttribute('cx', C[0] + pos.olhos[i][0] * s); o.setAttribute('cy', C[1] + pos.olhos[i][1] * s);
-        o.setAttribute('ry', (pisca ? 1.5 : ry) * s);
-        o.style.display = (k || i === 0) ? '' : 'none';
+      el.manchas.forEach(m => { m.style.display = sujo ? '' : 'none'; m.setAttribute('cx', C[0] + m.dataset.x * s * (frente ? 1 : dir)); m.setAttribute('cy', C[1] + m.dataset.y * s); });
+      const pisca = this.piscadas.some(p => t >= p && t < p + 0.12);
+      const olhar = [num('olharX', 0) * s, num('olharY', 0) * s];
+      const ladoOlho = i => (frente ? (i === 0 ? -1 : 1) : dir);
+      const posOlho = i => frente ? [C[0] + (i === 0 ? -22 : 22) * s, C[1] - 16 * s] : [C[0] + dir * 26 * s, C[1] - 16 * s];
+      // ---- olhos
+      const tipo = disc('olho');
+      el.olhos.forEach((o, i) => {
+        const vis = frente || i === 0;
+        [o.esclera, o.cheio, o.brilho, o.linha].forEach(e => (e.style.display = 'none'));
+        if (!vis) return;
+        const [ox, oy] = posOlho(i), lado = ladoOlho(i);
+        const fechado = pisca || tipo === 'fechado';
+        if (fechado) { o.linha.style.display = ''; o.linha.setAttribute('d', `M${ox - 9 * s} ${oy + 1 * s} Q${ox} ${oy + 5 * s} ${ox + 9 * s} ${oy + 1 * s}`); return; }
+        if (tipo === 'feliz') { o.linha.style.display = ''; o.linha.setAttribute('d', `M${ox - 9 * s} ${oy + 3 * s} Q${ox} ${oy - 10 * s} ${ox + 9 * s} ${oy + 3 * s}`); return; }
+        if (tipo === 'x') { o.linha.style.display = ''; const k = 7 * s; o.linha.setAttribute('d', `M${ox - k} ${oy - k} L${ox + k} ${oy + k} M${ox + k} ${oy - k} L${ox - k} ${oy + k}`); return; }
+        if (tipo === 'branco') {          // arregalado: esclera branca + pupila pequena
+          const r = num('olhoTam', 0) * s;
+          o.esclera.style.display = ''; o.esclera.setAttribute('cx', ox); o.esclera.setAttribute('cy', oy); o.esclera.setAttribute('r', r);
+          o.cheio.style.display = '';
+          const pr = 4.5 * s, px = ox + olhar[0], py = oy + olhar[1];
+          o.cheio.setAttribute('d', `M${px - pr} ${py} a${pr} ${pr} 0 1 0 ${2 * pr} 0 a${pr} ${pr} 0 1 0 ${-2 * pr} 0Z`);
+          return;
+        }
+        // olho sólido com pálpebra (lid: 0 aberto … 1 fechado; slant: + abaixa o lado de dentro)
+        const rx = 7.5 * s, ry = num('olhoTam', 0) * s;
+        const lid = num('palpebra', 0), slant = num('palpebraInc', 0);
+        const ox2 = ox + olhar[0] * 0.6, oy2 = oy + olhar[1] * 0.6;
+        const pts = [];
+        for (let k = 0; k <= 24; k++) {
+          const a = (k / 24) * Math.PI * 2;
+          let x = ox2 + Math.cos(a) * rx, y = oy2 + Math.sin(a) * ry;
+          const dentro = frente ? -lado * (x - ox2) / rx : dir * (x - ox2) / rx;   // +1 = canto interno (perto do nariz)
+          const linhaLid = oy2 - ry + 2 * ry * lid + dentro * slant * ry * 0.9;
+          if (y < linhaLid) y = Math.min(linhaLid, oy2 + ry);
+          pts.push([x, y]);
+        }
+        o.cheio.style.display = '';
+        o.cheio.setAttribute('d', 'M' + pts.map(p => p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join(' L') + 'Z');
+        if (lid < 0.45) { o.brilho.style.display = ''; o.brilho.setAttribute('cx', ox2 + 2.5 * s); o.brilho.setAttribute('cy', oy2 - ry * 0.45 + ry * lid); }
       });
-      this.el.bochechas.forEach((b, i) => {
-        b.setAttribute('cx', C[0] + pos.bochechas[i][0] * s); b.setAttribute('cy', C[1] + pos.bochechas[i][1] * s);
-        b.setAttribute('fill', nome === 'nojo' ? '#6DBE45' : this.bochecha);
-        b.setAttribute('opacity', nome === 'nojo' ? 0.85 : 0.45);
-        b.style.display = (k || i === 0) ? '' : 'none';
+      // ---- sobrancelhas: [altura, ponta interna (+ desce), curva]
+      el.sobrancelhas.forEach((sb, i) => {
+        const vis = frente || i === 0; sb.style.display = vis ? '' : 'none'; if (!vis) return;
+        const [ox, oy] = posOlho(i), lado = ladoOlho(i);
+        const alt = num('sobAlt', i) * s, inn = num('sobInt', i) * s, cur = num('sobCurva', 0) * s;
+        const y = oy - 21 * s - alt, wv = 12 * s;   // ponta interna = lado do nariz
+        const xi = frente ? ox - lado * wv : ox + dir * wv, xo = frente ? ox + lado * wv : ox - dir * wv;
+        sb.setAttribute('d', `M${xo} ${y - inn * 0.4} Q${ox} ${y - cur} ${xi} ${y + inn}`);
       });
-      this.el.sobrancelhas.forEach((sb, i) => {
-        const [bx, by] = pos.sob[i];
-        const x = C[0] + bx * s, y = C[1] + by * s;
-        const lado = vista === 'frente' ? (i === 0 ? -1 : 1) : dir;
-        let dy = 0, ang = 0;
-        if (nome === 'susto') dy = -10; if (nome === 'nojo' || nome === 'bravo') ang = 14; if (nome === 'triste') ang = -14;
-        if (nome === 'pensando' && i === 0) dy = -8;
-        const a = ang * RAD * lado;
-        const w = 13 * s, yy = y + dy * s;
-        sb.setAttribute('d', `M${x - w} ${yy - Math.tan(-a) * w * -1} Q${x} ${yy - 7 * s} ${x + w} ${yy + Math.tan(-a) * w * -1}`);
-        sb.style.display = (k || i === 0) ? '' : 'none';
+      // ---- bochechas
+      const corada = num('rubor', 0);
+      el.bochechas.forEach((b, i) => {
+        const vis = frente || i === 0; b.style.display = vis ? '' : 'none'; if (!vis) return;
+        const bx = frente ? C[0] + (i === 0 ? -40 : 40) * s : C[0] + dir * 22 * s;
+        b.setAttribute('cx', bx); b.setAttribute('cy', C[1] + 12 * s);
+        const verde = disc('verde');
+        b.setAttribute('fill', verde ? '#6DBE45' : corada > 0.5 ? '#FF3B4E' : this.bochecha);
+        b.setAttribute('opacity', verde ? 0.85 : (0.45 + corada * 0.4).toFixed(2));
+        b.setAttribute('rx', (11 + corada * 5) * s);
       });
-      // boca: lipsync quando falando; senão expressão
-      let forma = this.boca ? this.boca(t) : 'smile';
-      if (forma === 'smile' && nome === 'nojo') forma = 'nojo';
-      if (forma === 'smile' && nome === 'susto') forma = '4';
-      if (forma === 'smile' && (nome === 'triste' || nome === 'pensando')) forma = '0';
-      const bx = C[0] + pos.boca[0] * s, by = C[1] + pos.boca[1] * s, w = (vista === 'frente' ? 18 : 13) * s;
-      const B = this.el.boca;
-      const aberto = { '1': 4, '2': 9, '3': 14, '4': 12 }[forma];
-      if (forma === 'smile') { B.setAttribute('d', `M${bx - w} ${by - 4 * s} Q${bx} ${by + 14 * s} ${bx + w} ${by - 4 * s}`); B.setAttribute('fill', 'none'); }
-      else if (forma === 'nojo') { B.setAttribute('d', `M${bx - w} ${by + 4 * s} Q${bx - w / 2} ${by - 6 * s} ${bx} ${by + 2 * s} Q${bx + w / 2} ${by + 8 * s} ${bx + w} ${by - 2 * s}`); B.setAttribute('fill', 'none'); }
-      else if (forma === '0' || aberto == null) { B.setAttribute('d', `M${bx - w * 0.8} ${by} L${bx + w * 0.8} ${by}`); B.setAttribute('fill', 'none'); }
-      else {
-        const rx = (forma === '4' ? w * 0.55 : w * 0.8), ryb = aberto * s;
-        B.setAttribute('d', `M${bx - rx} ${by} A${rx} ${ryb} 0 1 0 ${bx + rx} ${by} A${rx} ${ryb} 0 1 0 ${bx - rx} ${by} Z`);
+      // ---- boca
+      const falando = this.boca ? this.boca(t) : 'smile';
+      const abre = { '0': 0, '1': 0.3, '2': 0.6, '3': 1, '4': 0.85 }[falando];
+      const bx = C[0] + (frente ? 0 : dir * 40) * s, by = C[1] + 26 * s;
+      const W = (frente ? 18 : 13) * s * num('bocaLarg', 0);
+      const B = el.boca, D = el.dentes, Lg = el.lingua;
+      D.setAttribute('d', ''); Lg.setAttribute('d', '');
+      const formaFala = disc('fala');
+      if (abre != null && abre > 0) {
+        const o = abre * 15 * s * num('falaAbre', 0);
+        if (formaFala === 'feliz') { B.setAttribute('d', `M${bx - W} ${by - 3 * s} Q${bx} ${by - 3 * s} ${bx + W} ${by - 3 * s} Q${bx + W} ${by + o * 1.2} ${bx} ${by + o * 1.3} Q${bx - W} ${by + o * 1.2} ${bx - W} ${by - 3 * s}Z`); }
+        else if (formaFala === 'triste') { B.setAttribute('d', `M${bx - W} ${by + 4 * s} Q${bx - W} ${by - o * 1.2} ${bx} ${by - o * 1.1} Q${bx + W} ${by - o * 1.2} ${bx + W} ${by + 4 * s}Z`); }
+        else if (formaFala === 'dentes') {
+          const h = Math.max(6 * s, o);
+          B.setAttribute('d', `M${bx - W} ${by - h / 2} H${bx + W} V${by + h / 2} H${bx - W}Z`);
+          D.setAttribute('d', `M${bx - W + 3 * s} ${by - h / 2 + 2 * s} H${bx + W - 3 * s} V${by - h / 2 + 7 * s} H${bx - W + 3 * s}Z M${bx - W + 3 * s} ${by + h / 2 - 7 * s} H${bx + W - 3 * s} V${by + h / 2 - 2 * s} H${bx - W + 3 * s}Z`);
+        } else {
+          const rx = W * (falando === '4' ? 0.6 : 0.85), ry = Math.max(3 * s, o);
+          B.setAttribute('d', `M${bx - rx} ${by} A${rx} ${ry} 0 1 0 ${bx + rx} ${by} A${rx} ${ry} 0 1 0 ${bx - rx} ${by}Z`);
+          if (ry > 9 * s) { Lg.setAttribute('d', `M${bx - rx * 0.6} ${by + ry * 0.75} Q${bx} ${by + ry * 0.2} ${bx + rx * 0.6} ${by + ry * 0.75} Q${bx} ${by + ry * 1.0} ${bx - rx * 0.6} ${by + ry * 0.75}Z`);
+            if (formaFala === 'grito') D.setAttribute('d', `M${bx - rx * 0.7} ${by - ry * 0.82} Q${bx} ${by - ry * 1.05} ${bx + rx * 0.7} ${by - ry * 0.82} L${bx + rx * 0.6} ${by - ry * 0.62} Q${bx} ${by - ry * 0.75} ${bx - rx * 0.6} ${by - ry * 0.62}Z`); }
+        }
         B.setAttribute('fill', this.tinta);
+      } else {
+        const f = disc('boca');
+        let d = '', cheia = false;
+        const Wb = W;
+        switch (f) {
+          case 'sorriso': d = `M${bx - Wb} ${by - 4 * s} Q${bx} ${by + 14 * s} ${bx + Wb} ${by - 4 * s}`; break;
+          case 'sorrisao': d = `M${bx - Wb * 1.1} ${by - 5 * s} Q${bx} ${by - 2 * s} ${bx + Wb * 1.1} ${by - 5 * s} Q${bx + Wb} ${by + 20 * s} ${bx} ${by + 22 * s} Q${bx - Wb} ${by + 20 * s} ${bx - Wb * 1.1} ${by - 5 * s}Z`; cheia = true;
+            Lg.setAttribute('d', `M${bx - Wb * 0.55} ${by + 15 * s} Q${bx} ${by + 6 * s} ${bx + Wb * 0.55} ${by + 15 * s} Q${bx} ${by + 22 * s} ${bx - Wb * 0.55} ${by + 15 * s}Z`); break;
+          case 'reta': d = `M${bx - Wb * 0.75} ${by + 2 * s} L${bx + Wb * 0.75} ${by + 2 * s}`; break;
+          case 'triste': d = `M${bx - Wb * 0.85} ${by + 8 * s} Q${bx} ${by - 6 * s} ${bx + Wb * 0.85} ${by + 8 * s}`; break;
+          case 'o': d = `M${bx - 6 * s} ${by + 3 * s} a${6 * s} ${8 * s} 0 1 0 ${12 * s} 0 a${6 * s} ${8 * s} 0 1 0 ${-12 * s} 0Z`; cheia = true; break;
+          case 'grito': { const rx = Wb * 0.9, ry = 18 * s; d = `M${bx - rx} ${by + 4 * s} A${rx} ${ry} 0 1 0 ${bx + rx} ${by + 4 * s} A${rx} ${ry} 0 1 0 ${bx - rx} ${by + 4 * s}Z`; cheia = true;
+            Lg.setAttribute('d', `M${bx - rx * 0.6} ${by + 4 * s + ry * 0.7} Q${bx} ${by + 4 * s + ry * 0.15} ${bx + rx * 0.6} ${by + 4 * s + ry * 0.7} Q${bx} ${by + 4 * s + ry} ${bx - rx * 0.6} ${by + 4 * s + ry * 0.7}Z`);
+            D.setAttribute('d', `M${bx - rx * 0.7} ${by + 4 * s - ry * 0.82} Q${bx} ${by + 4 * s - ry * 1.05} ${bx + rx * 0.7} ${by + 4 * s - ry * 0.82} L${bx + rx * 0.6} ${by + 4 * s - ry * 0.6} Q${bx} ${by + 4 * s - ry * 0.72} ${bx - rx * 0.6} ${by + 4 * s - ry * 0.6}Z`); break; }
+          case 'dentes': { const h = 12 * s; d = `M${bx - Wb} ${by - h / 2 + 2 * s} H${bx + Wb} V${by + h / 2 + 2 * s} H${bx - Wb}Z`; cheia = true;
+            D.setAttribute('d', `M${bx - Wb + 2 * s} ${by - h / 2 + 4 * s} H${bx + Wb - 2 * s} V${by + h / 2} H${bx - Wb + 2 * s}Z`); break; }
+          case 'nojo': d = `M${bx - Wb} ${by + 4 * s} Q${bx - Wb / 2} ${by - 6 * s} ${bx} ${by + 2 * s} Q${bx + Wb / 2} ${by + 8 * s} ${bx + Wb} ${by - 2 * s}`; break;
+          case 'torta': d = `M${bx - Wb * 0.8} ${by + 4 * s} Q${bx + Wb * 0.2} ${by + 6 * s} ${bx + Wb * 0.9} ${by - 5 * s}`; break;
+          case 'tremula': { const n = 6, w2 = Wb * 1.6 / n; d = `M${bx - Wb * 0.8} ${by + 3 * s}`; for (let k = 1; k <= n; k++) d += ` L${bx - Wb * 0.8 + k * w2} ${by + 3 * s + (k % 2 ? -4 : 4) * s}`; break; }
+          default: d = `M${bx - Wb} ${by - 4 * s} Q${bx} ${by + 14 * s} ${bx + Wb} ${by - 4 * s}`;
+        }
+        B.setAttribute('d', d); B.setAttribute('fill', cheia ? this.tinta : 'none');
       }
+      // ---- extras
+      const ext = w > 0.5 ? (E.extras || []) : [];
+      const tem = k => ext.includes(k);
+      const lado0 = frente ? 1 : -dir;   // lado da testa onde vão gota/veia
+      el.suor.style.display = tem('suor') ? '' : 'none';
+      if (tem('suor')) { const sx = C[0] + lado0 * 52 * s, sy = C[1] - 30 * s + ((t * 0.6) % 1) * 22 * s; el.suor.setAttribute('d', `M${sx} ${sy - 14 * s} Q${sx + 9 * s} ${sy} ${sx} ${sy + 6 * s} Q${sx - 9 * s} ${sy} ${sx} ${sy - 14 * s}Z`); }
+      el.lagrimas.forEach((lg, i) => {
+        const vis = tem('lagrimas') && (frente || i === 0); lg.style.display = vis ? '' : 'none'; if (!vis) return;
+        const [ox, oy] = posOlho(i), k = ((t * 0.9 + i * 0.5) % 1);
+        const ly = oy + 10 * s + k * 34 * s;
+        lg.setAttribute('d', `M${ox} ${ly - 10 * s} Q${ox + 7 * s} ${ly} ${ox} ${ly + 5 * s} Q${ox - 7 * s} ${ly} ${ox} ${ly - 10 * s}Z`);
+      });
+      el.veia.style.display = tem('veia') ? '' : 'none';
+      if (tem('veia')) { const vx = C[0] + lado0 * 38 * s, vy = C[1] - 44 * s, k = 10 * s * (1 + Math.sin(t * 2 * Math.PI * 4) * 0.15);
+        el.veia.setAttribute('d', `M${vx - k} ${vy - k * 0.2} Q${vx - k * 0.2} ${vy - k * 0.2} ${vx - k * 0.2} ${vy - k} M${vx + k} ${vy - k * 0.2} Q${vx + k * 0.2} ${vy - k * 0.2} ${vx + k * 0.2} ${vy - k} M${vx - k} ${vy + k * 0.2} Q${vx - k * 0.2} ${vy + k * 0.2} ${vx - k * 0.2} ${vy + k} M${vx + k} ${vy + k * 0.2} Q${vx + k * 0.2} ${vy + k * 0.2} ${vx + k * 0.2} ${vy + k}`); }
+      el.choque.style.display = tem('choque') ? '' : 'none';
+      if (tem('choque')) { const r0 = 84 * s, r1 = (104 + Math.sin(t * 2 * Math.PI * 6) * 5) * s; let d = '';
+        [-60, -35, -12, 12, 35, 60].forEach(a => { const ar = (a - 90) * RAD; d += `M${C[0] + Math.cos(ar) * r0} ${C[1] + Math.sin(ar) * r0} L${C[0] + Math.cos(ar) * r1} ${C[1] + Math.sin(ar) * r1} `; });
+        el.choque.setAttribute('d', d); }
+      el.zzz.style.display = tem('zzz') ? '' : 'none';
+      if (tem('zzz')) { let d = ''; [0, 1, 2].forEach(k => { const z = (12 + k * 5) * s, x = C[0] + (40 + k * 22) * s, y = C[1] - (60 + k * 26) * s - ((t * 0.5) % 1) * 10 * s; d += `M${x} ${y} h${z} l${-z} ${z} h${z} `; }); el.zzz.setAttribute('d', d); }
     }
   }
 
@@ -454,6 +598,6 @@
     const k = clamp(Math.floor((x - x0) / larg), 0, n - 1);
     return y0 - k * alt;
   };
-  Boneco.medidas = M; Boneco.gait = GAIT; Boneco.ik2 = ik2;
+  Boneco.medidas = M; Boneco.expressoes = Object.keys(EXPR); Boneco.gait = GAIT; Boneco.ik2 = ik2;
   global.Boneco = Boneco;
 })(window);

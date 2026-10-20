@@ -61,7 +61,7 @@ heroi.braco('d', 3.5, 5, 'acenar');
 //         comer, queixo, nariz, alcancar {alvo:[x,y]}, pose {o, c}
 // CABEÇA e ROSTO
 heroi.cabeca(4, 5, { vista: 'frente', inclinar: 8 });   // olhar para a câmera estando de perfil
-heroi.expressao(4, 6, 'feliz');   // normal, feliz, susto, nojo, bravo, triste, pensando, dormindo
+heroi.expressao(4, 6, 'feliz');   // ver lista de expressões abaixo
 heroi.sujeira(10, 20);            // manchas de fuligem/sujeira
 // a cada quadro (dentro de window.__seek):
 heroi.desenhar(t);
@@ -75,6 +75,27 @@ const [mx, my] = heroi.mao('e');  // posição da mão para prender objetos (pã
   caírem no meio dos degraus.
 - Para várias pessoas, crie vários `Boneco` (seeds diferentes para não piscarem juntos).
 - Visibilidade por cena: envolva cada boneco num `<g>` e ligue/desligue no `__seek`.
+
+## Expressões do rosto
+
+`heroi.expressao(t0, t1, nome)` — 24 expressões (grade visual em `assets/expressoes.html`):
+
+| Emoção | Nomes |
+|---|---|
+| Alegria | `feliz` (olhos ^ ^), `alegre` (sorrisão, corado), `aliviado` (olhos fechados + gota) |
+| Neutro/atenção | `normal`, `serio` (sobrancelhas retas e baixas, boca reta), `determinado`, `desconfiado` (pálpebra caída, boca de lado), `pensando`, `confuso` |
+| Raiva | `bravo` (pontas internas das sobrancelhas para baixo, dentes, veia), `furioso` (grito, rosto vermelho, treme) |
+| Surpresa/medo | `surpreso` (boca O), `susto` (olhos arregalados, linhas de choque), `espanto` (susto + grito + suor), `medo` (sobrancelhas de preocupação, boca tremendo, treme), `preocupado`, `gritando` |
+| Tristeza | `triste`, `chorando` (lágrimas), `cansado` (pálpebras pesadas, suor), `envergonhado` (corado, olhar baixo) |
+| Outros | `nojo` (bochechas verdes, boca ondulada), `tonto` (olhos X), `dormindo` (Zzz) |
+
+- Entrada e saída da expressão levam 0,15 s (sobrancelhas e pálpebras deslizam).
+- **Falando** (com `boca` de lipsync), a boca segue a voz mas no formato da emoção:
+  `feliz/alegre` abre em "D", `triste/medo` com cantos para baixo, `bravo` mostra dentes,
+  `gritando/furioso/espanto` abre até ~1,9× mais com língua e dentes.
+- Escolha pela **fala**: o que o personagem sente naquela frase. Troque a expressão a cada
+  ideia nova (2–4 s), não a cada palavra.
+- Detalhes finos (veia, linhas de choque, Zzz, gotas) ficam fora do contorno para não virar borrão.
 
 ## Verificar (sempre)
 
