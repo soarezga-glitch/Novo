@@ -510,7 +510,7 @@ tl.set('#s3-blob', { autoAlpha: 1 }, 19.7)
 pop('#s3-splat', 20.7, 0.3, 'back.out(3)');
 // passante andando da direita para a esquerda
 const passX0 = 1150, passX1 = -150, passT0 = 18.7, passT1 = 25.2;
-tl.fromTo('#pass', { x: 0 }, { x: passX1 - passX0, duration: passT1 - passT0, ease: 'none', immediateRender: false }, passT0);
+tl.fromTo('#pass', { x: passX0 }, { x: passX1, duration: passT1 - passT0, ease: 'none', immediateRender: false }, passT0);
 for (let i = 0, st = 0.32; passT0 + i * st < passT1; i++) {
   const t = passT0 + i * st, s = i % 2 ? 1 : -1;
   tl.to('#pass-ll', { rotation: 24 * s, duration: st, ease: 'sine.inOut' }, t).to('#pass-lr', { rotation: -24 * s, duration: st, ease: 'sine.inOut' }, t)
