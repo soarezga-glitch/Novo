@@ -1,0 +1,648 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Um dia na Roma Antiga</title>
+<!--
+  Vídeo vertical (1080x1920) feito com a skill "edit": stickman branco com contorno,
+  cenários coloridos da Roma Antiga trocando conforme a narração (fala.mp3).
+  Tudo que se move está na timeline GSAP (tl); boca e legenda são atualizadas em __seek.
+-->
+<style>
+  html, body { margin: 0; background: #000; overflow: hidden; }
+  #stage { width: 1080px; height: 1920px; display: block; }
+  text { font-family: Inter, 'DejaVu Sans', sans-serif; font-weight: 800; }
+</style>
+<script src="gsap.min.js"></script>
+<script src="lipsync.js" onerror="window.LIPSYNC = null"></script>
+<script src="palavras.js" onerror="window.PALAVRAS = null"></script>
+</head>
+<body>
+<svg id="stage" viewBox="0 0 1080 1920" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="outline" x="-20%" y="-20%" width="140%" height="140%">
+      <feMorphology in="SourceAlpha" operator="dilate" radius="5" result="d"/>
+      <feFlood flood-color="#1D1D2B"/>
+      <feComposite in2="d" operator="in" result="o"/>
+      <feMerge><feMergeNode in="o"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <linearGradient id="skyDay" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5DB7EE"/><stop offset="1" stop-color="#C9EBFF"/></linearGradient>
+    <linearGradient id="skyNight" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0E1230"/><stop offset="1" stop-color="#2B2F5E"/></linearGradient>
+    <linearGradient id="skyDawn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F6A97A"/><stop offset=".6" stop-color="#FBD9A6"/><stop offset="1" stop-color="#FFF0CF"/></linearGradient>
+    <radialGradient id="fireGlow" cx=".5" cy=".7" r=".7"><stop offset="0" stop-color="#FF8A2B" stop-opacity=".85"/><stop offset="1" stop-color="#FF8A2B" stop-opacity="0"/></radialGradient>
+    <radialGradient id="lamp" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#FFD27A" stop-opacity=".55"/><stop offset="1" stop-color="#FFD27A" stop-opacity="0"/></radialGradient>
+    <pattern id="cobble" width="90" height="50" patternUnits="userSpaceOnUse">
+      <rect width="90" height="50" fill="#9C958A"/>
+      <rect x="3" y="3" width="40" height="20" rx="8" fill="#B5AEA2"/><rect x="47" y="3" width="40" height="20" rx="8" fill="#ADA699"/>
+      <rect x="-20" y="27" width="40" height="20" rx="8" fill="#ADA699"/><rect x="25" y="27" width="40" height="20" rx="8" fill="#B5AEA2"/><rect x="70" y="27" width="40" height="20" rx="8" fill="#B5AEA2"/>
+    </pattern>
+    <pattern id="stoneTiles" width="160" height="80" patternUnits="userSpaceOnUse">
+      <rect width="160" height="80" fill="#8E877C"/>
+      <rect x="4" y="4" width="72" height="34" rx="4" fill="#A39C90"/><rect x="84" y="4" width="72" height="34" rx="4" fill="#9A9387"/>
+      <rect x="-36" y="44" width="72" height="34" rx="4" fill="#9A9387"/><rect x="44" y="44" width="72" height="34" rx="4" fill="#A39C90"/><rect x="124" y="44" width="72" height="34" rx="4" fill="#A39C90"/>
+    </pattern>
+    <pattern id="stoneWall" width="120" height="60" patternUnits="userSpaceOnUse">
+      <rect width="120" height="60" fill="#C9B79A"/>
+      <path d="M0 30 H120 M60 0 V30 M0 30 V60 M120 30 V60" stroke="#B19E80" stroke-width="4"/>
+    </pattern>
+    <pattern id="planks" width="60" height="40" patternUnits="userSpaceOnUse">
+      <rect width="60" height="40" fill="#A8743F"/>
+      <path d="M0 0 H60 M0 20 H60 M20 0 V20 M45 20 V40" stroke="#8A5A2E" stroke-width="3"/>
+    </pattern>
+    <pattern id="planksNight" width="60" height="40" patternUnits="userSpaceOnUse">
+      <rect width="60" height="40" fill="#3A2A2A"/>
+      <path d="M0 0 H60 M0 20 H60 M20 0 V20 M45 20 V40" stroke="#2A1D1F" stroke-width="3"/>
+    </pattern>
+    <pattern id="tiles" width="40" height="30" patternUnits="userSpaceOnUse">
+      <rect width="40" height="30" fill="#C8553D"/><path d="M0 15 Q10 0 20 15 Q30 0 40 15" stroke="#A23E2B" stroke-width="4" fill="none"/>
+    </pattern>
+  </defs>
+
+  <g id="scenes"></g>
+  <!-- ============ STICKMAN BRANCO (pés em y=0 no espaço local) ============ -->
+  <g id="hero" filter="url(#outline)">
+    <g id="flip">
+      <g id="body" stroke="#FFFFFF" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" fill="none">
+        <g id="leg-l"><path d="M0 -200 L-28 -8 L-58 -4"/></g>
+        <g id="leg-r"><path d="M0 -200 L28 -8 L58 -4"/></g>
+        <g id="arm-r">
+          <path d="M0 -375 L36 -288"/>
+          <g id="fore-r"><path d="M36 -288 L46 -196"/><circle cx="47" cy="-188" r="11" fill="#FFFFFF" stroke="none"/>
+            <g id="prop-r" transform="translate(47 -188)" stroke="none">
+              <g id="bread-r" opacity="0"><ellipse cx="0" cy="-22" rx="40" ry="24" fill="#D9A15B"/><path d="M-22 -32 l10 14 M0 -38 l10 14 M20 -32 l8 12" stroke="#A56E2E" stroke-width="5"/></g>
+            </g>
+          </g>
+        </g>
+        <g id="torso">
+          <path d="M0 -200 L0 -400"/>
+          <path id="tunic" d="M-34 -394 L34 -394 L60 -168 L-60 -168 Z" fill="#C8553D" stroke="none"/>
+          <path d="M-46 -262 L46 -262" stroke="#7A2E1F" stroke-width="10"/>
+          <g id="soot-body" opacity="0" stroke="none" fill="#3A3A3A"><ellipse cx="-20" cy="-320" rx="18" ry="10" opacity=".6"/><ellipse cx="22" cy="-210" rx="22" ry="9" opacity=".5"/></g>
+        </g>
+        <g id="head">
+          <circle cx="0" cy="-475" r="72" fill="#FFFFFF" stroke="none"/>
+          <g id="soot" opacity="0" stroke="none" fill="#3A3A3A"><ellipse cx="-30" cy="-520" rx="20" ry="12" opacity=".55"/><ellipse cx="38" cy="-440" rx="16" ry="9" opacity=".5"/><ellipse cx="10" cy="-535" rx="10" ry="6" opacity=".5"/></g>
+          <g id="brows" stroke="#1D1D2B" stroke-width="7">
+            <path d="M-38 -522 Q-26 -530 -12 -524"/><path d="M12 -524 Q26 -530 38 -522"/>
+          </g>
+          <g id="eyes" stroke="none" fill="#1D1D2B">
+            <g id="eye-l"><ellipse cx="-24" cy="-492" rx="8" ry="12"/></g>
+            <g id="eye-r"><ellipse cx="24" cy="-492" rx="8" ry="12"/></g>
+          </g>
+          <g id="cheeks" stroke="none" fill="#FF6B5B" opacity=".45">
+            <circle cx="-44" cy="-462" r="11"/><circle cx="44" cy="-462" r="11"/>
+          </g>
+          <g id="mouth" stroke="#1D1D2B" stroke-width="7">
+            <path class="m" data-shape="smile" d="M-20 -452 Q0 -432 20 -452"/>
+            <path class="m" data-shape="0" d="M-16 -446 Q0 -442 16 -446"/>
+            <ellipse class="m" data-shape="1" cx="0" cy="-446" rx="13" ry="4" fill="#1D1D2B" stroke="none"/>
+            <ellipse class="m" data-shape="2" cx="0" cy="-445" rx="15" ry="9" fill="#1D1D2B" stroke="none"/>
+            <g class="m" data-shape="3" stroke="none"><ellipse cx="0" cy="-443" rx="18" ry="15" fill="#1D1D2B"/><ellipse cx="0" cy="-435" rx="9" ry="5" fill="#FF6B5B"/></g>
+            <ellipse class="m" data-shape="4" cx="0" cy="-444" rx="10" ry="13" fill="#1D1D2B" stroke="none"/>
+          </g>
+        </g>
+        <g id="arm-l">
+          <path d="M0 -375 L-36 -288"/>
+          <g id="fore-l"><path d="M-36 -288 L-46 -196"/><circle cx="-47" cy="-188" r="11" fill="#FFFFFF" stroke="none"/>
+            <g id="prop-l" transform="translate(-47 -188)" stroke="none">
+              <g id="bread-l" opacity="0"><ellipse cx="0" cy="-22" rx="40" ry="24" fill="#D9A15B"/><path d="M-22 -32 l10 14 M0 -38 l10 14 M20 -32 l8 12" stroke="#A56E2E" stroke-width="5"/></g>
+              <g id="jar-l" opacity="0"><path d="M-26 -10 Q-40 40 -20 70 H20 Q40 40 26 -10 Z" fill="#B8613A"/><rect x="-16" y="-24" width="32" height="18" rx="5" fill="#9A4E2D"/><path d="M-30 20 H30" stroke="#E7A57E" stroke-width="5"/></g>
+            </g>
+          </g>
+        </g>
+      </g>
+    </g>
+  </g>
+  <g id="fgs"></g>
+  <g id="ui">
+    <g id="caption">
+      <rect id="capBox" x="90" y="360" width="900" height="120" rx="60" fill="#1D1D2B" opacity=".9"/>
+      <text id="capText" x="540" y="441" font-size="58" text-anchor="middle"></text>
+    </g>
+  </g>
+</svg>
+
+<script>
+// ===================== CONFIG =====================
+const CONFIG = { fps: 30, palavrasPorLinha: 4, seed: 11, cauda: 2.2 };
+const COR = { tinta: '#1D1D2B', branco: '#FFFFFF', destaque: '#FFC24B', apagado: '#9C9AB0', terracota: '#C8553D', ouro: '#F2C14E' };
+const NS = 'http://www.w3.org/2000/svg';
+function mulberry32(a) { return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+const rand = mulberry32(CONFIG.seed);
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+
+// ===================== PEÇAS DE CENÁRIO =====================
+// stickman secundário (mesmo estilo, contorno escuro)
+function mini(id, x, y, s, cor, flip = 1) {
+  return `<g id="${id}" transform="translate(${x} ${y}) scale(${s * flip} ${s})" filter="url(#outline)">
+    <g id="${id}-b" stroke="#FFF" stroke-width="16" stroke-linecap="round" fill="none">
+      <g id="${id}-ll"><path d="M0 -200 L-28 -8 L-58 -4"/></g><g id="${id}-lr"><path d="M0 -200 L28 -8 L58 -4"/></g>
+      <g id="${id}-ar"><path d="M0 -375 L40 -200"/></g>
+      <path d="M0 -200 L0 -400"/><path d="M-34 -394 L34 -394 L60 -168 L-60 -168 Z" fill="${cor}" stroke="none"/>
+      <g id="${id}-h"><circle cx="0" cy="-475" r="72" fill="#FFF" stroke="none"/>
+        <ellipse cx="-24" cy="-492" rx="8" ry="12" fill="#1D1D2B" stroke="none"/><ellipse cx="24" cy="-492" rx="8" ry="12" fill="#1D1D2B" stroke="none"/>
+        <path id="${id}-m" d="M-20 -452 Q0 -434 20 -452" stroke="#1D1D2B" stroke-width="7"/></g>
+      <g id="${id}-al"><path d="M0 -375 L-40 -200"/></g>
+    </g></g>`;
+}
+function rigMini(id) {
+  gsap.set([`#${id}-ll`, `#${id}-lr`], { svgOrigin: '0 -200' });
+  gsap.set([`#${id}-al`, `#${id}-ar`], { svgOrigin: '0 -375' });
+  gsap.set(`#${id}-h`, { svgOrigin: '0 -400' });
+  gsap.set(`#${id}-b`, { svgOrigin: '0 0' });
+}
+// prédio romano de madeira (insula), torto
+function insula(p, x, w, top, night) {
+  const wall = night ? 'url(#planksNight)' : 'url(#planks)';
+  const win = night ? '#FFD27A' : '#2B1B12';
+  let s = `<path d="M${x} 1700 L${x + 6} ${top + 40} L${x + w - 10} ${top + 20} L${x + w} 1700 Z" fill="${wall}" stroke="#1D1D2B" stroke-width="8"/>
+    <path d="M${x - 30} ${top + 50} L${x + w / 2} ${top - 60} L${x + w + 30} ${top + 25} Z" fill="url(#tiles)" stroke="#1D1D2B" stroke-width="8"/>`;
+  const floors = 4, fh = (1700 - top - 40) / floors;
+  for (let f = 0; f < floors; f++) {
+    const y = top + 40 + f * fh;
+    s += `<path d="M${x} ${y + fh} H${x + w}" stroke="#5E3B1C" stroke-width="10"/>`;
+    if (f === floors - 1) { // térreo: lojas com arcos
+      for (let k = 0; k < 2; k++) { const ax = x + 50 + k * (w / 2); s += `<path d="M${ax} 1700 V${y + 120} Q${ax + 90} ${y + 40} ${ax + 180} ${y + 120} V1700 Z" fill="${night ? '#120C0C' : '#3B2416'}" stroke="#1D1D2B" stroke-width="6"/>`; }
+    } else {
+      for (let k = 0; k < 2; k++) { const wx = x + 60 + k * (w / 2); if (!(p === 'a' && f === 0 && k === 0)) s += `<rect x="${wx}" y="${y + 70}" width="${w / 2 - 120}" height="${fh - 150}" fill="${win}" stroke="#1D1D2B" stroke-width="6"/>`; }
+    }
+  }
+  return s;
+}
+function flame(x, y, s, i) {
+  return `<g class="flame" data-i="${i}" transform="translate(${x} ${y}) scale(${s})"><path d="M0 0 C-60 -10 -50 -90 -10 -150 C-15 -100 20 -90 15 -150 C60 -90 60 -10 0 0Z" fill="#FF6A2B"/><path d="M0 -6 C-30 -10 -28 -60 -4 -90 C0 -60 20 -55 14 -85 C38 -50 30 -10 0 -6Z" fill="#FFD24B"/></g>`;
+}
+function stamp(id, x, y, txt, cor, rot = -8, fs = 92) {
+  return `<g id="${id}" transform="translate(${x} ${y}) rotate(${rot})"><rect x="-${txt.length * fs * 0.36 + 40}" y="-${fs * 0.85}" width="${txt.length * fs * 0.72 + 80}" height="${fs * 1.35}" rx="18" fill="none" stroke="${cor}" stroke-width="12"/><text x="0" y="${fs * 0.3}" font-size="${fs}" fill="${cor}" text-anchor="middle">${txt}</text></g>`;
+}
+function card(id, bg, n, titulo, icone) {
+  return `<g id="${id}" class="scene"><rect width="1080" height="1920" fill="${bg}"/>
+    <g opacity=".12" fill="#fff">${[0, 1, 2, 3, 4].map(k => `<rect x="${60 + k * 230}" y="0" width="70" height="1920"/>`).join('')}</g>
+    <g id="${id}-n"><circle cx="540" cy="760" r="170" fill="#1D1D2B"/><text x="540" y="820" font-size="180" fill="${COR.ouro}" text-anchor="middle">${n}º</text></g>
+    <text id="${id}-d" x="540" y="1040" font-size="80" fill="#1D1D2B" text-anchor="middle" letter-spacing="8">DESAFIO</text>
+    <g id="${id}-t"><text x="540" y="1200" font-size="128" fill="#FFF" text-anchor="middle" stroke="#1D1D2B" stroke-width="12" paint-order="stroke">${titulo}</text></g>
+    <g id="${id}-i" transform="translate(540 1420)">${icone}</g></g>`;
+}
+
+// ===================== CENAS =====================
+const scenes = [];
+// S1 — quarto de pedra
+scenes.push(`<g id="s1" class="scene">
+  <rect width="1080" height="1920" fill="url(#stoneWall)"/>
+  <rect y="1300" width="1080" height="620" fill="url(#stoneTiles)"/><path d="M0 1300 H1080" stroke="#6E675C" stroke-width="10"/>
+  <g><rect x="700" y="560" width="220" height="260" fill="#8ED1F5" stroke="#5A4632" stroke-width="16"/><path d="M810 560 V820 M700 690 H920" stroke="#5A4632" stroke-width="10"/><path d="M700 820 L560 1300 L1060 1300 L920 820Z" fill="#FFF3C4" opacity=".25"/></g>
+  <rect id="s1-mat" x="160" y="1500" width="640" height="90" rx="20" fill="#D9B45A" stroke="#1D1D2B" stroke-width="6"/>
+  <g id="s1-smoke" fill="#E8E2D8" opacity=".85">${[0, 1, 2].map(k => `<g class="smoke"><circle cx="${120 + k * 120}" cy="1200" r="${50 + k * 10}"/><circle cx="${170 + k * 120}" cy="1150" r="${40 + k * 8}"/></g>`).join('')}</g>
+  <g id="s1-fish" transform="translate(300 1720)"><path d="M-110 0 Q-60 -50 40 0 Q-60 50 -110 0Z" fill="none" stroke="#FFF" stroke-width="10"/><path d="M-80 -20 V20 M-50 -28 V28 M-20 -28 V28 M10 -20 V20 M40 0 L90 -40 V40 Z" stroke="#FFF" stroke-width="10" fill="#FFF"/><circle cx="-92" cy="-6" r="7" fill="#1D1D2B"/>
+    <g id="s1-stink" stroke="#7CC46A" stroke-width="10" fill="none" stroke-linecap="round"><path d="M-60 -70 q20 -30 0 -60 q-20 -30 0 -60"/><path d="M-10 -80 q20 -30 0 -60 q-20 -30 0 -60"/><path d="M40 -70 q20 -30 0 -60 q-20 -30 0 -60"/></g></g>
+  <g id="s1-q" fill="${COR.ouro}" stroke="#1D1D2B" stroke-width="8" paint-order="stroke"><text id="s1-q1" x="600" y="1000" font-size="130">?</text><text id="s1-q2" x="700" y="930" font-size="100">?</text><text id="s1-q3" x="520" y="900" font-size="90">?</text></g>
+</g>`);
+// S2 — janela com vista de Roma
+scenes.push(`<g id="s2" class="scene">
+  <rect width="1080" height="1920" fill="url(#stoneWall)"/>
+  <g id="s2-view">
+    <path d="M200 1450 V700 Q200 420 600 420 Q1000 420 1000 700 V1450Z" fill="url(#skyDay)"/>
+    <g clip-path="none">
+      <circle cx="860" cy="590" r="55" fill="#FFE07A"/>
+      <path d="M200 1180 Q400 1080 600 1150 T1000 1120 V1450 H200Z" fill="#7FBF6A"/>
+      <g id="s2-coliseu"><ellipse cx="640" cy="1080" rx="260" ry="60" fill="#E2C9A0" stroke="#1D1D2B" stroke-width="6"/><rect x="380" y="900" width="520" height="180" fill="#E8D2AA" stroke="#1D1D2B" stroke-width="6"/>${[0, 1, 2].map(r => [0, 1, 2, 3, 4, 5, 6, 7].map(c => `<path d="M${400 + c * 62} ${1060 - r * 58} v-28 q14 -20 28 0 v28z" fill="#9C7A52"/>`).join('')).join('')}<path d="M380 900 Q640 860 900 900" stroke="#1D1D2B" stroke-width="6" fill="none"/></g>
+      <g id="s2-aqueduto" fill="#CDB591" stroke="#1D1D2B" stroke-width="5"><rect x="200" y="980" width="200" height="30"/>${[0, 1, 2].map(k => `<path d="M${205 + k * 65} 1010 h55 v170 h-12 q-15 -60 -31 0 h-12z"/>`).join('')}</g>
+      <g fill="url(#tiles)" stroke="#1D1D2B" stroke-width="5"><path d="M220 1300 L330 1230 L440 1300Z"/><path d="M460 1320 L600 1240 L740 1320Z"/><path d="M760 1300 L880 1220 L1000 1300Z"/></g>
+      <g fill="#F1E3C6" stroke="#1D1D2B" stroke-width="5"><rect x="240" y="1300" width="180" height="150"/><rect x="480" y="1320" width="240" height="130"/><rect x="780" y="1300" width="200" height="150"/></g>
+      <g fill="#2F6B3A"><path d="M455 1160 q20 -150 0 -230 q-20 80 0 230z"/><path d="M935 1150 q22 -160 0 -240 q-22 80 0 240z"/></g>
+    </g>
+    <path d="M200 1450 V700 Q200 420 600 420 Q1000 420 1000 700 V1450Z" fill="none" stroke="#5A4632" stroke-width="30"/>
+    <rect x="160" y="1440" width="880" height="50" fill="#8A7458" stroke="#1D1D2B" stroke-width="6"/>
+  </g>
+  <rect y="1490" width="1080" height="430" fill="url(#stoneTiles)"/>
+  <g id="s2-banner" transform="translate(610 1330) scale(.8)"><path d="M-380 -110 H380 L340 0 L380 110 H-380 L-340 0Z" fill="#B3261E" stroke="#1D1D2B" stroke-width="10"/><text x="0" y="-5" font-size="100" fill="${COR.ouro}" text-anchor="middle">ROMA ANTIGA</text><text x="0" y="80" font-size="52" fill="#FFF" text-anchor="middle" letter-spacing="20">SPQR</text></g>
+</g>`);
+// S3 — rua com prédios de madeira
+scenes.push(`<g id="s3" class="scene">
+  <rect width="1080" height="1920" fill="url(#skyDay)"/>
+  <circle cx="900" cy="230" r="70" fill="#FFE07A"/>
+  <g id="s3-insula">${insula('a', 40, 600, 330, false)}
+    <rect x="190" y="460" width="260" height="190" fill="#2B1B12" stroke="#1D1D2B" stroke-width="6"/></g>
+  <g id="s3-direita">${insula('b', 690, 420, 640, false)}</g>
+  <rect y="1700" width="1080" height="220" fill="url(#cobble)"/><path d="M0 1700 H1080" stroke="#6E675C" stroke-width="10"/>
+  <g id="s3-balde"><g id="s3-bucket"><path d="M830 820 h90 l-10 80 h-70z" fill="#8A6A3A" stroke="#1D1D2B" stroke-width="6"/><path d="M830 820 q45 -40 90 0" stroke="#1D1D2B" stroke-width="5" fill="none"/></g></g>
+  <ellipse id="s3-blob" cx="0" cy="0" rx="34" ry="44" fill="#6B4A1F" stroke="#1D1D2B" stroke-width="5"/>
+  <g id="s3-splat" transform="translate(800 1755)"><ellipse rx="130" ry="26" fill="#6B4A1F" stroke="#1D1D2B" stroke-width="5"/><circle cx="-110" cy="-60" r="14" fill="#6B4A1F"/><circle cx="90" cy="-80" r="12" fill="#6B4A1F"/><circle cx="20" cy="-110" r="10" fill="#6B4A1F"/></g>
+  <g id="s3-grito" transform="translate(300 1420)"><path d="M-230 -90 H230 Q260 -90 260 -60 V40 Q260 70 230 70 H-40 L-90 140 L-100 70 H-230 Q-260 70 -260 40 V-60 Q-260 -90 -230 -90Z" fill="#FFF" stroke="#1D1D2B" stroke-width="8"/><text y="12" font-size="86" fill="#B3261E" text-anchor="middle">CUIDADO!</text></g>
+  <g id="s3-andar" transform="translate(320 830)"><rect x="-150" y="-50" width="300" height="80" rx="40" fill="#1D1D2B"/><text y="12" font-size="44" fill="${COR.ouro}" text-anchor="middle">3º ANDAR</text></g>
+  ${mini('pass', 1150, 1760, 0.55, '#3B7DD8', -1)}
+</g>`);
+// S4 — desafio 1: fome
+scenes.push(card('c1', '#F2A541', 1, 'A FOME', `<ellipse cx="0" cy="40" rx="150" ry="40" fill="#8A5A2E" stroke="#1D1D2B" stroke-width="8"/><path d="M-150 40 Q0 200 150 40" fill="#A8743F" stroke="#1D1D2B" stroke-width="8"/>`));
+scenes.push(`<g id="s4b" class="scene"><rect width="1080" height="1920" fill="#F7D9A8"/>
+  <g id="s4-gel" transform="translate(300 900)"><rect x="-130" y="-230" width="260" height="460" rx="24" fill="#FFF" stroke="#1D1D2B" stroke-width="10"/><path d="M-130 -60 H130" stroke="#1D1D2B" stroke-width="8"/><rect x="80" y="-180" width="16" height="80" rx="8" fill="#1D1D2B"/><rect x="80" y="-20" width="16" height="120" rx="8" fill="#1D1D2B"/>
+    <g id="s4-x1" stroke="#D7263D" stroke-width="34" stroke-linecap="round"><path d="M-170 -250 L170 250 M170 -250 L-170 250"/></g></g>
+  <g id="s4-merc" transform="translate(780 900)"><path d="M-170 -60 H170 L140 140 H-140Z" fill="#FFF" stroke="#1D1D2B" stroke-width="10"/><path d="M-200 -140 H-150 L-110 140" stroke="#1D1D2B" stroke-width="10" fill="none"/><circle cx="-100" cy="200" r="30" fill="#1D1D2B"/><circle cx="110" cy="200" r="30" fill="#1D1D2B"/>
+    <g id="s4-x2" stroke="#D7263D" stroke-width="34" stroke-linecap="round"><path d="M-190 -200 L190 250 M190 -200 L-190 250"/></g></g>
+  <rect y="1700" width="1080" height="220" fill="#E0B97F"/>
+</g>`);
+scenes.push(`<g id="s4c" class="scene">
+  <rect width="1080" height="1920" fill="url(#skyDay)"/>
+  <rect x="0" y="700" width="1080" height="1000" fill="url(#stoneWall)"/>
+  <rect y="1700" width="1080" height="220" fill="url(#cobble)"/><path d="M0 1700 H1080" stroke="#6E675C" stroke-width="10"/>
+  <g id="s4-banca">
+    <path d="M560 900 H1060 L1040 1010 H580Z" fill="#FFF" stroke="#1D1D2B" stroke-width="8"/>${[0, 1, 2, 3, 4].map(k => `<path d="M${560 + k * 100} 900 h50 l-4 110 h-50z" fill="#D7263D"/>`).join('')}
+    ${mini('vend', 820, 1470, 0.6, '#5C8A3A')}
+    <rect x="580" y="1300" width="460" height="400" fill="#A8743F" stroke="#1D1D2B" stroke-width="8"/><rect x="560" y="1270" width="500" height="50" fill="#C9B79A" stroke="#1D1D2B" stroke-width="8"/>
+    <path d="M590 1010 V1270 M1030 1010 V1270" stroke="#5E3B1C" stroke-width="16"/>
+  </g>
+  <g id="s4-pao" transform="translate(690 1235)"><ellipse rx="70" ry="38" fill="#D9A15B" stroke="#1D1D2B" stroke-width="6"/><path d="M-40 -18 l16 22 M-5 -28 l16 22 M30 -18 l14 20" stroke="#A56E2E" stroke-width="7"/>
+    <g transform="translate(0 -90)"><rect x="-80" y="-34" width="160" height="56" rx="28" fill="#1D1D2B"/><text y="10" font-size="34" fill="#FFF" text-anchor="middle">DURO</text></g></g>
+  <g id="s4-garum" transform="translate(920 1270)"><path d="M-45 -150 Q-80 -60 -40 0 H40 Q80 -60 45 -150 Z" fill="#B8613A" stroke="#1D1D2B" stroke-width="6"/><rect x="-26" y="-180" width="52" height="34" rx="8" fill="#9A4E2D" stroke="#1D1D2B" stroke-width="5"/>
+    <g transform="translate(0 -250)"><rect x="-100" y="-36" width="200" height="60" rx="30" fill="#1D1D2B"/><text y="10" font-size="38" fill="${COR.ouro}" text-anchor="middle">GARUM</text></g>
+    <g id="s4-stink" stroke="#7CC46A" stroke-width="12" fill="none" stroke-linecap="round" transform="translate(-140 -200)"><path d="M-40 0 q25 -35 0 -70 q-25 -35 0 -70"/><path d="M20 -10 q25 -35 0 -70 q-25 -35 0 -70"/></g></g>
+  <g id="s4-moeda"><circle r="34" fill="${COR.ouro}" stroke="#1D1D2B" stroke-width="6"/><circle r="20" fill="none" stroke="#B88A1E" stroke-width="5"/></g>
+  <g id="s4-eca" transform="translate(300 900)"><text font-size="110" fill="#5DAA4A" text-anchor="middle" stroke="#1D1D2B" stroke-width="10" paint-order="stroke" transform="rotate(-10)">ECA!</text></g>
+</g>`);
+// S5 — desafio 2: água
+scenes.push(card('c2', '#4DA6E8', 2, 'A ÁGUA', `<path d="M0 -120 C60 -40 110 20 110 70 A110 110 0 0 1 -110 70 C-110 20 -60 -40 0 -120Z" fill="#BDE6FF" stroke="#1D1D2B" stroke-width="10"/>`));
+scenes.push(`<g id="s5b" class="scene">
+  <rect width="1080" height="1920" fill="url(#skyDay)"/>
+  <rect x="0" y="1000" width="1080" height="700" fill="#9FD18B"/>
+  <rect y="1700" width="1080" height="220" fill="url(#cobble)"/><path d="M0 1700 H1080" stroke="#6E675C" stroke-width="10"/>
+  <g id="s5-fonte"><rect x="700" y="900" width="200" height="560" fill="#D8CBB3" stroke="#1D1D2B" stroke-width="8"/><path d="M680 900 H920 L880 850 H720Z" fill="#C2B49A" stroke="#1D1D2B" stroke-width="8"/>
+    <circle cx="800" cy="1040" r="54" fill="#C2B49A" stroke="#1D1D2B" stroke-width="6"/><circle cx="782" cy="1030" r="8" fill="#1D1D2B"/><circle cx="818" cy="1030" r="8" fill="#1D1D2B"/>
+    <rect x="770" y="1080" width="60" height="22" rx="10" fill="#8C7B5E" stroke="#1D1D2B" stroke-width="5"/>
+    <path id="s5-jato" d="M770 1095 Q690 1160 670 1500" stroke="#5DB7EE" stroke-width="22" fill="none" stroke-dasharray="40 24" stroke-linecap="round"/>
+    <path d="M540 1460 H960 V1700 H540Z" fill="#C2B49A" stroke="#1D1D2B" stroke-width="8"/><path d="M560 1480 H940 V1530 H560Z" fill="#5DB7EE"/></g>
+</g>`);
+scenes.push(`<g id="s5c" class="scene">
+  <rect width="1080" height="1920" fill="#C9A77E"/><rect width="1080" height="1920" fill="url(#planks)" opacity=".55"/>
+  <path d="M0 1800 L1080 700 V1920 H0Z" fill="#7A5230"/>
+  <path d="M0 1800 ${[...Array(12)].map((_, k) => `L${(k + 1) * 90} ${1800 - k * 92} L${(k + 1) * 90} ${1800 - (k + 1) * 92}`).join(' ')}" stroke="#1D1D2B" stroke-width="8" fill="none"/>
+  <g id="s5-a1" transform="translate(200 1300)"><rect x="-80" y="-50" width="160" height="80" rx="40" fill="#1D1D2B"/><text y="12" font-size="44" fill="#FFF" text-anchor="middle">1º</text></g>
+  <g id="s5-a2" transform="translate(470 1000)"><rect x="-80" y="-50" width="160" height="80" rx="40" fill="#1D1D2B"/><text y="12" font-size="44" fill="#FFF" text-anchor="middle">2º</text></g>
+  <g id="s5-a3" transform="translate(740 700)"><rect x="-80" y="-50" width="160" height="80" rx="40" fill="#1D1D2B"/><text y="12" font-size="44" fill="${COR.ouro}" text-anchor="middle">3º</text></g>
+  <g id="s5-todo">${stamp('s5-stamp', 540, 1560, 'TODO DIA!', '#D7263D', -10, 110)}</g>
+</g>`);
+// S6 — desafio 3: banheiro
+scenes.push(card('c3', '#9B7BDB', 3, 'O BANHEIRO', `<rect x="-170" y="-40" width="340" height="120" rx="16" fill="#D8CBB3" stroke="#1D1D2B" stroke-width="8"/><ellipse cx="-80" cy="-10" rx="40" ry="16" fill="#1D1D2B"/><ellipse cx="80" cy="-10" rx="40" ry="16" fill="#1D1D2B"/>`));
+scenes.push(`<g id="s6b" class="scene">
+  <rect width="1080" height="1920" fill="url(#stoneWall)"/>
+  <path d="M140 1000 V700 Q140 520 340 520 Q540 520 540 700 V1000Z M600 1000 V700 Q600 520 800 520 Q1000 520 1000 700 V1000Z" fill="#8F7E64" stroke="#1D1D2B" stroke-width="8"/>
+  <rect y="1700" width="1080" height="220" fill="url(#stoneTiles)"/>
+  ${mini('l1', 150, 1590, 0.62, '#3B7DD8')}${mini('l2', 360, 1590, 0.62, '#5C8A3A')}${mini('l3', 930, 1590, 0.62, '#E0A030', -1)}
+  <g id="s6-sponge" transform="translate(860 1100) rotate(18)"><rect x="-10" y="-330" width="20" height="380" rx="8" fill="#8A5A2E" stroke="#1D1D2B" stroke-width="6"/><ellipse cx="0" cy="-350" rx="70" ry="54" fill="#E8C75A" stroke="#1D1D2B" stroke-width="7"/>${[0, 1, 2, 3, 4].map(k => `<circle cx="${-35 + k * 18}" cy="${-360 + (k % 2) * 22}" r="7" fill="#B8962E"/>`).join('')}</g>
+  <g id="s6-label" transform="translate(540 760)"><rect x="-230" y="-56" width="460" height="92" rx="46" fill="#1D1D2B"/><text y="16" font-size="56" fill="${COR.ouro}" text-anchor="middle">TERSORIUM</text></g>
+  <g id="s6-comp">${stamp('s6-stamp', 540, 940, 'COMPARTILHADO', '#D7263D', -8, 70)}</g>
+</g>`);
+// S7 — noite, fogo
+scenes.push(`<g id="s7a" class="scene">
+  <rect width="1080" height="1920" fill="url(#skyNight)"/>
+  <g fill="#FFF">${[...Array(28)].map(() => `<circle cx="${(rand() * 1080) | 0}" cy="${(rand() * 600) | 0}" r="${(2 + rand() * 4).toFixed(1)}" opacity="${(0.5 + rand() * 0.5).toFixed(2)}"/>`).join('')}</g>
+  <circle cx="880" cy="230" r="80" fill="#FFF4C9"/><circle cx="910" cy="210" r="70" fill="#2A2D5A"/>
+  <g id="s7-insula">${insula('a', 40, 600, 330, true)}<rect x="190" y="460" width="260" height="190" fill="#FFD27A" stroke="#1D1D2B" stroke-width="6"/></g>
+  <g>${insula('b', 690, 420, 640, true)}</g>
+  <rect y="1700" width="1080" height="220" fill="#3E3A44"/>
+  <rect id="s7-glow" x="-200" y="700" width="1480" height="1220" fill="url(#fireGlow)"/>
+  <g id="s7-flames">${flame(140, 1420, 1.3, 0)}${flame(330, 1430, 1.6, 1)}${flame(520, 1400, 1.2, 2)}${flame(250, 1100, 1.1, 3)}${flame(470, 1090, 1.3, 4)}${flame(780, 1460, 1.2, 5)}${flame(980, 1440, 1.4, 6)}</g>
+  <g id="s7-g1" transform="translate(820 780)"><text font-size="80" fill="#FFF" text-anchor="middle" stroke="#1D1D2B" stroke-width="10" paint-order="stroke" transform="rotate(8)">AAAH!</text></g>
+  <g id="s7-g2" transform="translate(860 1200)"><text font-size="64" fill="#FFF" text-anchor="middle" stroke="#1D1D2B" stroke-width="10" paint-order="stroke" transform="rotate(-6)">SOCORRO!</text></g>
+  <g id="s7-fogo" transform="translate(540 1000)"><text font-size="210" fill="#FF6A2B" text-anchor="middle" stroke="#1D1D2B" stroke-width="16" paint-order="stroke">FOGO!</text></g>
+</g>`);
+scenes.push(`<g id="s7b" class="scene">
+  <rect width="1080" height="1920" fill="#1A1530"/>
+  <path d="M0 1800 L1080 700 V1920 H0Z" fill="#2D2340"/>
+  <path d="M0 1800 ${[...Array(12)].map((_, k) => `L${(k + 1) * 90} ${1800 - k * 92} L${(k + 1) * 90} ${1800 - (k + 1) * 92}`).join(' ')}" stroke="#6B5A8A" stroke-width="8" fill="none"/>
+  <rect id="s7b-glow" x="-300" y="1200" width="1000" height="900" fill="url(#fireGlow)"/>
+  <g id="s7b-smoke" fill="#4A4458" opacity=".9">${[0, 1, 2, 3].map(k => `<circle class="smk" cx="${700 + k * 110}" cy="${640 - (k % 2) * 60}" r="${90 + k * 15}"/>`).join('')}</g>
+</g>`);
+// S8 — amanhecer
+scenes.push(`<g id="s8" class="scene">
+  <rect width="1080" height="1920" fill="url(#skyDawn)"/>
+  <circle cx="200" cy="1000" r="110" fill="#FFE3A3"/>
+  <g fill="#2B2226"><path d="M520 1700 L540 900 L620 980 L700 860 L780 960 L860 840 L960 930 L1040 900 L1060 1700Z"/><path d="M640 1700 V1100 M760 1700 V1040 M880 1700 V1080" stroke="#4A3A3A" stroke-width="18"/></g>
+  <g id="s8-fumaca" fill="#8C8288" opacity=".75">${[0, 1, 2].map(k => `<circle class="smk8" cx="${700 + k * 120}" cy="${780 - k * 40}" r="${70 + k * 18}"/>`).join('')}</g>
+  <rect y="1700" width="1080" height="220" fill="url(#cobble)"/><path d="M0 1700 H1080" stroke="#6E675C" stroke-width="10"/>
+  <rect x="380" y="1590" width="320" height="115" rx="10" fill="#B5AEA2" stroke="#1D1D2B" stroke-width="8"/>
+  <g id="s8-ok" transform="translate(540 1050)"><text font-size="140" fill="#FFF" text-anchor="middle" stroke="#1D1D2B" stroke-width="14" paint-order="stroke">CONSEGUI!</text></g>
+  <g id="s8-pensa"><circle cx="760" cy="1060" r="18" fill="#FFF" stroke="#1D1D2B" stroke-width="6"/><circle cx="800" cy="990" r="28" fill="#FFF" stroke="#1D1D2B" stroke-width="6"/>
+    <path d="M560 940 Q480 940 490 860 Q470 760 590 760 Q620 680 740 700 Q830 650 900 730 Q1010 730 990 840 Q1020 940 900 950 Q840 1000 740 960 Q640 990 560 940Z" fill="#FFF" stroke="#1D1D2B" stroke-width="8"/>
+    <g id="s8-dia"><text x="740" y="830" font-size="64" fill="#2E8B57" text-anchor="middle">1 DIA ✓</text></g>
+    <g id="s8-sem"><text x="740" y="915" font-size="64" fill="#D7263D" text-anchor="middle">1 SEMANA?</text></g></g>
+  <g id="s8-voce" transform="translate(540 1000)"><text font-size="150" fill="${COR.ouro}" text-anchor="middle" stroke="#1D1D2B" stroke-width="14" paint-order="stroke">E VOCÊ?</text></g>
+</g>`);
+scenes.push(`<g id="fim" class="scene">
+  <rect width="1080" height="1920" fill="#B3261E"/>
+  <g fill="#8E1E18">${[0, 1].map(k => `<rect x="${k ? 900 : 60}" y="0" width="120" height="1920"/>`).join('')}</g>
+  <g fill="#D8CBB3" stroke="#1D1D2B" stroke-width="6">${[0, 1].map(k => `<g transform="translate(${k ? 960 : 120} 0)"><rect x="-55" y="300" width="110" height="1300"/><rect x="-75" y="260" width="150" height="50"/><rect x="-75" y="1590" width="150" height="50"/></g>`).join('')}</g>
+  <g id="fim-t"><text x="540" y="760" font-size="92" fill="#FFF" text-anchor="middle">QUANTO TEMPO</text><text x="540" y="870" font-size="92" fill="#FFF" text-anchor="middle">VOCÊ DURARIA</text><text x="540" y="1010" font-size="104" fill="${COR.ouro}" text-anchor="middle" stroke="#1D1D2B" stroke-width="10" paint-order="stroke">NA ROMA ANTIGA?</text></g>
+  <g id="fim-c" transform="translate(540 1180)"><rect x="-250" y="-56" width="500" height="96" rx="48" fill="#1D1D2B"/><text y="10" font-size="50" fill="#FFF" text-anchor="middle">Comente aqui ↓</text></g>
+</g>`);
+$('#scenes').innerHTML = scenes.join('');
+// primeiros planos (na frente do herói)
+$('#fgs').innerHTML = `
+  <g id="fg-s3"><rect x="180" y="650" width="280" height="120" fill="url(#planks)"/><rect x="170" y="640" width="300" height="26" fill="#5E3B1C" stroke="#1D1D2B" stroke-width="6"/></g>
+  <g id="fg-s7"><rect x="180" y="650" width="280" height="120" fill="url(#planksNight)"/><rect x="170" y="640" width="300" height="26" fill="#2A1D1F" stroke="#1D1D2B" stroke-width="6"/></g>
+  <g id="fg-s6"><rect x="0" y="1450" width="1080" height="260" fill="#D8CBB3" stroke="#1D1D2B" stroke-width="8"/><rect x="0" y="1430" width="1080" height="40" fill="#C2B49A" stroke="#1D1D2B" stroke-width="8"/>
+    <ellipse cx="740" cy="1450" rx="50" ry="14" fill="#1D1D2B"/><path d="M0 1520 H1080" stroke="#B5A88C" stroke-width="6"/></g>
+  <g id="fg-s4"><rect x="580" y="1300" width="460" height="400" fill="#A8743F" stroke="#1D1D2B" stroke-width="8"/><rect x="560" y="1270" width="500" height="50" fill="#C9B79A" stroke="#1D1D2B" stroke-width="8"/></g>`;
+['pass', 'vend', 'l1', 'l2', 'l3'].forEach(rigMini);
+
+// ===================== RIG DO HERÓI =====================
+const PIVOT = { armL: '0 -375', armR: '0 -375', foreL: '-36 -288', foreR: '36 -288', leg: '0 -200', head: '0 -400', torso: '0 -200', eyeL: '-24 -492', eyeR: '24 -492' };
+gsap.set('#hero', { svgOrigin: '0 0', x: 540, y: 1700 });
+gsap.set('#flip', { svgOrigin: '0 0' });
+gsap.set('#body', { svgOrigin: '0 0' });
+gsap.set('#arm-l', { svgOrigin: PIVOT.armL }); gsap.set('#arm-r', { svgOrigin: PIVOT.armR });
+gsap.set('#fore-l', { svgOrigin: PIVOT.foreL }); gsap.set('#fore-r', { svgOrigin: PIVOT.foreR });
+gsap.set(['#leg-l', '#leg-r'], { svgOrigin: PIVOT.leg });
+gsap.set('#head', { svgOrigin: PIVOT.head }); gsap.set('#torso', { svgOrigin: PIVOT.torso });
+gsap.set('#eye-l', { svgOrigin: PIVOT.eyeL }); gsap.set('#eye-r', { svgOrigin: PIVOT.eyeR });
+
+// ===================== BOCA / LIPSYNC =====================
+const LS = window.LIPSYNC;
+const mouths = $$('#mouth .m');
+function setMouth(t) {
+  let shape = 'smile';
+  if (LS && t >= LS.offset && t < LS.offset + LS.duration) shape = String(LS.frames[Math.min(LS.frames.length - 1, Math.floor((t - LS.offset) * LS.fps))] ?? 0);
+  if (t > 86.6) shape = 'smile';
+  mouths.forEach(m => (m.style.display = m.dataset.shape === shape ? '' : 'none'));
+}
+
+// ===================== LEGENDA =====================
+const WORDS = window.PALAVRAS || [];
+const LINES = [];
+WORDS.forEach((w, i) => {
+  const cur = LINES[LINES.length - 1];
+  if (!cur || cur.length >= CONFIG.palavrasPorLinha || /[.,!?]$/.test(WORDS[i - 1]?.t || '')) LINES.push([w]); else cur.push(w);
+});
+const HIDE_CAPTION = [[25.1, 27.2], [40.8, 43.2], [49.95, 52.5], [86.45, 999]];
+const capText = $('#capText'), capBox = $('#capBox'), capG = $('#caption');
+let shownLine = -1;
+function setCaption(t) {
+  const hidden = HIDE_CAPTION.some(([a, b]) => t >= a && t < b) || t < WORDS[0]?.s - 0.1;
+  capG.style.display = hidden ? 'none' : '';
+  if (hidden) return;
+  let li = LINES.findIndex(l => t < l[l.length - 1].e + 0.12);
+  if (li < 0) li = LINES.length - 1;
+  const line = LINES[li];
+  if (li !== shownLine) {
+    capText.textContent = '';
+    line.forEach((w, k) => { const ts = document.createElementNS(NS, 'tspan'); ts.textContent = (k ? ' ' : '') + w.t; capText.appendChild(ts); });
+    let fs = 58; capText.setAttribute('font-size', fs);
+    while (capText.getComputedTextLength() > 860 && fs > 34) capText.setAttribute('font-size', --fs);
+    const wpx = Math.max(360, capText.getComputedTextLength() + 90);
+    capBox.setAttribute('x', 540 - wpx / 2); capBox.setAttribute('width', wpx);
+    shownLine = li;
+  }
+  [...capText.children].forEach((ts, k) => { const w = line[k]; ts.setAttribute('fill', t >= w.s && t < w.e + 0.05 ? COR.destaque : t >= w.e ? COR.branco : COR.apagado); });
+}
+
+// ===================== TIMELINE =====================
+const rendering = navigator.webdriver;
+const END = (LS ? LS.offset + LS.duration : 89.6) + CONFIG.cauda;
+const tl = gsap.timeline({ paused: true, defaults: { ease: 'power2.inOut' } });
+const FADE = 0.25;
+
+$$('.scene').forEach(s => gsap.set(s, { autoAlpha: 0 }));
+$$('#fgs > g').forEach(s => gsap.set(s, { autoAlpha: 0 }));
+function show(sel, t0, t1) {
+  tl.fromTo(sel, { autoAlpha: 0 }, { autoAlpha: 1, duration: t0 === 0 ? 0.01 : FADE, ease: 'none', immediateRender: false }, t0);
+  if (t1 != null) tl.to(sel, { autoAlpha: 0, duration: FADE, ease: 'none' }, t1);
+}
+function pop(sel, t, d = 0.45, ease = 'back.out(2.2)') {
+  gsap.set(sel, { autoAlpha: 0, scale: 0.2, transformOrigin: '50% 50%' });
+  tl.fromTo(sel, { autoAlpha: 0, scale: 0.2 }, { autoAlpha: 1, scale: 1, duration: d, ease, immediateRender: false }, t);
+}
+function hide(sel, t, d = 0.25) { tl.to(sel, { autoAlpha: 0, duration: d, ease: 'power1.in' }, t); }
+function heroAt(t, x, y, s, flip = 1, visible = 1) {
+  tl.set('#hero', { x, y, scale: s, autoAlpha: visible }, t);
+  tl.set('#flip', { scaleX: flip }, t);
+}
+function resetPose(t) {
+  tl.set('#arm-l', { rotation: 8 }, t).set('#arm-r', { rotation: -8 }, t)
+    .set('#fore-l', { rotation: -6 }, t).set('#fore-r', { rotation: 6 }, t)
+    .set(['#leg-l', '#leg-r'], { rotation: 0, scaleY: 1 }, t)
+    .set('#body', { rotation: 0, y: 0, scaleX: 1, scaleY: 1 }, t)
+    .set('#head', { rotation: 0 }, t).set('#brows', { y: 0 }, t)
+    .set(['#bread-r', '#bread-l', '#jar-l'], { opacity: 0 }, t);
+}
+function walk(t0, steps, step, x0, y0, x1, y1, amp = 24, armAmp = 26, bounce = 14) {
+  tl.fromTo('#hero', { x: x0, y: y0 }, { x: x1, y: y1, duration: steps * step, ease: 'none', immediateRender: false }, t0);
+  for (let i = 0; i < steps; i++) {
+    const t = t0 + i * step, s = i % 2 ? 1 : -1;
+    tl.to('#leg-l', { rotation: amp * s, duration: step, ease: 'sine.inOut' }, t)
+      .to('#leg-r', { rotation: -amp * s, duration: step, ease: 'sine.inOut' }, t)
+      .to('#arm-l', { rotation: 8 - armAmp * s, duration: step, ease: 'sine.inOut' }, t)
+      .to('#arm-r', { rotation: -8 + armAmp * s, duration: step, ease: 'sine.inOut' }, t)
+      .to('#body', { y: -bounce, duration: step / 2, ease: 'sine.out' }, t)
+      .to('#body', { y: 0, duration: step / 2, ease: 'sine.in' }, t + step / 2);
+  }
+  const te = t0 + steps * step;
+  tl.to(['#leg-l', '#leg-r'], { rotation: 0, duration: 0.2, ease: 'power2.out' }, te)
+    .to('#arm-l', { rotation: 8, duration: 0.3 }, te).to('#arm-r', { rotation: -8, duration: 0.3 }, te);
+}
+function wave(t, n = 5) { // braço direito levantado abanando
+  tl.to('#arm-r', { rotation: -118, duration: 0.3, ease: 'back.out(1.6)' }, t)
+    .to('#fore-r', { rotation: -40, duration: 0.15, ease: 'sine.inOut', repeat: n, yoyo: true }, t + 0.3);
+  const e = t + 0.3 + 0.15 * (n + 1);
+  tl.to('#arm-r', { rotation: -8, duration: 0.35 }, e).to('#fore-r', { rotation: 6, duration: 0.35 }, e);
+  return e + 0.35;
+}
+function shrug(t, hold = 0.8) {
+  tl.to('#arm-l', { rotation: 55, duration: 0.25, ease: 'back.out(2)' }, t).to('#arm-r', { rotation: -55, duration: 0.25, ease: 'back.out(2)' }, t)
+    .to('#fore-l', { rotation: -70, duration: 0.25 }, t).to('#fore-r', { rotation: 70, duration: 0.25 }, t)
+    .to('#brows', { y: -8, duration: 0.2 }, t)
+    .to(['#arm-l'], { rotation: 8, duration: 0.3 }, t + hold).to('#arm-r', { rotation: -8, duration: 0.3 }, t + hold)
+    .to('#fore-l', { rotation: -6, duration: 0.3 }, t + hold).to('#fore-r', { rotation: 6, duration: 0.3 }, t + hold).to('#brows', { y: 0, duration: 0.2 }, t + hold);
+}
+function hop(t, h = 50) {
+  tl.to('#body', { scaleY: 0.9, scaleX: 1.06, duration: 0.1, ease: 'power2.out' }, t)
+    .to('#body', { y: -h, scaleY: 1.05, scaleX: 0.97, duration: 0.2, ease: 'power2.out' }, t + 0.1)
+    .to('#body', { y: 0, scaleY: 1, scaleX: 1, duration: 0.2, ease: 'power2.in' }, t + 0.3);
+}
+function cheeks(t, cor, d = 0.3) { tl.to('#cheeks', { fill: cor, opacity: 0.8, duration: d }, t); }
+
+// ---------- ambiente contínuo do herói: respiração, piscadas, cabeça acompanhando a fala
+tl.to('#torso', { scaleY: 1.02, duration: 0.9, ease: 'sine.inOut', repeat: Math.floor(END / 0.9) - 1, yoyo: true }, 0);
+tl.to('#head', { y: -5, duration: 0.4, ease: 'sine.inOut', repeat: Math.floor(86 / 0.4) - 1, yoyo: true }, 0.2);
+for (let t = 1.6 + rand(); t < END - 0.3; t += 2.4 + rand() * 1.8)
+  tl.to(['#eye-l', '#eye-r'], { scaleY: 0.1, duration: 0.06, ease: 'power1.in', repeat: 1, yoyo: true }, t);
+
+// ---------- S1: acorda no quarto (0 – 6.9)
+show('#s1', 0, 6.9);
+heroAt(0, 760, 1560, 0.95); resetPose(0);
+tl.set('#body', { rotation: -90 }, 0).set('#eye-l, #eye-r', { scaleY: 0.1 }, 0);
+tl.to(['#eye-l', '#eye-r'], { scaleY: 1, duration: 0.15 }, 0.5)
+  .to('#body', { rotation: 0, duration: 0.7, ease: 'back.out(1.4)' }, 1.0)
+  .to('#hero', { y: 1700, duration: 0.7, ease: 'power2.out' }, 1.0);
+pop('#s1-q1', 1.5); pop('#s1-q2', 1.7); pop('#s1-q3', 1.9);
+tl.to('#head', { rotation: -10, duration: 0.4 }, 1.8).to('#head', { rotation: 10, duration: 0.5 }, 2.3).to('#head', { rotation: 0, duration: 0.4 }, 2.9);
+hide('#s1-q', 3.0);
+tl.fromTo('.smoke', { y: 0, autoAlpha: 0 }, { y: -500, autoAlpha: 0.9, duration: 3.5, ease: 'sine.out', stagger: 0.4, immediateRender: false }, 3.2);
+pop('#s1-fish', 4.9);
+tl.fromTo('#s1-stink path', { y: 20, autoAlpha: 0 }, { y: -30, autoAlpha: 1, duration: 0.6, stagger: 0.12, repeat: 2, yoyo: true, immediateRender: false }, 5.1);
+cheeks(5.2, '#7CC46A');
+wave(5.4, 5);
+
+// ---------- S2: janela (6.9 – 11.1)
+show('#s2', 6.9, 11.1);
+resetPose(6.9); heroAt(6.9, 150, 1730, 0.72, 1); cheeks(6.9, '#FF6B5B', 0.01);
+tl.to('#head', { rotation: 12, duration: 0.5 }, 7.2);
+tl.fromTo('#s2-view', { scale: 1.12, svgOrigin: '600 1000' }, { scale: 1, duration: 4, ease: 'power2.out', immediateRender: false }, 6.9);
+pop('#s2-banner', 9.0, 0.6);
+hop(9.05, 60);
+tl.to('#brows', { y: -10, duration: 0.2 }, 9.0).to('#brows', { y: 0, duration: 0.3 }, 10.4);
+
+// ---------- S3: rua, insula, esgoto (11.1 – 25.2)
+show('#s3', 11.1, 25.2); show('#fg-s3', 11.1, 25.2);
+resetPose(11.1); heroAt(11.1, 320, 702, 0.42, 1);
+pop('#s3-andar', 11.6);
+hide('#s3-andar', 14.8);
+tl.to('#s3-insula', { rotation: -1.5, svgOrigin: '340 1700', duration: 0.3, ease: 'sine.inOut', repeat: 3, yoyo: true }, 14.2);
+pop('#s3-grito', 15.9);
+tl.to('#head', { rotation: 14, duration: 0.3 }, 16.0).to('#brows', { y: -8, duration: 0.2 }, 16.0);
+hide('#s3-grito', 18.4);
+gsap.set('#s3-bucket', { svgOrigin: '875 860' });
+tl.to('#s3-bucket', { rotation: 115, duration: 0.35, ease: 'back.in(1.5)' }, 19.4);
+gsap.set('#s3-blob', { autoAlpha: 0, x: 900, y: 880 });
+tl.set('#s3-blob', { autoAlpha: 1 }, 19.7)
+  .fromTo('#s3-blob', { x: 900 }, { x: 800, duration: 1.0, ease: 'none', immediateRender: false }, 19.7)
+  .fromTo('#s3-blob', { y: 880 }, { y: 1720, duration: 1.0, ease: 'power2.in', immediateRender: false }, 19.7)
+  .set('#s3-blob', { autoAlpha: 0 }, 20.7);
+pop('#s3-splat', 20.7, 0.3, 'back.out(3)');
+// passante andando da direita para a esquerda
+const passX0 = 1150, passX1 = -150, passT0 = 18.7, passT1 = 25.2;
+tl.fromTo('#pass', { x: 0 }, { x: passX1 - passX0, duration: passT1 - passT0, ease: 'none', immediateRender: false }, passT0);
+for (let i = 0, st = 0.32; passT0 + i * st < passT1; i++) {
+  const t = passT0 + i * st, s = i % 2 ? 1 : -1;
+  tl.to('#pass-ll', { rotation: 24 * s, duration: st, ease: 'sine.inOut' }, t).to('#pass-lr', { rotation: -24 * s, duration: st, ease: 'sine.inOut' }, t)
+    .to('#pass-al', { rotation: -24 * s, duration: st, ease: 'sine.inOut' }, t).to('#pass-ar', { rotation: 24 * s, duration: st, ease: 'sine.inOut' }, t);
+}
+tl.to('#pass-b', { y: -110, duration: 0.18, ease: 'power2.out', repeat: 1, yoyo: true }, 20.75)
+  .to('#pass-h', { rotation: -20, duration: 0.2, repeat: 1, yoyo: true, repeatDelay: 0.6 }, 20.8);
+tl.to('#head', { rotation: 0, duration: 0.4 }, 22.5).to('#brows', { y: 0, duration: 0.3 }, 22.5);
+cheeks(21.0, '#7CC46A'); cheeks(24.8, '#FF6B5B');
+
+// ---------- S4: fome (25.2 – 40.9)
+show('#c1', 25.2, 27.2); heroAt(25.2, 540, 1700, 0.8, 1, 0);
+pop('#c1-n', 25.3); pop('#c1-t', 25.9); pop('#c1-i', 26.2);
+show('#s4b', 27.2, 30.5); resetPose(27.2); heroAt(27.2, 540, 1800, 0.62, 1, 1);
+pop('#s4-gel', 27.3); pop('#s4-x1', 28.1, 0.3, 'back.out(3)'); pop('#s4-merc', 28.7); pop('#s4-x2', 29.3, 0.3, 'back.out(3)');
+shrug(29.5, 0.8);
+show('#s4c', 30.5, 40.9); show('#fg-s4', 30.5, 40.9);
+resetPose(30.5);
+walk(30.5, 4, 0.3, -120, 1700, 300, 1700);
+// moeda: da mão do herói até o vendedor
+gsap.set('#s4-moeda', { autoAlpha: 0, x: 345, y: 1530 });
+tl.to('#arm-r', { rotation: -60, duration: 0.3, ease: 'back.out(2)' }, 31.9)
+  .set('#s4-moeda', { autoAlpha: 1 }, 32.1)
+  .fromTo('#s4-moeda', { x: 345 }, { x: 780, duration: 0.8, ease: 'none', immediateRender: false }, 32.1)
+  .fromTo('#s4-moeda', { y: 1530 }, { y: 1150, duration: 0.4, ease: 'power2.out', yoyo: true, repeat: 1, immediateRender: false }, 32.1)
+  .to('#s4-moeda', { rotation: 720, duration: 0.8, ease: 'none' }, 32.1)
+  .set('#s4-moeda', { autoAlpha: 0 }, 32.9)
+  .to('#arm-r', { rotation: -8, duration: 0.3 }, 32.3);
+tl.to('#vend-ar', { rotation: -60, duration: 0.25, repeat: 1, yoyo: true, repeatDelay: 0.3 }, 32.8);
+pop('#s4-pao', 33.4); pop('#s4-garum', 34.8);
+tl.fromTo('#s4-stink path', { y: 20, autoAlpha: 0 }, { y: -40, autoAlpha: 1, duration: 0.5, stagger: 0.15, repeat: 5, yoyo: true, immediateRender: false }, 37.2);
+cheeks(37.3, '#7CC46A'); pop('#s4-eca', 37.6); hide('#s4-eca', 38.8);
+tl.set('#bread-l', { opacity: 1 }, 38.9).set('#s4-pao', { autoAlpha: 0 }, 38.9);
+tl.to('#arm-l', { rotation: 150, duration: 0.35, ease: 'back.out(1.6)' }, 38.9).to('#fore-l', { rotation: 110, duration: 0.35 }, 38.95)
+  .to('#body', { scaleY: 0.96, duration: 0.15, repeat: 5, yoyo: true }, 39.3)
+  .to('#arm-l', { rotation: 8, duration: 0.3 }, 40.5).to('#fore-l', { rotation: -6, duration: 0.3 }, 40.5);
+cheeks(40.6, '#FF6B5B');
+
+// ---------- S5: água (40.9 – 50.0)
+show('#c2', 40.9, 43.2); heroAt(40.9, 540, 1700, 0.8, 1, 0);
+pop('#c2-n', 41.0); pop('#c2-t', 41.6); pop('#c2-i', 41.9);
+show('#s5b', 43.2, 46.6); resetPose(43.2); heroAt(43.2, -100, 1700, 0.8, 1, 1);
+walk(43.2, 5, 0.28, -100, 1700, 330, 1700);
+tl.fromTo('#s5-jato', { strokeDashoffset: 0 }, { strokeDashoffset: -640, duration: 3.4, ease: 'none', immediateRender: false }, 43.2);
+tl.to('#arm-l', { rotation: -40, duration: 0.3 }, 44.8).set('#jar-l', { opacity: 1 }, 45.0);
+hop(45.6, 30);
+show('#s5c', 46.6, 50.0); resetPose(46.6); heroAt(46.6, 80, 1718, 0.6, 1, 1); tl.set('#jar-l', { opacity: 1 }, 46.6);
+walk(46.6, 9, 0.3, 80, 1718, 820, 962, 26, 14, 10);
+pop('#s5-a1', 47.1); pop('#s5-a2', 47.9); pop('#s5-a3', 48.8);
+pop('#s5-stamp', 49.35, 0.35, 'back.out(3)');
+tl.to('#brows', { y: 8, duration: 0.2 }, 49.4);
+
+// ---------- S6: banheiro (50.0 – 65.5)
+show('#c3', 50.0, 52.5); heroAt(50.0, 540, 1700, 0.8, 1, 0);
+pop('#c3-n', 50.1); pop('#c3-t', 50.7); pop('#c3-i', 51.0);
+show('#s6b', 52.5, 65.5); show('#fg-s6', 52.5, 65.5);
+resetPose(52.5); heroAt(52.5, 570, 1590, 0.62, 1, 1);
+tl.fromTo('#s6b', { x: 0 }, { x: 0, duration: 0.01, immediateRender: false }, 52.5);
+// todos se olham e acenam: ninguém tinha vergonha
+tl.to('#l1-h', { rotation: 12, duration: 0.3 }, 58.1).to('#l2-h', { rotation: -12, duration: 0.3 }, 58.2).to('#l3-h', { rotation: 12, duration: 0.3 }, 58.15);
+tl.to('#l2-ar', { rotation: -140, duration: 0.3, ease: 'back.out(2)' }, 58.3).to('#l2-ar', { rotation: -110, duration: 0.15, repeat: 5, yoyo: true }, 58.6).to('#l2-ar', { rotation: 0, duration: 0.3 }, 59.6);
+shrug(58.4, 1.0);
+pop('#s6-sponge', 60.6, 0.5); pop('#s6-label', 61.0);
+tl.to('#s6-sponge', { rotation: 10, duration: 0.4, repeat: 3, yoyo: true, ease: 'sine.inOut' }, 61.4);
+cheeks(62.2, '#7CC46A');
+pop('#s6-stamp', 63.6, 0.35, 'back.out(3)');
+tl.to('#l1-h', { rotation: 0, duration: 0.3 }, 62).to('#l2-h', { rotation: 0, duration: 0.3 }, 62).to('#l3-h', { rotation: 0, duration: 0.3 }, 62);
+
+// ---------- S7: noite, fogo (65.5 – 77.0)
+show('#s7a', 65.5, 71.8); show('#fg-s7', 65.5, 71.8);
+resetPose(65.5); heroAt(65.5, 320, 702, 0.42, 1); cheeks(65.5, '#FF6B5B', 0.01);
+pop('#s7-g1', 66.0); pop('#s7-g2', 66.6);
+tl.to('#head', { rotation: -12, duration: 0.3 }, 66.0).to('#head', { rotation: 12, duration: 0.3 }, 66.6).to('#brows', { y: -10, duration: 0.2 }, 66.0);
+gsap.set('#s7-glow', { autoAlpha: 0 });
+tl.to('#s7-glow', { autoAlpha: 1, duration: 1.2, ease: 'power1.out' }, 68.0);
+$$('.flame').forEach((f, i) => {
+  gsap.set(f, { autoAlpha: 0, scale: 0.1, transformOrigin: '50% 100%' });
+  tl.to(f, { autoAlpha: 1, scale: 1, duration: 0.5, ease: 'back.out(2)' }, 68.0 + i * 0.18);
+  tl.to(f, { scaleY: 1.18, scaleX: 0.92, duration: 0.14 + (i % 3) * 0.03, ease: 'sine.inOut', repeat: Math.floor(3.4 / 0.16), yoyo: true }, 68.5 + i * 0.18);
+});
+pop('#s7-fogo', 68.0, 0.4, 'back.out(3)');
+tl.to('#s7-fogo', { scale: 1.08, duration: 0.2, repeat: 7, yoyo: true }, 68.4);
+hide('#s7-fogo', 70.6);
+tl.to('#arm-l', { rotation: 140, duration: 0.25 }, 68.1).to('#arm-r', { rotation: -140, duration: 0.25 }, 68.1)
+  .to('#arm-l', { rotation: 120, duration: 0.12, repeat: 11, yoyo: true }, 68.35).to('#arm-r', { rotation: -120, duration: 0.12, repeat: 11, yoyo: true }, 68.35);
+show('#s7b', 71.8, 77.0); resetPose(71.8);
+tl.fromTo('#s7b-glow', { autoAlpha: 0.4 }, { autoAlpha: 1, duration: 0.3, repeat: 15, yoyo: true, immediateRender: false }, 71.8);
+tl.fromTo('.smk', { y: 0, x: 0 }, { y: -80, x: -60, duration: 5, ease: 'sine.inOut', stagger: 0.2, immediateRender: false }, 71.8);
+tl.set('#fore-l', { rotation: -70 }, 71.8).set('#fore-r', { rotation: 70 }, 71.8);
+walk(72.0, 26, 0.18, 1000, 760, 120, 1880, 40, 30, 18);
+
+// ---------- S8: amanhecer (77.0 – 86.4) + final
+show('#s8', 77.0, 86.4);
+resetPose(77.0); heroAt(77.0, 540, 1700, 0.9, 1, 1);
+tl.set(['#soot', '#soot-body'], { opacity: 1 }, 77.0);
+pop('#s8-ok', 77.0, 0.4, 'back.out(3)');
+tl.to('#arm-l', { rotation: 150, duration: 0.3, ease: 'back.out(2)' }, 77.0).to('#arm-r', { rotation: -150, duration: 0.3, ease: 'back.out(2)' }, 77.0);
+hop(77.05, 70);
+hide('#s8-ok', 78.0);
+tl.to('#arm-l', { rotation: 20, duration: 0.4 }, 78.0).to('#arm-r', { rotation: -20, duration: 0.4 }, 78.0);
+// senta na pedra
+tl.to('#body', { y: 80, duration: 0.5, ease: 'power2.inOut' }, 78.2)
+  .to(['#leg-l', '#leg-r'], { scaleY: 0.6, duration: 0.5 }, 78.2)
+  .to('#leg-l', { rotation: 18, duration: 0.5 }, 78.2).to('#leg-r', { rotation: -18, duration: 0.5 }, 78.2);
+// pensa: mão no queixo
+tl.to('#arm-r', { rotation: -165, duration: 0.4 }, 79.6).to('#fore-r', { rotation: -120, duration: 0.4 }, 79.65)
+  .to('#head', { rotation: -8, duration: 0.4 }, 79.6).to('#brows', { y: -6, duration: 0.3 }, 79.6);
+pop('#s8-pensa', 80.2, 0.5); pop('#s8-dia', 81.6); pop('#s8-sem', 83.3);
+tl.to('#s8-sem', { scale: 1.1, duration: 0.25, repeat: 3, yoyo: true }, 84.0);
+tl.fromTo('.smk8', { y: 0 }, { y: -160, duration: 9, ease: 'none', stagger: 0.5, immediateRender: false }, 77.0);
+hide('#s8-pensa', 85.6);
+tl.to('#arm-r', { rotation: -100, duration: 0.3, ease: 'back.out(2)' }, 85.7).to('#fore-r', { rotation: -10, duration: 0.3 }, 85.7)
+  .to('#head', { rotation: 0, duration: 0.3 }, 85.7);
+pop('#s8-voce', 85.8, 0.4, 'back.out(3)');
+
+show('#fim', 86.45);
+resetPose(86.45); heroAt(86.45, 540, 1640, 0.62, 1, 1);
+tl.set(['#soot', '#soot-body'], { opacity: 0 }, 86.45);
+pop('#fim-t', 86.6, 0.6); pop('#fim-c', 87.6);
+tl.to('#fim-c', { scale: 1.06, duration: 0.4, repeat: Math.floor((END - 88.2) / 0.4) - 1, yoyo: true, ease: 'sine.inOut' }, 88.2);
+wave(87.0, 9);
+tl.set({}, {}, END);
+
+// ===================== API DO RENDER =====================
+window.__timeline = tl;
+window.__duration = tl.duration();
+window.__seek = t => { tl.seek(t, false); setMouth(t); setCaption(t); };
+window.__seek(0);
+if (!rendering) {
+  tl.eventCallback('onUpdate', () => { setMouth(tl.time()); setCaption(tl.time()); });
+  tl.repeat(-1).play();
+}
+</script>
+</body>
+</html>
