@@ -29,8 +29,10 @@ Leia `references/biomecanica.md` para os números. Resumo:
    desce ~2% da altura). Correndo, o tronco inclina para frente (~10°); subindo escada, ~9°.
 7. **Mãos alcançam alvos por IK**: comer, pensar (queixo), tampar o nariz, pegar/entregar algo —
    a mão vai até o ponto e o cotovelo fica para baixo, como numa pessoa.
-8. **Toda mudança de ação tem transição** (padrão 0,3 s). Trocar perfil↔frente é instantâneo:
-   faça isso num momento com piscada ou corte de cena.
+8. **Toda mudança de ação tem transição** (padrão 0,3 s). Na troca perfil↔frente o corpo troca
+   rápido, mas a **cabeça gira suave** (olhos e boca deslizam passando por ¾).
+10. **O rosto acompanha a cabeça**: inclinou ou deitou, o rosto gira junto (deitado de costas =
+   rosto para cima). Falando, a cabeça acompanha levemente as sílabas.
 9. **Escala**: o boneco tem ~570 unidades de altura com `escala: 1`. Use escala para caber na cena,
    nunca estique só uma parte.
 
@@ -60,7 +62,9 @@ heroi.braco('d', 3.5, 5, 'acenar');
 // gestos: acenar, cima, desespero, encolher, abanar, apontar, estender, segurar, cintura,
 //         comer, queixo, nariz, alcancar {alvo:[x,y]}, pose {o, c}
 // CABEÇA e ROSTO
-heroi.cabeca(4, 5, { vista: 'frente', inclinar: 8 });   // olhar para a câmera estando de perfil
+heroi.cabeca(4, 5, { virar: 0 });            // virar a cabeça: 0 = de frente, ±1 = perfil, ±0.5 = ¾ (gira suave)
+heroi.cabeca(5, 6, { inclinar: 10, baixar: 8, olhar: [3, -4] });  // inclinar (graus), baixar (olhar p/ baixo), pupilas
+heroi.cabeca(6, 7, { gesto: 'sim' });        // gestos: 'sim' (concordar), 'nao' (negar), 'balancar'
 heroi.expressao(4, 6, 'feliz');   // ver lista de expressões abaixo
 heroi.sujeira(10, 20);            // manchas de fuligem/sujeira
 // a cada quadro (dentro de window.__seek):

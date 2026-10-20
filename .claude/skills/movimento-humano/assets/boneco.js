@@ -343,11 +343,11 @@
       const H = P.quadril;
       const top = add(H, [dir * Math.sin(inc * RAD) * M.tronco * s * (vista === 'perfil' ? 1 : 0), -Math.cos(inc * RAD) * M.tronco * s - (P.respira || 0)]);
       // cabeça (orientação própria)
-      const hc = this.acaoEm(this.cabecas, t).atual;
-      const vistaCab = hc?.p.vista ?? vista;
-      const inclCab = (hc?.p.inclinar ?? 0) + (vista === 'perfil' ? inc * 0.5 : 0);
+      const cabeca = this.cabecaEm(t, P);
+      const inclCab = cabeca.inclinar + (vista === 'perfil' ? inc * 0.5 : 0);
+      const sxCab = vista === 'perfil' ? dir : 1;
       const pescoco = add(top, [0, -M.pescoco * s]);
-      const cab = add(pescoco, vec(180 + inclCab, M.cabeca * s, vista === 'perfil' ? dir : 1));
+      const cab = add(pescoco, vec(180 + inclCab, M.cabeca * s, sxCab));
       // pernas via IK
       const quadris = vista === 'frente'
         ? [add(H, [-M.quadrilFrente * s, 0]), add(H, [M.quadrilFrente * s, 0])]
@@ -430,7 +430,36 @@
       // cabeça e rosto
       const C = rot(cab);
       this.el.cranio.setAttribute('cx', C[0]); this.el.cranio.setAttribute('cy', C[1]);
-      this.desenharRosto(t, C, vistaCab, P, giro);
+      this.desenharRosto(t, C, cabeca, P, (giro || 0) - sxCab * inclCab);
+    }
+
+    // Orientação da cabeça em t. virar: 0 = de frente, ±1 = perfil olhando para ±x (valores no meio = ¾).
+    // A troca frente↔perfil do corpo vira a cabeça em ~0,25 s; cabeca(t0,t1,{...}) sobrepõe com entrada/saída de 0,25 s.
+    cabecaEm(t, P) {
+      const yawDe = Q => (Q ? (Q.vista === 'perfil' ? Q.dir : 0) : 0);
+      let yaw = 0; const K = 5;
+      for (let k = 0; k < K; k++) yaw += yawDe(k === 0 ? P : this.pose(Math.max(0, t - k * 0.06)));
+      yaw /= K;
+      let incl = 0, olhar = [0, 0], baixar = 0;
+      let hc = null;
+      for (const c of this.cabecas) if (t >= c.t0 - 0.0001 && t <= c.t1 + 0.25) hc = c;
+      if (hc) {
+        const p = hc.p, tt = t - hc.t0;
+        const w = clamp(Math.min(1, (t - hc.t0) / 0.25, t <= hc.t1 ? 1 : 1 - (t - hc.t1) / 0.25), 0, 1);
+        const alvo = p.virar ?? (p.vista === 'frente' ? 0 : p.vista === 'perfil' ? (p.dir ?? P.dir) : null);
+        if (alvo != null) yaw = lerp(yaw, alvo, w);
+        incl += (p.inclinar ?? 0) * w;
+        baixar += (p.baixar ?? 0) * w;
+        if (p.olhar) olhar = [p.olhar[0] * w, p.olhar[1] * w];
+        if (p.gesto === 'sim') baixar += Math.sin(tt * 2 * Math.PI * 2.2) * 9 * w;
+        if (p.gesto === 'nao') yaw += Math.sin(tt * 2 * Math.PI * 2.4) * 0.38 * w;
+        if (p.gesto === 'balancar') incl += Math.sin(tt * 2 * Math.PI * 1.2) * 8 * w;
+      }
+      // fala: cabeça acompanha levemente as sílabas
+      const f = this.boca ? this.boca(t) : 'smile';
+      const ab = { '1': 0.3, '2': 0.6, '3': 1, '4': 0.8 }[f] || 0;
+      baixar += ab * 2.5;
+      return { yaw: clamp(yaw, -1, 1), inclinar: incl, olhar, baixar };
     }
 
     // Expressão ativa em t, com entrada/saída de 0,15 s (mistura numérica com 'normal')
@@ -442,25 +471,31 @@
       return { E: EXPR[ex.nome] || EXPR.normal, w: clamp(w, 0, 1), nome: ex.nome };
     }
 
-    desenharRosto(t, C0, vista, P, giro) {
-      const s = this.s, dir = P.dir, el = this.el;
+    desenharRosto(t, C0, cabeca, P, rotRosto) {
+      const s = this.s, el = this.el;
+      const yaw = cabeca.yaw, a = Math.abs(yaw), dir = yaw === 0 ? (P.dir || 1) : Math.sign(yaw);
+      const vista = a > 0.5 ? 'perfil' : 'frente';
+      el.rosto.setAttribute('transform', `rotate(${rotRosto.toFixed(2)} ${C0[0].toFixed(1)} ${C0[1].toFixed(1)})`);
       const { E, w, nome } = this.expressaoEm(t);
       const N = EXPR.normal;
       const num = (k, i) => { const a = Array.isArray(N[k]) ? N[k][i] : N[k], b = Array.isArray(E[k]) ? E[k][i] : E[k]; return lerp(a ?? 0, b ?? (a ?? 0), w); };
       const disc = k => (w > 0.5 ? (E[k] ?? N[k]) : N[k]);
       const tremor = disc('tremer') ? Math.sin(t * 2 * Math.PI * 14) * 2.2 * s : 0;
-      const C = [C0[0] + tremor, C0[1]];
+      const C = [C0[0] + tremor, C0[1] + cabeca.baixar * 0.45 * s];
       const frente = vista === 'frente';
+      const perto = dir > 0 ? 1 : 0;                       // olho/bochecha do lado para onde ele vira
+      const visivel = i => a < 0.62 || i === perto;
+      const mix = (f, pf) => lerp(f, pf, a);
       const sujo = this.sujo.some(q => t >= q.t0 && t <= q.t1);
-      el.manchas.forEach(m => { m.style.display = sujo ? '' : 'none'; m.setAttribute('cx', C[0] + m.dataset.x * s * (frente ? 1 : dir)); m.setAttribute('cy', C[1] + m.dataset.y * s); });
+      el.manchas.forEach(m => { m.style.display = sujo ? '' : 'none'; m.setAttribute('cx', C[0] + m.dataset.x * s * (frente ? 1 : dir) + yaw * 14 * s); m.setAttribute('cy', C[1] + m.dataset.y * s); });
       const pisca = this.piscadas.some(p => t >= p && t < p + 0.12);
-      const olhar = [num('olharX', 0) * s, num('olharY', 0) * s];
+      const olhar = [(num('olharX', 0) + cabeca.olhar[0]) * s, (num('olharY', 0) + cabeca.olhar[1]) * s];
       const ladoOlho = i => (frente ? (i === 0 ? -1 : 1) : dir);
-      const posOlho = i => frente ? [C[0] + (i === 0 ? -22 : 22) * s, C[1] - 16 * s] : [C[0] + dir * 26 * s, C[1] - 16 * s];
+      const posOlho = i => [C[0] + mix(i === 0 ? -22 : 22, i === perto ? 26 * dir : 34 * dir) * s, C[1] - 16 * s];
       // ---- olhos
       const tipo = disc('olho');
       el.olhos.forEach((o, i) => {
-        const vis = frente || i === 0;
+        const vis = visivel(i);
         [o.esclera, o.cheio, o.brilho, o.linha].forEach(e => (e.style.display = 'none'));
         if (!vis) return;
         const [ox, oy] = posOlho(i), lado = ladoOlho(i);
@@ -495,7 +530,7 @@
       });
       // ---- sobrancelhas: [altura, ponta interna (+ desce), curva]
       el.sobrancelhas.forEach((sb, i) => {
-        const vis = frente || i === 0; sb.style.display = vis ? '' : 'none'; if (!vis) return;
+        const vis = visivel(i); sb.style.display = vis ? '' : 'none'; if (!vis) return;
         const [ox, oy] = posOlho(i), lado = ladoOlho(i);
         const alt = num('sobAlt', i) * s, inn = num('sobInt', i) * s, cur = num('sobCurva', 0) * s;
         const y = oy - 21 * s - alt, wv = 12 * s;   // ponta interna = lado do nariz
@@ -505,8 +540,8 @@
       // ---- bochechas
       const corada = num('rubor', 0);
       el.bochechas.forEach((b, i) => {
-        const vis = frente || i === 0; b.style.display = vis ? '' : 'none'; if (!vis) return;
-        const bx = frente ? C[0] + (i === 0 ? -40 : 40) * s : C[0] + dir * 22 * s;
+        const vis = visivel(i); b.style.display = vis ? '' : 'none'; if (!vis) return;
+        const bx = C[0] + mix(i === 0 ? -40 : 40, i === perto ? 22 * dir : 46 * dir) * s;
         b.setAttribute('cx', bx); b.setAttribute('cy', C[1] + 12 * s);
         const verde = disc('verde');
         b.setAttribute('fill', verde ? '#6DBE45' : corada > 0.5 ? '#FF3B4E' : this.bochecha);
@@ -516,8 +551,8 @@
       // ---- boca
       const falando = this.boca ? this.boca(t) : 'smile';
       const abre = { '0': 0, '1': 0.3, '2': 0.6, '3': 1, '4': 0.85 }[falando];
-      const bx = C[0] + (frente ? 0 : dir * 40) * s, by = C[1] + 26 * s;
-      const W = (frente ? 18 : 13) * s * num('bocaLarg', 0);
+      const bx = C[0] + mix(0, dir * 40) * s, by = C[1] + 26 * s;
+      const W = mix(18, 13) * s * num('bocaLarg', 0);
       const B = el.boca, D = el.dentes, Lg = el.lingua;
       D.setAttribute('d', ''); Lg.setAttribute('d', '');
       const formaFala = disc('fala');
@@ -566,7 +601,7 @@
       el.suor.style.display = tem('suor') ? '' : 'none';
       if (tem('suor')) { const sx = C[0] + lado0 * 52 * s, sy = C[1] - 30 * s + ((t * 0.6) % 1) * 22 * s; el.suor.setAttribute('d', `M${sx} ${sy - 14 * s} Q${sx + 9 * s} ${sy} ${sx} ${sy + 6 * s} Q${sx - 9 * s} ${sy} ${sx} ${sy - 14 * s}Z`); }
       el.lagrimas.forEach((lg, i) => {
-        const vis = tem('lagrimas') && (frente || i === 0); lg.style.display = vis ? '' : 'none'; if (!vis) return;
+        const vis = tem('lagrimas') && visivel(i); lg.style.display = vis ? '' : 'none'; if (!vis) return;
         const [ox, oy] = posOlho(i), k = ((t * 0.9 + i * 0.5) % 1);
         const ly = oy + 10 * s + k * 34 * s;
         lg.setAttribute('d', `M${ox} ${ly - 10 * s} Q${ox + 7 * s} ${ly} ${ox} ${ly + 5 * s} Q${ox - 7 * s} ${ly} ${ox} ${ly - 10 * s}Z`);
