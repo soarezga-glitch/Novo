@@ -27,14 +27,24 @@
     interior:  { ceu: ['#6B5A48', '#9C8A70'], nevoa: '#B9A68A', luz: '#FFE2A8', sombra: '#2A1E18', forca: 0.7 }
   };
 
+  const MAT_PADRAO = { reboco: '#E3C9A0', reboco2: '#D9B48A', tijolo: '#B5654A', telha: '#C8553D', madeira: '#8A5A33', pedra: '#B3A894',
+    marmore: '#EDE3CF', travertino: '#CDB591', calcada: '#A49B8C', piso: '#9A9387', vegetacao: '#3E6B45', cipreste: '#2F5A3A',
+    ceramica: '#B8613A', distante: '#B79E83', ceu: null };
   function Cenario(opts = {}) {
     const R = mulberry32(opts.seed ?? 1);
     const rnd = (a = 0, b = 1) => a + (b - a) * R();
     const pick = arr => arr[Math.floor(R() * arr.length)];
     const luz = opts.luz ?? 1;
-    const H = HORAS[opts.hora || 'dia'];
+    // paleta de época (skill paleta-de-epoca): materiais + clima do céu
+    const PAL = global.Paleta;
+    const MAT = PAL && opts.epoca ? PAL.materiais(opts.epoca) : MAT_PADRAO;
+    const horaNome = opts.hora || 'dia';
+    const clima = PAL && PAL.CLIMAS[opts.clima || MAT.ceu];
+    const H = { ...HORAS[horaNome], ...((clima && horaNome === 'dia' && clima.dia) || {}) };
+    // luz quente nas partes iluminadas, sombra puxando para a cor fria do céu (color-expert: spectral bias)
+    const tom = (c, k) => (k >= 0 ? mix(c, H.luz, k * 0.9) : mix(c, H.sombra, -k));
     const id = (opts.prefixo || 'cn') + Math.floor(rnd(1000, 9999));
-    const C = { rnd, pick, tom, mix, luz, hora: H, id };
+    const C = { rnd, pick, tom, mix, luz, hora: H, id, mat: MAT };
 
     // ---------- defs: gradientes, grão, vinheta ----------
     C.defs = () => `
@@ -78,7 +88,7 @@
 
     // ---------- camadas distantes (perspectiva atmosférica) ----------
     // tipo: 'colinas' | 'roma' (silhueta com Coliseu, templo, cúpula, ciprestes) ; profundidade 0 (longe) … 1 (perto)
-    C.distante = ({ y, w = 1080, tipo = 'roma', profundidade = 0.3, cor = '#B79E83' } = {}) => {
+    C.distante = ({ y, w = 1080, tipo = 'roma', profundidade = 0.3, cor = MAT.distante } = {}) => {
       const c = mix(cor, H.nevoa, 0.75 - profundidade * 0.5);
       const c2 = mix(c, H.nevoa, 0.25);
       let s = `<g>`;
@@ -102,7 +112,7 @@
     };
 
     // ---------- parede de reboco com tijolo aparecendo, manchas e rachaduras ----------
-    C.parede = ({ x, y, w, h, cor = '#E3C9A0', tijolo = '#B5654A', desgaste = 1, recorte } = {}) => {
+    C.parede = ({ x, y, w, h, cor = MAT.reboco, tijolo = MAT.tijolo, desgaste = 1, recorte } = {}) => {
       const clip = `${id}-p${Math.floor(rnd(1e5, 1e6))}`;
       let s = `<clipPath id="${clip}"><rect x="${x}" y="${y}" width="${w}" height="${h}"/></clipPath><g clip-path="url(#${clip})">`;
       s += `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${cor}"/>`;
@@ -125,7 +135,7 @@
     };
 
     // ---------- janela romana: vão fundo, peitoril, verga, venezianas, vaso opcional ----------
-    C.janela = ({ x, y, w = 130, h = 150, cor = '#E3C9A0', madeira = '#8A5A33', aberta = true, vaso = false, noite = false, luzAcesa = false } = {}) => {
+    C.janela = ({ x, y, w = 130, h = 150, cor = MAT.reboco, madeira = MAT.madeira, aberta = true, vaso = false, noite = false, luzAcesa = false } = {}) => {
       const fundo = luzAcesa ? '#FFD27A' : noite ? '#0E0C18' : '#2A1C14';
       let s = `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fundo}"/>`;
       if (luzAcesa) s += `<rect x="${x - w * 0.6}" y="${y - h * 0.4}" width="${w * 2.2}" height="${h * 1.8}" fill="url(#${id}-brilho)" opacity=".5"/>`;
@@ -153,7 +163,7 @@
     };
 
     // ---------- telhado de telhas romanas (tegula + imbrex) com beiral e sombra ----------
-    C.telhado = ({ x, y, w, h = 90, beiral = 30, cor = '#C8553D', duasAguas = true } = {}) => {
+    C.telhado = ({ x, y, w, h = 90, beiral = 30, cor = MAT.telha, duasAguas = true } = {}) => {
       let s = '';
       const x0 = x - beiral, x1 = x + w + beiral, topo = y - h;
       const path = duasAguas ? `M${x0} ${y} L${x + w / 2} ${topo} L${x1} ${y}Z` : `M${x0} ${y} L${x0 + 20} ${topo} L${x1 - 20} ${topo} L${x1} ${y}Z`;
@@ -173,7 +183,7 @@
 
     // ---------- insula: prédio romano de vários andares ----------
     // janelas: matriz automática; pular: lista "andar-coluna" a não desenhar; lojas no térreo (tabernae) com arcos e balcão
-    C.insula = ({ x, base = 1700, w = 600, top = 330, andares = 4, cor = '#E3C9A0', telha = '#C8553D', lado = 46, noite = false, luzes = [], pular = [], sacada = 1, varal = false, grafite = null } = {}) => {
+    C.insula = ({ x, base = 1700, w = 600, top = 330, andares = 4, cor = MAT.reboco, telha = MAT.telha, lado = 46, noite = false, luzes = [], pular = [], sacada = 1, varal = false, grafite = null } = {}) => {
       const h = base - top, fh = h / andares;
       let s = '';
       // face lateral (volume): fica do lado oposto à luz, mais escura
@@ -227,10 +237,10 @@
       return s;
     };
     C.grafite = (x, y, txt) => `<text x="${f1(x)}" y="${f1(y)}" font-family="'DejaVu Sans', sans-serif" font-size="30" font-weight="700" fill="#7A2E1F" opacity=".55" transform="rotate(${f1(rnd(-6, 4))} ${f1(x)} ${f1(y)})">${txt}</text>`;
-    C.anfora = (x, yBase, k = 1) => `<g transform="translate(${f1(x)} ${f1(yBase)}) scale(${k})"><path d="M-22 -150 Q-48 -90 -26 -30 L0 0 L26 -30 Q48 -90 22 -150Z" fill="#B8613A" stroke="#1D1D2B" stroke-width="5"/><path d="M${luz > 0 ? 6 : -18} -140 Q${luz > 0 ? 30 : -30} -90 ${luz > 0 ? 14 : -14} -40" stroke="#E7A57E" stroke-width="6" fill="none" opacity=".8"/><rect x="-14" y="-172" width="28" height="24" rx="5" fill="#9A4E2D" stroke="#1D1D2B" stroke-width="4"/><path d="M-14 -160 Q-40 -150 -24 -120 M14 -160 Q40 -150 24 -120" stroke="#1D1D2B" stroke-width="5" fill="none"/></g>`;
+    C.anfora = (x, yBase, k = 1) => `<g transform="translate(${f1(x)} ${f1(yBase)}) scale(${k})"><path d="M-22 -150 Q-48 -90 -26 -30 L0 0 L26 -30 Q48 -90 22 -150Z" fill="${MAT.ceramica}" stroke="#1D1D2B" stroke-width="5"/><path d="M${luz > 0 ? 6 : -18} -140 Q${luz > 0 ? 30 : -30} -90 ${luz > 0 ? 14 : -14} -40" stroke="#E7A57E" stroke-width="6" fill="none" opacity=".8"/><rect x="-14" y="-172" width="28" height="24" rx="5" fill="#9A4E2D" stroke="#1D1D2B" stroke-width="4"/><path d="M-14 -160 Q-40 -150 -24 -120 M14 -160 Q40 -150 24 -120" stroke="#1D1D2B" stroke-width="5" fill="none"/></g>`;
 
     // ---------- colunas (dórica, jônica, coríntia), arco, aqueduto, templo, coliseu ----------
-    C.coluna = ({ x, base, h = 520, r = 34, ordem = 'dorica', cor = '#EDE3CF' } = {}) => {
+    C.coluna = ({ x, base, h = 520, r = 34, ordem = 'dorica', cor = MAT.marmore } = {}) => {
       const topo = base - h;
       let s = `<rect x="${x - r - 14}" y="${base - 26}" width="${2 * r + 28}" height="26" fill="${tom(cor, -0.08)}" stroke="#1D1D2B" stroke-width="5"/>`;
       s += `<path d="M${x - r} ${base - 26} L${x - r * 0.86} ${topo + 40} H${x + r * 0.86} L${x + r} ${base - 26}Z" fill="${cor}" stroke="#1D1D2B" stroke-width="5"/>`;
@@ -241,7 +251,7 @@
       else s += `<path d="M${x - r} ${topo + 44} Q${x - r - 20} ${topo + 20} ${x - r - 22} ${topo + 4} H${x + r + 22} Q${x + r + 20} ${topo + 20} ${x + r} ${topo + 44}Z" fill="${cor}" stroke="#1D1D2B" stroke-width="5"/>` + [-1, 0, 1].map(k => `<path d="M${x + k * r * 0.6} ${topo + 44} Q${x + k * r * 0.9} ${topo + 18} ${x + k * r * 1.1} ${topo + 8}" stroke="#7A9A5A" stroke-width="7" fill="none"/>`).join('') + `<rect x="${x - r - 16}" y="${topo - 12}" width="${2 * r + 32}" height="16" fill="${tom(cor, 0.1)}" stroke="#1D1D2B" stroke-width="5"/>`;
       return s;
     };
-    C.templo = ({ x, base, w = 700, h = 640, ordem = 'corintia', cor = '#EDE3CF', colunas = 6 } = {}) => {
+    C.templo = ({ x, base, w = 700, h = 640, ordem = 'corintia', cor = MAT.marmore, colunas = 6 } = {}) => {
       let s = `<rect x="${x - 30}" y="${base - 60}" width="${w + 60}" height="60" fill="${tom(cor, -0.12)}" stroke="#1D1D2B" stroke-width="6"/>`;
       for (let k = 0; k < 3; k++) s += `<path d="M${x - 30 + k * 14} ${base - 60 + k * 20} H${x + w + 30 - k * 14}" stroke="${tom(cor, -0.3)}" stroke-width="3"/>`;
       s += `<rect x="${x}" y="${base - h}" width="${w}" height="${h - 60}" fill="${tom(cor, -0.3)}"/>`;
@@ -251,7 +261,7 @@
       s += `<path d="M${x - 40} ${ty - 50} L${x + w / 2} ${ty - 190} L${x + w + 40} ${ty - 50}Z" fill="${cor}" stroke="#1D1D2B" stroke-width="6"/><path d="M${x + 20} ${ty - 62} L${x + w / 2} ${ty - 170} L${x + w - 20} ${ty - 62}Z" fill="${tom(cor, -0.15)}"/>`;
       return s;
     };
-    C.aqueduto = ({ x, base, w = 900, h = 520, vaos = 5, cor = '#CDB591' } = {}) => {
+    C.aqueduto = ({ x, base, w = 900, h = 520, vaos = 5, cor = MAT.travertino } = {}) => {
       const vw = w / vaos;
       let s = `<rect x="${x}" y="${base - h}" width="${w}" height="${h}" fill="${cor}" stroke="#1D1D2B" stroke-width="6"/>`;
       for (let k = 0; k < vaos; k++) { const ax = x + k * vw + vw * 0.16, aw = vw * 0.68; s += `<path d="M${f1(ax)} ${base} V${f1(base - h * 0.55)} A${f1(aw / 2)} ${f1(aw / 2)} 0 0 1 ${f1(ax + aw)} ${f1(base - h * 0.55)} V${base}Z" fill="url(#${id}-ceu)" stroke="#1D1D2B" stroke-width="5"/><path d="M${f1(ax + (luz > 0 ? 0 : aw - 14))} ${base} V${f1(base - h * 0.55)}" stroke="${H.sombra}" stroke-width="14" opacity=".2"/>`; }
@@ -259,7 +269,7 @@
       for (let yy = base - h + 30; yy < base; yy += 34) s += `<path d="M${x} ${yy} H${x + w}" stroke="${tom(cor, -0.15)}" stroke-width="2" opacity=".6"/>`;
       return s;
     };
-    C.coliseu = ({ x, base, w = 640, h = 260, cor = '#E2C9A0' } = {}) => {
+    C.coliseu = ({ x, base, w = 640, h = 260, cor = MAT.travertino } = {}) => {
       let s = `<path d="M${x} ${base} V${base - h + 30} Q${x + w / 2} ${base - h - 30} ${x + w} ${base - h + 30} V${base}Z" fill="${cor}" stroke="#1D1D2B" stroke-width="6"/>`;
       for (let r = 0; r < 3; r++) for (let c = 0; c < 9; c++) { const ax = x + 20 + c * (w - 40) / 9, ay = base - 30 - r * (h / 3.4); s += `<path d="M${f1(ax)} ${f1(ay)} v-36 a${f1((w - 40) / 22)} ${f1((w - 40) / 22)} 0 0 1 ${f1((w - 40) / 11)} 0 v36z" fill="${tom(cor, -0.45)}"/>`; }
       for (let r = 1; r < 4; r++) s += `<path d="M${x} ${f1(base - r * (h / 3.4) + 4)} H${x + w}" stroke="${tom(cor, -0.25)}" stroke-width="4"/>`;
@@ -268,7 +278,7 @@
     };
 
     // ---------- chão ----------
-    C.calcada = ({ y, w = 1080, h = 300, cor = '#A49B8C' } = {}) => {
+    C.calcada = ({ y, w = 1080, h = 300, cor = MAT.calcada } = {}) => {
       let s = `<rect x="0" y="${y}" width="${w}" height="${h}" fill="${tom(cor, -0.25)}"/>`;
       let row = 0;
       for (let yy = y + 4; yy < y + h; yy += 30 + row * 3, row++) {
@@ -277,15 +287,15 @@
       }
       return s + `<rect x="0" y="${y}" width="${w}" height="10" fill="#000" opacity=".2"/>`;
     };
-    C.piso = ({ y, w = 1080, h = 600, cor = '#9A9387' } = {}) => {
+    C.piso = ({ y, w = 1080, h = 600, cor = MAT.piso } = {}) => {
       let s = `<rect x="0" y="${y}" width="${w}" height="${h}" fill="${tom(cor, -0.2)}"/>`;
       for (let yy = y, r = 0; yy < y + h; yy += 70 + r * 8, r++) for (let xx = (r % 2) * -60; xx < w; xx += 130) s += `<rect x="${f1(xx + 3)}" y="${f1(yy + 3)}" width="124" height="${64 + r * 8}" rx="6" fill="${tom(cor, rnd(-0.1, 0.1))}"/>`;
       return s;
     };
 
     // ---------- vegetação e vida ----------
-    C.cipreste = (x, base, h = 380) => `<path d="M${x} ${base} Q${x - 50} ${base - h * 0.45} ${x} ${base - h} Q${x + 50} ${base - h * 0.45} ${x} ${base}Z" fill="#2F5A3A" stroke="#1D1D2B" stroke-width="5"/><path d="M${x + luz * 8} ${base - 20} Q${x + luz * 34} ${base - h * 0.45} ${x + luz * 4} ${base - h * 0.95}" stroke="#4E8A55" stroke-width="10" fill="none" opacity=".8"/>`;
-    C.pinheiro = (x, base, h = 330) => `<path d="M${x - 8} ${base} L${x - 4} ${base - h} H${x + 4} L${x + 8} ${base}Z" fill="#6B4A2E" stroke="#1D1D2B" stroke-width="4"/><path d="M${x - 160} ${base - h + 10} Q${x - 120} ${base - h - 90} ${x} ${base - h - 70} Q${x + 120} ${base - h - 90} ${x + 160} ${base - h + 10} Q${x} ${base - h + 40} ${x - 160} ${base - h + 10}Z" fill="#3E6B45" stroke="#1D1D2B" stroke-width="5"/><path d="M${x + luz * 20} ${base - h - 40} Q${x + luz * 90} ${base - h - 70} ${x + luz * 130} ${base - h - 10}" stroke="#6FA06A" stroke-width="12" fill="none"/>`;
+    C.cipreste = (x, base, h = 380) => `<path d="M${x} ${base} Q${x - 50} ${base - h * 0.45} ${x} ${base - h} Q${x + 50} ${base - h * 0.45} ${x} ${base}Z" fill="${MAT.cipreste}" stroke="#1D1D2B" stroke-width="5"/><path d="M${x + luz * 8} ${base - 20} Q${x + luz * 34} ${base - h * 0.45} ${x + luz * 4} ${base - h * 0.95}" stroke="#4E8A55" stroke-width="10" fill="none" opacity=".8"/>`;
+    C.pinheiro = (x, base, h = 330) => `<path d="M${x - 8} ${base} L${x - 4} ${base - h} H${x + 4} L${x + 8} ${base}Z" fill="#6B4A2E" stroke="#1D1D2B" stroke-width="4"/><path d="M${x - 160} ${base - h + 10} Q${x - 120} ${base - h - 90} ${x} ${base - h - 70} Q${x + 120} ${base - h - 90} ${x + 160} ${base - h + 10} Q${x} ${base - h + 40} ${x - 160} ${base - h + 10}Z" fill="${MAT.vegetacao}" stroke="#1D1D2B" stroke-width="5"/><path d="M${x + luz * 20} ${base - h - 40} Q${x + luz * 90} ${base - h - 70} ${x + luz * 130} ${base - h - 10}" stroke="#6FA06A" stroke-width="12" fill="none"/>`;
     C.hera = (x, y, comprimento = 300) => { let s = '', cx = x, cy = y; for (let i = 0; i < comprimento / 18; i++) { cx += rnd(-12, 12); cy += 18; s += `<ellipse cx="${f1(cx + rnd(-14, 14))}" cy="${f1(cy)}" rx="12" ry="8" fill="${pick(['#3E7B3A', '#5DA052', '#2F6B32'])}" stroke="#1D1D2B" stroke-width="2" transform="rotate(${f1(rnd(-40, 40))} ${f1(cx)} ${f1(cy)})"/>`; } return s; };
     C.pombo = (x, y, k = 1, flip = 1) => `<g transform="translate(${f1(x)} ${f1(y)}) scale(${k * flip} ${k})"><ellipse cx="0" cy="0" rx="22" ry="14" fill="#9AA0B0" stroke="#1D1D2B" stroke-width="3"/><circle cx="18" cy="-12" r="9" fill="#8A90A3" stroke="#1D1D2B" stroke-width="3"/><path d="M26 -12 l8 3 l-8 2Z" fill="#E0A030"/><circle cx="20" cy="-14" r="2" fill="#1D1D2B"/><path d="M-20 -2 l-14 -6 l2 12Z" fill="#7A8093" stroke="#1D1D2B" stroke-width="2"/><path d="M-4 14 v8 M6 14 v8" stroke="#D96B4B" stroke-width="3"/></g>`;
     C.toldo = (x, y, w, cores = ['#D7263D', '#F2E6C9']) => { let s = `<path d="M${x} ${y} H${x + w} L${x + w + 20} ${y + 90} H${x - 20}Z" fill="${cores[1]}" stroke="#1D1D2B" stroke-width="5"/>`; const n = Math.round(w / 60); for (let k = 0; k < n; k += 2) { const a = x + k * w / n, b = x + (k + 1) * w / n; s += `<path d="M${f1(a)} ${y} H${f1(b)} L${f1(b + (b - x - w / 2) / w * 40)} ${y + 90} H${f1(a + (a - x - w / 2) / w * 40)}Z" fill="${cores[0]}"/>`; } for (let k = 0; k <= n; k++) s += `<path d="M${f1(x - 20 + k * (w + 40) / n)} ${y + 90} q${f1((w + 40) / n / 2)} 24 ${f1((w + 40) / n)} 0" fill="${k % 2 ? cores[1] : cores[0]}" stroke="#1D1D2B" stroke-width="4"/>`; return s + `<rect x="${x - 20}" y="${y + 90}" width="${w + 40}" height="40" fill="url(#${id}-beiral)"/>`; };
@@ -306,5 +316,6 @@
     return C;
   }
   Cenario.horas = Object.keys(HORAS);
+  Cenario.tom = (c, k) => (k >= 0 ? mix(c, '#FFF6E6', k) : mix(c, '#1A1424', -k));
   global.Cenario = Cenario;
 })(window);

@@ -18,6 +18,7 @@
 <script src="gsap.min.js"></script>
 <script src="lipsync.js" onerror="window.LIPSYNC = null"></script>
 <script src="boneco.js"></script>
+<script src="paletas.js"></script>
 <script src="cenario.js"></script>
 <script src="marca.js"></script>
 </head>
@@ -108,7 +109,7 @@ const scenes = [];
 // Cenários montados com a skill "cenario-ilustrado" (cenario.js): luz de um lado, volume, textura, desgaste, vida.
 const degraus = (cor, luzCor) => { let d = ''; for (let k = 0; k < 12; k++) { const x = k * 90, y = 1800 - k * 92; d += `<rect x="${x}" y="${y - 92}" width="90" height="${1920 - y + 92}" fill="${cor}"/><rect x="${x}" y="${y - 92}" width="90" height="12" fill="${luzCor}" opacity=".7"/><rect x="${x}" y="${y - 80}" width="10" height="80" fill="#000" opacity=".18"/>`; } return d; };
 // S1 — quarto de pedra
-{ const C = Cenario({ seed: 3, luz: 1, hora: 'interior', prefixo: 'k1' });
+{ const C = Cenario({ epoca: 'roma', seed: 3, luz: 1, hora: 'interior', prefixo: 'k1' });
   let v = `<g id="s1" class="scene"><defs>${C.defs()}</defs>`;
   v += C.parede({ x: 0, y: 0, w: 1080, h: 1320, cor: '#B9AA92', tijolo: '#8E6E58', desgaste: 2 });
   for (let k = 0; k < 5; k++) v += `<rect x="${-20 + k * 240}" y="0" width="70" height="110" fill="#6B4A2E" stroke="#1D1D2B" stroke-width="5"/><rect x="${-20 + k * 240}" y="96" width="70" height="14" fill="#000" opacity=".25"/>`;
@@ -122,10 +123,10 @@ const degraus = (cor, luzCor) => { let d = ''; for (let k = 0; k < 12; k++) { co
   v += C.anfora(980, 1330, 0.9) + C.anfora(900, 1340, 0.7);
   v += `<g id="s1-mat"><rect x="150" y="1490" width="660" height="100" rx="24" fill="#D9B45A" stroke="#1D1D2B" stroke-width="6"/>` + [...Array(10)].map((_, k) => `<path d="M${190 + k * 60} 1500 V1580" stroke="#B8923A" stroke-width="5"/>`).join('') + `<rect x="160" y="1470" width="150" height="56" rx="26" fill="#EFE3C6" stroke="#1D1D2B" stroke-width="5"/><path d="M520 1490 Q600 1460 700 1500 L720 1590 H500Z" fill="#7A6AA8" stroke="#1D1D2B" stroke-width="5"/></g>`;
   v += `  <g id="s1-smoke" fill="#E8E2D8" opacity=".85">${[0, 1, 2].map(k => `<g class="smoke"><circle cx="${120 + k * 120}" cy="1200" r="${50 + k * 10}"/><circle cx="${170 + k * 120}" cy="1150" r="${40 + k * 8}"/></g>`).join('')}</g>` + `  <g id="s1-fish" transform="translate(300 1720)"><path d="M-110 0 Q-60 -50 40 0 Q-60 50 -110 0Z" fill="none" stroke="#FFF" stroke-width="10"/><path d="M-80 -20 V20 M-50 -28 V28 M-20 -28 V28 M10 -20 V20 M40 0 L90 -40 V40 Z" stroke="#FFF" stroke-width="10" fill="#FFF"/><circle cx="-92" cy="-6" r="7" fill="#1D1D2B"/>
-    <g id="s1-stink" stroke="#7CC46A" stroke-width="10" fill="none" stroke-linecap="round"><path d="M-60 -70 q20 -30 0 -60 q-20 -30 0 -60"/><path d="M-10 -80 q20 -30 0 -60 q-20 -30 0 -60"/><path d="M40 -70 q20 -30 0 -60 q-20 -30 0 -60"/></g></g>` + `  <g id="s1-q" fill="${COR.ouro}" stroke="#1D1D2B" stroke-width="8" paint-order="stroke"><text id="s1-q1" x="600" y="1000" font-size="130">?</text><text id="s1-q2" x="700" y="930" font-size="100">?</text><text id="s1-q3" x="520" y="900" font-size="90">?</text></g>` + C.atmosfera({ grao: 0.3 }) + `</g>`;
+    <g id="s1-stink" stroke="#7CC46A" stroke-width="10" fill="none" stroke-linecap="round"><path d="M-60 -70 q20 -30 0 -60 q-20 -30 0 -60"/><path d="M-10 -80 q20 -30 0 -60 q-20 -30 0 -60"/><path d="M40 -70 q20 -30 0 -60 q-20 -30 0 -60"/></g></g>` + `  <g id="s1-q" fill="${COR.ouro}" stroke="#1D1D2B" stroke-width="8" paint-order="stroke"><text id="s1-q1" x="600" y="1000" font-size="130">?</text><text id="s1-q2" x="700" y="930" font-size="100">?</text><text id="s1-q3" x="520" y="900" font-size="90">?</text></g>` + Paleta.grade('confusao') + C.atmosfera({ grao: 0.3 }) + `</g>`;
   scenes.push(v); }
 // S2 — janela com vista de Roma
-{ const C = Cenario({ seed: 5, luz: 1, hora: 'tarde', prefixo: 'k2' });
+{ const C = Cenario({ epoca: 'roma', seed: 5, luz: 1, hora: 'tarde', prefixo: 'k2' });
   let v = `<g id="s2" class="scene"><defs>${C.defs()}<clipPath id="k2-arco"><path d="M200 1450 V700 Q200 420 600 420 Q1000 420 1000 700 V1450Z"/></clipPath></defs>`;
   v += C.parede({ x: 0, y: 0, w: 1080, h: 1500, cor: '#C4B49A', tijolo: '#8E6E58', desgaste: 2 });
   v += `<g id="s2-view"><g clip-path="url(#k2-arco)">` + C.ceu({ w: 1080, h: 1500, astroX: 860, astroY: 600, nuvens: 2 }) + C.distante({ y: 1060, tipo: 'roma', profundidade: 0.05 });
@@ -134,7 +135,7 @@ const degraus = (cor, luzCor) => { let d = ''; for (let k = 0; k < 12; k++) { co
   v += `<g id="s2-aqueduto">` + C.aqueduto({ x: 160, base: 1250, w: 380, h: 230, vaos: 3 }) + `</g>`;
   v += C.cipreste(470, 1290, 300) + C.cipreste(940, 1300, 330) + C.pinheiro(760, 1320, 220);
   [[220, 1330, 200, '#E9D6B2'], [470, 1360, 260, '#E3C9A0'], [780, 1340, 220, '#EAD3AE']].forEach(([x, y, w, c]) => { v += `<rect x="${x}" y="${y}" width="${w}" height="200" fill="${c}" stroke="#1D1D2B" stroke-width="5"/>` + C.telhado({ x, y, w, h: 60, beiral: 16 }) + `<rect x="${x + w * 0.2}" y="${y + 40}" width="34" height="46" fill="#2A1C14"/><rect x="${x + w * 0.6}" y="${y + 40}" width="34" height="46" fill="#2A1C14"/>`; });
-  v += C.atmosfera({ grao: 0, vinheta: false, raios: true }) + `</g>`;
+  v += Paleta.grade('descoberta') + C.atmosfera({ grao: 0, vinheta: false, raios: true }) + `</g>`;
   v += `<path d="M200 1450 V700 Q200 420 600 420 Q1000 420 1000 700 V1450Z" fill="none" stroke="#5A4632" stroke-width="34"/><path d="M215 1450 V700 Q215 436 600 436" fill="none" stroke="#7A5E44" stroke-width="8"/>`;
   v += `<rect x="150" y="1440" width="900" height="56" fill="#8A7458" stroke="#1D1D2B" stroke-width="6"/><rect x="150" y="1440" width="900" height="12" fill="#B29A7A"/></g>`;
   v += C.piso({ y: 1490, h: 430, cor: '#8E877C' }) + C.vaso(1000, 1440, '#D7263D');
@@ -142,7 +143,7 @@ const degraus = (cor, luzCor) => { let d = ''; for (let k = 0; k < 12; k++) { co
   scenes.push(v); }
 // S3 — rua com prédios romanos (insulae)
 const ruaS3 = (noite) => {
-  const C = Cenario({ seed: 8, luz: 1, hora: noite ? 'noite' : 'dia', prefixo: noite ? 'k7' : 'k3' });
+  const C = Cenario({ epoca: 'roma', seed: 8, luz: 1, hora: noite ? 'noite' : 'dia', prefixo: noite ? 'k7' : 'k3' });
   let v = `<defs>${C.defs()}</defs>` + C.ceu({ astroX: 900, astroY: 230, nuvens: noite ? 0 : 3 });
   v += C.distante({ y: 760, tipo: 'roma', profundidade: 0.15 }) + C.distante({ y: 900, tipo: 'roma', profundidade: 0.45, cor: '#C9A27C' });
   v += `<g id="${noite ? 's7-insula' : 's3-insula'}">` + C.insula({ x: 40, base: 1700, w: 600, top: 330, andares: 4, pular: ['0-0', '0-1'], noite, luzes: noite ? ['1-0', '2-1'] : [], grafite: 'CAVE CANEM' });
@@ -158,7 +159,7 @@ const ruaS3 = (noite) => {
   <ellipse id="s3-blob" cx="0" cy="0" rx="34" ry="44" fill="#6B4A1F" stroke="#1D1D2B" stroke-width="5"/>
   <g id="s3-splat" transform="translate(800 1755)"><ellipse rx="130" ry="26" fill="#6B4A1F" stroke="#1D1D2B" stroke-width="5"/><circle cx="-110" cy="-60" r="14" fill="#6B4A1F"/><circle cx="90" cy="-80" r="12" fill="#6B4A1F"/><circle cx="20" cy="-110" r="10" fill="#6B4A1F"/></g>
   <g id="s3-grito" transform="translate(330 1420)">${Marca.balao(0, 0, 'CUIDADO!', { ponta: [-80, 150] })}</g>
-  <g id="s3-andar" transform="translate(320 860)">${Marca.etiqueta(0, 0, '3º ANDAR')}</g>${C.atmosfera({ grao: 0.3, raios: true })}</g>`); }
+  <g id="s3-andar" transform="translate(320 860)">${Marca.etiqueta(0, 0, '3º ANDAR')}</g>${Paleta.grade('rotina')}${C.atmosfera({ grao: 0.3, raios: true })}</g>`); }
 // S4 — desafio 1: fome
 scenes.push(card('c1', '#F2A541', 1, 'A FOME', `<ellipse cx="0" cy="40" rx="150" ry="40" fill="#8A5A2E" stroke="#1D1D2B" stroke-width="8"/><path d="M-150 40 Q0 200 150 40" fill="#A8743F" stroke="#1D1D2B" stroke-width="8"/>`));
 scenes.push(`<g id="s4b" class="scene"><rect width="1080" height="1920" fill="#F7D9A8"/>
@@ -169,7 +170,7 @@ scenes.push(`<g id="s4b" class="scene"><rect width="1080" height="1920" fill="#F
   <rect y="1700" width="1080" height="220" fill="#E0B97F"/>
 </g>`);
 // S4c — banca do mercado
-{ const C = Cenario({ seed: 12, luz: 1, hora: 'dia', prefixo: 'k4' });
+{ const C = Cenario({ epoca: 'roma', seed: 12, luz: 1, hora: 'dia', prefixo: 'k4' });
   let v = `<g id="s4c" class="scene"><defs>${C.defs()}</defs>` + C.ceu({ astroX: 950, astroY: 260, nuvens: 2 });
   v += C.distante({ y: 700, tipo: 'roma', profundidade: 0.2 });
   v += C.insula({ x: -10, base: 1700, w: 1100, top: 560, andares: 3, cor: '#E6CFA6', pular: ['0-1', '0-2', '1-1', '1-2', '1-3'], sacada: 0, grafite: 'VENDO GARVM' });
@@ -183,12 +184,12 @@ scenes.push(`<g id="s4b" class="scene"><rect width="1080" height="1920" fill="#F
     ${Marca.etiqueta(0, -250, 'GARUM', { fs: 40 })}
     <g id="s4-stink" stroke="#7CC46A" stroke-width="12" fill="none" stroke-linecap="round" transform="translate(-140 -200)"><path d="M-40 0 q25 -35 0 -70 q-25 -35 0 -70"/><path d="M20 -10 q25 -35 0 -70 q-25 -35 0 -70"/></g></g>
   <g id="s4-moeda"><circle r="34" fill="${COR.ouro}" stroke="#1D1D2B" stroke-width="6"/><circle r="20" fill="none" stroke="#B88A1E" stroke-width="5"/></g>
-  <g id="s4-eca" transform="translate(300 900)">${Marca.impacto(0, 0, 'ECA!', { fs: 140, rot: -10 })}</g>` + C.atmosfera({ grao: 0.3, raios: true }) + `</g>`;
+  <g id="s4-eca" transform="translate(300 900)">${Marca.impacto(0, 0, 'ECA!', { fs: 140, rot: -10 })}</g>` + Paleta.grade('rotina') + `<g id="s4-nojo">${Paleta.grade('nojo')}</g>` + C.atmosfera({ grao: 0.3, raios: true }) + `</g>`;
   scenes.push(v); }
 // S5 — desafio 2: água
 scenes.push(card('c2', '#4DA6E8', 2, 'A ÁGUA', `<path d="M0 -120 C60 -40 110 20 110 70 A110 110 0 0 1 -110 70 C-110 20 -60 -40 0 -120Z" fill="#BDE6FF" stroke="#1D1D2B" stroke-width="10"/>`));
 // S5b — praça com fonte pública
-{ const C = Cenario({ seed: 15, luz: 1, hora: 'dia', prefixo: 'k5' });
+{ const C = Cenario({ epoca: 'roma', seed: 15, luz: 1, hora: 'dia', prefixo: 'k5' });
   let v = `<g id="s5b" class="scene"><defs>${C.defs()}</defs>` + C.ceu({ astroX: 900, astroY: 240, nuvens: 3 });
   v += C.distante({ y: 900, tipo: 'roma', profundidade: 0.15 });
   v += `<g transform="translate(-40 0)">` + C.templo({ x: 40, base: 1160, w: 560, h: 560, colunas: 5 }) + `</g>` + C.cipreste(640, 1170, 340) + C.cipreste(1010, 1180, 380);
@@ -200,11 +201,11 @@ scenes.push(card('c2', '#4DA6E8', 2, 'A ÁGUA', `<path d="M0 -120 C60 -40 110 20
   v += `<path id="s5-jato" d="M770 1095 Q690 1160 670 1500" stroke="#5DB7EE" stroke-width="22" fill="none" stroke-dasharray="40 24" stroke-linecap="round"/>`;
   v += `<path d="M530 1460 H970 V1700 H530Z" fill="#C2B49A" stroke="#1D1D2B" stroke-width="8"/><rect x="520" y="1450" width="460" height="26" fill="#D8CBB3" stroke="#1D1D2B" stroke-width="6"/><path d="M548 1484 H952 V1540 H548Z" fill="#5DB7EE"/><path d="M570 1500 h80 M700 1514 h120 M860 1498 h60" stroke="#BDE6FF" stroke-width="6" stroke-linecap="round"/>`;
   v += [0, 1, 2].map(k => `<path d="M${560 + k * 140} 1560 h80 v120 h-80z" fill="none" stroke="#A89A80" stroke-width="5"/>`).join('') + `</g>`;
-  v += C.pombo(980, 1440, 0.9, -1) + C.sombraChao(530, 440, 1700, 90) + C.atmosfera({ grao: 0.3, raios: true }) + `</g>`;
+  v += C.pombo(980, 1440, 0.9, -1) + C.sombraChao(530, 440, 1700, 90) + Paleta.grade('esforco') + C.atmosfera({ grao: 0.3, raios: true }) + `</g>`;
   scenes.push(v); }
 // escadaria interna do prédio (dia: S5c · noite com fogo: S7b)
 const escadaria = (noite) => {
-  const C = Cenario({ seed: 18, luz: -1, hora: noite ? 'noite' : 'interior', prefixo: noite ? 'k8' : 'k6' });
+  const C = Cenario({ epoca: 'roma', seed: 18, luz: -1, hora: noite ? 'noite' : 'interior', prefixo: noite ? 'k8' : 'k6' });
   let v = `<defs>${C.defs()}</defs>` + C.parede({ x: 0, y: 0, w: 1080, h: 1920, cor: noite ? '#3A3046' : '#D2B48C', tijolo: noite ? '#2A2030' : '#9C6A4A', desgaste: 2 });
   for (let k = 0; k < 4; k++) v += `<rect x="${k * 300 + 40}" y="0" width="40" height="1920" fill="${noite ? '#241C2E' : '#7A5434'}" stroke="#1D1D2B" stroke-width="5"/>`;
   v += `<rect x="760" y="260" width="150" height="190" fill="${noite ? '#1B1F45' : '#A9DDF7'}" stroke="#5A4632" stroke-width="14"/><path d="M835 260 V450" stroke="#5A4632" stroke-width="8"/>`;
@@ -217,11 +218,11 @@ const escadaria = (noite) => {
 { const { C, v } = escadaria(false); scenes.push(`<g id="s5c" class="scene">${v}  <g id="s5-a1" transform="translate(200 1300)">${Marca.etiqueta(0, 0, '1º ANDAR', { fs: 38 })}</g>
   <g id="s5-a2" transform="translate(470 1000)">${Marca.etiqueta(0, 0, '2º ANDAR', { fs: 38 })}</g>
   <g id="s5-a3" transform="translate(740 700)">${Marca.etiqueta(0, 0, '3º ANDAR', { fs: 38 })}</g>
-  <g id="s5-todo">${stamp('s5-stamp', 540, 1560, 'TODO DIA!', '#D7263D', -10, 110)}</g>${C.atmosfera({ grao: 0.3 })}</g>`); }
+  <g id="s5-todo">${stamp('s5-stamp', 540, 1560, 'TODO DIA!', '#D7263D', -10, 110)}</g>${Paleta.grade('esforco')}${C.atmosfera({ grao: 0.3 })}</g>`); }
 // S6 — desafio 3: banheiro
 scenes.push(card('c3', '#9B7BDB', 3, 'O BANHEIRO', `<rect x="-170" y="-40" width="340" height="120" rx="16" fill="#D8CBB3" stroke="#1D1D2B" stroke-width="8"/><ellipse cx="-80" cy="-10" rx="40" ry="16" fill="#1D1D2B"/><ellipse cx="80" cy="-10" rx="40" ry="16" fill="#1D1D2B"/>`));
 // S6b — latrina pública (forica)
-{ const C = Cenario({ seed: 21, luz: 1, hora: 'interior', prefixo: 'k9' });
+{ const C = Cenario({ epoca: 'roma', seed: 21, luz: 1, hora: 'interior', prefixo: 'k9' });
   let v = `<g id="s6b" class="scene"><defs>${C.defs()}</defs>` + C.parede({ x: 0, y: 0, w: 1080, h: 1720, cor: '#E2D6C0', tijolo: '#B5876A', desgaste: 1.2 });
   v += `<rect x="0" y="380" width="1080" height="40" fill="#B3261E" opacity=".75"/><rect x="0" y="1060" width="1080" height="30" fill="#B3261E" opacity=".6"/>`;
   [[140, '#3E7B3A'], [600, '#3B7DD8']].forEach(([x, c]) => { v += `<path d="M${x} 1000 V700 Q${x} 520 ${x + 200} 520 Q${x + 400} 520 ${x + 400} 700 V1000Z" fill="#9C8A70" stroke="#1D1D2B" stroke-width="8"/><path d="M${x + 30} 1000 V710 Q${x + 30} 552 ${x + 200} 552 Q${x + 370} 552 ${x + 370} 710 V1000Z" fill="#C9B79A"/><path d="M${x + 120} 900 q80 -120 160 0" stroke="${c}" stroke-width="10" fill="none"/><circle cx="${x + 200}" cy="760" r="40" fill="${c}" opacity=".6"/>`; });
@@ -229,18 +230,18 @@ scenes.push(card('c3', '#9B7BDB', 3, 'O BANHEIRO', `<rect x="-170" y="-40" width
   v += C.piso({ y: 1700, h: 220, cor: '#B3A894' }) + `<rect y="1700" width="1080" height="30" fill="#5DB7EE" opacity=".8"/>`;
   v += `  <g id="s6-sponge" transform="translate(860 1100) rotate(18)"><rect x="-10" y="-330" width="20" height="380" rx="8" fill="#8A5A2E" stroke="#1D1D2B" stroke-width="6"/><ellipse cx="0" cy="-350" rx="70" ry="54" fill="#E8C75A" stroke="#1D1D2B" stroke-width="7"/>${[0, 1, 2, 3, 4].map(k => `<circle cx="${-35 + k * 18}" cy="${-360 + (k % 2) * 22}" r="7" fill="#B8962E"/>`).join('')}</g>
   <g id="s6-label" transform="translate(540 760)">${Marca.etiqueta(0, 0, 'TERSORIUM', { fs: 56 })}</g>
-  <g id="s6-comp">${stamp('s6-stamp', 540, 940, 'COMPARTILHADO', '#D7263D', -8, 70)}</g>` + C.atmosfera({ grao: 0.3 }) + `</g>`;
+  <g id="s6-comp">${stamp('s6-stamp', 540, 940, 'COMPARTILHADO', '#D7263D', -8, 70)}</g>` + Paleta.grade('nojo') + C.atmosfera({ grao: 0.3 }) + `</g>`;
   scenes.push(v); }
 // S7a — a mesma rua à noite, pegando fogo
 { const { C, v } = ruaS3(true); scenes.push(`<g id="s7a" class="scene">${v}  <rect id="s7-glow" x="-200" y="700" width="1480" height="1220" fill="url(#fireGlow)"/>
   <g id="s7-flames">${flame(140, 1420, 1.3, 0)}${flame(330, 1430, 1.6, 1)}${flame(520, 1400, 1.2, 2)}${flame(250, 1100, 1.1, 3)}${flame(470, 1090, 1.3, 4)}${flame(780, 1460, 1.2, 5)}${flame(980, 1440, 1.4, 6)}</g>
   <g id="s7-g1" transform="translate(820 780)">${Marca.apoio(0, 0, 'AAAH!', { fs: 80, rot: 8 })}</g>
   <g id="s7-g2" transform="translate(860 1200)">${Marca.apoio(0, 0, 'SOCORRO!', { fs: 64, rot: -6 })}</g>
-  <g id="s7-fogo" transform="translate(540 1000)">${Marca.impacto(0, 0, 'FOGO!', { fs: 210 })}</g>${C.atmosfera({ grao: 0.25 })}</g>`); }
+  <g id="s7-fogo" transform="translate(540 1000)">${Marca.impacto(0, 0, 'FOGO!', { fs: 210 })}</g>${`<g id="s7-tensao">${Paleta.grade('tensao')}</g><g id="s7-perigo">${Paleta.grade('perigo')}</g>`}${C.atmosfera({ grao: 0.25 })}</g>`); }
 { const { C, v } = escadaria(true); scenes.push(`<g id="s7b" class="scene">${v}  <rect id="s7b-glow" x="-300" y="1200" width="1000" height="900" fill="url(#fireGlow)"/>
-  <g id="s7b-smoke" fill="#4A4458" opacity=".9">${[0, 1, 2, 3].map(k => `<circle class="smk" cx="${700 + k * 110}" cy="${640 - (k % 2) * 60}" r="${90 + k * 15}"/>`).join('')}</g>${C.atmosfera({ grao: 0.25 })}</g>`); }
+  <g id="s7b-smoke" fill="#4A4458" opacity=".9">${[0, 1, 2, 3].map(k => `<circle class="smk" cx="${700 + k * 110}" cy="${640 - (k % 2) * 60}" r="${90 + k * 15}"/>`).join('')}</g>${Paleta.grade('tensao') + Paleta.grade('perigo')}${C.atmosfera({ grao: 0.25 })}</g>`); }
 // S8 — amanhecer: o prédio queimado ainda soltando fumaça
-{ const C = Cenario({ seed: 25, luz: -1, hora: 'amanhecer', prefixo: 'kA' });
+{ const C = Cenario({ epoca: 'roma', seed: 25, luz: -1, hora: 'amanhecer', prefixo: 'kA' });
   let v = `<g id="s8" class="scene"><defs>${C.defs()}</defs>` + C.ceu({ astroX: 200, astroY: 1000, nuvens: 3 });
   v += C.distante({ y: 1150, tipo: 'roma', profundidade: 0.2 }) + C.insula({ x: -120, base: 1700, w: 560, top: 980, andares: 3, cor: '#E3C9A0', sacada: 0, pular: ['0-0'] });
   v += `<g><path d="M520 1700 L540 900 L620 980 L700 860 L780 960 L860 840 L960 930 L1040 900 L1080 920 V1700Z" fill="#2B2226" stroke="#1D1D2B" stroke-width="6"/>`;
@@ -255,7 +256,7 @@ scenes.push(card('c3', '#9B7BDB', 3, 'O BANHEIRO', `<rect x="-170" y="-40" width
     <path d="M560 940 Q480 940 490 860 Q470 760 590 760 Q620 680 740 700 Q830 650 900 730 Q1010 730 990 840 Q1020 940 900 950 Q840 1000 740 960 Q640 990 560 940Z" fill="#FFF" stroke="#1D1D2B" stroke-width="8"/>
     <g id="s8-dia"><text x="740" y="830" font-size="64" fill="#111111" text-anchor="middle">1 DIA ✓</text></g>
     <g id="s8-sem"><text x="740" y="915" font-size="64" fill="#FF7A00" stroke="#111111" stroke-width="8" paint-order="stroke" text-anchor="middle">1 SEMANA?</text></g></g>
-  <g id="s8-voce" transform="translate(540 1000)">${Marca.impacto(0, 0, 'E VOCÊ?', { fs: 160 })}</g>` + C.atmosfera({ grao: 0.3, raios: true }) + `</g>`;
+  <g id="s8-voce" transform="translate(540 1000)">${Marca.impacto(0, 0, 'E VOCÊ?', { fs: 160 })}</g>` + Paleta.grade('alivio') + C.atmosfera({ grao: 0.3, raios: true }) + `</g>`;
   scenes.push(v); }
 scenes.push(Marca.final({ linhas: ['QUANTO TEMPO', 'VOCÊ DURARIA'], destaque: 'NA ROMA ANTIGA?', chamada: 'COMENTE AQUI ↓' }));
 $('#scenes').innerHTML = scenes.join('');
@@ -408,6 +409,8 @@ tl.set('#s4-moeda', { autoAlpha: 1 }, 32.1)
   .to('#s4-moeda', { rotation: 720, duration: 0.8, ease: 'none' }, 32.1)
   .set('#s4-moeda', { autoAlpha: 0 }, 32.9);
 pop('#s4-pao', 33.4); pop('#s4-garum', 34.8);
+gsap.set('#s4-nojo', { autoAlpha: 0 });
+tl.to('#s4-nojo', { autoAlpha: 1, duration: 0.6, ease: 'sine.inOut' }, 37.2).to('#s4-nojo', { autoAlpha: 0, duration: 0.8, ease: 'sine.inOut' }, 40.0);
 tl.fromTo('#s4-stink path', { y: 20, autoAlpha: 0 }, { y: -40, autoAlpha: 1, duration: 0.5, stagger: 0.15, repeat: 5, yoyo: true, immediateRender: false }, 37.2);
 pop('#s4-eca', 37.6); hide('#s4-eca', 38.8);
 tl.set('#s4-pao', { autoAlpha: 0 }, 38.9);
@@ -428,6 +431,8 @@ pop('#s6-stamp', 63.6, 0.35, 'back.out(3)');
 show('#s7a', 65.5, 71.8); show('#fg-s7', 65.5, 71.8);
 pop('#s7-g1', 66.0); pop('#s7-g2', 66.6);
 gsap.set('#s7-glow', { autoAlpha: 0 });
+gsap.set('#s7-perigo', { autoAlpha: 0 });
+tl.to('#s7-perigo', { autoAlpha: 1, duration: 1.0, ease: 'power1.out' }, 68.0).to('#s7-tensao', { autoAlpha: 0.35, duration: 1.0 }, 68.0);
 tl.to('#s7-glow', { autoAlpha: 1, duration: 1.2, ease: 'power1.out' }, 68.0);
 $$('.flame').forEach((f, i) => {
   gsap.set(f, { autoAlpha: 0, scale: 0.1, transformOrigin: '50% 100%' });
