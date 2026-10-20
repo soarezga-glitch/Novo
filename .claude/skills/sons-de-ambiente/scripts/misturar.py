@@ -114,17 +114,17 @@ def main():
     alvo = P.get('volume_final_lufs', -10)
     duck_f = f"[0:a][v1]sidechaincompress=threshold=0.03:ratio={ratio}:attack=25:release=350:makeup=1[ambd];"
     if a.so_ambiente:   # só ambiente + efeitos (já com ducking), para medir o equilíbrio com a voz
-        filtro = f"[1:a]aresample={SR},asplit=2[v1][v2];[v2]anullsink;" + duck_f + f"[ambd][2:a]amix=inputs=2:normalize=0:duration=first,aresample={SR}[out]"
+        filtro = f"[1:a]aresample={SR},apad=whole_dur={P['duracao']},asplit=2[v1][v2];[v2]anullsink;" + duck_f + f"[ambd][2:a]amix=inputs=2:normalize=0:duration=first,aresample={SR}[out]"
     else:
-        filtro = (f"[1:a]aresample={SR},asplit=2[v1][v2];" + duck_f +
-                  f"[ambd][v2][2:a]amix=inputs=3:normalize=0:duration=first,loudnorm=I={alvo}:TP=-1:LRA=9,aresample={SR}[out]")
+        filtro = (f"[1:a]aresample={SR},apad=whole_dur={P['duracao']},asplit=2[v1][v2];" + duck_f +
+                  f"[ambd][v2][2:a]amix=inputs=3:normalize=0:duration=first,loudnorm=I={alvo}:TP=-1.5:LRA=9,alimiter=limit=0.8:level=disabled,aresample={SR}[out]")
     subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', tmp[0], '-i', voz, '-i', tmp[1],
                     '-filter_complex', filtro, '-map', '[out]', '-ar', str(SR), a.saida], check=True)
     for f in tmp:
         os.remove(f)
     if a.video:
         subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', a.video, '-i', a.saida, '-map', '0:v', '-map', '1:a',
-                        '-c:v', 'copy', '-c:a', 'aac', '-b:a', '192k', '-shortest', a.video_saida or a.video.replace('.mp4', '_som.mp4')], check=True)
+                        '-c:v', 'copy', '-c:a', 'aac', '-b:a', '192k', a.video_saida or a.video.replace('.mp4', '_som.mp4')], check=True)
     print('ok', a.saida)
 
 
