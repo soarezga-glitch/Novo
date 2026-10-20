@@ -1,0 +1,85 @@
+---
+name: movimento-humano
+description: Anima stickman/boneco 2D em SVG com função motora humana — articulações reais (quadril, joelho, tornozelo, pé, ombro, cotovelo, mão), cinemática inversa para o pé ficar plantado no chão, ciclos de caminhada/corrida/escada com calcanhar→ponta, braços em oposição às pernas, sentar, pular, deitar/levantar, comer, pensar, acenar, apontar, segurar objetos. Use sempre que um vídeo/animação tiver personagem andando, correndo, subindo escada, gesticulando ou interagindo com objetos — junto com a skill "edit" (render) — e sempre que o usuário reclamar que o boneco "anda errado", "pé virado", "braço estranho" ou "movimento não natural".
+---
+
+# movimento-humano — boneco que se move como gente
+
+O stickman antigo (template da skill `edit`) tinha pernas de um osso só e andava de frente para a
+câmera: o pé não apontava para onde ele ia e a perna girava como compasso. Esta skill troca isso
+por um **boneco articulado** (`assets/boneco.js`) com **cinemática inversa (IK)**: você diz onde o
+pé pisa ou onde a mão deve chegar, e o motor calcula joelho e cotovelo dentro dos limites do corpo.
+
+Caminhos relativos a esta pasta (`SKILL_DIR`). O render continua sendo o da skill `edit`
+(`../edit/scripts/render.mjs`).
+
+## Regras de função motora (não quebre)
+
+Leia `references/biomecanica.md` para os números. Resumo:
+
+1. **Locomoção é de perfil.** Quem anda para a direita aparece de lado olhando para a direita
+   (`dir: 1`); para a esquerda, `dir: -1`. De frente só parado, falando, gesticulando.
+2. **Pé aponta para onde o corpo vai** e o pé de apoio **não escorrega**: ele fica plantado
+   onde pisou até sair do chão (o motor calcula isso; nunca anime o pé com tween de x).
+3. **Rolamento do pé**: calcanhar toca primeiro → pé chato → calcanhar sobe → ponta empurra.
+4. **Joelho só dobra para trás** (a canela vai para trás da coxa), **cotovelo só dobra para frente**.
+5. **Braço oposto à perna**: perna direita à frente → braço esquerdo à frente. Cotovelo levemente
+   dobrado andando (~15°), ~90° correndo.
+6. **Centro de massa**: quadril mais baixo logo após o contato, mais alto na passagem (sobe e
+   desce ~2% da altura). Correndo, o tronco inclina para frente (~10°); subindo escada, ~9°.
+7. **Mãos alcançam alvos por IK**: comer, pensar (queixo), tampar o nariz, pegar/entregar algo —
+   a mão vai até o ponto e o cotovelo fica para baixo, como numa pessoa.
+8. **Toda mudança de ação tem transição** (padrão 0,3 s). Trocar perfil↔frente é instantâneo:
+   faça isso num momento com piscada ou corte de cena.
+9. **Escala**: o boneco tem ~570 unidades de altura com `escala: 1`. Use escala para caber na cena,
+   nunca estique só uma parte.
+
+## Uso
+
+```html
+<script src="boneco.js"></script>   <!-- copie assets/boneco.js para o projeto -->
+<defs> ... <filter id="outline"> (contorno escuro; copie de assets/demo.html) ... </defs>
+<g id="atores"></g>
+```
+```js
+const heroi = new Boneco(document.querySelector('#atores'), {
+  escala: 0.9, roupa: '#C8553D', seed: 4,
+  boca: t => formaDaBoca(t)            // opcional: lipsync ('0'..'4' ou 'smile')
+});
+// BASE (pernas + tronco) — uma ação por intervalo
+heroi.base(0, 3, 'andar',  { de: [100, 1700], ate: [700, 1700] });
+heroi.base(3, 6, 'parado', { x: 700, y: 1700, vista: 'frente' });
+heroi.base(6, 8, 'correr', { de: [700, 1700], ate: [100, 1700] });
+heroi.base(8, 11, 'subir', { de: [x0, y], ate: [x1, y], chao: x => alturaDoDegrau(x), passo: larguraDoDegrau });
+heroi.base(11, 14, 'sentar', { x: assentoX, y: assentoY, chao: 1700, dir: 1 });
+heroi.base(14, 15, 'pular', { x, y, vista: 'frente', altura: 80 });
+heroi.base(15, 16, 'deitado', { x, y, dir: 1 });  // depois 'parado' com transicao: 0.8 = levantar
+heroi.base(16, 17, 'agachar', { x, y, vista: 'perfil', quanto: 70 });
+// BRAÇOS (por cima da base): lado 'e', 'd' ou 'ambos'
+heroi.braco('d', 3.5, 5, 'acenar');
+// gestos: acenar, cima, desespero, encolher, abanar, apontar, estender, segurar, cintura,
+//         comer, queixo, nariz, alcancar {alvo:[x,y]}, pose {o, c}
+// CABEÇA e ROSTO
+heroi.cabeca(4, 5, { vista: 'frente', inclinar: 8 });   // olhar para a câmera estando de perfil
+heroi.expressao(4, 6, 'feliz');   // normal, feliz, susto, nojo, bravo, triste, pensando, dormindo
+heroi.sujeira(10, 20);            // manchas de fuligem/sujeira
+// a cada quadro (dentro de window.__seek):
+heroi.desenhar(t);
+const [mx, my] = heroi.mao('e');  // posição da mão para prender objetos (pão, jarro, moeda)
+```
+
+- No perfil com `dir: 1`, o braço **'e' é o de perto** (desenhado na frente); com `dir: -1`, o 'd'.
+  Objetos segurados vão na mão de perto.
+- `subir`/`andar` com `chao: x => y` plantam cada pé na altura do degrau. Faça `passo` igual
+  à largura do degrau e comece `de[0]` em `centroDoPrimeiroDegrau - 0.55 * passo` para os pés
+  caírem no meio dos degraus.
+- Para várias pessoas, crie vários `Boneco` (seeds diferentes para não piscarem juntos).
+- Visibilidade por cena: envolva cada boneco num `<g>` e ligue/desligue no `__seek`.
+
+## Verificar (sempre)
+
+Gere quadros de prévia com `../edit/scripts/render.mjs cena.html --frames ...` em momentos de
+**contato** (pés afastados), **passagem** (pés juntos) e em cada gesto. Confira: pé apontando para
+a direção do movimento, pé de apoio parado no mesmo lugar entre dois quadros, joelho nunca dobrado
+para frente, mão chegando no alvo. `assets/demo.html` mostra todos os movimentos — use como
+referência visual e para testar mudanças no motor.
