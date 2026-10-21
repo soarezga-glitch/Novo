@@ -14,7 +14,7 @@
   Origem de todo objeto: centro da base, no chão (y = 0, desenho para cima com y negativo).
 */
 (function (global) {
-  function Detalhes({ luz = -1, seed = 7, prefixo = 'dt' } = {}) {
+  function Detalhes({ luz = -1, seed = 7, prefixo = 'dt', sombra = true } = {}) {   // sombra: false para objeto na mão (sem sombra no chão)
     const L = '#1D1D2B';
     let n = 0; const uid = () => `${prefixo}${seed}_${++n}`;
     const f = v => Math.round(v * 10) / 10;
@@ -32,7 +32,7 @@
     const rad = (s, cx = 0.5, cy = 0.5, r = 0.5, fx = cx, fy = cy) => { const i = uid(); return { id: `url(#${i})`, def: `<radialGradient id="${i}" cx="${cx}" cy="${cy}" r="${r}" fx="${fx}" fy="${fy}">${stops(s)}</radialGradient>` }; };
     const clip = d => { const i = uid(); return { id: `url(#${i})`, def: `<clipPath id="${i}"><path d="${d}"/></clipPath>` }; };
     // sombra de contato macia no chão
-    const contato = (w, h = 14, op = 0.35) => { const g = rad([[0, '#000', op], [0.6, '#000', op * 0.45], [1, '#000', 0]]); return `<defs>${g.def}</defs><ellipse cx="${f(w * 0.06)}" cy="2" rx="${f(w)}" ry="${h}" fill="${g.id}"/>`; };
+    const contato = (w, h = 14, op = 0.35) => { if (!sombra) return ''; const g = rad([[0, '#000', op], [0.6, '#000', op * 0.45], [1, '#000', 0]]); return `<defs>${g.def}</defs><ellipse cx="${f(w * 0.06)}" cy="2" rx="${f(w)}" ry="${h}" fill="${g.id}"/>`; };
     // texto que não espelha quando a luz vem da direita
     const T = (x, y, txt, { fs = 20, cor = L, peso = 700, fonte = "'DejaVu Sans', Arial, sans-serif", anc = 'middle', extra = '' } = {}) =>
       `<text x="${f(luz > 0 ? -x : x)}" y="${f(y)}" font-size="${fs}" font-family="${fonte}" font-weight="${peso}" fill="${cor}" text-anchor="${anc}" ${extra}>${txt}</text>`;
@@ -49,7 +49,8 @@
     const REAL = {
       paoFrances: [320, 0.18], paoRomano: [320, 0.24], uvas: [190, 0.16], peixe: [360, 0.35], anfora: [210, 0.4], moeda: [210, 0.022],
       queijo: [430, 0.3], geladeira: [270, 0.75], carrinhoMercado: [460, 0.95], microondas: [330, 0.5], fogao: [300, 0.6],
-      tv: [440, 1.0], celular: [130, 0.075], liquidificador: [190, 0.2]
+      tv: [440, 1.0], celular: [130, 0.075], liquidificador: [190, 0.2],
+      tigela: [300, 0.2], copo: [120, 0.1], capacete: [300, 0.4], rudis: [370, 0.75], gladio: [52, 0.08], escudo: [180, 0.65], tridente: [100, 0.2], rede: [320, 2.5], corneta: [330, 1.2], palma: [160, 0.5], leao: [640, 2.2], urso: [600, 2.0]
     };
 
     const D = {
@@ -456,6 +457,161 @@
         s += `<path d="M-52 -370 L-40 -150" stroke="#fff" stroke-width="8" opacity=".5" stroke-linecap="round"/><path d="M30 -370 L24 -160" stroke="#fff" stroke-width="3" opacity=".35"/>`;
         s += `</g><path d="${copo}" fill="none" stroke="${L}" stroke-width="5" stroke-linejoin="round"/>`;
         s += `<rect x="-76" y="-396" width="152" height="22" rx="6" fill="#2B2F35" stroke="${L}" stroke-width="4"/><rect x="-22" y="-410" width="44" height="16" rx="4" fill="#4A4F55" stroke="${L}" stroke-width="3"/><path d="M-66 -390 H60" stroke="#6A717A" stroke-width="2"/>`;
+        return pos(x, y, k, s);
+      },
+
+      // ===================== GLADIADORES / COLISEU =====================
+      // tigela de barro com cevada e feijão (a comida dos gladiadores, "hordearii" = comedores de cevada) + colher de pau
+      tigela: (x, y, k = 1, { cor = '#A8603A', colher = true, vapor = true } = {}) => {
+        const g = lin([[0, tom(cor, 0.25)], [0.5, cor], [1, tom(cor, -0.45)]], 0, 0, 1, 0);
+        const papa = rad([[0, '#E9D29A'], [1, '#B99A5E']], 0.4, 0.4, 0.7);
+        let s = `<defs>${g.def}${papa.def}</defs>` + contato(150, 12, 0.35);
+        s += `<path d="M-150 -120 Q-140 -20 -60 -6 H60 Q140 -20 150 -120Z" fill="${g.id}" stroke="${L}" stroke-width="5" stroke-linejoin="round"/>`;
+        s += `<path d="M-50 -6 L-44 6 H44 L50 -6Z" fill="${tom(cor, -0.35)}" stroke="${L}" stroke-width="4"/>`;     // pé da tigela
+        for (let i = 0; i < 3; i++) s += `<path d="M${-140 + i * 6} ${-96 + i * 26} Q0 ${-70 + i * 30} ${140 - i * 6} ${-96 + i * 26}" stroke="#000" stroke-width="1.6" fill="none" opacity=".15"/>`;   // anéis do torno
+        s += `<path d="M-128 -90 Q-118 -40 -70 -24" stroke="#fff" stroke-width="7" fill="none" opacity=".3" stroke-linecap="round"/>`;
+        s += `<ellipse cx="0" cy="-120" rx="150" ry="34" fill="${tom(cor, 0.1)}" stroke="${L}" stroke-width="5"/>`;
+        s += `<ellipse cx="0" cy="-118" rx="134" ry="26" fill="${papa.id}"/>`;
+        for (let i = 0; i < 70; i++) { const a = rnd(0, Math.PI * 2), rr = Math.sqrt(rnd(0, 1)); const px = Math.cos(a) * rr * 124, py = -118 + Math.sin(a) * rr * 22; s += `<ellipse cx="${f(px)}" cy="${f(py)}" rx="4.2" ry="2.6" fill="${rnd() < 0.5 ? '#D9BE7E' : '#F2E2B4'}" stroke="#A88A50" stroke-width="0.8" transform="rotate(${f(rnd(0, 180))} ${f(px)} ${f(py)})"/>`; }   // grãos de cevada
+        for (let i = 0; i < 16; i++) { const a = rnd(0, Math.PI * 2), rr = Math.sqrt(rnd(0, 1)); const px = Math.cos(a) * rr * 110, py = -118 + Math.sin(a) * rr * 18; s += `<ellipse cx="${f(px)}" cy="${f(py)}" rx="8" ry="5" fill="#7A3A2A" stroke="${L}" stroke-width="1.5" transform="rotate(${f(rnd(-30, 30))} ${f(px)} ${f(py)})"/><ellipse cx="${f(px - 2)}" cy="${f(py - 1.5)}" rx="3" ry="1.4" fill="#fff" opacity=".45"/>`; }   // feijões
+        if (colher) s += `<path d="M40 -130 L170 -250" stroke="${L}" stroke-width="16" stroke-linecap="round"/><path d="M40 -130 L170 -250" stroke="#9A6A3A" stroke-width="10" stroke-linecap="round"/><ellipse cx="34" cy="-124" rx="26" ry="14" fill="#9A6A3A" stroke="${L}" stroke-width="4" transform="rotate(-42 34 -124)"/>`;
+        if (vapor) s += `<g stroke="#fff" stroke-width="6" fill="none" opacity=".55" stroke-linecap="round"><path d="M-50 -160 q-16 -30 0 -60 q16 -30 0 -60"/><path d="M10 -170 q-16 -30 0 -60 q16 -30 0 -55"/></g>`;
+        return pos(x, y, k, s);
+      },
+
+      // copo de barro com água misturada com cinza (bebida de "ossos fortes"): água acinzentada, flocos de cinza boiando
+      copo: (x, y, k = 1, { cor = '#9A5A3A', cinza = true } = {}) => {
+        const g = lin([[0, tom(cor, 0.3)], [0.55, cor], [1, tom(cor, -0.5)]], 0, 0, 1, 0);
+        let s = `<defs>${g.def}</defs>` + contato(70, 8, 0.32);
+        s += `<path d="M-60 -200 L-48 -8 Q0 4 48 -8 L60 -200Z" fill="${g.id}" stroke="${L}" stroke-width="5" stroke-linejoin="round"/>`;
+        s += `<path d="M-56 -150 Q0 -140 56 -150 M-54 -110 Q0 -100 54 -110" stroke="${tom(cor, -0.4)}" stroke-width="3" fill="none" opacity=".6"/><path d="M-40 -180 L-32 -30" stroke="#fff" stroke-width="7" opacity=".28" stroke-linecap="round"/>`;
+        s += `<ellipse cx="0" cy="-200" rx="60" ry="14" fill="${tom(cor, 0.1)}" stroke="${L}" stroke-width="5"/><ellipse cx="0" cy="-198" rx="50" ry="9" fill="${cinza ? '#8E8E86' : '#5DB7EE'}"/>`;
+        if (cinza) { s += pontos(26, -44, 44, -204, -192, '#3A3A38', 1.2, 3, 0.5, 0.9) + `<path d="M-30 -199 q14 -4 26 0" stroke="#C9C9C0" stroke-width="2" fill="none"/>`; }
+        s += `<path d="M38 -200 l8 8 -6 4Z" fill="${tom(cor, 0.35)}" stroke="${L}" stroke-width="2"/>`;
+        return pos(x, y, k, s);
+      },
+
+      // capacete de secutor (objeto, de lado): casco liso de bronze, crista baixa, dois furinhos, aba da nuca, rebites
+      capacete: (x, y, k = 1, { cor = '#C3C6CD' } = {}) => {
+        const g = rad([[0, '#FFFFFF'], [0.35, cor], [1, tom(cor, -0.5)]], 0.35, 0.3, 0.75);
+        let s = `<defs>${g.def}</defs>` + contato(130, 12, 0.35);
+        s += `<path d="M-150 -40 Q-170 -10 -120 0 H120 Q170 -10 150 -40 Q60 -70 0 -70 Q-60 -70 -150 -40Z" fill="${tom(cor, -0.25)}" stroke="${L}" stroke-width="5"/>`;    // aba
+        s += `<path d="M-90 -250 Q0 -360 90 -250 Q20 -300 -90 -250Z" fill="${tom(cor, -0.1)}" stroke="${L}" stroke-width="5"/>`;                                     // crista
+        s += `<path d="M-130 -40 C-150 -200 -60 -290 0 -290 C80 -290 150 -200 130 -40 Q0 -10 -130 -40Z" fill="${g.id}" stroke="${L}" stroke-width="6"/>`;
+        s += `<path d="M-110 -110 Q0 -84 110 -110" stroke="${tom(cor, -0.35)}" stroke-width="3" fill="none"/>`;
+        [-40, 40].forEach(ex => { s += `<ellipse cx="${ex}" cy="-150" rx="14" ry="16" fill="#0E0E14" stroke="${tom(cor, -0.5)}" stroke-width="3"/><path d="M${ex - 14} -170 q14 -8 28 0" stroke="#fff" stroke-width="2.5" fill="none" opacity=".7"/>`; });
+        for (let i = 0; i < 9; i++) { const px = -110 + i * 27.5; s += `<circle cx="${f(px)}" cy="${f(-60 - Math.sin((i / 8) * Math.PI) * 14)}" r="4.5" fill="${tom(cor, -0.4)}"/><circle cx="${f(px - 1.2)}" cy="${f(-61.5 - Math.sin((i / 8) * Math.PI) * 14)}" r="1.8" fill="#fff" opacity=".8"/>`; }
+        s += `<path d="M-90 -200 Q-80 -260 -20 -275" stroke="#fff" stroke-width="10" fill="none" opacity=".7" stroke-linecap="round"/>`;
+        s += pontos(14, -110, 110, -260, -60, tom(cor, -0.45), 1, 3, 0.15, 0.35);   // amassadinhos
+        return pos(x, y, k, s);
+      },
+
+      // espada de treino (rudis, de madeira) — deitada no chão (origem = centro, no chão)
+      rudis: (x, y, k = 1, { rot = 0 } = {}) => {
+        const g = lin([[0, '#C9945A'], [1, '#8A5A2E']]);
+        let s = `<defs>${g.def}</defs>` + contato(140, 8, 0.3);
+        s += `<g transform="rotate(${rot})"><path d="M-150 -14 L90 -18 L130 -8 L90 2 L-150 -2Z" fill="${g.id}" stroke="${L}" stroke-width="4" stroke-linejoin="round"/><path d="M-140 -10 L84 -12" stroke="#E2B57A" stroke-width="2.5" opacity=".7"/>${[...Array(5)].map((_, i) => `<path d="M${-120 + i * 45} -14 q10 4 22 1" stroke="#6E4524" stroke-width="1.5" fill="none" opacity=".6"/>`).join('')}`;
+        s += `<rect x="-166" y="-30" width="14" height="44" rx="4" fill="#6E4524" stroke="${L}" stroke-width="4"/><rect x="-216" y="-15" width="52" height="16" rx="6" fill="#5A3A1E" stroke="${L}" stroke-width="4"/>${[0, 1, 2].map(i => `<path d="M${-208 + i * 15} -15 v16" stroke="#3A2414" stroke-width="2"/>`).join('')}<circle cx="-222" cy="-7" r="9" fill="#6E4524" stroke="${L}" stroke-width="3"/></g>`;
+        return pos(x, y, k, s);
+      },
+
+      // gládio (espada curta de ferro) — na vertical, ponta para cima; origem = punho (para segurar na mão)
+      gladio: (x, y, k = 1) => {
+        const g = lin([[0, '#F4F6F8'], [0.45, '#AEB4BC'], [0.55, '#7E848C'], [1, '#C9CED4']], 0, 0, 1, 0);
+        let s = `<defs>${g.def}</defs>`;
+        s += `<path d="M-13 -24 L-12 -190 L0 -222 L12 -190 L13 -24Z" fill="${g.id}" stroke="${L}" stroke-width="4" stroke-linejoin="round"/><path d="M0 -30 V-205" stroke="#6E747C" stroke-width="2"/>`;
+        s += `<rect x="-26" y="-28" width="52" height="12" rx="5" fill="#C9A24A" stroke="${L}" stroke-width="3.5"/><rect x="-8" y="-16" width="16" height="34" rx="4" fill="#6E4524" stroke="${L}" stroke-width="3"/><circle cx="0" cy="24" r="10" fill="#C9A24A" stroke="${L}" stroke-width="3"/>`;
+        return `<g transform="translate(${f(x)} ${f(y)}) scale(${k})">${s}</g>`;
+      },
+
+      // escudo de secutor (scutum retangular curvo): madeira coberta de couro pintado, borda de metal, umbo no centro
+      escudo: (x, y, k = 1, { cor = '#9E2A22', cor2 = '#FF7A00' } = {}) => {
+        const g = lin([[0, tom(cor, 0.3)], [0.5, cor], [1, tom(cor, -0.45)]], 0, 0, 1, 0);
+        const um = rad([[0, '#FFF3C4'], [0.5, '#C9A24A'], [1, '#7A5A1A']], 0.35, 0.35, 0.7);
+        let s = `<defs>${g.def}${um.def}</defs>`;
+        s += `<path d="M-90 -170 Q0 -184 90 -170 V170 Q0 184 -90 170Z" fill="${g.id}" stroke="${L}" stroke-width="6"/>`;
+        s += `<path d="M-90 -170 Q0 -184 90 -170 V170 Q0 184 -90 170Z" fill="none" stroke="#B9BCC4" stroke-width="5" transform="scale(.94)"/>`;
+        s += `<path d="M-70 -120 L70 120 M70 -120 L-70 120" stroke="${cor2}" stroke-width="12" opacity=".9"/><path d="M-60 -150 Q0 -160 60 -150 M-60 150 Q0 160 60 150" stroke="${cor2}" stroke-width="8" fill="none"/>`;
+        s += `<circle r="40" fill="${um.id}" stroke="${L}" stroke-width="5"/><circle cx="-10" cy="-12" r="10" fill="#fff" opacity=".6"/>`;
+        s += pontos(24, -84, 84, -160, 160, tom(cor, -0.5), 2, 5, 0.12, 0.3) + `<path d="M-80 -150 V140" stroke="#fff" stroke-width="6" opacity=".2"/>`;
+        return `<g transform="translate(${f(x)} ${f(y)}) scale(${k})">${s}</g>`;
+      },
+
+      // tridente do reciário — vertical, origem = onde a mão segura (meio do cabo)
+      tridente: (x, y, k = 1) => {
+        const mt = metal(true);
+        let s = `<defs>${mt.def}</defs><rect x="-6" y="-200" width="12" height="420" rx="5" fill="#8A5A2E" stroke="${L}" stroke-width="3.5"/><path d="M-2 -196 V210" stroke="#C9945A" stroke-width="2.5"/>`;
+        s += `<path d="M-40 -210 V-290 L-46 -282 M40 -210 V-290 L46 -282 M0 -210 V-310" stroke="${L}" stroke-width="12" stroke-linecap="round" fill="none"/><path d="M-40 -210 V-290 M40 -210 V-290 M0 -210 V-310" stroke="#C9CED4" stroke-width="6" stroke-linecap="round"/>`;
+        s += `<path d="M-52 -296 L-40 -318 L-28 -296Z M28 -296 L40 -318 L52 -296Z M-12 -316 L0 -340 L12 -316Z" fill="#DDE1E6" stroke="${L}" stroke-width="3.5" stroke-linejoin="round"/>`;
+        s += `<path d="M-46 -200 Q0 -226 46 -200" stroke="${L}" stroke-width="12" fill="none" stroke-linecap="round"/><path d="M-46 -200 Q0 -226 46 -200" stroke="#B9BCC4" stroke-width="6" fill="none" stroke-linecap="round"/><rect x="-10" y="-208" width="20" height="24" rx="3" fill="#8E949C" stroke="${L}" stroke-width="3"/>`;
+        return `<g transform="translate(${f(x)} ${f(y)}) scale(${k})">${s}</g>`;
+      },
+
+      // rede de pesca do reciário (aberta no ar): malha que segue a forma, pesos de chumbo na borda
+      rede: (x, y, k = 1, { abertura = 1 } = {}) => {
+        const R = 160 * abertura, n = 9;
+        let s = '';
+        const pt = (u, v) => [u * R * (1 - 0.15 * v * v), (v * R * 0.62) + Math.sin(u * 3) * 10 * abertura];
+        for (let i = -n; i <= n; i += 2) { let d = ''; for (let j = -n; j <= n; j++) { const [px, py] = pt(i / n, j / n); d += (d ? ' L' : 'M') + f(px) + ' ' + f(py); } s += `<path d="${d}" stroke="#D9C9A0" stroke-width="3" fill="none"/>`; }
+        for (let j = -n; j <= n; j += 2) { let d = ''; for (let i = -n; i <= n; i++) { const [px, py] = pt(i / n, j / n); d += (d ? ' L' : 'M') + f(px) + ' ' + f(py); } s += `<path d="${d}" stroke="#C9B888" stroke-width="3" fill="none"/>`; }
+        for (let i = -n; i <= n; i += 3) { const [px, py] = pt(i / n, 1); s += `<circle cx="${f(px)}" cy="${f(py + 6)}" r="7" fill="#6E727A" stroke="${L}" stroke-width="2.5"/>`; }
+        return `<g transform="translate(${f(x)} ${f(y)}) scale(${k})" stroke-linecap="round">${s}</g>`;
+      },
+
+      // corneta romana (cornu): tubo de bronze em forma de G com travessa de madeira; origem = bocal
+      corneta: (x, y, k = 1) => {
+        const g = lin([[0, '#F2D27A'], [0.5, '#C9A24A'], [1, '#7A5A1A']]);
+        let s = `<defs>${g.def}</defs>`;
+        s += `<path d="M0 0 C-40 -20 -150 -10 -170 -120 C-190 -230 -60 -290 40 -250 C120 -220 130 -120 90 -70" stroke="${L}" stroke-width="22" fill="none" stroke-linecap="round"/><path d="M0 0 C-40 -20 -150 -10 -170 -120 C-190 -230 -60 -290 40 -250 C120 -220 130 -120 90 -70" stroke="${g.id}" stroke-width="14" fill="none" stroke-linecap="round"/>`;
+        s += `<path d="M-4 -6 C-40 -24 -146 -16 -164 -120" stroke="#FFF3C4" stroke-width="3" fill="none" opacity=".8"/>`;
+        s += `<path d="M90 -70 L150 -20 L60 -40Z" fill="${g.id}" stroke="${L}" stroke-width="5" stroke-linejoin="round"/><ellipse cx="108" cy="-28" rx="44" ry="16" transform="rotate(38 108 -28)" fill="#7A5A1A" stroke="${L}" stroke-width="4"/>`;   // campânula
+        s += `<path d="M-150 -60 L60 -200" stroke="${L}" stroke-width="12" stroke-linecap="round"/><path d="M-150 -60 L60 -200" stroke="#8A5A2E" stroke-width="7" stroke-linecap="round"/>`;
+        return `<g transform="translate(${f(x)} ${f(y)}) scale(${k})">${s}</g>`;
+      },
+
+      // folha de palmeira (prêmio do vencedor) — origem = cabo (na mão), folha para cima
+      palma: (x, y, k = 1) => {
+        let s = `<path d="M0 30 Q6 -120 30 -300" stroke="${L}" stroke-width="10" fill="none" stroke-linecap="round"/><path d="M0 30 Q6 -120 30 -300" stroke="#8A9A3A" stroke-width="5" fill="none" stroke-linecap="round"/>`;
+        for (let i = 0; i < 14; i++) { const t = 0.15 + i * 0.06, px = 6 * t * 2 + 30 * t * t, py = 30 - 330 * t; [-1, 1].forEach(sd => { const L2 = 80 - i * 4; s += `<path d="M${f(px)} ${f(py)} Q${f(px + sd * L2 * 0.6)} ${f(py - 6)} ${f(px + sd * L2)} ${f(py + 26 - i)}" stroke="${L}" stroke-width="9" fill="none" stroke-linecap="round"/><path d="M${f(px)} ${f(py)} Q${f(px + sd * L2 * 0.6)} ${f(py - 6)} ${f(px + sd * L2)} ${f(py + 26 - i)}" stroke="${i % 2 ? '#5DA052' : '#3E8A3A'}" stroke-width="5" fill="none" stroke-linecap="round"/>`; }); }
+        return `<g transform="translate(${f(x)} ${f(y)}) scale(${k})">${s}</g>`;
+      },
+
+      // leão (de lado, olhando para a direita): juba em mechas com volume, corpo em degradê, focinho, olho, cauda com tufo
+      leao: (x, y, k = 1, { rugindo = false } = {}) => {
+        const g = lin([[0, '#E8B860'], [1, '#B07A30']]);
+        const jb = rad([[0, '#B0602A'], [1, '#6E3418']], 0.6, 0.45, 0.6);
+        let s = `<defs>${g.def}${jb.def}</defs>` + contato(220, 14, 0.35);
+        s += `<path d="M-230 -240 Q-300 -270 -290 -190 Q-286 -150 -306 -120" stroke="${L}" stroke-width="12" fill="none" stroke-linecap="round"/><path d="M-230 -240 Q-300 -270 -290 -190 Q-286 -150 -306 -120" stroke="#C88A3A" stroke-width="6" fill="none" stroke-linecap="round"/><ellipse cx="-308" cy="-112" rx="16" ry="20" fill="#6E3418" stroke="${L}" stroke-width="4"/>`;
+        // pernas (as de longe mais escuras), patas com dedos
+        [[-60, -36, 0.8], [150, 184, 0.8], [-170, -134, 1], [62, 98, 1]].forEach(([a, b, e]) => { s += `<path d="M${a + 4} -120 Q${a - 6} -60 ${a} -14 Q${a - 4} 0 ${a + 8} 0 H${b + 4} Q${b + 6} -10 ${b} -16 Q${b + 6} -70 ${b - 2} -120Z" fill="${e < 1 ? '#B07A30' : '#D89A48'}" stroke="${L}" stroke-width="5" stroke-linejoin="round"/>${[0, 1, 2].map(i => `<path d="M${a + 12 + i * 9} 0 v-7" stroke="${L}" stroke-width="2.5"/>`).join('')}`; });
+        s += `<g transform="translate(0 -70)">`;
+        s += `<path d="M-240 -170 Q-250 -236 -150 -232 Q-20 -222 120 -240 Q200 -236 210 -170 Q216 -60 170 -44 Q0 -20 -200 -44 Q-246 -60 -240 -170Z" fill="${g.id}" stroke="${L}" stroke-width="6"/>`;
+        s += `<path d="M-200 -60 Q0 -40 160 -60" stroke="#F4D89A" stroke-width="10" fill="none" opacity=".5"/>`;
+        // juba: mechas
+        for (let i = 0; i < 16; i++) { const a = -Math.PI * 0.95 + i * 0.13 * Math.PI, rr = 118; const px = 200 + Math.cos(a) * rr * 0.9, py = -230 + Math.sin(a) * rr; s += `<path d="M200 -230 Q${f(200 + Math.cos(a + 0.2) * rr * 0.6)} ${f(-230 + Math.sin(a + 0.2) * rr * 0.6)} ${f(px)} ${f(py)}" stroke="${L}" stroke-width="34" stroke-linecap="round"/>`; }
+        s += `<ellipse cx="200" cy="-230" rx="110" ry="120" fill="${jb.id}"/>`;
+        for (let i = 0; i < 16; i++) { const a = -Math.PI * 0.95 + i * 0.13 * Math.PI, rr = 112; s += `<path d="M200 -230 Q${f(200 + Math.cos(a + 0.2) * rr * 0.6)} ${f(-230 + Math.sin(a + 0.2) * rr * 0.6)} ${f(200 + Math.cos(a) * rr * 0.88)} ${f(-230 + Math.sin(a) * rr)}" stroke="${i % 2 ? '#8A4520' : '#A85A28'}" stroke-width="26" stroke-linecap="round"/>`; }
+        // cara
+        s += `<path d="M220 -290 Q300 -300 320 -240 Q340 -220 330 -196 Q${rugindo ? '300 -150 250 -170' : '300 -176 260 -176'} Q210 -180 206 -230 Q206 -280 220 -290Z" fill="#E2AA52" stroke="${L}" stroke-width="5"/>`;
+        s += `<path d="M312 -246 Q336 -236 334 -212 L318 -214Z" fill="#3A2418" stroke="${L}" stroke-width="3"/>`;   // nariz
+        if (rugindo) s += `<path d="M330 -196 Q300 -140 250 -170 Q290 -176 330 -196Z" fill="#7A1A1A" stroke="${L}" stroke-width="4"/><path d="M322 -192 l-6 12 -6 -10 M268 -172 l4 -12 6 10" fill="#fff" stroke="${L}" stroke-width="2"/>`;
+        s += `<ellipse cx="270" cy="-258" rx="11" ry="${rugindo ? 6 : 9}" fill="#F6E2A0" stroke="${L}" stroke-width="3"/><circle cx="273" cy="-258" r="5" fill="${L}"/><path d="M252 -276 Q270 ${rugindo ? -282 : -272} 290 -270" stroke="${L}" stroke-width="5" fill="none"/>`;
+        s += `<path d="M232 -300 Q226 -330 252 -318" fill="#C88A3A" stroke="${L}" stroke-width="4"/>${[0, 1, 2].map(i => `<circle cx="${296 + i * 9}" cy="${-210 + i * 3}" r="2" fill="${L}"/>`).join('')}</g>`;
+        return pos(x, y, k, s);
+      },
+
+      // urso (de lado, em pé nas quatro patas, olhando para a direita): pelo em tufos, corcova, focinho claro, garras
+      urso: (x, y, k = 1, { rugindo = false, cor = '#6E4A2E' } = {}) => {
+        const g = lin([[0, tom(cor, 0.25)], [1, tom(cor, -0.35)]]);
+        let s = `<defs>${g.def}</defs>` + contato(220, 14, 0.38);
+        s += `<path d="M-170 -110 L-180 0 H-120 L-110 -110 M-60 -100 L-66 0 H-10 L-6 -100 M80 -110 L76 0 H136 L138 -110 M170 -120 L172 0 H232 L226 -130" fill="${tom(cor, -0.15)}" stroke="${L}" stroke-width="5" stroke-linejoin="round"/><g transform="translate(0 -50)">`;
+        [-150, -38, 106, 202].forEach(px => { s += [0, 1, 2].map(i => `<path d="M${px + i * 14} 0 l4 8" stroke="#E8E2D0" stroke-width="4" stroke-linecap="round"/>`).join(''); });
+        s += `<path d="M-230 -150 Q-240 -270 -120 -290 Q0 -330 90 -290 Q200 -280 230 -190 Q250 -70 200 -50 H-180 Q-236 -70 -230 -150Z" fill="${g.id}" stroke="${L}" stroke-width="6"/>`;
+        for (let i = 0; i < 40; i++) { const px = rnd(-210, 200), py = rnd(-290, -70); s += `<path d="M${f(px)} ${f(py)} q${f(rnd(-4, 4))} ${f(rnd(8, 14))} ${f(rnd(4, 9))} ${f(rnd(14, 20))}" stroke="${tom(cor, rnd() < 0.5 ? -0.4 : 0.3)}" stroke-width="3" fill="none" stroke-linecap="round" opacity=".6"/>`; }
+        s += `<path d="M190 -250 Q260 -300 320 -250 Q350 -226 360 -200 Q${rugindo ? '340 -150 290 -160' : '340 -176 300 -176'} Q240 -170 210 -200Z" fill="${tom(cor, 0.05)}" stroke="${L}" stroke-width="5"/>`;
+        s += `<path d="M310 -230 Q350 -224 360 -200 Q330 -190 304 -196Z" fill="#C9A882" stroke="${L}" stroke-width="3.5"/><ellipse cx="352" cy="-212" rx="10" ry="7" fill="#1D1D2B"/>`;
+        if (rugindo) s += `<path d="M360 -200 Q340 -150 290 -160 Q320 -182 360 -200Z" fill="#7A1A1A" stroke="${L}" stroke-width="4"/><path d="M350 -196 l-4 12 -6 -10" fill="#fff" stroke="${L}" stroke-width="2"/>`;
+        s += `<circle cx="280" cy="-244" r="7" fill="${L}"/><circle cx="278" cy="-246" r="2.2" fill="#fff"/><circle cx="236" cy="-282" r="18" fill="${tom(cor, -0.1)}" stroke="${L}" stroke-width="4"/><circle cx="236" cy="-282" r="8" fill="${tom(cor, -0.5)}"/></g>`;
         return pos(x, y, k, s);
       },
     };

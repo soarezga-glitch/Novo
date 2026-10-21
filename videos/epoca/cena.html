@@ -21,6 +21,7 @@
 <script src="paletas.js"></script>
 <script src="cenario.js"></script>
 <script src="objetos.js"></script>
+<script src="detalhes.js"></script>
 <script src="marca.js"></script>
 </head>
 <body>
@@ -164,11 +165,13 @@ const ruaS3 = (noite) => {
   <g id="s3-grito" transform="translate(330 1420)">${Marca.balao(0, 0, 'CUIDADO!', { ponta: [-80, 150] })}</g>
   <g id="s3-andar" transform="translate(320 860)">${Marca.etiqueta(0, 0, '3º ANDAR')}</g>${Paleta.grade('rotina')}${C.atmosfera({ grao: 0.3, raios: true })}</g>`); }
 // S4 — desafio 1: fome
-scenes.push(card('c1', '#F2A541', 1, 'A FOME', `<ellipse cx="0" cy="40" rx="150" ry="40" fill="#8A5A2E" stroke="#1D1D2B" stroke-width="8"/><path d="M-150 40 Q0 200 150 40" fill="#A8743F" stroke="#1D1D2B" stroke-width="8"/>`));
+// objetos em destaque com a skill "objetos-detalhados"
+const DT = Detalhes({ seed: 4 }), DTd = Detalhes({ seed: 6, luz: 1 }), DTm = Detalhes({ seed: 8, luz: 1, sombra: false });
+scenes.push(card('c1', '#F2A541', 1, 'A FOME', DT.paoRomano(0, 130, 1.25)));
 scenes.push(`<g id="s4b" class="scene"><rect width="1080" height="1920" fill="#F7D9A8"/>
-  <g id="s4-gel" transform="translate(300 900)"><rect x="-130" y="-230" width="260" height="460" rx="24" fill="#FFF" stroke="#1D1D2B" stroke-width="10"/><path d="M-130 -60 H130" stroke="#1D1D2B" stroke-width="8"/><rect x="80" y="-180" width="16" height="80" rx="8" fill="#1D1D2B"/><rect x="80" y="-20" width="16" height="120" rx="8" fill="#1D1D2B"/>
+  <g id="s4-gel" transform="translate(300 900)">${DT.geladeira(0, 260, 0.82)}
     <g id="s4-x1" stroke-linecap="round"><path d="M-170 -250 L170 250 M170 -250 L-170 250" stroke="#111111" stroke-width="52"/><path d="M-170 -250 L170 250 M170 -250 L-170 250" stroke="#FF7A00" stroke-width="32"/></g></g>
-  <g id="s4-merc" transform="translate(780 900)"><path d="M-170 -60 H170 L140 140 H-140Z" fill="#FFF" stroke="#1D1D2B" stroke-width="10"/><path d="M-200 -140 H-150 L-110 140" stroke="#1D1D2B" stroke-width="10" fill="none"/><circle cx="-100" cy="200" r="30" fill="#1D1D2B"/><circle cx="110" cy="200" r="30" fill="#1D1D2B"/>
+  <g id="s4-merc" transform="translate(780 900)">${DT.carrinhoMercado(0, 250, 0.98)}
     <g id="s4-x2" stroke-linecap="round"><path d="M-190 -200 L190 250 M190 -200 L-190 250" stroke="#111111" stroke-width="52"/><path d="M-190 -200 L190 250 M190 -200 L-190 250" stroke="#FF7A00" stroke-width="32"/></g></g>
   <rect y="1700" width="1080" height="220" fill="#E0B97F"/>
 </g>`);
@@ -181,12 +184,12 @@ scenes.push(`<g id="s4b" class="scene"><rect width="1080" height="1920" fill="#F
   v += `<path d="M590 1010 V1270 M1030 1010 V1270" stroke="#5E3B1C" stroke-width="16"/>`;
   v += C.anfora(80, 1700, 0.8) + C.anfora(150, 1712, 0.65) + `<path d="M380 1700 l40 -70 h120 l40 70Z" fill="#B07A48" stroke="#1D1D2B" stroke-width="5"/>` + [0, 1, 2, 3, 4].map(k => `<circle cx="${430 + k * 22}" cy="${1622 - (k % 2) * 12}" r="16" fill="${['#E0A030', '#D7263D', '#8CC74A'][k % 3]}" stroke="#1D1D2B" stroke-width="3"/>`).join('');
   v += Objetos(C).saco(560, 1705, 0.55) + C.calcada({ y: 1700, h: 220 }) + C.pombo(330, 1760, 1) + C.sombraChao(-10, 1100, 1700, 80);
-  v += `  <g id="s4-pao" transform="translate(690 1235)"><ellipse rx="70" ry="38" fill="#D9A15B" stroke="#1D1D2B" stroke-width="6"/><path d="M-40 -18 l16 22 M-5 -28 l16 22 M30 -18 l14 20" stroke="#A56E2E" stroke-width="7"/>
+  v += `  <g id="s4-pao" transform="translate(690 1235)">${DTd.paoFrances(0, 38, 0.46, { migalhas: false })}
     ${Marca.etiqueta(0, -90, 'DURO', { fs: 36 })}</g>
-  <g id="s4-garum" transform="translate(920 1270)"><path d="M-45 -150 Q-80 -60 -40 0 H40 Q80 -60 45 -150 Z" fill="#B8613A" stroke="#1D1D2B" stroke-width="6"/><rect x="-26" y="-180" width="52" height="34" rx="8" fill="#9A4E2D" stroke="#1D1D2B" stroke-width="5"/>
+  <g id="s4-garum" transform="translate(920 1270)">${DTd.anfora(0, 0, 0.45)}
     ${Marca.etiqueta(0, -250, 'MOLHO DE PEIXE', { fs: 40 })}
     <g id="s4-stink" stroke="#7CC46A" stroke-width="12" fill="none" stroke-linecap="round" transform="translate(-140 -200)"><path d="M-40 0 q25 -35 0 -70 q-25 -35 0 -70"/><path d="M20 -10 q25 -35 0 -70 q-25 -35 0 -70"/></g></g>
-  <g id="s4-moeda"><circle r="34" fill="${COR.ouro}" stroke="#1D1D2B" stroke-width="6"/><circle r="20" fill="none" stroke="#B88A1E" stroke-width="5"/></g>
+  <g id="s4-moeda">${DTm.moeda(0, 38, 0.34)}</g>
   <g id="s4-eca" transform="translate(300 900)">${Marca.impacto(0, 0, 'ECA!', { fs: 140, rot: -10 })}</g>` + Paleta.grade('rotina') + `<g id="s4-nojo">${Paleta.grade('nojo')}</g>` + C.atmosfera({ grao: 0.3, raios: true }) + `</g>`;
   scenes.push(v); }
 // S5 — desafio 2: água
@@ -388,8 +391,8 @@ H8.sujeira(77.0, 86.45);
 
 // objetos presos na mão
 $('#props').innerHTML = `
-  <g id="p-pao"><ellipse cx="0" cy="-18" rx="34" ry="20" fill="#D9A15B" stroke="#1D1D2B" stroke-width="5"/><path d="M-18 -26 l8 12 M0 -32 l8 12 M16 -26 l7 10" stroke="#A56E2E" stroke-width="5"/></g>
-  <g id="p-jarro"><path d="M-22 -6 Q-34 36 -16 60 H16 Q34 36 22 -6 Z" fill="#B8613A" stroke="#1D1D2B" stroke-width="5"/><rect x="-14" y="-20" width="28" height="16" rx="5" fill="#9A4E2D" stroke="#1D1D2B" stroke-width="4"/></g>`;
+  <g id="p-pao">${DTm.paoFrances(0, 2, 0.22, { mordida: true, migalhas: false })}</g>
+  <g id="p-jarro">${DTm.anfora(0, 64, 0.2, { escorrido: false })}</g>`;
 const PROPS = [
   { el: $('#p-pao'), ator: H5, mao: 'e', janelas: [[38.9, 40.6]], escala: 0.85 },
   { el: $('#p-jarro'), ator: H6, mao: 'e', janelas: [[44.95, 46.6]], escala: 0.8 },

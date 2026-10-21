@@ -44,8 +44,9 @@ templo, pichação, placa) com a fonte própria deles.
 | `Marca.final({ linhas, destaque, chamada })` | pergunta final + CTA | tela preta, texto branco, destaque laranja, botão laranja |
 
 ## Regras
-- **Pouco texto**: só palavras de impacto e rótulos; nada de legenda do que está sendo falado
-  (o usuário não quer legenda).
+- **Pouco texto**: palavras de impacto e rótulos. A fala entra só como **legenda dinâmica**
+  (skill `legenda-dinamica`: 1–3 palavras por vez, palavra falada em laranja, faixa baixa e pequena) —
+  o usuário pediu esse formato; nada de bloco de texto.
 - **Tudo em PORTUGUÊS** — qualquer palavra que aparece na tela (etiquetas, placas, pichações no muro,
   inscrições em templo/estátua/estandarte, nomes de objetos) é escrita em português, mesmo em cena
   de outra época. Nada de latim ou outra língua (ex.: TERSORIUM → ESPONJA, GARUM → MOLHO DE PEIXE,

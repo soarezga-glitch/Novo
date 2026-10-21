@@ -22,11 +22,15 @@ Corta grave inútil (<80 Hz), comprime levemente (sobe as partes fracas), realç
 ## 2. Biblioteca de sons
 ```bash
 python3 scripts/sintetizar.py --saida biblioteca/roma --voz vozes_latim.wav --seed 7
+python3 scripts/sintetizar.py --saida biblioteca/coliseu --voz vozes_coliseu.wav --seed 11 --conjunto coliseu
 ```
 - `--voz`: vozes para a multidão (*walla*). Gere frases na língua/época com o TTS do
   HyperFrames (`npx hyperframes tts "..." --voice pm_alex|pm_santa|pf_dora`), várias vozes
   concatenadas. O script pica, muda o tom, inverte e sobrepõe até virar burburinho sem palavras.
-- `biblioteca/roma/` já pronta (MP3). `biblioteca/ui/`: pop, whoosh, impacto, chime, riser,
+- `biblioteca/roma/` já pronta (MP3).
+- `biblioteca/coliseu/` já pronta: cela (gotas + multidão abafada), subsolo, túnel (coração), arena
+  (multidão gigante), fim de tarde; efeitos: rugido de leão e de urso, corneta romana, clang (tridente
+  no escudo), portão de ferro, areia caindo, respiração dentro do capacete, grito da multidão, passos na areia. `biblioteca/ui/`: pop, whoosh, impacto, chime, riser,
   sparkle (Pixabay, uso livre — ver CREDITS.md), vindos da skill `media-use`.
 - Sons gravados reais (opcional, melhor qualidade): a skill `media-use` busca no Openverse
   (precisa liberar `api.openverse.org` na rede do ambiente) ou a skill `sound-effects` da
@@ -41,6 +45,11 @@ Formato da partitura: ver o cabeçalho de `scripts/misturar.py` (ambientes em lo
 automação de volume, efeitos pontuais, sequências de passos, ducking, volume final).
 
 ## Regras de sound design
+0. **Pedido do usuário: som ambiente com ênfase.** Ambiente+efeitos só ~5–7 dB abaixo da voz
+   (`--so-ambiente` ≈ -17 LUFS com voz em -10), e **todo objeto que aparece fazendo algo tem som
+   próprio**: espada caindo (`sfx_espada_madeira`, com quiques), tigela/copo na mesa (`sfx_ceramica`),
+   beber (`sfx_goles`), capacete (`sfx_capacete`), corrente (`sfx_corrente`), corpo caindo
+   (`sfx_queda_areia`), rede (`sfx_rede_cai`), tocha estalando (`amb_tocha`).
 1. **Um ambiente por cena**, trocando com crossfade curto (0,3–0,6 s) junto com o corte de imagem.
    Cartões/telas de texto: ambiente quase mudo + whoosh/impacto.
 2. **Equilíbrio**: ambiente+efeitos ~8–12 dB abaixo da voz no geral (`--so-ambiente` ≈ -18 a

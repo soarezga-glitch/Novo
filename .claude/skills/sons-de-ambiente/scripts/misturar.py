@@ -122,6 +122,14 @@ def main():
                     '-filter_complex', filtro, '-map', '[out]', '-ar', str(SR), a.saida], check=True)
     for f in tmp:
         os.remove(f)
+    if not a.so_ambiente:   # 2ª passada: se ficou abaixo do alvo (efeitos com pico alto seguram o loudnorm), sobe com limitador
+        med = subprocess.run(['ffmpeg', '-i', a.saida, '-af', 'ebur128', '-f', 'null', '-'], capture_output=True, text=True).stderr
+        I = [float(l.split()[1]) for l in med.splitlines() if l.strip().startswith('I:')][-1]
+        if alvo - I > 0.5:
+            tmp2 = a.saida + '.tmp.wav'
+            subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', a.saida, '-af', f'volume={alvo - I + 0.6:.2f}dB,alimiter=limit=0.8:attack=1:release=80:level=disabled', '-ar', str(SR), tmp2], check=True)
+            os.replace(tmp2, a.saida)
+            print(f'volume corrigido: {I:.1f} → ~{alvo} LUFS')
     if a.video:
         subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', a.video, '-i', a.saida, '-map', '0:v', '-map', '1:a',
                         '-c:v', 'copy', '-c:a', 'aac', '-b:a', '192k', a.video_saida or a.video.replace('.mp4', '_som.mp4')], check=True)
