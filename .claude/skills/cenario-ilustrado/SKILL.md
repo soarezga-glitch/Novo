@@ -96,3 +96,24 @@ frente? Há pelo menos 2 sinais de vida por cena? Algo ficou chapado (uma cor s�
   (banco e volante no fundo, porta e vidro na frente); `Z.carro.pontos` = assento, pé e volante.
 - `sala({ tv: 'noticia', manchete })` e `telaNoticia(x, y, w, h, manchete)`: telejornal em fonte Anton que
   sempre cabe na TV; `textoCaber(txt, cx, cy, larg, alt)` para qualquer texto de tela/placa.
+
+## Escola de hoje (`assets/escola.js`) — série "O garoto do tênis laranja"
+`Escola(Cenario({ seed, luz: -1, hora: 'dia' | 'noite', prefixo }))`: `fachada` (prédio com volume, marquise, faixa
+BEM-VINDOS que balança, mastro com bandeira, mural dos alunos, árvores em 3 tons, calçada gasta), `corredor`
+(perspectiva de um ponto: armários, portas SALA 7/8, extintor, cartazes, luminárias e reflexo no granilite),
+`refeitorio` (azulejo com rejunte, feixes de luz das janelas, relógio com ponteiro, cardápio, cartazes, balcão de
+inox com cubas FUMEGANTES, lixeiras de reciclagem, planta), `quarto` (luar azul, cidade na janela, varal de
+luzinhas, estante, troféu, pôster, caixa do tênis, mesa com abajur e a foto do pai), `cama`, `mesa`, `banco`,
+`bandeja`, `arrozNoChao`, `telaCelular`. Classes animáveis: `.vapor`, `.ponteiro`, `.bandeira`, `.faixa-balanca`,
+`.luzinha`, `.lampada`.
+
+## Checklist de CENA PREENCHIDA (pedido do usuário: "o vídeo ficou simples demais")
+Antes de renderizar, cada plano precisa ter:
+1. **Luz única + 3 tons + sombra** (inclusive sombra de contato embaixo de cada personagem — o motor já desenha).
+2. **3 camadas de profundidade**: fundo (névoa/arquitetura), meio (gente e móveis), frente (personagem principal) e,
+   quando couber, **um elemento em primeiro plano desfocado** na borda (folhagem, coluna, quina de mesa).
+3. **Vida no fundo**: pessoas fazendo coisas (comendo, conversando, servindo, passando) — nunca o fundo vazio.
+4. **Objetos que contam a história** (3–7 por grupo) com sinais de uso; o objeto citado na fala em destaque.
+5. **Algo se mexendo no cenário**: vapor, ponteiro, bandeira, luzes, cortina, fumaça.
+6. **Cor da emoção** (`Paleta.grade`): rotina, nostalgia, tensão, alívio, mistério… mudando com a história.
+7. **Acabamento**: `atmosfera()` (grão) + vinheta.

@@ -149,6 +149,8 @@
       this.el = {};
       const F = this.fig;
       const tecido = (c, w) => ({ fill: 'none', stroke: c, 'stroke-width': w * this.s, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' });
+      this.el.sombraPe = mk('ellipse', { fill: '#1A1424', opacity: 0.2 }, parent);   // sombra de contato no chão (fora do contorno)
+      parent.insertBefore(this.el.sombraPe, g);
       this.el.capa = mk('path', { fill: F.corCapa || '#7A3A2A', stroke: 'none' });
       this.el.mochila = mk('g', {});        // mochila nas costas (sobrevivente): atrás do corpo
       this.el.bracoLonge = mk('path', linha(this.corLonge));
@@ -270,7 +272,7 @@
         const bracos = p.guidao
           ? { e: bracoAte([p.guidao[0] - dirM * 6 * s, p.guidao[1]]), d: bracoAte(p.guidao) }
           : { e: { o: 18, c: 40 }, d: { o: 14, c: 40 } };
-        return { vista: 'perfil', dir: dirM, R: [hx, p.chao ?? hy + 200 * s], giro: 0, inclina: inc, quadril: [hx, hy], respira: 0, pes, bracos };
+        return { vista: 'perfil', dir: dirM, R: [hx, p.chao ?? hy + 200 * s], giro: 0, inclina: inc, quadril: [hx, hy], respira: 0, pes, bracos, semSombra: true };
       }
       if (a.tipo === 'pular') {
         // pulo no lugar (frente ou perfil): agacha → sobe → cai → amortece
@@ -574,7 +576,8 @@
       const s = this.s;
       const P = this.pose(t);
       this._t = t; { const a = this.acaoEm(this.acoes, t).atual; this._rapido = a ? ({ correr: 1, pular: 0.8, andar: 0.35, montar: 0.7 }[a.tipo] || 0) : 0; }
-      if (!P) { this.g.style.display = 'none'; this.el.extras.style.display = 'none'; return; }
+      if (!P) { this.g.style.display = 'none'; this.el.extras.style.display = 'none'; this.el.sombraPe.style.display = 'none'; return; }
+      this.el.sombraPe.style.display = '';
       this.g.style.display = ''; this.el.extras.style.display = '';
       const { vista, dir } = P;
       // tronco
@@ -649,6 +652,14 @@
       this.el.pernaPerto.setAttribute('d', legPath(pernas[perto.perna]));
       this.el.bracoLonge.setAttribute('d', armPath(bracos[longe.braco]));
       this.el.bracoPerto.setAttribute('d', armPath(bracos[perto.braco]));
+      // sombra de contato: embaixo dos pés (ou do corpo deitado), achatada no chão
+      { const sp = this.el.sombraPe, chaoY = P.R[1];
+        if (this.semSombra || P.semSombra) sp.setAttribute('rx', 0);
+        else if (giro) { const c = rot(H); sp.setAttribute('cx', c[0].toFixed(1)); sp.setAttribute('cy', (chaoY + 4).toFixed(1)); sp.setAttribute('rx', (230 * s).toFixed(1)); sp.setAttribute('ry', (16 * s).toFixed(1)); }
+        else { const xs = pernas.map(Lg => Lg.tz[0]), alto = Math.max(0, chaoY - Math.max(...pernas.map(Lg => Lg.tz[1])) - M.tornozelo * s);
+          const k = Math.max(0.35, 1 - alto / (160 * s));
+          sp.setAttribute('cx', ((Math.min(...xs) + Math.max(...xs)) / 2).toFixed(1)); sp.setAttribute('cy', (chaoY + 3).toFixed(1));
+          sp.setAttribute('rx', ((Math.abs(xs[0] - xs[1]) / 2 + 58 * s) * k).toFixed(1)); sp.setAttribute('ry', (12 * s * k).toFixed(1)); sp.setAttribute('opacity', (0.22 * k).toFixed(2)); } }
       this._giroR = giro ? `rotate(${giro.toFixed(2)} ${R[0].toFixed(1)} ${R[1].toFixed(1)})` : '';
       this.desenharFigurino({ pernas, bracos, perto, longe, top, H, inc, vista, dir, f, rot, s });
       const mL = rot(maos[longe.braco]), mP = rot(maos[perto.braco]);
@@ -787,6 +798,9 @@
         const ab = [Math.max(ox - r * 1.06, fx - hw), Math.min(ox + r * 1.06, fx + hw)];   // bordas da abertura
         const topo = C[1] - r * 1.02, pe = C[1] + r * 0.9;
         h = `<path d="M${f(ox - r * 1.18)} ${f(pe)} Q${f(ox - r * 1.3)} ${f(C[1] - r * 1.35)} ${f(ox)} ${f(C[1] - r * 1.25)} Q${f(ox + r * 1.3)} ${f(C[1] - r * 1.35)} ${f(ox + r * 1.18)} ${f(pe)} L${f(ab[1])} ${f(pe)} Q${f(ab[1] + r * 0.1)} ${f(C[1] - r * 1.0)} ${f((ab[0] + ab[1]) / 2)} ${f(topo)} Q${f(ab[0] - r * 0.1)} ${f(C[1] - r * 1.0)} ${f(ab[0])} ${f(pe)}Z" fill="${c2}" stroke="${T}" stroke-width="${3 * s}"/>`;
+      } else if (ch === 'touca') {          // touca de cozinha (merendeira): cobre o alto da cabeça
+        h = `<path d="M${C[0] - r * 1.08} ${C[1] - r * 0.15} Q${C[0] - r * 1.2} ${C[1] - r * 1.25} ${C[0]} ${C[1] - r * 1.3} Q${C[0] + r * 1.2} ${C[1] - r * 1.25} ${C[0] + r * 1.08} ${C[1] - r * 0.15} Q${C[0]} ${C[1] - r * 0.4} ${C[0] - r * 1.08} ${C[1] - r * 0.15}Z" fill="${cc}" stroke="${T}" stroke-width="${4 * s}"/>`;
+        for (let k = -2; k <= 2; k++) h += `<path d="M${C[0] + k * r * 0.35} ${C[1] - r * 1.1} q${r * 0.05} ${r * 0.3} 0 ${r * 0.6}" stroke="${Boneco.tomLonge(cc)}" stroke-width="${2.5 * s}" fill="none"/>`;
       } else if (ch === 'tiara') {          // tiara/arco no cabelo (gira com a cabeça: some atrás quando de costas)
         const f = n => n.toFixed(1), lat = 0.72, rr = r * 1.07;
         const pts = []; for (let k = 0; k <= 20; k++) { const lon = -Math.PI / 2 + Math.PI * k / 20, x = C[0] + rr * Math.cos(lat) * Math.sin(lon + TH) * 1.0, y = C[1] - rr * Math.sin(lat) - Math.cos(lon) * r * 0.12; if (Math.cos(lon + TH) > -0.2) pts.push(f(x) + ' ' + f(y)); }
@@ -1046,6 +1060,7 @@
     'duda':          { tronco: 'camiseta', cor: '#2E9E5A', mangas: 'curta', pernas: 'calca', corPernas: '#C9B48A', pes: 'tenis', corPes: '#2A2A30', corPes2: '#F2F2F2', cabelo: 'cacheado', corCabelo: '#2A1E16', semBochecha: true },
     'pedrao':        { tronco: 'moletomLargo', cor: '#6A6E78', mangas: 'longa', pernas: 'calca', corPernas: '#2A2A30', pes: 'tenis', corPes: '#2E4A7A', corPes2: '#F2F2F2', cabelo: 'curto', corCabelo: '#1A1A1A', chapeu: 'bone', corChapeu: '#2E4A7A', boneTras: true, semBochecha: true },
     'menina':        { tronco: 'camiseta', cor: '#7A4AA8', mangas: 'curta', pernas: 'calca', corPernas: '#6A8AB8', pes: 'tenis', corPes: '#F2F2F2', corPes2: '#7A4AA8', cabelo: 'longo', corCabelo: '#3A2418', chapeu: 'tiara', corChapeu: '#F2C230', semBochecha: true },
+    'merendeira':    { tronco: 'camiseta', cor: '#F2F2EE', mangas: 'curta', pernas: 'calca', corPernas: '#F2F2EE', pes: 'tenis', corPes: '#F2F2F2', corPes2: '#8A8A8A', cabelo: 'curto', corCabelo: '#5A3A2A', chapeu: 'touca', corChapeu: '#FFFFFF', extras: ['avental'], semBochecha: true },
     'aluno':         { tronco: 'camiseta', cor: '#5A7A9A', mangas: 'curta', pernas: 'calca', corPernas: '#2E3A4A', pes: 'tenis', corPes: '#F2F2F2', corPes2: '#5A5A60', cabelo: 'curto', corCabelo: '#2A1E16', semBochecha: true },
     // --- SOBREVIVENTE: personagem oficial (skill personagem-sobrevivente) ---
     'sobrevivente':  { tronco: 'camiseta', cor: '#FFFFFF', mangas: 'curta', pernas: 'calca', corPernas: '#26262B', cargo: true, pes: 'tenis', corPes: '#FF7A00', corPes2: '#111111', cabelo: 'militar', corCabelo: '#111111', extras: ['cachecol', 'mochila'], luvas: true, semBochecha: true, cinto: 'none' }

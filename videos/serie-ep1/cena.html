@@ -41,7 +41,8 @@
     <radialGradient id="vin" cx=".5" cy=".5" r=".75"><stop offset=".55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".42"/></radialGradient>
     <radialGradient id="sepia" cx=".5" cy=".45" r=".7"><stop offset=".4" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#3A2410" stop-opacity=".7"/></radialGradient>
   </defs>
-  <g id="cam"><g id="scenes"></g><g id="atores"></g><g id="props"></g></g>
+  <g id="cam"><g id="scenes"></g><g id="atores"></g><g id="props"></g><g id="primeiroPlano"></g></g>
+  <g id="grades"></g>
   <g id="faixaLeg"></g>
   <g id="topo"></g>
   <g id="legenda"></g>
@@ -54,6 +55,7 @@ const $$ = s => [...document.querySelectorAll(s)];
 const LARANJA = '#FF7A00', PRETO = '#111111', L = '#1D1D2B';
 const DT = Detalhes({ seed: 4 }), DTm = Detalhes({ seed: 8, sombra: false });
 const Es = s => Escola(Cenario({ seed: s, luz: -1, hora: 'dia', prefixo: 'e' + s }));
+const EsN = s => Escola(Cenario({ seed: s, luz: -1, hora: 'noite', prefixo: 'n' + s }));
 
 // ===================== TEMPOS (planos) =====================
 const S = {
@@ -113,7 +115,7 @@ cena('c-chao', Es(8).refeitorio({ chao: 1100, balcao: false, mesasFundo: false }
 // 9. a menina no fundo que não ria
 cena('c-menina', Es(9).refeitorio({ chao: 1100, balcao: false, mesasFundo: false }) + vin);
 // 10. quarto à noite
-cena('c-quarto', Es(10).quarto({ chao: 1180, noite: true }) + `<g id="q-cama">${Es(10).cama(430, PE, 1.25)}</g>` + vin +
+cena('c-quarto', EsN(10).quarto({ chao: 1180, noite: true }) + `<g id="q-cama">${Es(10).cama(430, PE, 1.25)}</g>` + vin +
   `<g id="q-bzz"><path d="M-40 -10 l-20 -6 M-40 10 l-22 4 M40 -10 l20 -6 M40 10 l22 4" stroke="#FFE27A" stroke-width="8" stroke-linecap="round"/></g>` + apoio('q-bzzt', 760, 520, 'BZZZ!', 96, 6));
 // 11. a tela do celular com o vídeo do Duda
 { const E = Es(11), x = 170, y = 220, w = 740, h = 1120;
@@ -138,6 +140,30 @@ function ator(escala, janelas, opts = {}, pai = '#atores') {
 function item(svg, janelas, pai = '#atores') { const g = document.createElementNS(NS, 'g'); $(pai).appendChild(g); g.innerHTML = svg; ITENS.push({ g, janelas }); return g; }
 const J = n => [[S[n][0], S[n][1]]];
 const E0 = Es(30);
+
+// ===================== VIDA NO FUNDO (criada antes: fica atrás dos personagens principais) =====================
+// alunos sentados comendo: banco, dois alunos de perfil (um de cada lado) e a mesa NA FRENTE deles (pernas debaixo da mesa)
+function mesaComAlunos(x, yPiso, k, janelas, i0, { comem = true, riem = false } = {}) {
+  item(E0.banco(x - 150 * k, yPiso, k, { largura: 200 }) + E0.banco(x + 150 * k, yPiso, k, { largura: 200 }), janelas);
+  [[-1, i0], [1, i0 + 1]].forEach(([lado, i]) => { const a = ator(k, janelas, aluno(i)); const t0 = janelas[0][0], t1 = janelas[0][1];
+    a.base(t0, t1, 'sentar', { x: x + lado * 150 * k, y: yPiso - 102 * k, chao: yPiso + 20 * k, dir: -lado });
+    if (comem) a.braco('d', t0 + 0.2 + i * 0.3, t1, 'comer'); a.expressao(t0, t1, riem ? 'alegre' : 'feliz'); });
+  item(E0.mesa(x, yPiso + 30 * k, k) + E0.bandeja(x - 60 * k, yPiso - 150 * k - 22 * k, 0.6 * k) + E0.bandeja(x + 70 * k, yPiso - 150 * k - 22 * k, 0.6 * k, { suco: false }), janelas);
+}
+// 1. fachada: alunos chegando na escola pela calçada
+[[1180, 470, 4, 0.92], [1350, 600, 2, 0.88]].forEach(([de, ate, i, k]) => { const a = ator(k, J('fachada'), aluno(i)); a.base(S.fachada[0], S.fachada[1], 'andar', { de: [de, 1300], ate: [ate, 1300], passo: 100 * k }); a.expressao(S.fachada[0], S.fachada[1], 'feliz'); });
+// 2. corredor: dupla conversando encostada nos armários, um aluno passando no fundo
+{ const a = ator(1.0, J('corredor'), aluno(5)); a.base(S.corredor[0], S.corredor[1], 'parado', { x: 850, y: 1250, vista: 'perfil', dir: 1 }); a.braco('d', 4.0, S.corredor[1], 'explicar'); a.expressao(S.corredor[0], S.corredor[1], 'alegre');
+  const b = ator(0.97, J('corredor'), aluno(2)); b.base(S.corredor[0], S.corredor[1], 'parado', { x: 975, y: 1245, vista: 'perfil', dir: -1 }); b.braco('ambos', S.corredor[0], S.corredor[1], 'cruzar'); b.expressao(S.corredor[0], S.corredor[1], 'feliz');
+  const c = ator(0.55, J('corredor'), aluno(1)); c.base(S.corredor[0], S.corredor[1], 'andar', { de: [480, 1020], ate: [680, 1020], passo: 60 }); }
+// 4. fila: merendeira servindo atrás do balcão (o balcão da frente cobre as pernas dela)
+{ const m = ator(1.2, J('fila'), { figurino: 'merendeira', seed: 40 }); m.base(S.fila[0], S.fila[1], 'parado', { x: 930, y: 1150, vista: 'perfil', dir: -1 });
+  m.braco('d', S.fila[0], S.fila[1], 'alcancar', { alvo: [800, 935] }); m.braco('e', 12.0, 13.2, 'estender'); m.expressao(S.fila[0], S.fila[1], 'feliz'); m.cabeca(13.5, 15.5, { virar: -0.4 });
+  item(`<rect x="0" y="950" width="1080" height="200" fill="#B9BEC6" stroke="${L}" stroke-width="6"/><rect x="0" y="950" width="1080" height="30" fill="#E4E8EC" stroke="${L}" stroke-width="4"/><rect x="0" y="980" width="1080" height="16" fill="#000" opacity=".12"/>` + [...Array(7)].map((_, k) => `<path d="M${40 + k * 150} 1020 V1140" stroke="#8A9098" stroke-width="4"/><path d="M${46 + k * 150} 1020 V1140" stroke="#E4E8EC" stroke-width="2"/>`).join('') + `<rect x="760" y="922" width="160" height="32" rx="6" fill="#8A9098" stroke="${L}" stroke-width="4"/><ellipse cx="840" cy="922" rx="72" ry="13" fill="#F4F1E8"/>`, J('fila')); }
+// 5. trio / 6. canto / 7. queda: mesas com alunos comendo ao fundo
+mesaComAlunos(180, 1215, 0.72, J('trio'), 0); mesaComAlunos(930, 1215, 0.72, J('trio'), 2);
+mesaComAlunos(260, 1190, 0.66, J('queda'), 4); 
+mesaComAlunos(900, 1170, 0.62, J('menina'), 1, { riem: true });
 
 // ---- 1. fachada: Léo chega andando e se vira para a câmera ----
 const l1 = ator(KL, J('fachada'), LEO);
@@ -203,6 +229,17 @@ const lv = ator(0.55, J('celular'), LEO); lv.base(S.celular[0], S.celular[1], 'd
 const cv = ator(0.6, J('celular'), CAIO); cv.base(S.celular[0], S.celular[1], 'parado', { x: 700, y: 1060, vista: 'frente' }); cv.expressao(S.celular[0], S.celular[1], 'alegre'); cv.braco('d', S.celular[0], S.celular[1], 'apontar');
 // ---- final ----
 const lf = ator(0.75, [[FIM_FALA, 999]], LEO); lf.base(FIM_FALA, 999, 'parado', { x: 540, y: 1640, vista: 'frente' }); lf.braco('d', FIM_FALA + 0.4, 999, 'joinha'); lf.expressao(FIM_FALA, 999, 'determinado');
+
+// primeiro plano: folhagem/coluna escura e desfocada na borda (dá profundidade: algo entre a câmera e a cena)
+document.querySelector('defs').insertAdjacentHTML('beforeend', `<filter id="desfoque" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="9"/></filter>`);
+const folhas = (x, y, flip = 1) => `<g transform="translate(${x} ${y}) scale(${flip} 1)" filter="url(#desfoque)" opacity=".92">${[[-20, -260, -30], [40, -320, 5], [90, -240, 30], [10, -200, -55], [70, -380, 15]].map(([dx, dy, r]) => `<path d="M0 0 Q${dx * 0.4} ${dy / 2} ${dx} ${dy} Q${dx + 60} ${dy + 80} 10 0Z" fill="${r > 0 ? '#2E5A2E' : '#244A26'}" transform="rotate(${r} 0 0)"/>`).join('')}</g>`;
+const PP = [[J('fila'), folhas(-30, 1560)], [J('trio'), folhas(1110, 1600, -1)], [J('chao'), `<rect x="-40" y="0" width="120" height="1920" fill="#5A6A6A" filter="url(#desfoque)" opacity=".9"/>`], [J('menina'), folhas(-20, 1620)]];
+PP.forEach(([jan, svg]) => { const g = document.createElementNS(NS, 'g'); g.innerHTML = svg; $('#primeiroPlano').appendChild(g); ITENS.push({ g, janelas: jan }); });
+
+// roteiro de cores (paleta-de-epoca): cada plano com a emoção dele
+const GRADES = [['fachada', 'rotina'], ['corredor', 'rotina'], ['presente', 'nostalgia'], ['fila', 'neutro'], ['trio', 'tensao', 0.55], ['canto', 'tensao', 0.7], ['queda', 'tensao', 0.6], ['chao', 'tensao', 0.55], ['menina', 'alivio'], ['quarto', 'misterio', 0.8], ['celular', 'neutro']];
+const gradeEls = GRADES.map(([k, nome, op]) => { const g = document.createElementNS(NS, 'g'); g.innerHTML = Paleta.grade(nome); g.setAttribute('opacity', op ?? 1); $('#grades').appendChild(g); return { g, de: S[k][0], ate: S[k][1] }; });
+{ const g = document.createElementNS(NS, 'g'); g.id = 'gradeTensaoFila'; g.innerHTML = Paleta.grade('tensao'); $('#grades').appendChild(g); }   // a fila escurece no "cenourinha"
 
 // objetos na mão (cada objeto tem dono e segue a mão)
 $('#props').insertAdjacentHTML('beforeend', `<g id="p-band4">${E0.bandeja(0, 0, 1.1)}</g><g id="p-band6">${E0.bandeja(0, 0, 1.1)}</g><g id="p-band7">${E0.bandeja(0, 0, 0.95)}</g><g id="p-cel5">${DTm.celular(0, 0, 0.3)}</g><g id="p-cel8">${DTm.celular(0, 0, 0.22)}</g><g id="p-cel10">${DTm.celular(0, 0, 0.3)}</g>`);
@@ -276,6 +313,15 @@ const leg = Legenda($('#legenda'), window.PALAVRAS || [], { y: PISO_LEG, enfase:
 function opacidade(t, janelas) { for (const [a, b] of janelas) if (t >= a && t < b) return 1; return 0; }
 function desenhar(t) {
   $('#cam').setAttribute('transform', camEm(t));
+  gradeEls.forEach(G => G.g.style.display = t >= G.de && t < G.ate ? '' : 'none');
+  { const g = $('#gradeTensaoFila'), u = t >= 14.2 && t < S.fila[1] ? Math.min(1, (t - 14.2) / 0.5) : 0; g.style.display = u ? '' : 'none'; g.setAttribute('opacity', (u * 0.7).toFixed(2)); }
+  // sinais de vida: vapor da comida, ponteiro do relógio, bandeira, faixa, luzinhas, lâmpada falhando
+  $$('.vapor').forEach(v => { const ph = (t * 0.6 + +v.dataset.fase) % 1; v.setAttribute('transform', `translate(0 ${(-ph * 50).toFixed(1)})`); v.setAttribute('opacity', (Math.sin(ph * Math.PI) * 0.9).toFixed(2)); });
+  $$('.ponteiro').forEach(p => p.setAttribute('transform', `rotate(${(t * 6).toFixed(1)} ${p.dataset.cx} ${p.dataset.cy})`));
+  $$('.bandeira').forEach(b => b.setAttribute('transform', `rotate(${(Math.sin(t * 3.2) * 3).toFixed(2)} ${b.dataset.cx} ${b.dataset.cy}) skewY(${(Math.sin(t * 4.1) * 2).toFixed(2)})`));
+  $$('.faixa-balanca').forEach(b => b.setAttribute('transform', `rotate(${(Math.sin(t * 1.7) * 1.2).toFixed(2)} ${b.dataset.cx} ${b.dataset.cy})`));
+  $$('.luzinha').forEach(l => l.setAttribute('opacity', (0.55 + 0.45 * Math.sin(t * 2.4 + +l.dataset.fase)).toFixed(2)));
+  $$('.lampada').forEach((l, i) => l.setAttribute('opacity', i === 2 && Math.sin(t * 13) > 0.85 ? '0.4' : '1'));
   for (const A of ATORES) { const o = opacidade(t, A.janelas); A.g.style.display = o ? '' : 'none'; if (o) A.b.desenhar(t); }
   for (const I of ITENS) I.g.style.display = opacidade(t, I.janelas) ? '' : 'none';
   for (const P of PROPS) {
