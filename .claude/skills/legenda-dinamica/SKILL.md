@@ -18,7 +18,7 @@ tempo assistido).
 ```
 ```js
 fetch('transcript.json') … ou cole o JSON: [{ text, start, end }, ...]   // da transcrição (hyperframes transcribe)
-const leg = Legenda($('#legenda'), PALAVRAS, { y: 1450, enfase: ['FOGO', 'LEÃO'] })
+const leg = Legenda($('#legenda'), PALAVRAS, { y: 330, enfase: ['FOGO', 'LEÃO'] })
   .esconder([[24.0, 26.0], [94.6, 999]])      // cartões de desafio e tela final: sem legenda
   .mover([[61.0, 80.0, 1180]]);               // trecho em que a ação ocupa a faixa de baixo
 // dentro do __seek:  leg.seek(t);
@@ -32,8 +32,10 @@ Corrija a transcrição antes (palavras erradas: "festas" → "frestas"), porque
 3. **Palavra falada em laranja** (#FF7A00) com um pulinho; as já ditas brancas; as que vêm a
    seguir um pouco apagadas. Palavras-chave da história (`enfase`) ficam laranja e 25% maiores.
 4. **Legível no celular**: Luckiest Guy ~74 px, contorno preto grosso (20% do tamanho) + sombra.
-5. **Sem tomar a cena**: uma linha só, faixa central-baixa (y ≈ 1450 de 1920 ≈ 75%), dentro dos 80%
-   do meio; nunca nos 420 px de baixo (botões, nome, música) nem na lateral direita (ícones).
+5. **Sem tomar a cena**: uma linha só, **no alto da tela (y ≈ 330)**, logo abaixo da barra do app
+   — ali nos nossos cenários só tem teto, céu ou toldo. O usuário reprovou a faixa do meio-baixo
+   (tampava os bonecos e coisas importantes). Nunca nos 420 px de baixo (botões, nome, música)
+   nem na lateral direita (ícones). Palavras de impacto e balões ficam de y ≈ 420 para baixo.
 6. **Sem briga com os textos de impacto**: esconda nos cartões e na tela final; se uma palavra de
    impacto grande estiver no mesmo lugar, mova a legenda (`mover`) ou mova o impacto.
 7. Mantém a regra da `identidade-visual`: textos em português, só a fonte e as cores da marca.

@@ -130,6 +130,7 @@ scenes.push(card('c1', 1, 'A COMIDA', DT.tigela(0, 130, 1.0)));
   v += O.tocha(80, 1712, 0.7) + O.tocha(1000, 1712, 0.7);
   v += `<rect x="0" y="1300" width="1080" height="40" fill="#6E4524" stroke="#1D1D2B" stroke-width="5"/><rect x="0" y="1384" width="1080" height="18" fill="#7A5030" stroke="#1D1D2B" stroke-width="4"/>${[80, 400, 700, 1000].map(x => `<rect x="${x}" y="1402" width="16" height="60" fill="#5A3A1E"/>`).join('')}<rect x="0" y="1460" width="1080" height="260" fill="#857664"/>`;   // mesa e banco do fundo
   v += C.piso({ y: 1712, h: 208, cor: '#7E7464' });
+  v += `<g><rect x="360" y="1562" width="230" height="26" rx="5" fill="#8A5A30" stroke="#1D1D2B" stroke-width="5"/><rect x="360" y="1562" width="230" height="8" fill="#A87444"/><rect x="378" y="1588" width="18" height="124" fill="#6E4524" stroke="#1D1D2B" stroke-width="4"/><rect x="556" y="1588" width="18" height="124" fill="#6E4524" stroke="#1D1D2B" stroke-width="4"/></g>`;   // banco onde ele senta
   v += `<g id="s4-cev" transform="translate(600 1210)">${Marca.etiqueta(0, 0, 'CEVADA', { fs: 46 })}</g><g id="s4-fei" transform="translate(800 1130)">${Marca.etiqueta(0, 0, 'FEIJÃO', { fs: 46 })}</g>`;
   v += `<g id="s4-agua" transform="translate(860 1110)">${Marca.etiqueta(0, 0, 'ÁGUA + CINZA', { fs: 46 })}</g>`;
   v += `<g id="s4-ossos">${Marca.carimbo(540, 780, 'OSSOS FORTES', { fs: 92, rot: -8 })}</g>`;
@@ -328,7 +329,7 @@ H3.expressao(17.0, 18.8, 'confuso'); H3.cabeca(18.9, 19.9, { baixar: 16, olhar: 
 H3.expressao(21.0, 24.0, 'espanto');
 H3.base(21.8, 22.5, 'agachar', { x: 380, y: 1712, vista: 'perfil', dir: 1, quanto: 110 });
 H3.base(22.5, 24.0, 'parado', { x: 380, y: 1712, vista: 'perfil', dir: 1 });
-H3.braco('d', 21.9, 22.5, 'alcancar', { alvo: [470, 1700] }); H3.braco('d', 22.5, 24.0, 'segurar');
+H3.braco('d', 21.9, 22.5, 'alcancar', { alvo: [440, 1700] }); H3.braco('d', 22.5, 24.0, 'segurar');
 const H4 = ator(0.85, [[26.0, 36.2]], { boca, figurino: PROT });                    // refeitório
 H4.base(26.0, 36.2, 'sentar', { x: 470, y: 1560, chao: 1712, dir: 1 });
 H4.cabeca(26.4, 28.6, { baixar: 14, olhar: [3, 5] }); H4.expressao(26.0, 28.6, 'desconfiado'); H4.expressao(28.6, 31.0, 'confuso');
@@ -448,11 +449,11 @@ pop('#s2-banner', 15.3, 0.5); pop('#s2-voce', 15.9, 0.4);
 show('#s3', 17.0, 24.0);
 gsap.set('#v-rudis', { autoAlpha: 0 });
 tl.set('#v-rudis', { autoAlpha: 1, x: rudisIni[0], y: rudisIni[1], rotation: -60 }, 17.9)
-  .to('#v-rudis', { x: 470, duration: 0.6, ease: 'none' }, 17.9)
+  .to('#v-rudis', { x: 425, duration: 0.6, ease: 'none' }, 17.9)
   .to('#v-rudis', { y: rudisIni[1] - 140, duration: 0.25, ease: 'power2.out' }, 17.9)
-  .to('#v-rudis', { y: 1712, duration: 0.35, ease: 'power2.in' }, 18.15)
+  .to('#v-rudis', { y: 1706, duration: 0.35, ease: 'power2.in' }, 18.15)
   .to('#v-rudis', { rotation: 360, duration: 0.6, ease: 'none' }, 17.9)
-  .to('#v-rudis', { y: 1690, rotation: 372, duration: 0.12, yoyo: true, repeat: 1, ease: 'power1.out' }, 18.5)
+  .to('#v-rudis', { y: 1680, rotation: 366, x: 440, duration: 0.12, yoyo: true, repeat: 1, ease: 'power1.out' }, 18.5).to('#v-rudis', { y: 1694, duration: 0.06, yoyo: true, repeat: 1 }, 18.75)
   .set('#v-rudis', { autoAlpha: 0 }, 22.5);
 pop('#s3-treina', 20.1); hide('#s3-treina', 22.4);
 pop('#s3-glad', 23.0, 0.4, 'back.out(3)'); hide('#s3-glad', 23.9);
@@ -534,9 +535,9 @@ tl.to('#fim-c', { scale: 1.06, duration: 0.4, repeat: Math.max(1, Math.floor((EN
 tl.set({}, {}, END);
 
 // ===================== LEGENDA (skill legenda-dinamica) =====================
-const leg = Legenda($('#legenda'), window.PALAVRAS || [], { y: 1480, enfase: ['COLISEU', 'GLADIADOR', 'LEÃO', 'URSO', 'CAPACETE', 'SOLTA', 'MATA', 'SOLTAR', 'TRIDENTE', 'REDE', 'CINZA'] })
+const leg = Legenda($('#legenda'), window.PALAVRAS || [], { y: 330, enfase: ['COLISEU', 'GLADIADOR', 'LEÃO', 'URSO', 'CAPACETE', 'SOLTA', 'MATA', 'SOLTAR', 'TRIDENTE', 'REDE', 'CINZA'] })
   .esconder([[24.0, 26.0], [36.2, 38.3], [47.2, 50.0], [83.9, 85.0], [94.6, 999]])
-  .mover([[15.0, 17.0, 1160], [61.0, 80.0, 1100]]);
+  .mover([]);   // legenda no alto (abaixo da barra do app): ali só tem teto, céu ou toldo
 
 // ===================== API DO RENDER =====================
 function opacidade(t, janelas) {

@@ -378,6 +378,78 @@ def respira_capacete(r, dur=4.0):
     return normaliza(reverb(x, 0.25, 0.55), -3)
 
 
+# ---------------------------------------------------------------- detalhes de cena (objetos e ações)
+def espada_madeira(r):
+    """espada de treino de madeira caindo na pedra: batida forte + 2 quiques + arrasto"""
+    L = int(1.1 * SR); out = np.zeros(L)
+    for at_s, a, f0 in [(0, 1.0, 180), (0.17, 0.55, 210), (0.29, 0.3, 240), (0.36, 0.15, 260)]:
+        at = int(at_s * SR); M = int(0.25 * SR); t = np.arange(M) / SR
+        x = (np.sin(2 * np.pi * f0 * t) + 0.6 * np.sin(2 * np.pi * f0 * 2.7 * t)) * np.exp(-t * 30)
+        x += filtro(r.standard_normal(M), 'banda', (300, 2600)) * np.exp(-t * 55) * 0.9
+        out[at:at + M] += x * a
+    t = np.arange(L) / SR
+    out += filtro(r.standard_normal(L), 'banda', (800, 3000)) * np.exp(-np.abs(t - 0.5) * 18) * 0.08   # arrasto
+    return normaliza(reverb(out, 0.6, 0.25), -1)
+
+
+def ceramica(r):
+    """tigela/copo de barro pousado na mesa de madeira"""
+    L = int(0.6 * SR); t = np.arange(L) / SR
+    x = sum(np.sin(2 * np.pi * f * t) * np.exp(-t * d) * a for f, d, a in [(820, 28, 1), (1730, 40, 0.6), (2950, 55, 0.35)])
+    x += np.sin(2 * np.pi * 120 * t) * np.exp(-t * 35) * 0.8 + filtro(r.standard_normal(L), 'banda', (400, 3000)) * np.exp(-t * 90) * 0.6
+    return normaliza(reverb(x, 0.5, 0.2), -2)
+
+
+def goles(r, n=3):
+    """goles de quem bebe (garganta)"""
+    L = int(1.6 * SR); out = np.zeros(L)
+    for k in range(n):
+        at = int((0.1 + k * 0.42) * SR); M = int(0.2 * SR); t = np.arange(M) / SR
+        f = 260 - 140 * t / 0.2
+        out[at:at + M] += np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-t * 18) + filtro(r.standard_normal(M), 'baixa', 700) * np.exp(-t * 25) * 0.5
+    return normaliza(out, -3)
+
+
+def capacete_metal(r):
+    """capacete de bronze: batida metálica grave e pesada"""
+    L = int(1.2 * SR); t = np.arange(L) / SR
+    x = sum(np.sin(2 * np.pi * f * t) * np.exp(-t * d) * a for f, d, a in [(310, 5, 1), (690, 7, 0.7), (1290, 10, 0.5), (2210, 14, 0.3)])
+    x += filtro(r.standard_normal(L), 'alta', 1500) * np.exp(-t * 50) * 0.7
+    return normaliza(reverb(x, 0.7, 0.3), -1)
+
+
+def corrente(r):
+    """corrente de ferro chacoalhando"""
+    L = int(1.2 * SR); out = np.zeros(L)
+    for _ in range(26):
+        at = r.integers(0, L - 3000); M = 2500; t = np.arange(M) / SR
+        out[at:at + M] += sum(np.sin(2 * np.pi * r.uniform(1500, 5200) * t) * np.exp(-t * r.uniform(50, 90)) for _ in range(2)) * r.uniform(0.2, 0.8)
+    return normaliza(reverb(out, 0.7, 0.3), -2)
+
+
+def queda_areia(r):
+    """corpo caindo na areia: baque surdo + areia espirrando"""
+    L = int(0.9 * SR); t = np.arange(L) / SR
+    x = np.sin(2 * np.pi * 65 * t) * np.exp(-t * 14) * 1.2 + filtro(r.standard_normal(L), 'baixa', 400) * np.exp(-t * 20)
+    x += filtro(r.standard_normal(L), 'alta', 2500) * np.exp(-t * 9) * 0.35
+    return normaliza(x, -1)
+
+
+def rede_cai(r):
+    """rede de corda caindo na areia (chiado de corda + pesos de chumbo)"""
+    L = int(0.8 * SR); t = np.arange(L) / SR
+    x = filtro(r.standard_normal(L), 'banda', (900, 4000)) * np.exp(-t * 7) * 0.6
+    for k in range(5):
+        at = int((0.05 + k * 0.05) * SR); M = 1800; tt = np.arange(M) / SR
+        x[at:at + M] += np.sin(2 * np.pi * r.uniform(150, 260) * tt) * np.exp(-tt * 40) * 0.6
+    return normaliza(x, -2)
+
+
+def tocha(dur, r):
+    """tocha na parede: estalos suaves de fogo pequeno"""
+    return fogo(dur, r, 0.45)
+
+
 def ambientes_coliseu(r, voz):
     D = 25
     def mix(*partes):
@@ -390,12 +462,15 @@ def ambientes_coliseu(r, voz):
         'amb_subsolo':     mix((ronco_multidao(D, r, voz, abafado=True, densidade=40), -2), (tom_sala(D, r), -8), (gotas(D, r, 4), -16)),
         'amb_tunel':       mix((tom_sala(D, r), -2), (ronco_multidao(D, r, voz, abafado=True, densidade=30), -8), (batida_coracao(D, r, 96), -10)),
         'amb_arena':       mix((ronco_multidao(D, r, voz, densidade=45), -1), (vento(D, r, 0.5), -18)),
+        'amb_tocha':       mix((tocha(D, r), -2), (tom_sala(D, r), -10)),
         'amb_fim_tarde':   mix((passaros(D, r, 8), -6), (vento(D, r, 0.6), -10), (ronco_multidao(D, r, voz, abafado=True, densidade=12), -16)),
     }, {
         'sfx_rugido_leao': [rugido(r, 'leao')], 'sfx_rugido_urso': [rugido(r, 'urso')], 'sfx_corneta': [corneta(r)],
         'sfx_clang': [clang(r)], 'sfx_portao': [portao(r)], 'sfx_areia': [areia_caindo(r)], 'sfx_respira_capacete': [respira_capacete(r)],
         'sfx_grito_multidao': [grito_multidao(r, voz)], 'sfx_baque_madeira': [baque_madeira(r)],
         'sfx_passo_pedra': [passo(r, 'pedra') for _ in range(4)], 'sfx_passo_areia': [passo(r, 'terra') for _ in range(4)],
+        'sfx_espada_madeira': [espada_madeira(r)], 'sfx_ceramica': [ceramica(r)], 'sfx_goles': [goles(r)], 'sfx_capacete': [capacete_metal(r)],
+        'sfx_corrente': [corrente(r)], 'sfx_queda_areia': [queda_areia(r)], 'sfx_rede_cai': [rede_cai(r)],
     }
 
 

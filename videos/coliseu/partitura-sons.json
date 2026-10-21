@@ -10,31 +10,31 @@
    "som": "amb_cela",
    "de": 0,
    "ate": 15.1,
-   "db": -22,
+   "db": -18,
    "fade": 0.5
   },
   {
    "som": "amb_subsolo",
    "de": 6.8,
    "ate": 15.1,
-   "db": -21,
+   "db": -17,
    "fade": 0.6,
    "automacao": [
     [
      6.8,
-     -35
+     -31
     ],
     [
      9.2,
-     -18
+     -14
     ],
     [
      11.2,
-     -22
+     -18
     ],
     [
      15.1,
-     -22
+     -18
     ]
    ]
   },
@@ -42,14 +42,14 @@
    "som": "amb_arena",
    "de": 14.9,
    "ate": 17.1,
-   "db": -27,
+   "db": -23,
    "fade": 0.3
   },
   {
    "som": "amb_cela",
    "de": 16.9,
    "ate": 24.1,
-   "db": -22,
+   "db": -18,
    "fade": 0.4,
    "offset": 6
   },
@@ -57,7 +57,7 @@
    "som": "amb_subsolo",
    "de": 16.9,
    "ate": 24.1,
-   "db": -28,
+   "db": -24,
    "fade": 0.4,
    "offset": 4
   },
@@ -65,14 +65,14 @@
    "som": "amb_cela",
    "de": 24.0,
    "ate": 26.1,
-   "db": -37,
+   "db": -33,
    "fade": 0.3
   },
   {
    "som": "amb_cela",
    "de": 25.9,
    "ate": 36.3,
-   "db": -22,
+   "db": -18,
    "fade": 0.4,
    "offset": 12
   },
@@ -80,31 +80,31 @@
    "som": "amb_subsolo",
    "de": 36.1,
    "ate": 38.4,
-   "db": -37,
+   "db": -33,
    "fade": 0.3
   },
   {
    "som": "amb_subsolo",
    "de": 38.2,
    "ate": 47.3,
-   "db": -21,
+   "db": -17,
    "fade": 0.4,
    "automacao": [
     [
      38.2,
-     -23
-    ],
-    [
-     42.4,
-     -16
-    ],
-    [
-     46.5,
      -19
     ],
     [
+     42.4,
+     -12
+    ],
+    [
+     46.5,
+     -15
+    ],
+    [
      47.3,
-     -21
+     -17
     ]
    ]
   },
@@ -112,21 +112,21 @@
    "som": "amb_tunel",
    "de": 38.2,
    "ate": 47.3,
-   "db": -27,
+   "db": -23,
    "fade": 0.4
   },
   {
    "som": "amb_tunel",
    "de": 47.1,
    "ate": 50.1,
-   "db": -37,
+   "db": -33,
    "fade": 0.3
   },
   {
    "som": "amb_tunel",
    "de": 49.9,
    "ate": 61.1,
-   "db": -20,
+   "db": -16,
    "fade": 0.4,
    "offset": 8
   },
@@ -134,20 +134,20 @@
    "som": "amb_subsolo",
    "de": 55.9,
    "ate": 61.1,
-   "db": -23,
+   "db": -19,
    "fade": 0.4,
    "automacao": [
     [
      55.9,
-     -27
+     -23
     ],
     [
      60.0,
-     -15
+     -11
     ],
     [
      61.1,
-     -13
+     -9
     ]
    ]
   },
@@ -155,14 +155,14 @@
    "som": "amb_arena",
    "de": 60.6,
    "ate": 80.1,
-   "db": -17,
+   "db": -13,
    "fade": 0.5
   },
   {
    "som": "amb_arena",
    "de": 79.9,
    "ate": 85.1,
-   "db": -14,
+   "db": -10,
    "fade": 0.3,
    "offset": 9
   },
@@ -170,7 +170,7 @@
    "som": "amb_arena",
    "de": 84.9,
    "ate": 89.1,
-   "db": -24,
+   "db": -20,
    "fade": 0.6,
    "offset": 4
   },
@@ -178,343 +178,399 @@
    "som": "amb_fim_tarde",
    "de": 84.9,
    "ate": 99.233,
-   "db": -22,
+   "db": -18,
    "fade": 0.6,
    "automacao": [
     [
      84.9,
-     -29
+     -25
     ],
     [
      89.0,
-     -21
+     -17
     ],
     [
      94.6,
-     -23
+     -19
     ],
     [
      99.2,
-     -33
+     -29
     ]
    ]
+  },
+  {
+   "som": "amb_tocha",
+   "de": 0,
+   "ate": 15.1,
+   "db": -16,
+   "fade": 0.5
+  },
+  {
+   "som": "amb_tocha",
+   "de": 16.9,
+   "ate": 24.1,
+   "db": -16,
+   "fade": 0.4,
+   "offset": 5
+  },
+  {
+   "som": "amb_tocha",
+   "de": 25.9,
+   "ate": 36.3,
+   "db": -18,
+   "fade": 0.4,
+   "offset": 9
+  },
+  {
+   "som": "amb_tocha",
+   "de": 55.9,
+   "ate": 61.1,
+   "db": -17,
+   "fade": 0.4,
+   "offset": 3
   }
  ],
  "efeitos": [
   {
+   "som": "sfx_corrente",
+   "em": 2.4,
+   "db": -14
+  },
+  {
    "som": "pop",
    "em": 4.8,
-   "db": -19
+   "db": -16
   },
   {
    "som": "pop",
    "em": 5.4,
-   "db": -19
+   "db": -16
   },
   {
    "som": "pop",
    "em": 5.9,
-   "db": -19
+   "db": -16
   },
   {
    "som": "sfx_areia",
    "em": 7.6,
-   "db": -17
+   "db": -14
   },
   {
    "som": "sfx_grito_multidao",
    "em": 9.2,
-   "db": -12
+   "db": -9
   },
   {
    "som": "sfx_areia",
    "em": 9.4,
-   "db": -17
+   "db": -14
   },
   {
    "som": "sparkle",
    "em": 11.4,
-   "db": -19
+   "db": -16
   },
   {
    "som": "whoosh",
    "em": 15.0,
-   "db": -17
+   "db": -14
   },
   {
    "som": "impact-bass-1",
    "em": 15.3,
-   "db": -15
+   "db": -12
   },
   {
    "som": "pop",
    "em": 15.9,
-   "db": -17
+   "db": -14
   },
   {
    "som": "whoosh-short",
    "em": 17.9,
-   "db": -17
+   "db": -14
   },
   {
-   "som": "sfx_baque_madeira",
-   "em": 18.5,
-   "db": -11
-  },
-  {
-   "som": "sfx_baque_madeira",
-   "em": 18.74,
-   "db": -18
+   "som": "sfx_espada_madeira",
+   "em": 18.48,
+   "db": -3
   },
   {
    "som": "pop",
    "em": 20.1,
-   "db": -15
+   "db": -12
   },
   {
    "som": "impact-bass-2",
    "em": 23.0,
-   "db": -11
+   "db": -8
   },
   {
    "som": "whoosh-cinematic",
    "em": 24.0,
-   "db": -15
+   "db": -12
   },
   {
    "som": "impact-bass-1",
    "em": 24.1,
-   "db": -15
-  },
-  {
-   "som": "whoosh-cinematic",
-   "em": 36.2,
-   "db": -15
-  },
-  {
-   "som": "impact-bass-1",
-   "em": 36.300000000000004,
-   "db": -15
-  },
-  {
-   "som": "whoosh-cinematic",
-   "em": 47.2,
-   "db": -15
-  },
-  {
-   "som": "impact-bass-1",
-   "em": 47.300000000000004,
-   "db": -15
+   "db": -12
   },
   {
    "som": "pop",
    "em": 26.5,
-   "db": -19
+   "db": -16
+  },
+  {
+   "som": "sfx_ceramica",
+   "em": 26.5,
+   "db": -6
   },
   {
    "som": "pop",
    "em": 27.3,
-   "db": -19
+   "db": -16
   },
   {
    "som": "pop",
    "em": 28.0,
-   "db": -19
+   "db": -16
   },
   {
    "som": "pop",
    "em": 28.7,
-   "db": -19
+   "db": -16
+  },
+  {
+   "som": "sfx_ceramica",
+   "em": 28.7,
+   "db": -7
   },
   {
    "som": "pop",
    "em": 29.6,
-   "db": -19
+   "db": -16
   },
   {
    "som": "impact-bass-1",
    "em": 31.9,
-   "db": -13
+   "db": -10
+  },
+  {
+   "som": "sfx_goles",
+   "em": 34.4,
+   "db": -5
+  },
+  {
+   "som": "whoosh-cinematic",
+   "em": 36.2,
+   "db": -12
+  },
+  {
+   "som": "impact-bass-1",
+   "em": 36.300000000000004,
+   "db": -12
   },
   {
    "som": "sfx_rugido_leao",
    "em": 41.3,
-   "db": -11
+   "db": -8
   },
   {
    "som": "sfx_rugido_urso",
    "em": 41.8,
-   "db": -12
+   "db": -9
   },
   {
    "som": "sfx_grito_multidao",
    "em": 42.5,
-   "db": -13
+   "db": -10
   },
   {
    "som": "sfx_areia",
    "em": 44.4,
-   "db": -12
+   "db": -9
   },
   {
    "som": "sfx_areia",
    "em": 45.0,
-   "db": -12
+   "db": -9
   },
   {
    "som": "sfx_areia",
    "em": 45.8,
+   "db": -9
+  },
+  {
+   "som": "whoosh-cinematic",
+   "em": 47.2,
    "db": -12
+  },
+  {
+   "som": "impact-bass-1",
+   "em": 47.300000000000004,
+   "db": -12
+  },
+  {
+   "som": "sfx_capacete",
+   "em": 50.0,
+   "db": -4
   },
   {
    "som": "sfx_baque_madeira",
    "em": 50.6,
-   "db": -17
+   "db": -14
   },
   {
    "som": "sfx_respira_capacete",
    "em": 52.3,
-   "db": -9
+   "db": -6
   },
   {
    "som": "sfx_respira_capacete",
    "em": 54.4,
+   "db": -9
+  },
+  {
+   "som": "sfx_capacete",
+   "em": 56.3,
    "db": -12
   },
   {
    "som": "sfx_portao",
    "em": 60.0,
-   "db": -11
+   "db": -8
   },
   {
    "som": "whoosh-cinematic",
    "em": 60.5,
-   "db": -13
+   "db": -10
   },
   {
    "som": "sfx_grito_multidao",
    "em": 61.0,
-   "db": -9
+   "db": -6
   },
   {
    "som": "impact-bass-1",
    "em": 63.1,
-   "db": -12
+   "db": -9
   },
   {
    "som": "sfx_grito_multidao",
    "em": 63.1,
-   "db": -10
+   "db": -7
   },
   {
    "som": "sfx_corneta",
    "em": 68.5,
-   "db": -10
+   "db": -7
   },
   {
    "som": "impact-bass-2",
    "em": 70.2,
-   "db": -11
+   "db": -8
   },
   {
    "som": "sfx_grito_multidao",
    "em": 70.3,
-   "db": -12
+   "db": -9
   },
   {
    "som": "whoosh",
    "em": 71.0,
-   "db": -11
+   "db": -8
   },
   {
-   "som": "sfx_areia",
-   "em": 71.8,
-   "db": -17
+   "som": "sfx_rede_cai",
+   "em": 71.75,
+   "db": -5
   },
   {
    "som": "sfx_clang",
    "em": 72.9,
-   "db": -10
+   "db": -7
   },
   {
-   "som": "sfx_baque_madeira",
-   "em": 75.9,
-   "db": -12
+   "som": "sfx_queda_areia",
+   "em": 75.95,
+   "db": -3
   },
   {
    "som": "pop",
    "em": 77.1,
-   "db": -17
+   "db": -14
   },
   {
    "som": "pop",
    "em": 78.3,
-   "db": -17
+   "db": -14
   },
   {
    "som": "sfx_grito_multidao",
    "em": 80.0,
-   "db": -9
+   "db": -6
   },
   {
    "som": "pop",
    "em": 81.6,
-   "db": -15
-  },
-  {
-   "som": "pop",
-   "em": 82.1,
-   "db": -15
-  },
-  {
-   "som": "impact-bass-2",
-   "em": 84.0,
-   "db": -9
-  },
-  {
-   "som": "sfx_grito_multidao",
-   "em": 84.0,
    "db": -12
   },
   {
    "som": "pop",
+   "em": 82.1,
+   "db": -12
+  },
+  {
+   "som": "impact-bass-2",
+   "em": 84.0,
+   "db": -6
+  },
+  {
+   "som": "sfx_grito_multidao",
+   "em": 84.0,
+   "db": -9
+  },
+  {
+   "som": "pop",
    "em": 85.6,
-   "db": -17
+   "db": -14
   },
   {
    "som": "pop",
    "em": 90.0,
-   "db": -19
+   "db": -16
   },
   {
    "som": "chime",
    "em": 90.9,
-   "db": -17
+   "db": -14
   },
   {
    "som": "pop",
    "em": 92.4,
-   "db": -17
+   "db": -14
   },
   {
    "som": "impact-bass-1",
    "em": 94.0,
-   "db": -13
+   "db": -10
   },
   {
    "som": "whoosh",
    "em": 94.6,
-   "db": -17
+   "db": -14
   },
   {
    "som": "pop",
    "em": 95.8,
-   "db": -17
+   "db": -14
   },
   {
    "som": "chime",
    "em": 96.0,
-   "db": -19
+   "db": -16
   }
  ],
  "passos": [
@@ -523,56 +579,56 @@
    "de": 17.0,
    "ate": 17.6,
    "intervalo": 0.3,
-   "db": -20
+   "db": -17
   },
   {
    "som": "sfx_passo_pedra",
    "de": 56.4,
    "ate": 59.0,
    "intervalo": 0.43,
-   "db": -18
+   "db": -15
   },
   {
    "som": "sfx_passo_pedra",
    "de": 56.0,
    "ate": 58.6,
    "intervalo": 0.43,
-   "db": -22
+   "db": -19
   },
   {
    "som": "sfx_passo_areia",
    "de": 61.0,
    "ate": 62.6,
    "intervalo": 0.4,
-   "db": -18
+   "db": -15
   },
   {
    "som": "sfx_passo_areia",
    "de": 64.8,
    "ate": 66.0,
    "intervalo": 0.4,
-   "db": -20
+   "db": -17
   },
   {
    "som": "sfx_passo_areia",
    "de": 71.9,
    "ate": 72.5,
    "intervalo": 0.2,
-   "db": -16
+   "db": -13
   },
   {
    "som": "sfx_passo_areia",
    "de": 74.0,
    "ate": 76.0,
    "intervalo": 0.22,
-   "db": -15
+   "db": -12
   },
   {
    "som": "sfx_passo_pedra",
    "de": 85.0,
    "ate": 86.8,
    "intervalo": 0.45,
-   "db": -20
+   "db": -17
   }
  ],
  "ducking": {

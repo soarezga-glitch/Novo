@@ -45,6 +45,11 @@ Formato da partitura: ver o cabeçalho de `scripts/misturar.py` (ambientes em lo
 automação de volume, efeitos pontuais, sequências de passos, ducking, volume final).
 
 ## Regras de sound design
+0. **Pedido do usuário: som ambiente com ênfase.** Ambiente+efeitos só ~5–7 dB abaixo da voz
+   (`--so-ambiente` ≈ -17 LUFS com voz em -10), e **todo objeto que aparece fazendo algo tem som
+   próprio**: espada caindo (`sfx_espada_madeira`, com quiques), tigela/copo na mesa (`sfx_ceramica`),
+   beber (`sfx_goles`), capacete (`sfx_capacete`), corrente (`sfx_corrente`), corpo caindo
+   (`sfx_queda_areia`), rede (`sfx_rede_cai`), tocha estalando (`amb_tocha`).
 1. **Um ambiente por cena**, trocando com crossfade curto (0,3–0,6 s) junto com o corte de imagem.
    Cartões/telas de texto: ambiente quase mudo + whoosh/impacto.
 2. **Equilíbrio**: ambiente+efeitos ~8–12 dB abaixo da voz no geral (`--so-ambiente` ≈ -18 a
