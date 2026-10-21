@@ -58,3 +58,7 @@ templo, pichação, placa) com a fonte própria deles.
 - Zona segura do TikTok/Reels: evite os 220 px de cima e os 420 px de baixo, e a faixa de 140 px
   da direita (botões).
 - Entrada com "pop" (escala 0,2 → 1, `back.out`) e saída rápida; pode pulsar de leve enquanto fica na tela.
+
+**Texto que faz parte da cena** (TV, celular, placa, jornal): fonte **Anton** (`assets/fontes/anton.woff2`,
+estilo telejornal), sempre do tamanho da tela onde está (skill `fisica-de-cena`). A Luckiest Guy continua
+sendo a fonte da marca para palavras de impacto, cartões e legenda.

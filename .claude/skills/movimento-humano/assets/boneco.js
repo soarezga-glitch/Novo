@@ -133,6 +133,8 @@
     expressao(t0, t1, nome) { this.expr.push({ t0, t1, nome }); return this; }
     sujeira(t0, t1) { this.sujo.push({ t0, t1 }); return this; }
     mao(lado) { return this._maos ? this._maos[lado] : [0, 0]; }
+    // forma da mão (luva): 'relaxada' | 'aberta' | 'punho' | 'apontar' | 'indicador' | 'joinha' | 'baixo' | 'paz' | 'ok' | 'palma' | 'n1'..'n5'
+    formaMao(lado, t0, t1, forma) { (lado === 'ambos' ? ['e', 'd'] : [lado]).forEach(l => (this.formas = this.formas || { e: [], d: [] })[l].push({ t0, t1, forma })); return this; }
 
     // ---------- construção do SVG ----------
     build(parent, contorno) {
@@ -146,10 +148,12 @@
       const F = this.fig;
       const tecido = (c, w) => ({ fill: 'none', stroke: c, 'stroke-width': w * this.s, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' });
       this.el.capa = mk('path', { fill: F.corCapa || '#7A3A2A', stroke: 'none' });
+      this.el.mochila = mk('g', {});        // mochila nas costas (sobrevivente): atrás do corpo
       this.el.bracoLonge = mk('path', linha(this.corLonge));
       this.el.mangaLonge = mk('path', tecido(F.corManga || F.cor || '#888', 30));
       this.el.manicaLonge = mk('g', {});   // gladiador: protetor de braço (manica) e de ombro (galero)
       this.el.maoLonge = mk('circle', { r: 11 * this.s, fill: this.corLonge });
+      this.el.maoFormaLonge = mk('g', {});   // mão em forma de luva (aberta, punho, apontando, joinha...) — skill personagem-sobrevivente
       this.el.pernaLonge = mk('path', linha(this.corLonge));
       this.el.calcaLonge = mk('path', tecido(F.corPernas || '#3A4A6A', 30));
       this.el.grevaLonge = mk('g', {});    // gladiador: caneleira (ocrea)
@@ -167,6 +171,9 @@
         this.el.avental = mk('path', { fill: '#E8DCC4', stroke: 'none' });
       }
       this.el.bolsa = mk('path', { fill: '#8A5A33', stroke: 'none' });
+      this.el.bolsoCargo = mk('path', { fill: 'none', stroke: '#111114', 'stroke-width': 4 * this.s, 'stroke-linejoin': 'round' });
+      this.el.alcas = mk('path', { fill: 'none', stroke: '#1A1A1E', 'stroke-width': 9 * this.s, 'stroke-linecap': 'round' });
+      this.el.cachecol = mk('g', {});       // cachecol laranja (marca registrada do Sobrevivente)
       // cabeça
       const h = this.el.cab = mk('g', {});
       this.el.cabeloTras = mk('path', { fill: F.corCabelo || '#3A2A20' }, h);
@@ -197,6 +204,7 @@
       this.el.mangaPerto = mk('path', tecido(F.corManga || F.cor || '#888', 30));
       this.el.manicaPerto = mk('g', {});
       this.el.maoPerto = mk('circle', { r: 11 * this.s, fill: this.cor });
+      this.el.maoFormaPerto = mk('g', {});
     }
 
     // ---------- poses base ----------
@@ -229,6 +237,35 @@
         return { vista: 'perfil', dir, R: [hx, chao], giro: 0, inclina: p.inclina ?? 4, quadril: [hx, hy], respira,
           pes: [{ tz: [fx + dir * sep, chao - M.tornozelo * s], inc: 0 }, { tz: [fx - dir * sep, chao - M.tornozelo * s], inc: 0 }],
           bracos: { e: { o: 18, c: 40 }, d: { o: 14, c: 40 } } };
+      }
+      if (a.tipo === 'montar') {
+        // montado em moto / bicicleta / carro (skill fisica-de-cena): 3 pontos de contato com o veículo
+        //  p.assento [x,y] = quadril no banco · p.pe [x,y] = pedaleira (sola do pé) ou p.pedivela { c:[x,y], r, rpm, fase }
+        //  p.guidao [x,y] = onde as mãos seguram (guidão / volante) · p.inclina (se faltar, inclina só o necessário para alcançar)
+        const dirM = p.dir ?? 1;
+        const hx = p.assento[0], hy = p.assento[1] + respira * 0.15;
+        const tz = M.tornozelo * s;
+        let pes;
+        if (p.pedivela) {
+          const { c, r, rpm = 50, fase = 0 } = p.pedivela;
+          const th = (fase + (t - a.t0) * rpm / 60 * 360) * RAD;
+          pes = [0, Math.PI].map(o => { const ang = th + o; return { tz: [c[0] + dirM * Math.cos(ang) * r, c[1] + Math.sin(ang) * r - tz], inc: 0 }; });
+        } else {
+          const pe = p.pe ?? [hx + dirM * M.coxa * 0.6 * s, hy + 150 * s];
+          pes = [{ tz: [pe[0] + dirM * 4 * s, pe[1] - tz], inc: 4 }, { tz: [pe[0] - dirM * 4 * s, pe[1] - tz], inc: 4 }];
+        }
+        const ombroEm = inc => [hx + dirM * Math.sin(inc * RAD) * M.tronco * s, hy - Math.cos(inc * RAD) * M.tronco * s + 16 * s];
+        const alcance = (M.braco + M.antebraco) * s;
+        let inc = p.inclina;
+        if (inc == null) {
+          inc = 4;
+          if (p.guidao) while (inc < 50 && Math.hypot(p.guidao[0] - ombroEm(inc)[0], p.guidao[1] - ombroEm(inc)[1]) > alcance * 0.93) inc += 2;
+        }
+        const bracoAte = alvo => { const r = ik2(ombroEm(inc), alvo, M.braco * s, M.antebraco * s, dirM, -1); return { o: r.a1 - inc, c: norm(r.a2 - r.a1) }; };
+        const bracos = p.guidao
+          ? { e: bracoAte([p.guidao[0] - dirM * 6 * s, p.guidao[1]]), d: bracoAte(p.guidao) }
+          : { e: { o: 18, c: 40 }, d: { o: 14, c: 40 } };
+        return { vista: 'perfil', dir: dirM, R: [hx, p.chao ?? hy + 200 * s], giro: 0, inclina: inc, quadril: [hx, hy], respira: 0, pes, bracos };
       }
       if (a.tipo === 'pular') {
         // pulo no lugar (frente ou perfil): agacha → sobe → cai → amortece
@@ -319,6 +356,21 @@
         case 'segurar': return vista === 'frente' ? { o: 18, c: 80 } : { o: 12, c: 88 };
         case 'cintura': return vista === 'frente' ? { o: 38, c: -95 } : { o: -20, c: 100 };
         case 'pose': return { o: p.o, c: p.c };
+        // gestos do guia de mãos do Sobrevivente
+        case 'explicar': return vista === 'frente' ? { o: 38, c: 52 + Math.sin(tt * 2 * Math.PI * 0.9) * 8 } : { o: 40, c: 55 + Math.sin(tt * 2 * Math.PI * 0.9) * 8 };   // mão aberta, palma para cima
+        case 'parar': return vista === 'frente' ? { o: 80, c: -30 } : { o: 84, c: -38 };      // braço esticado, palma para frente
+        case 'joinha': return vista === 'frente' ? { o: 40, c: 70 } : { o: 50, c: 72 };
+        case 'levantar': return { o: 168, c: 8 };                                              // braço para cima (pedir a palavra / chamar atenção)
+        case 'chamar': return vista === 'frente' ? { o: 55, c: 50 + Math.sin(tt * 2 * Math.PI * 2.2) * 35 } : { o: 70, c: 45 + Math.sin(tt * 2 * Math.PI * 2.2) * 35 };
+        case 'contar': return vista === 'frente' ? { o: 28, c: 120 } : { o: 30, c: 118 };      // mão na altura do ombro mostrando os dedos
+        case 'cruzar': case 'cabeca': case 'testa': {
+          let alvo;
+          if (g.gesto === 'cruzar') alvo = vista === 'frente' ? add(cabeca, [-sx * 22 * s, (M.cabeca + M.pescoco + 70 + (lado === 'e' ? 6 : 0)) * s]) : add(cabeca, [dir * 30 * s, (M.cabeca + 95) * s]);
+          else if (g.gesto === 'cabeca') alvo = add(cabeca, [sx * (vista === 'frente' ? 30 : 0) * s, -M.cabeca * 0.95 * s]);
+          else alvo = add(cabeca, [vista === 'frente' ? sx * 14 * s : dir * 40 * s, -M.cabeca * 0.4 * s]);
+          const r = ik2(ombro, alvo, M.braco * s, M.antebraco * s, sx, vista === 'frente' ? 1 : -1);
+          return { o: r.a1, c: norm(r.a2 - r.a1) };
+        }
         case 'comer': case 'queixo': case 'nariz': case 'alcancar': {
           // mão até um alvo do rosto (ou p.alvo em mundo) via IK; cotovelo para baixo
           let alvo;
@@ -390,6 +442,54 @@
         el.bolsa.setAttribute('d', `M${f([bx - 26 * s, by])} h${52 * s} v${44 * s} h${-52 * s}Z M${f(top)} L${f([bx, by])}`);
         el.bolsa.setAttribute('stroke', '#5E3B1C'); el.bolsa.setAttribute('stroke-width', 6 * s);
       } else el.bolsa.setAttribute('d', '');
+      const T0 = '#1D1D2B', ex = F.extras || [], t = this._t || 0, rapido = this._rapido || 0;
+      // luvas pretas
+      if (F.luvas) { el.maoLonge.setAttribute('fill', '#2A2A30'); el.maoPerto.setAttribute('fill', '#1D1D2B'); }
+      // bolso lateral da calça cargo (na coxa da perna da frente)
+      if (F.cargo && F.pernas === 'calca') {
+        const L = pernas[perto.perna], a = P_(L.q, L.j, 0.42), b = P_(L.q, L.j, 0.78);
+        const v = [b[0] - a[0], b[1] - a[1]], n = Math.hypot(v[0], v[1]) || 1, w = [-v[1] / n * 11 * s, v[0] / n * 11 * s];
+        el.bolsoCargo.setAttribute('d', `M${f([a[0] + w[0], a[1] + w[1]])} L${f([b[0] + w[0], b[1] + w[1]])} L${f([b[0] - w[0], b[1] - w[1]])} L${f([a[0] - w[0], a[1] - w[1]])}Z M${f([a[0] + w[0], a[1] + w[1] + 7 * s])} L${f([a[0] - w[0], a[1] - w[1] + 7 * s])}`);
+      } else el.bolsoCargo.setAttribute('d', '');
+      // mochila preta pequena: de perfil inteira nas costas; de frente só as alças
+      if (ex.includes('mochila')) {
+        if (vista === 'perfil') {
+          const tras = -dir, c = P_(top, H, 0.42), bx = c[0] + tras * 30 * s, by = c[1];
+          const w = 44 * s, h = 112 * s, x0 = bx - w / 2 + tras * 6 * s;
+          el.mochila.innerHTML = `<g transform="rotate(${(dir * inc).toFixed(1)} ${f(c)})"><rect x="${x0}" y="${by - h / 2}" width="${w}" height="${h}" rx="${18 * s}" fill="#24242A" stroke="${T0}" stroke-width="${5 * s}"/>` +
+            `<rect x="${x0 + w * 0.075}" y="${by + h * 0.08}" width="${w * 0.85}" height="${h * 0.34}" rx="${8 * s}" fill="#1A1A1E" stroke="${T0}" stroke-width="${4 * s}" transform="translate(${tras * 6 * s} 0)"/>` +
+            `<rect x="${bx - 7 * s + tras * 6 * s}" y="${by + h * 0.18}" width="${14 * s}" height="${10 * s}" rx="${2 * s}" fill="#FF7A00" stroke="${T0}" stroke-width="${2.5 * s}"/>` +
+            `<path d="M${x0 + w * 0.15} ${by - h * 0.32} H${x0 + w * 0.85}" stroke="#FF7A00" stroke-width="${4 * s}" stroke-linecap="round"/></g>`;
+          el.alcas.setAttribute('d', `M${f(P_(top, H, 0.02))} Q${f([top[0] + dir * 14 * s, top[1] + 40 * s])} ${f(P_(top, H, 0.5))}`);
+        } else {
+          el.mochila.innerHTML = '';
+          const yA = top[1] + (H[1] - top[1]) * 0.42;   // alças só no peito (de frente a mochila fica escondida atrás)
+          el.alcas.setAttribute('d', `M${f([top[0] - 22 * s, top[1] + 10 * s])} Q${f([top[0] - 30 * s, yA - 20 * s])} ${f([top[0] - 34 * s, yA])} M${f([top[0] + 22 * s, top[1] + 10 * s])} Q${f([top[0] + 30 * s, yA - 20 * s])} ${f([top[0] + 34 * s, yA])}`);
+        }
+      } else { el.mochila.innerHTML = ''; el.alcas.setAttribute('d', ''); }
+      // cachecol laranja: volta grossa no pescoço + nó + 2 pontas largas que esvoaçam para trás (mais quando corre)
+      if (ex.includes('cachecol')) {
+        const pesc = [top[0], top[1] - M.pescoco * 0.3 * s], tras = vista === 'perfil' ? -dir : -1;
+        const vento = 0.55 + rapido * 0.45, amp = (5 + rapido * 10) * s;
+        const rx = (vista === 'perfil' ? 26 : 36) * s, ry = 15 * s;
+        let h = `<path d="M${pesc[0] - rx} ${pesc[1] - ry * 0.5} Q${pesc[0]} ${pesc[1] + ry * 1.6} ${pesc[0] + rx} ${pesc[1] - ry * 0.5} L${pesc[0] + rx * 0.9} ${pesc[1] + ry * 0.6} Q${pesc[0]} ${pesc[1] + ry * 2.6} ${pesc[0] - rx * 0.9} ${pesc[1] + ry * 0.6}Z" fill="#FF7A00" stroke="${T0}" stroke-width="${4.5 * s}" stroke-linejoin="round"/>`;
+        const no = [pesc[0] + tras * rx * 0.7, pesc[1] + ry * 0.7];
+        [1, 0].forEach(k => {
+          const len = (k ? 62 : 80) * s, ang = (35 + vento * 50 - k * 14) * RAD, ph = t * (5 + rapido * 7) + k * 1.9;
+          const dirv = [tras * Math.sin(ang), Math.cos(ang)];               // para trás e um pouco para baixo
+          const nrm = [-dirv[1], dirv[0]];
+          const e = [no[0] + dirv[0] * len, no[1] + dirv[1] * len + Math.sin(ph) * amp];
+          const m = [no[0] + dirv[0] * len * 0.5 + nrm[0] * Math.sin(ph + 1.2) * amp, no[1] + dirv[1] * len * 0.5 + nrm[1] * Math.sin(ph + 1.2) * amp];
+          const w0 = 7 * s, w1 = (k ? 16 : 20) * s;                        // estreita no nó, larga na ponta (como bandeira)
+          const A1 = [no[0] + nrm[0] * w0, no[1] + nrm[1] * w0], A2 = [no[0] - nrm[0] * w0, no[1] - nrm[1] * w0];
+          const E1 = [e[0] + nrm[0] * w1, e[1] + nrm[1] * w1], E2 = [e[0] - nrm[0] * w1, e[1] - nrm[1] * w1];
+          const M1 = [m[0] + nrm[0] * (w0 + w1) / 2, m[1] + nrm[1] * (w0 + w1) / 2], M2 = [m[0] - nrm[0] * (w0 + w1) / 2, m[1] - nrm[1] * (w0 + w1) / 2];
+          const corte = [e[0] - dirv[0] * 8 * s, e[1] - dirv[1] * 8 * s];      // ponta em "V" (franja cortada)
+          h += `<path d="M${f(A1)} Q${f(M1)} ${f(E1)} L${f(corte)} L${f(E2)} Q${f(M2)} ${f(A2)}Z" fill="${k ? '#E86A00' : '#FF7A00'}" stroke="${T0}" stroke-width="${4 * s}" stroke-linejoin="round"/>`;
+        });
+        h += `<ellipse cx="${f(no).split(' ')[0]}" cy="${f(no).split(' ')[1]}" rx="${11 * s}" ry="${9 * s}" fill="#FF7A00" stroke="${T0}" stroke-width="${4 * s}"/>`;
+        el.cachecol.innerHTML = h;
+      } else el.cachecol.innerHTML = '';
     }
 
     // Calçado desenhado sobre o pé (calcanhar → ponta), apontando para onde o pé aponta
@@ -457,6 +557,7 @@
     desenhar(t) {
       const s = this.s;
       const P = this.pose(t);
+      this._t = t; { const a = this.acaoEm(this.acoes, t).atual; this._rapido = a ? ({ correr: 1, pular: 0.8, andar: 0.35, montar: 0.7 }[a.tipo] || 0) : 0; }
       if (!P) { this.g.style.display = 'none'; this.el.extras.style.display = 'none'; return; }
       this.g.style.display = ''; this.el.extras.style.display = '';
       const { vista, dir } = P;
@@ -490,6 +591,7 @@
         : { e: add(top, [0, 16 * s]), d: add(top, [0, 16 * s]) };
       const ctx = { vista, dir, cabeca: cab, s };
       const maos = {}, bracos = {};
+      const formaG = { e: null, d: null };
       ['e', 'd'].forEach(l => {
         let ang = { ...P.bracos[l] };
         const lista = this.bracos[l];
@@ -502,6 +604,7 @@
           if (t < g.t0 + ent) w = smooth((t - g.t0) / ent);
           if (t > g.t1) w = 1 - smooth((t - g.t1) / sai);
           ang = { o: lerp(ang.o, alvo.o, w), c: lerp(ang.c, alvo.c, w) };
+          if (w > 0.5) formaG[l] = g.p.mao || (g.gesto === 'contar' ? 'n' + (g.p.n ?? 1) : FORMA_GESTO[g.gesto]);
         }
         const sx = vista === 'frente' ? (l === 'e' ? -1 : 1) : dir;
         const o = vista === 'perfil' ? ang.o + inc : ang.o;
@@ -534,6 +637,15 @@
       const mL = rot(maos[longe.braco]), mP = rot(maos[perto.braco]);
       this.el.maoLonge.setAttribute('cx', mL[0]); this.el.maoLonge.setAttribute('cy', mL[1]);
       this.el.maoPerto.setAttribute('cx', mP[0]); this.el.maoPerto.setAttribute('cy', mP[1]);
+      if (this.fig.luvas) {
+        const baseA = this.acaoEm(this.acoes, t).atual, padrao = baseA && baseA.tipo === 'correr' ? 'punho' : 'relaxada';
+        const formaEm = l => { const ex = ((this.formas || {})[l] || []).filter(x => t >= x.t0 && t <= x.t1).pop(); return ex ? ex.forma : formaG[l] || padrao; };
+        [[longe.braco, this.el.maoFormaLonge, this.el.maoLonge, true], [perto.braco, this.el.maoFormaPerto, this.el.maoPerto, false]].forEach(([l, gEl, circ, eLonge]) => {
+          circ.setAttribute('r', 0);
+          const B = bracos[l], sxL = vista === 'frente' ? (l === 'e' ? -1 : 1) : dir;
+          gEl.innerHTML = Boneco.desenharMao(formaEm(l), rot(B.c), rot(B.m), { s: s * 1.45, vista, sx: sxL, longe: eLonge });   // luva um pouco maior que a bolinha, como na ficha
+        });
+      } else { this.el.maoFormaLonge.innerHTML = ''; this.el.maoFormaPerto.innerHTML = ''; }
       this.el.tronco.setAttribute('d', `M${f(H)} L${f(pescoco)}`);
       // roupa (túnica): trapézio do ombro até um pouco abaixo do quadril
       if (this.el.roupa) {
@@ -587,7 +699,7 @@
         // Linha do cabelo h(lon): latitude (rad) onde o cabelo começa; lon 0 = testa, ±π = nuca.
         // Parte visível = arco da silhueta (por cima da cabeça) + linha do cabelo no lado visível.
         const R = r * 1.05;
-        const H = { curto: [0.02, 0.5], cacheado: [0.12, 0.52], coque: [0.0, 0.52], longo: [-0.05, 0.5] }[est] || [0.02, 0.5];
+        const H = { curto: [0.02, 0.5], cacheado: [0.12, 0.52], coque: [0.0, 0.52], longo: [-0.05, 0.5], militar: [0.62, 0.3] }[est] || [0.02, 0.5];
         const h = lon => H[0] + H[1] * Math.cos(lon);
         const pt = (lon, lat) => [C[0] + R * Math.cos(lat) * Math.sin(lon + TH), C[1] - R * Math.sin(lat)];
         const lonD = Math.PI / 2 - TH, lonE = -Math.PI / 2 - TH;          // longitudes na borda direita/esquerda da tela
@@ -597,6 +709,18 @@
           pts.push([C[0] - R * Math.cos(lat), C[1] - R * Math.sin(lat)]); }
         for (let k = 0; k <= 24; k++) { const lon = lonD + (lonE - lonD) * (k / 24); pts.push(pt(lon, h(lon))); }
         d = 'M' + pts.map(p => p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join(' L') + 'Z';
+        if (est === 'militar') {             // militar curto e espetado: fios em ponta saindo do topo, inclinados para um lado
+          const nS = 11;
+          for (let k = 0; k < nS; k++) {
+            const lat = (h(lonE) + 0.08) + (Math.PI - h(lonD) - h(lonE) - 0.16) * (k / (nS - 1));
+            const bx = C[0] - R * Math.cos(lat), by = C[1] - R * Math.sin(lat);
+            const n = [-Math.cos(lat), -Math.sin(lat)], tg = [-n[1], n[0]];          // normal (para fora) e tangente
+            const comp = r * (0.24 + 0.08 * Math.sin(k * 2.3)), lar = r * 0.12, lado = 0.55;   // fios inclinados para um lado
+            const p1 = [bx + tg[0] * lar, by + tg[1] * lar], p2 = [bx - tg[0] * lar, by - tg[1] * lar];
+            const tip = [bx + n[0] * comp + tg[0] * comp * lado, by + n[1] * comp + tg[1] * comp * lado];
+            d += `M${p1[0].toFixed(1)} ${p1[1].toFixed(1)} L${tip[0].toFixed(1)} ${tip[1].toFixed(1)} L${p2[0].toFixed(1)} ${p2[1].toFixed(1)}Z`;
+          }
+        }
         if (est === 'cacheado') {            // cachos: bolinhas ao longo da borda do cabelo
           const bol = (x, y) => `M${(x - r * 0.19).toFixed(1)} ${y.toFixed(1)} a${r * 0.19} ${r * 0.19} 0 1 1 ${r * 0.38} 0 a${r * 0.19} ${r * 0.19} 0 1 1 ${-r * 0.38} 0Z`;
           pts.forEach((p, k) => { if (k % 3 === 0) d += bol(p[0], p[1]); });
@@ -774,7 +898,7 @@
         b.setAttribute('cx', bx); b.setAttribute('cy', C[1] + 12 * s);
         const verde = disc('verde');
         b.setAttribute('fill', verde ? '#6DBE45' : corada > 0.5 ? '#FF3B4E' : this.bochecha);
-        b.setAttribute('opacity', verde ? 0.85 : (0.45 + corada * 0.4).toFixed(2));
+        b.setAttribute('opacity', verde ? 0.85 : this.fig.semBochecha && corada < 0.9 ? 0 : (0.45 + corada * 0.4).toFixed(2));
         b.setAttribute('rx', (11 + corada * 5) * s);
       });
       // ---- boca
@@ -894,7 +1018,9 @@
     'casual':        { tronco: 'camiseta', cor: '#3B7DD8', mangas: 'curta', pernas: 'calca', corPernas: '#2E4A7A', pes: 'tenis', corPes: '#FFFFFF', corPes2: '#3B7DD8', cabelo: 'curto', corCabelo: '#3A2A20' },
     'moletom':       { tronco: 'moletom', cor: '#6A6E78', mangas: 'longa', pernas: 'calca', corPernas: '#2A2C32', pes: 'tenis', corPes: '#FFFFFF', corPes2: '#2A2C32', cabelo: 'curto', corCabelo: '#2A1E16' },
     // --- marca do usuário (personagem principal) ---
-    'marca':         { tronco: 'camiseta', cor: '#111111', cor2: '#FF7A00', mangas: 'curta', pernas: 'calca', corPernas: '#24242A', pes: 'tenis', corPes: '#FF7A00', corPes2: '#111111' }
+    'marca':         { tronco: 'camiseta', cor: '#111111', cor2: '#FF7A00', mangas: 'curta', pernas: 'calca', corPernas: '#24242A', pes: 'tenis', corPes: '#FF7A00', corPes2: '#111111' },
+    // --- SOBREVIVENTE: personagem oficial (skill personagem-sobrevivente) ---
+    'sobrevivente':  { tronco: 'camiseta', cor: '#FFFFFF', mangas: 'curta', pernas: 'calca', corPernas: '#26262B', cargo: true, pes: 'tenis', corPes: '#FF7A00', corPes2: '#111111', cabelo: 'militar', corCabelo: '#111111', extras: ['cachecol', 'mochila'], luvas: true, semBochecha: true, cinto: 'none' }
   };
   // O personagem principal leva SEMPRE o tênis laranja e preto, qualquer que seja a época.
   Boneco.PROTAGONISTA = { pes: 'tenis', corPes: '#FF7A00', corPes2: '#111111' };
@@ -905,6 +1031,84 @@
     const r = { ...base, ...f };
     if (f.protagonista) Object.assign(r, Boneco.PROTAGONISTA);
     return r;
+  };
+
+  // forma da mão para cada gesto de braço (guia de mãos do Sobrevivente)
+  const FORMA_GESTO = { apontar: 'apontar', acenar: 'aberta', cima: 'punho', desespero: 'aberta', encolher: 'aberta', abanar: 'aberta', estender: 'aberta',
+    segurar: 'punho', cintura: 'punho', comer: 'punho', queixo: 'punho', nariz: 'punho', alcancar: 'aberta', explicar: 'aberta', parar: 'palma', joinha: 'joinha',
+    levantar: 'indicador', chamar: 'aberta', cruzar: 'punho', cabeca: 'aberta', testa: 'aberta' };
+  Boneco.FORMA_GESTO = FORMA_GESTO;
+
+  // Desenha a mão de luva preta. E = cotovelo, W = mão (fim do antebraço). Dedos simples e arredondados, 4 dedos + polegar.
+  Boneco.desenharMao = (forma, E, W, { s = 1, vista = 'frente', sx = 1, longe = false } = {}) => {
+    const LUVA = longe ? '#34343C' : '#22222A', BORDA = '#0B0B10', BRILHO = '#5C5C68';
+    let u = [W[0] - E[0], W[1] - E[1]]; const n0 = Math.hypot(u[0], u[1]) || 1; u = [u[0] / n0, u[1] / n0];
+    let v = [-u[1], u[0]];
+    if (vista === 'frente') { if (v[0] * -sx < 0) v = [-v[0], -v[1]]; }      // de frente: polegar para o lado de dentro
+    else if (v[1] > 0) v = [-v[0], -v[1]];                                 // de lado: polegar para cima
+    const P = (a, b) => [W[0] + (u[0] * a + v[0] * b) * s, W[1] + (u[1] * a + v[1] * b) * s];
+    const q = p => p[0].toFixed(1) + ' ' + p[1].toFixed(1);
+    const rotv = (d, ang) => { const c = Math.cos(ang), sn = Math.sin(ang); return [d[0] * c - d[1] * sn, d[0] * sn + d[1] * c]; };
+    const dedo = (b, d, L, w = 7) => { const e = [b[0] + d[0] * L * s, b[1] + d[1] * L * s];
+      return `<path d="M${q(b)} L${q(e)}" stroke="${BORDA}" stroke-width="${(w + 3) * s}" stroke-linecap="round"/><path d="M${q(b)} L${q(e)}" stroke="${LUVA}" stroke-width="${w * s}" stroke-linecap="round"/>`; };
+    const palma = (c, r = 10) => `<circle cx="${c[0].toFixed(1)}" cy="${c[1].toFixed(1)}" r="${r * s}" fill="${LUVA}" stroke="${BORDA}" stroke-width="${2.6 * s}"/>`;
+    const brilho = (c, r = 10) => `<path d="M${q([c[0] - r * 0.55 * s, c[1] - r * 0.25 * s])} Q${q([c[0] - r * 0.2 * s, c[1] - r * 0.75 * s])} ${q([c[0] + r * 0.35 * s, c[1] - r * 0.6 * s])}" stroke="${BRILHO}" stroke-width="${2 * s}" fill="none" stroke-linecap="round" opacity=".8"/>`;
+    const C = P(9, 0), up = [0, -1], lado = [1, 0];
+    const abre = vista === 'frente' ? 1 : 0.45;
+    let h = '';
+    const dedosCima = (k, comPolegar) => {        // k dedos levantados (contagem), saindo do alto do punho
+      let r = '';
+      const dx = [-6, -2, 2, 6];
+      for (let i = 0; i < k; i++) { const b = [C[0] + dx[i] * s * abre, C[1] - 7 * s]; r += dedo(b, rotv(up, (i - (k - 1) / 2) * 0.16 * abre), 12, 6); }
+      if (comPolegar) r += dedo([C[0] - sx * 8 * s * abre, C[1]], rotv(up, -sx * 1.1), 10, 6.5);
+      return r;
+    };
+    const nos = () => `<path d="M${q(P(14, -6))} L${q(P(15, 6))}" stroke="${BRILHO}" stroke-width="${1.6 * s}" stroke-dasharray="${3 * s} ${2.2 * s}" opacity=".7"/>`;   // juntas dos dedos
+    switch (forma) {
+      case 'aberta': {
+        h += palma(P(8, 0), 9.5);
+        [-1.5, -0.5, 0.5, 1.5].forEach((k, i) => {   // dedos em leque: cada um abre para o seu lado
+          const d0 = [u[0] - v[0] * k * 0.42 * abre, u[1] - v[1] * k * 0.42 * abre], nd = Math.hypot(d0[0], d0[1]);
+          h += dedo(P(12, -k * 4.6 * abre), [d0[0] / nd, d0[1] / nd], i === 0 || i === 3 ? 9.5 : 12, 5.6); });
+        { const d0 = [u[0] * 0.4 + v[0], u[1] * 0.4 + v[1]], nd = Math.hypot(d0[0], d0[1]); h += dedo(P(5, 8), [d0[0] / nd, d0[1] / nd], 8, 6.5); }   // polegar para o lado
+        h += brilho(P(8, 0), 9.5); break;
+      }
+      case 'palma': {        // palma para frente, dedos para cima (gesto de parar / cumprimentar)
+        const c = P(6, 0); h += palma(c, 10.5);
+        [-1.5, -0.5, 0.5, 1.5].forEach((k, i) => { h += dedo([c[0] + k * 4.2 * s * abre, c[1] - 8 * s], rotv(up, k * 0.12), i === 0 || i === 3 ? 10 : 12.5, 6); });
+        h += dedo([c[0] - sx * 9 * s * abre, c[1] + 1 * s], rotv(up, -sx * 1.15), 9, 6.5);
+        h += brilho(c, 10.5); break;
+      }
+      case 'apontar': {
+        h += palma(C, 10.5) + nos();
+        h += dedo(P(15, -3), u, 15, 6.5);                             // indicador esticado na direção do braço
+        h += dedo(P(6, 8), rotv(u, 0.5), 7, 6.5); h += brilho(C, 10.5); break;
+      }
+      case 'indicador': case 'n1': h += palma(C, 10.5) + dedosCima(1, false) + brilho(C, 10.5); break;
+      case 'paz': case 'n2': { h += palma(C, 10.5); const b = [C[0], C[1] - 7 * s]; h += dedo([b[0] - 2.5 * s, b[1]], rotv(up, -0.32), 12.5, 6) + dedo([b[0] + 2.5 * s, b[1]], rotv(up, 0.32), 12.5, 6) + brilho(C, 10.5); break; }
+      case 'n3': h += palma(C, 10.5) + dedosCima(3, false) + brilho(C, 10.5); break;
+      case 'n4': h += palma(C, 10.5) + dedosCima(4, false) + brilho(C, 10.5); break;
+      case 'n5': h += palma(C, 10.5) + dedosCima(4, true) + brilho(C, 10.5); break;
+      case 'ok': {
+        h += palma(C, 10);
+        const anel = [C[0] - sx * 8 * s, C[1] - 6 * s];
+        h += `<circle cx="${anel[0].toFixed(1)}" cy="${anel[1].toFixed(1)}" r="${6 * s}" fill="none" stroke="${BORDA}" stroke-width="${8.5 * s}"/><circle cx="${anel[0].toFixed(1)}" cy="${anel[1].toFixed(1)}" r="${6 * s}" fill="none" stroke="${LUVA}" stroke-width="${5.5 * s}"/>`;
+        [0, 1, 2].forEach(i => { h += dedo([C[0] + (i * 4 - 1) * s * sx, C[1] - 7 * s], rotv(up, sx * (0.1 + i * 0.16)), 11, 5.5); });
+        h += brilho(C, 10); break;
+      }
+      case 'joinha': case 'baixo': {
+        h += palma(C, 11) + `<path d="M${q([C[0] - 8 * s, C[1] + 3 * s])} H${q([C[0] + 8 * s, 0]).split(' ')[0]}" stroke="${BRILHO}" stroke-width="${1.6 * s}" opacity=".7"/>`;
+        const d = forma === 'joinha' ? up : [0, 1];
+        h += dedo([C[0] - sx * 3 * s, C[1] + d[1] * 8 * s], d, 11, 7.5) + brilho(C, 11); break;
+      }
+      case 'punho': h += palma(C, 11) + nos() + dedo(P(5, 7), rotv(u, 0.9), 6, 6) + brilho(C, 11); break;
+      default: {             // relaxada: luva arredondada, dedos juntos levemente curvados
+        const c = P(9, 0), ang = Math.atan2(u[1], u[0]) * 180 / Math.PI;
+        h += `<ellipse cx="${c[0].toFixed(1)}" cy="${c[1].toFixed(1)}" rx="${13 * s}" ry="${10 * s}" transform="rotate(${ang.toFixed(1)} ${q(c)})" fill="${LUVA}" stroke="${BORDA}" stroke-width="${2.6 * s}"/>`;
+        h += dedo(P(5, 7.5), rotv(u, 0.55), 6, 6) + brilho(c, 10);
+      }
+    }
+    return h;
   };
 
   Boneco.escada = (x0, y0, larg, alt, n) => x => {

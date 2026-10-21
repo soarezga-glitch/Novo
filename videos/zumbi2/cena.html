@@ -1,0 +1,434 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Apocalipse Zumbi: 5 testes</title>
+<!--
+  Vídeo vertical (1080x1920), versão curta: "Você sobreviveria a um apocalipse zumbi?" — 5 testes.
+  Narração em fala.mp3 (com 3 s de pausa depois de cada pergunta para a contagem 3…1).
+  Cada teste: cartão → situação → opções A/B → contagem → resposta (morreu + qual era a certa).
+  Skills: edit, movimento-humano (pose montar), figurino, fisica-de-cena (palco com faixas, contato, texto na TV),
+  cenario-ilustrado (cidade.js), objetos-detalhados, paleta-de-epoca, identidade-visual, legenda-dinamica, sons-de-ambiente.
+-->
+<style>
+  html, body { margin: 0; background: #000; overflow: hidden; }
+  #stage { width: 1080px; height: 1920px; display: block; }
+  @font-face { font-family: 'Luckiest Guy'; src: url(fontes/luckiest-guy.woff2); }
+  @font-face { font-family: 'Anton'; src: url(fontes/anton.woff2); }
+  text:not([font-family]) { font-family: 'Luckiest Guy', 'DejaVu Sans', sans-serif; }
+</style>
+<script src="gsap.min.js"></script>
+<script src="boneco.js"></script>
+<script src="paletas.js"></script>
+<script src="cenario.js"></script>
+<script src="cidade.js"></script>
+<script src="detalhes.js"></script>
+<script src="marca.js"></script>
+<script src="palco.js"></script>
+<script src="legenda.js"></script>
+<script src="legenda-dados.js"></script>
+</head>
+<body>
+<svg id="stage" viewBox="0 0 1080 1920" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <clipPath id="painelA"><rect x="30" y="230" width="1020" height="620" rx="34"/></clipPath>
+    <clipPath id="painelB"><rect x="30" y="890" width="1020" height="620" rx="34"/></clipPath>
+  </defs>
+  <g id="scenes"></g>
+  <g id="atores"></g>
+  <g id="props"></g>
+  <g id="topo"></g>
+  <g id="legenda"></g>
+</svg>
+
+<script>
+const NS = 'http://www.w3.org/2000/svg';
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const LARANJA = '#FF7A00', PRETO = '#111111', L = '#1D1D2B';
+const DT = Detalhes({ seed: 4 }), DTm = Detalhes({ seed: 8, sombra: false });
+
+// ===================== TEMPOS (áudio com as pausas) =====================
+// card · sit(situação) · A · B · cont(3 s) · se(resposta) · escolha("Revólver?") · morreu · motivo · certo · fim
+const T = [
+  null,
+  { n: 1, card: 5.09, sit: 6.14, A: 7.37, B: 8.06, cont: 9.22, se: 12.22, escolha: 12.29, morreu: 13.45, motivo: 14.05, certo: 14.9, fim: 15.93, titulo: 'A ARMA', esc: 'REVÓLVER?', ok: 'PÉ DE CABRA' },
+  { n: 2, card: 15.93, sit: 17.04, A: 18.67, B: 19.68, cont: 21.08, se: 24.08, escolha: 24.12, morreu: 24.88, motivo: 25.8, certo: 27.08, fim: 29.48, titulo: 'A SEDE', esc: 'LAGO?', ok: 'DESCARGA' },
+  { n: 3, card: 29.48, sit: 30.53, A: 31.84, B: 32.84, cont: 33.58, se: 36.58, escolha: 36.73, morreu: 38.13, motivo: 38.79, certo: 39.9, fim: 40.9, titulo: 'A FUGA', esc: 'MOTO?', ok: 'BICICLETA' },
+  { n: 4, card: 40.9, sit: 42.18, A: 45.99, B: 47.01, cont: 48.09, se: 51.09, escolha: 51.24, morreu: 52.45, motivo: 53.0, certo: 53.9, fim: 54.82, titulo: 'O SOBREVIVENTE', esc: 'DEIXOU ENTRAR?', ok: 'PEDIR PRA VER' },
+  { n: 5, card: 54.82, sit: 55.98, A: 57.36, B: 57.97, cont: 58.91, se: 61.91, escolha: 62.05, morreu: 62.96, motivo: 64.05, certo: 65.0, fim: 66.09, titulo: 'A NOITE FRIA', esc: 'FOGUEIRA?', ok: 'NO ESCURO' },
+];
+const CONT = 3, FIM = 66.09, FIM_FALA = 71.08, END = FIM_FALA + 2.2;
+
+// ===================== CHÃO COM PROFUNDIDADE (skill fisica-de-cena) =====================
+const F = { calcadaFundo: 1330, rua: 1500, calcadaFrente: 1720 };          // y do pé em cada faixa da rua
+const palcoRua = Palco({ horizonte: 760, yRef: 1720, kRef: 0.6, faixas: F });
+const FN = { fundo: 1560, meio: 1650, frente: 1760 };                      // campo à noite (chão a partir de 1450)
+const palcoNoite = Palco({ horizonte: 1150, yRef: 1760, kRef: 0.62, faixas: FN });
+
+// ===================== CENAS =====================
+const scenes = [];
+const cena = (id, corpo) => scenes.push(`<g id="${id}" class="scene">${corpo}</g>`);
+const Zc = s => Cidade(Cenario({ seed: s, luz: -1, hora: 'dia', prefixo: 'z' + s }));
+const morreu = id => `<g id="${id}">${Marca.carimbo(540, 820, 'VOCÊ MORREU', { fs: 120, rot: -8 })}</g>`;
+const etq = (id, x, y, t, fs = 48) => `<g id="${id}" transform="translate(${x} ${y})">${Marca.etiqueta(0, 0, t, { fs })}</g>`;
+const apoio = (id, x, y, t, fs = 90, rot = -5) => `<g id="${id}" transform="translate(${x} ${y})">${Marca.apoio(0, 0, t, { fs, rot })}</g>`;
+const imp = (id, x, y, t, fs = 150, rot = -4) => `<g id="${id}" transform="translate(${x} ${y})">${Marca.impacto(0, 0, t, { fs, rot })}</g>`;
+const certo = (id, t) => `<g id="${id}" transform="translate(540 610)"><rect x="-380" y="-62" width="760" height="124" rx="26" fill="${PRETO}" stroke="${LARANJA}" stroke-width="8"/><text y="-14" font-size="34" text-anchor="middle" fill="#FFFFFF">O CERTO ERA</text><text y="40" font-size="56" text-anchor="middle" fill="${LARANJA}">${t}</text></g>`;
+const escolha = (id, t) => `<g id="${id}" transform="translate(540 700)">${Marca.apoio(0, 0, t, { fs: 110, rot: -4 })}</g>`;
+document.querySelector('defs').insertAdjacentHTML('beforeend', `<radialGradient id="vin" cx=".5" cy=".5" r=".75"><stop offset=".55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".45"/></radialGradient>`);
+const vin = `<rect width="1080" height="1920" fill="url(#vin)"/>`;
+// mesa de madeira (tampo em yTopo, pés no chão yChao) — objeto nunca flutua: fica em cima de algo
+const mesa = (x0, x1, yTopo, yChao) => `<rect x="${x0 + 20}" y="${yTopo}" width="18" height="${yChao - yTopo}" fill="#5A3A22" stroke="${L}" stroke-width="4"/><rect x="${x1 - 38}" y="${yTopo}" width="18" height="${yChao - yTopo}" fill="#5A3A22" stroke="${L}" stroke-width="4"/><rect x="${x0}" y="${yTopo - 26}" width="${x1 - x0}" height="30" rx="6" fill="#8A5A34" stroke="${L}" stroke-width="5"/><path d="M${x0 + 10} ${yTopo - 16} H${x1 - 10}" stroke="#A8744A" stroke-width="4"/><ellipse cx="${(x0 + x1) / 2}" cy="${yChao + 2}" rx="${(x1 - x0) * 0.55}" ry="12" fill="#000" opacity=".2"/>`;
+// tronco de árvore deitado para sentar (topo = yChao - 62*k)
+const tronco = (x, yChao, k = 1) => `<g transform="translate(${x} ${yChao}) scale(${k})"><ellipse cx="0" cy="4" rx="150" ry="14" fill="#000" opacity=".3"/><rect x="-140" y="-70" width="280" height="70" rx="34" fill="#6A4428" stroke="${L}" stroke-width="6"/><ellipse cx="140" cy="-35" rx="22" ry="35" fill="#B88A5A" stroke="${L}" stroke-width="6"/><ellipse cx="140" cy="-35" rx="10" ry="18" fill="none" stroke="#8A5A34" stroke-width="3"/><path d="M-100 -50 h80 M-40 -24 h110" stroke="#4A2E1A" stroke-width="4"/></g>`;
+const TOPO_TRONCO = 62;
+
+// tela dividida das opções: painel A (cima) e B (baixo)
+function opcoes(n, cenaA, cenaB, rotA, rotB) {
+  const painel = (Lt, y, corpo, rot) => `<g id="o${n}-${Lt}"><g clip-path="url(#painel${Lt})">${corpo}</g><rect x="30" y="${y}" width="1020" height="620" rx="34" fill="none" stroke="${PRETO}" stroke-width="12"/>
+    <g transform="translate(110 ${y + 90})"><circle r="70" fill="${LARANJA}" stroke="${PRETO}" stroke-width="10"/><text y="30" font-size="96" text-anchor="middle" fill="${PRETO}">${Lt}</text></g>
+    <g transform="translate(700 ${y + 80})">${Marca.etiqueta(0, 0, rot, { fs: 46 })}</g></g>`;
+  cena(`o${n}`, `<rect width="1080" height="1920" fill="${PRETO}"/><g opacity=".14" fill="${LARANJA}">${[0, 1, 2, 3, 4].map(k => `<rect x="${60 + k * 230}" y="0" width="70" height="1920"/>`).join('')}</g>
+    ${painel('A', 230, cenaA, rotA)}${painel('B', 890, cenaB, rotB)}<rect id="o${n}-Bveu" x="30" y="890" width="1020" height="620" rx="34" fill="${PRETO}" opacity=".7"/>
+    <g transform="translate(540 870)"><circle r="54" fill="${PRETO}" stroke="${LARANJA}" stroke-width="8"/><text y="20" font-size="58" text-anchor="middle" fill="${LARANJA}">OU</text></g>
+    <g transform="translate(540 1640)">${Marca.apoio(0, 0, 'A OU B?', { fs: 80, rot: -3 })}</g>`);
+}
+// contagem regressiva 3…1 (cor da marca, TEMPO)
+function contagem(n) {
+  const R = 230, circ = 2 * Math.PI * R;
+  cena(`k${n}`, `<rect width="1080" height="1920" fill="${LARANJA}"/><g opacity=".12" fill="${PRETO}">${[0, 1, 2, 3, 4].map(k => `<rect x="${60 + k * 230}" y="0" width="70" height="1920"/>`).join('')}</g>
+    <g transform="translate(540 560)">${Marca.faixa(0, 0, 'TEMPO', { fs: 110, rot: -3 })}</g>
+    <g transform="translate(540 1060)"><circle r="${R + 40}" fill="${PRETO}"/><circle r="${R}" fill="none" stroke="#3A3A3A" stroke-width="26"/>
+      <circle id="k${n}-anel" r="${R}" fill="none" stroke="${LARANJA}" stroke-width="26" stroke-linecap="round" stroke-dasharray="${circ.toFixed(1)}" stroke-dashoffset="0" transform="rotate(-90)"/>
+      ${[3, 2, 1].map(v => `<g id="k${n}-${v}"><text y="105" font-size="300" text-anchor="middle" fill="#FFFFFF" stroke="${PRETO}" stroke-width="10" paint-order="stroke">${v}</text></g>`).join('')}</g>
+    <g transform="translate(540 1440)">${Marca.apoio(0, 0, 'ESCOLHE!', { fs: 84, rot: -3 })}</g>`);
+}
+const card = (n, titulo) => scenes.push(Marca.cartao({ id: `c${n}`, numero: `${n}`, rotulo: 'TESTE', titulo }));
+const verde = `<rect width="1080" height="1920" fill="#5A7A3A" opacity=".16" style="mix-blend-mode:multiply"/>`;
+
+// ---------- ABERTURA ----------
+{ const Z = Zc(1); cena('intro', Z.rua({ chao: 1250, caos: true, faixas: F }) + verde + vin +
+    `<g id="i-banner" transform="translate(540 600)">${Marca.faixa(0, 0, 'APOCALIPSE ZUMBI', { fs: 96 })}</g>` +
+    `<g id="i-5">${Marca.carimbo(540, 820, '5 TESTES', { fs: 120, rot: -8 })}</g>` + imp('i-erro', 540, 1000, 'ERROU = ZUMBI', 120)); }
+
+// ---------- TESTE 1: a arma ----------
+card(1, 'A ARMA');
+{ const Z = Zc(11); cena('s1', Z.sala({ chao: 1700, cortina: 'fechada', tv: 'noticia', manchete: 'ATAQUES ZUMBIS NA CIDADE' }) +
+    `<rect x="0" y="1700" width="1080" height="220" fill="#000" opacity=".06"/>` + mesa(420, 800, 1660, 1830) +
+    `<g id="s1-rev" transform="translate(520 1634)">${DT.revolver(0, 0, 0.75)}</g><g id="s1-pe" transform="translate(700 1640) rotate(84)">${DT.peDeCabra(0, 0, 0.42)}</g>` + vin + apoio('s1-q', 540, 760, 'SÓ UMA!', 96)); }
+opcoes(1, `<rect x="30" y="230" width="1020" height="620" fill="#3A4A5A"/><rect x="30" y="740" width="1020" height="110" fill="#8A5A34"/><path d="M30 740 H1050" stroke="${L}" stroke-width="6"/><g transform="translate(560 720)">${DT.revolver(0, 0, 1.8)}</g>` + `<g transform="translate(330 420)">${Marca.etiqueta(0, 0, '6 BALAS', { fs: 40 })}</g>`,
+  `<rect x="30" y="890" width="1020" height="620" fill="#4A3A3A"/><rect x="30" y="1400" width="1020" height="110" fill="#8A5A34"/><path d="M30 1400 H1050" stroke="${L}" stroke-width="6"/><g transform="translate(560 1384) rotate(84)">${DT.peDeCabra(0, 0, 1.0)}</g>` + `<g transform="translate(330 1080)">${Marca.etiqueta(0, 0, 'SEM BARULHO', { fs: 40 })}</g>`, 'REVÓLVER', 'PÉ DE CABRA');
+contagem(1);
+{ const Z = Zc(14); cena('m1', Z.rua({ chao: 1250, caos: true, faixas: F }) + vin + Paleta.grade('perigo') +
+    escolha('m1-e', T[1].esc) + imp('m1-bang', 760, 1090, 'BANG!', 150, 6) + morreu('m1-x') + etq('m1-mot', 540, 1020, 'O TIRO CHAMOU A HORDA', 46) + certo('m1-ok', T[1].ok)); }
+
+// ---------- TESTE 2: a sede ----------
+card(2, 'A SEDE');
+{ const Z = Zc(21); cena('s2', Z.estrada({ chao: 1000, noite: false }) + vin + `<g id="s2-sol"><circle cx="810" cy="550" r="150" fill="#FFE08A" opacity=".45"/></g>` + apoio('s2-q', 540, 760, 'QUE SEDE...', 92)); }
+{ const ZA = Zc(22), ZB = Zc(23);
+  opcoes(2, ZA.lago({ x: 30, y: 230, w: 1020, h: 620, chao: 520 }), ZB.banheiro({ x: 30, y: 890, w: 1020, h: 620, chao: 1440, abandonado: true, tampaAberta: true }), 'ÁGUA DO LAGO', 'CAIXA DA DESCARGA'); }
+contagem(2);
+{ const Z = Zc(24); cena('m2', Z.lago({ chao: 1100, bacterias: true }) + vin + Paleta.grade('nojo') + escolha('m2-e', T[2].esc) + morreu('m2-x') +
+    `<g id="m2-lupa" transform="translate(760 1560)"><circle r="190" fill="#DFF5D0" stroke="${PRETO}" stroke-width="16"/>${[...Array(9)].map((_, i) => `<g transform="translate(${-110 + (i % 3) * 110} ${-90 + Math.floor(i / 3) * 90}) rotate(${i * 37})"><rect x="-38" y="-16" width="76" height="32" rx="16" fill="#9BCB3A" stroke="#3A5A1A" stroke-width="5"/><circle cx="-12" cy="0" r="5" fill="#3A5A1A"/><circle cx="12" cy="2" r="4" fill="#3A5A1A"/></g>`).join('')}<path d="M130 140 L230 240" stroke="${PRETO}" stroke-width="40" stroke-linecap="round"/><path d="M130 140 L230 240" stroke="#8A5A30" stroke-width="26" stroke-linecap="round"/></g>` + etq('m2-bac', 760, 1310, 'BACTÉRIAS!', 50)); }
+{ const Z = Zc(25); cena('v2', Z.banheiro({ chao: 1700, abandonado: true, tampaAberta: true }) + vin + etq('v2-e1', 540, 1000, '= ÁGUA DA TORNEIRA', 50) + certo('v2-ok', T[2].ok)); }
+
+// ---------- TESTE 3: a fuga ----------
+card(3, 'A FUGA');
+{ const Z = Zc(31); cena('s3', Z.rua({ chao: 1250, caos: true, faixas: F }) + vin + apoio('s3-q', 540, 760, 'PRECISA FUGIR!', 90)); }
+{ const ZA = Zc(32), ZB = Zc(33);
+  opcoes(3, ZA.estrada({ x: 30, y: 230, w: 1020, h: 620, chao: 520 }) + `<g transform="translate(330 450)">${Marca.etiqueta(0, 0, 'SILENCIOSA', { fs: 36 })}</g>`,
+    ZB.estrada({ x: 30, y: 890, w: 1020, h: 620, chao: 1180 }) + `<g transform="translate(330 1110)">${Marca.etiqueta(0, 0, 'BARULHENTA', { fs: 36 })}</g>`, 'BICICLETA', 'MOTO'); }
+contagem(3);
+{ const Z = Zc(34); cena('m3', Z.rua({ chao: 1250, caos: true, faixas: F }) + vin + Paleta.grade('perigo') + escolha('m3-e', T[3].esc) + apoio('m3-vrum', 600, 1090, 'VRUUUUM!', 110, 6) + morreu('m3-x') + etq('m3-mot', 540, 1020, 'O BARULHO ATRAIU TODOS', 46) + certo('m3-ok', T[3].ok)); }
+
+// ---------- TESTE 4: o sobrevivente na porta ----------
+card(4, 'O SOBREVIVENTE');
+{ const Z = Zc(41); cena('s4', Z.fachada({ chao: 1700, noite: true }) + vin + apoio('s4-toc', 760, 820, 'TOC TOC!', 100, 6) +
+    `<g id="s4-fala" transform="translate(260 980)">${Marca.balao(0, 0, 'ME DEIXA ENTRAR!', { fs: 50, ponta: [40, 150] })}</g>` + etq('s4-braco', 540, 640, 'ESCONDE O BRAÇO?', 48)); }
+{ const ZA = Zc(42), ZB = Zc(43);
+  opcoes(4, ZA.fachada({ x: 30, y: 230, w: 1020, h: 620, chao: 800, noite: true }) + `<rect x="425" y="610" width="230" height="190" fill="#FFE9A8" opacity=".85"/>`,
+    ZB.fachada({ x: 30, y: 890, w: 1020, h: 620, chao: 1460, noite: true }) + `<g transform="translate(760 1080)">${Marca.balao(0, 0, 'MOSTRA O BRAÇO!', { fs: 38, ponta: [-70, 90] })}</g>`, 'DEIXAR ENTRAR', 'PEDIR PRA VER'); }
+contagem(4);
+{ const Z = Zc(44); cena('m4', Z.sala({ chao: 1700, cortina: 'fechada', tv: false, noite: true }) + vin + Paleta.grade('tensao') + escolha('m4-e', T[4].esc) + morreu('m4-x') + etq('m4-mot', 540, 1020, 'ELE ESTAVA MORDIDO', 46) + certo('m4-ok', T[4].ok)); }
+
+// ---------- TESTE 5: a noite fria ----------
+card(5, 'A NOITE FRIA');
+{ const Z = Zc(51); cena('s5', Z.noite({ chao: 1450 }) + tronco(540, 1760, 0.95) + vin + apoio('s5-frio', 540, 780, 'BRRR... FRIO!', 96)); }
+{ const ZA = Zc(52), ZB = Zc(53);
+  opcoes(5, ZA.noite({ x: 30, y: 230, w: 1020, h: 620, chao: 680 }) + ZA.fogueira(700, 820, 0.45) + tronco(400, 830, 0.55),
+    ZB.noite({ x: 30, y: 890, w: 1020, h: 620, chao: 1340 }) + tronco(540, 1490, 0.55) + `<rect x="30" y="890" width="1020" height="620" fill="#000" opacity=".35"/>`, 'FOGUEIRA', 'NO ESCURO'); }
+contagem(5);
+{ const Z = Zc(54); cena('m5', Z.noite({ chao: 1450 }) + `<g id="m5-fogo">${Z.fogueira(680, 1770, 0.85)}</g>` + tronco(330, 1770, 0.95) + vin + Paleta.grade('perigo') + escolha('m5-e', T[5].esc) + morreu('m5-x') + etq('m5-mot', 540, 1020, 'A LUZ ATRAIU TODOS', 46) + certo('m5-ok', T[5].ok)); }
+
+// ---------- FINAL ----------
+scenes.push(Marca.final({ linhas: ['PASSOU NOS 5?', 'COMENTA'], destaque: 'SOBREVIVI', chamada: 'OU ONDE MORREU ↓' }));
+$('#scenes').innerHTML = scenes.join('');
+
+// ===================== PERSONAGENS =====================
+const HEROI = { preset: 'marca', protagonista: true, extras: ['bolsa'] };
+const PELE_Z = { cor: '#A9C79A', corLonge: '#8FAE80', bochecha: '#6E8A50' };
+const SOB = { figurino: { preset: 'casual', cor: '#8A5A3A', corPernas: '#3A3A4A', cabelo: 'curto', corCabelo: '#2A1E16' }, seed: 9 };
+const ROUPAS_Z = ['#6E7A5A', '#7A5A5A', '#5A6A7A', '#8A7A5A', '#5A5A5A'];
+const ATORES = [], ITENS = [];
+function grupo(janelas, pai = '#atores') { const g = document.createElementNS(NS, 'g'); if (pai) $(pai).appendChild(g); return g; }
+function ator(escala, janelas, opts = {}, pai = '#atores') {
+  const g = grupo(janelas, pai);
+  const b = new Boneco(g, { escala, seed: 4, ...opts });
+  ATORES.push({ b, g, janelas }); b.grupo = g; return b;
+}
+// objeto/veículo que entra na ordem de profundidade (pintado junto com os atores)
+function item(svg, janelas, palco, y) { const g = grupo(janelas); g.innerHTML = svg; ITENS.push({ g, janelas }); if (palco) palco.ator(g, { y }); return g; }
+// zumbi numa faixa do palco: escala da faixa, passo proporcional
+function zumbi(palco, faixa, de, ate, t0, t1, janelas, seed = 1, o = {}) {
+  const y = palco.y(faixa), k = palco.k(y);
+  const z = ator(k, janelas, { figurino: { preset: 'zumbi', cor: ROUPAS_Z[seed % 5], corPernas: ['#3A4A5A', '#4A3A2A', '#2A2A30'][seed % 3] }, ...PELE_Z, seed });
+  if (de !== ate) z.base(t0, t1, 'andar', { de: [de, y], ate: [ate, y], passo: 70 * k });
+  else z.base(t0, t1, 'parado', { x: de, y, vista: 'perfil', dir: o.dir ?? -1 });
+  if (o.antes) z.base(janelas[0][0], t0, 'parado', { x: de, y, vista: 'perfil', dir: Math.sign(ate - de) || -1 });
+  z.braco('ambos', janelas[0][0], t1, 'estender'); z.cabeca(janelas[0][0], t1, { inclinar: (seed % 2 ? 1 : -1) * 14, baixar: 6 }); z.expressao(janelas[0][0], t1, 'zumbi'); z.sujeira(janelas[0][0], t1);
+  palco.ator(z.grupo, { y });
+  if (o.atravessa) palco.atravessar(z.grupo, z, o.atravessa);
+  return z;
+}
+const heroiNa = (palco, faixa, k = 1) => palco.k(palco.y(faixa)) * k;
+
+// ---- abertura: zumbis nas 3 faixas, um atravessando a rua; herói na calçada da frente ----
+{ const J = [[0, T[1].card]];
+  const H = ator(heroiNa(palcoRua, 'calcadaFrente'), J, { figurino: HEROI });
+  H.base(0, T[1].card, 'parado', { x: 540, y: F.calcadaFrente, vista: 'frente' }); H.cabeca(0.5, 1.8, { virar: -0.7 }); H.cabeca(2.0, 3.4, { virar: 0.7 }); H.expressao(0, T[1].card, 'medo'); H.braco('ambos', 3.0, 4.8, 'desespero');
+  palcoRua.ator(H.grupo, { y: F.calcadaFrente });
+  item(Zc(2).carro(960, F.rua, 1.25, { cor: '#C9A24A', portaAberta: true, quebrado: true }), J, palcoRua, F.rua);
+  zumbi(palcoRua, 'calcadaFundo', 1150, 700, 0, T[1].card, J, 1);
+  zumbi(palcoRua, 'calcadaFundo', -120, 260, 0, T[1].card, J, 4);
+  zumbi(palcoRua, 'rua', -160, 250, 0, T[1].card, J, 2);
+  zumbi(palcoRua, 'calcadaFundo', 880, 620, 0, T[1].card, J, 3, { atravessa: [[0.3, 'calcadaFundo'], [4.8, 'calcadaFrente']] });
+}
+
+// ---- teste 1 ----
+{ const t = T[1];
+  const h = ator(0.82, [[t.sit, t.A]], { figurino: HEROI });
+  h.base(t.sit, t.A, 'parado', { x: 230, y: 1830, vista: 'perfil', dir: 1 }); h.braco('e', t.sit, t.A, 'queixo'); h.expressao(t.sit, t.A, 'pensando'); h.cabeca(t.sit, t.A, { baixar: 8 });
+  // resposta: atira na calçada da frente, a horda vem das 3 faixas
+  const J = [[t.se, t.fim]];
+  const hm = ator(heroiNa(palcoRua, 'calcadaFrente'), J, { figurino: HEROI });
+  hm.base(t.se, t.fim, 'parado', { x: 330, y: F.calcadaFrente, vista: 'perfil', dir: 1 }); hm.braco('d', t.se + 0.1, t.morreu, 'apontar'); hm.braco('ambos', t.morreu + 0.2, t.fim, 'desespero');
+  hm.expressao(t.se, t.morreu, 'determinado'); hm.expressao(t.morreu, t.fim, 'medo'); hm.cabeca(t.motivo, t.fim, { virar: -0.6 });
+  palcoRua.ator(hm.grupo, { y: F.calcadaFrente });
+  T[1].arma = hm;
+  zumbi(palcoRua, 'calcadaFundo', 1150, 640, 13.0, t.fim, J, 1, { antes: true });
+  zumbi(palcoRua, 'calcadaFundo', -150, 200, 13.6, t.fim, J, 2, { antes: true });
+  zumbi(palcoRua, 'rua', 1250, 700, 13.3, t.fim, J, 3, { antes: true });
+  zumbi(palcoRua, 'rua', -200, 120, 13.9, t.fim, J, 5, { antes: true });
+  zumbi(palcoRua, 'calcadaFundo', 980, 560, 13.2, t.fim, J, 4, { antes: true, atravessa: [[13.2, 'calcadaFundo'], [15.9, 'rua']] });
+  zumbi(palcoRua, 'calcadaFrente', 1300, 820, 14.0, t.fim, J, 6, { antes: true });
+}
+
+// ---- teste 2 ----
+{ const t = T[2];
+  const h = ator(0.82, [[t.sit, t.A]], { figurino: HEROI });
+  h.base(t.sit, 17.9, 'andar', { de: [140, 1760], ate: [460, 1760], passo: 70 }); h.base(17.9, t.A, 'parado', { x: 460, y: 1760, vista: 'frente', transicao: 0.3 });
+  h.braco('d', 17.9, t.A, 'abanar'); h.expressao(t.sit, t.A, 'cansado');
+  // painel A: herói ajoelhado na margem pegando água com a mão
+  const ha = ator(0.42, [[t.A, t.cont]], { figurino: HEROI });
+  ha.base(t.A, t.cont, 'agachar', { x: 300, y: 556, vista: 'perfil', dir: 1, quanto: 70 }); ha.braco('d', t.A + 0.2, t.cont, 'alcancar', { alvo: [372, 584] }); ha.expressao(t.A, t.cont, 'feliz');
+  const hb = ator(0.42, [[t.B - 0.2, t.cont]], { figurino: HEROI });
+  hb.base(t.B - 0.2, t.cont, 'parado', { x: 330, y: 1440, vista: 'perfil', dir: 1 }); hb.braco('d', t.B, t.cont, 'nariz'); hb.expressao(t.B, t.cont, 'nojo');
+  // resposta: bebe do lago (ajoelhado na margem, mão na água) e passa mal
+  const hm = ator(0.55, [[t.se, t.certo]], { figurino: HEROI });
+  hm.base(t.se, t.morreu, 'agachar', { x: 420, y: 1190, vista: 'perfil', dir: 1, quanto: 80 }); hm.braco('d', t.se, t.morreu, 'alcancar', { alvo: [520, 1225] });
+  hm.base(t.morreu, t.certo, 'parado', { x: 420, y: 1190, vista: 'frente', transicao: 0.4 }); hm.braco('ambos', t.morreu + 0.2, t.certo, 'encolher');
+  hm.expressao(t.se, t.morreu, 'feliz'); hm.expressao(t.morreu, t.certo, 'nojo');
+  // o certo: água limpa da caixa da descarga, num copo
+  const hv = ator(0.82, [[t.certo, t.fim]], { figurino: HEROI });
+  hv.base(t.certo, t.fim, 'parado', { x: 250, y: 1700, vista: 'perfil', dir: 1 }); hv.braco('d', t.certo + 0.3, t.fim, 'comer'); hv.expressao(t.certo, t.fim, 'alegre');
+  T[2].copo = hv;
+}
+
+// ---- teste 3 ----
+{ const t = T[3];
+  const J = [[t.sit, t.A]];
+  const h = ator(heroiNa(palcoRua, 'calcadaFrente'), J, { figurino: HEROI });
+  h.base(t.sit, t.A, 'correr', { de: [-80, F.calcadaFrente], ate: [620, F.calcadaFrente] }); h.expressao(t.sit, t.A, 'medo');
+  palcoRua.ator(h.grupo, { y: F.calcadaFrente });
+  zumbi(palcoRua, 'calcadaFundo', 1100, 700, t.sit, t.A, J, 1); zumbi(palcoRua, 'rua', -150, 180, t.sit, t.A, J, 2);
+  // painéis: montado na bicicleta (A) e na moto (B) — pose montar
+  const bikeA = item(DT.bicicleta(0, 0, 0.5), [[t.A, t.cont]]);
+  const hA = ator(0.38, [[t.A, t.cont]], { figurino: HEROI }, null); bikeA.appendChild(hA.grupo);
+  hA.base(t.A, t.cont, 'montar', { assento: DT.ponto('bicicleta', 'assento', 0.5), pedivela: { ...DT.ponto('bicicleta', 'pedivela', 0.5), rpm: 60 }, guidao: DT.ponto('bicicleta', 'guidao', 0.5), chao: 0 }); hA.expressao(t.A, t.cont, 'feliz');
+  const motoB = item(DT.moto(0, 0, 0.55, { fumaca: true }), [[t.B - 0.2, t.cont]]);
+  const hB = ator(0.4, [[t.B - 0.2, t.cont]], { figurino: HEROI }, null); motoB.appendChild(hB.grupo);
+  hB.base(t.B - 0.2, t.cont, 'montar', { assento: DT.ponto('moto', 'assento', 0.55), pe: DT.ponto('moto', 'pe', 0.55), guidao: DT.ponto('moto', 'guidao', 0.55), chao: 0 }); hB.expressao(t.B, t.cont, 'alegre');
+  T[3].bikeA = bikeA; T[3].motoB = motoB;
+  // resposta: chega de moto pela rua, o barulho chama os zumbis das 3 faixas
+  const JM = [[t.se, t.fim]];
+  const KM = 0.85, moto = item(DT.moto(0, 0, KM, { fumaca: true }), JM, palcoRua, F.rua);
+  const hm = ator(0.62, JM, { figurino: HEROI }, null); moto.appendChild(hm.grupo);
+  hm.base(t.se, t.fim, 'montar', { assento: DT.ponto('moto', 'assento', KM), pe: DT.ponto('moto', 'pe', KM), guidao: DT.ponto('moto', 'guidao', KM), chao: 0 });
+  hm.expressao(t.se, t.morreu, 'alegre'); hm.expressao(t.morreu, t.fim, 'medo'); hm.cabeca(t.morreu + 0.3, t.fim, { virar: -0.5 });
+  T[3].moto = moto; T[3].KM = KM;
+  zumbi(palcoRua, 'calcadaFundo', 1150, 700, 38.4, t.fim, JM, 1, { antes: true });
+  zumbi(palcoRua, 'calcadaFundo', -150, 250, 38.7, t.fim, JM, 3, { antes: true });
+  zumbi(palcoRua, 'rua', 1250, 860, 38.5, t.fim, JM, 2, { antes: true });
+  zumbi(palcoRua, 'calcadaFrente', 1300, 900, 38.9, t.fim, JM, 4, { antes: true });
+  zumbi(palcoRua, 'calcadaFrente', -220, 160, 39.1, t.fim, JM, 5, { antes: true });
+  zumbi(palcoRua, 'calcadaFundo', 920, 640, 38.6, t.fim, JM, 6, { antes: true, atravessa: [[38.6, 'calcadaFundo'], [40.9, 'rua']] });
+}
+
+// ---- teste 4 ----
+{ const t = T[4];
+  const s = ator(0.8, [[t.sit, t.A]], SOB);
+  s.base(t.sit, 43.6, 'andar', { de: [-80, 1700], ate: [300, 1700] }); s.base(43.6, t.A, 'parado', { x: 300, y: 1700, vista: 'perfil', dir: 1 });
+  s.braco('e', t.sit, t.A, 'pose', { o: -38, c: 70 });                 // braço de trás escondido nas costas
+  s.braco('d', 43.7, 44.4, 'estender'); s.expressao(t.sit, t.A, 'preocupado');
+  // painéis
+  const sa = ator(0.38, [[t.A, t.cont]], SOB); sa.base(t.A, t.cont, 'andar', { de: [380, 800], ate: [520, 800], passo: 40 }); sa.braco('e', t.A, t.cont, 'pose', { o: -38, c: 70 }); sa.expressao(t.A, t.cont, 'feliz');
+  const sb = ator(0.38, [[t.B - 0.2, t.cont]], SOB); sb.base(t.B - 0.2, t.cont, 'parado', { x: 360, y: 1460, vista: 'perfil', dir: 1 }); sb.braco('e', t.B - 0.2, t.cont, 'pose', { o: -38, c: 70 }); sb.expressao(t.B, t.cont, 'envergonhado');
+  // resposta: dentro de casa ele vira zumbi e vem para cima
+  const vira = 52.9;
+  const sm = ator(0.82, [[t.se, vira]], SOB); sm.base(t.se, vira, 'parado', { x: 760, y: 1760, vista: 'perfil', dir: -1 }); sm.braco('e', t.se, vira, 'pose', { o: -38, c: 70 }); sm.expressao(t.se, 52.2, 'feliz'); sm.expressao(52.2, vira, 'tonto');
+  const zm = ator(0.82, [[vira, t.fim]], { ...SOB, ...PELE_Z }); zm.base(vira, t.fim, 'andar', { de: [760, 1760], ate: [560, 1760], passo: 60 }); zm.braco('ambos', vira, t.fim, 'estender'); zm.expressao(vira, t.fim, 'zumbi'); zm.sujeira(vira, t.fim);
+  const hm = ator(0.82, [[t.se, t.fim]], { figurino: HEROI }); hm.base(t.se, t.fim, 'parado', { x: 300, y: 1760, vista: 'perfil', dir: 1 });
+  hm.expressao(t.se, t.morreu, 'feliz'); hm.expressao(t.morreu, t.fim, 'medo'); hm.braco('ambos', vira, t.fim, 'desespero');
+}
+
+// ---- teste 5 ----
+{ const t = T[5];
+  const h = ator(0.8, [[t.sit, t.A]], { figurino: HEROI });
+  h.base(t.sit, t.A, 'sentar', { x: 520, y: 1760 - TOPO_TRONCO * 0.95, chao: 1820, dir: 1 }); h.braco('ambos', t.sit, t.A, 'encolher'); h.expressao(t.sit, t.A, 'cansado');
+  const ha = ator(0.36, [[t.A, t.cont]], { figurino: HEROI }); ha.base(t.A, t.cont, 'sentar', { x: 400, y: 830 - TOPO_TRONCO * 0.55, chao: 850, dir: 1 }); ha.braco('ambos', t.A, t.cont, 'estender'); ha.expressao(t.A, t.cont, 'feliz');
+  const hb = ator(0.36, [[t.B - 0.2, t.cont]], { figurino: HEROI }); hb.base(t.B - 0.2, t.cont, 'sentar', { x: 530, y: 1490 - TOPO_TRONCO * 0.55, chao: 1510, dir: 1 }); hb.braco('ambos', t.B, t.cont, 'encolher'); hb.expressao(t.B, t.cont, 'cansado');
+  // resposta: sentado no tronco perto do fogo; a luz chama os zumbis das 3 faixas do escuro
+  const J = [[t.se, t.fim]];
+  const hm = ator(0.8, J, { figurino: HEROI });
+  hm.base(t.se, t.fim, 'sentar', { x: 320, y: 1770 - TOPO_TRONCO * 0.95, chao: 1830, dir: 1 }); hm.braco('ambos', t.se, t.morreu, 'estender');
+  hm.braco('ambos', t.morreu + 0.3, t.fim, 'desespero'); hm.expressao(t.se, t.morreu, 'feliz'); hm.expressao(t.morreu, t.fim, 'medo'); hm.cabeca(63.6, t.fim, { virar: 0.7 });
+  zumbi(palcoNoite, 'fundo', 1200, 820, 63.4, t.fim, J, 1, { antes: true });
+  zumbi(palcoNoite, 'fundo', -150, 160, 63.9, t.fim, J, 2, { antes: true });
+  zumbi(palcoNoite, 'meio', 1260, 930, 63.6, t.fim, J, 3, { antes: true });
+  zumbi(palcoNoite, 'frente', 1300, 960, 64.2, t.fim, J, 4, { antes: true });
+  zumbi(palcoNoite, 'meio', -200, 80, 64.4, t.fim, J, 5, { antes: true });
+}
+
+// ---- final ----
+const Hf = ator(0.62, [[FIM, 999]], { figurino: { preset: 'marca', protagonista: true } });
+Hf.base(FIM, 999, 'parado', { x: 540, y: 1640 }); Hf.braco('d', FIM + 0.4, 999, 'acenar'); Hf.expressao(FIM, 999, 'alegre');
+
+// objetos na mão (o objeto segue a mão; skill fisica-de-cena: todo objeto tem dono)
+$('#props').innerHTML = `<g id="p-rev">${DTm.revolver(0, 0, 0.42)}</g><g id="p-copo">${DTm.copo(0, 6, 0.36)}</g>`;
+const PROPS = [
+  { el: $('#p-rev'), ator: T[1].arma, mao: 'd', janelas: [[T[1].se, T[1].fim]], escala: 1 },
+  { el: $('#p-copo'), ator: T[2].copo, mao: 'd', janelas: [[T[2].certo + 0.3, T[2].fim]], escala: 1 },
+];
+
+// ===================== TIMELINE =====================
+const rendering = navigator.webdriver;
+const tl = gsap.timeline({ paused: true, defaults: { ease: 'power2.inOut' } });
+const FADE = 0.2;
+$$('.scene').forEach(s => gsap.set(s, { autoAlpha: 0 }));
+function show(sel, t0, t1) {
+  tl.fromTo(sel, { autoAlpha: 0 }, { autoAlpha: 1, duration: t0 === 0 ? 0.01 : FADE, ease: 'none', immediateRender: false }, t0);
+  if (t1 != null) tl.to(sel, { autoAlpha: 0, duration: FADE, ease: 'none' }, t1);
+}
+function pop(sel, t, d = 0.4, ease = 'back.out(2.4)') {
+  gsap.set(sel, { autoAlpha: 0, scale: 0.2, transformOrigin: '50% 50%' });
+  tl.fromTo(sel, { autoAlpha: 0, scale: 0.2 }, { autoAlpha: 1, scale: 1, duration: d, ease, immediateRender: false }, t);
+}
+function hide(sel, t, d = 0.2) { tl.to(sel, { autoAlpha: 0, duration: d, ease: 'power1.in' }, t); }
+function treme(sel, t, dur = 0.5, forca = 10) { tl.to(sel, { x: `+=${forca}`, duration: 0.05, repeat: Math.round(dur / 0.05), yoyo: true }, t).set(sel, { x: 0 }, t + dur + 0.06); }
+
+// abertura
+show('#intro', 0, T[1].card);
+pop('#i-banner', 0.3, 0.5); hide('#i-banner', 1.45); pop('#i-5', 1.6, 0.35, 'back.out(3)'); hide('#i-5', 2.85);
+pop('#i-erro', 2.97, 0.35, 'back.out(3)'); treme('#i-erro', 3.6, 0.4); hide('#i-erro', 4.9);
+for (let n = 1; n <= 5; n++) {
+  const t = T[n];
+  show(`#c${n}`, t.card, t.sit); pop(`#c${n}-n`, t.card + 0.05, 0.3); pop(`#c${n}-t`, t.card + 0.2, 0.3); pop(`#c${n}-i`, t.card + 0.3, 0.25);
+  show(`#s${n}`, t.sit, t.A);
+  show(`#o${n}`, t.A, t.cont);
+  pop(`#o${n}-A`, t.A, 0.35); gsap.set(`#o${n}-B`, { autoAlpha: 1 });
+  tl.fromTo(`#o${n}-Bveu`, { opacity: 0.75 }, { opacity: 0, duration: 0.3, immediateRender: false }, t.B);
+  tl.to(`#o${n}-A`, { opacity: 0.55, duration: 0.3 }, t.B);
+  tl.fromTo(`#o${n}-B`, { scale: 0.92, transformOrigin: '540px 1200px' }, { scale: 1, duration: 0.4, ease: 'back.out(2)', immediateRender: false }, t.B);
+  show(`#k${n}`, t.cont, t.cont + CONT);
+  [3, 2, 1].forEach((v, i) => { const t0 = t.cont + i; gsap.set(`#k${n}-${v}`, { autoAlpha: 0 }); tl.fromTo(`#k${n}-${v}`, { autoAlpha: 0, scale: 1.6, transformOrigin: '50% 50%' }, { autoAlpha: 1, scale: 1, duration: 0.25, ease: 'back.out(2)', immediateRender: false }, t0).to(`#k${n}-${v}`, { autoAlpha: 0, duration: 0.12 }, t0 + 0.88); });
+  tl.fromTo(`#k${n}-anel`, { strokeDashoffset: 0 }, { strokeDashoffset: 2 * Math.PI * 230, duration: CONT, ease: 'none', immediateRender: false }, t.cont);
+  // resposta
+  const fimM = n === 2 ? t.certo : t.fim;
+  show(`#m${n}`, t.se, fimM);
+  pop(`#m${n}-e`, t.escolha, 0.3, 'back.out(3)'); hide(`#m${n}-e`, t.morreu - 0.05, 0.12);
+  pop(`#m${n}-x`, t.morreu, 0.35, 'back.out(3)'); treme(`#m${n}-x`, t.morreu + 0.35, 0.3, 8);
+  if (n !== 2) { hide(`#m${n}-x`, t.certo - 0.1); pop(`#m${n}-mot`, t.motivo, 0.3); pop(`#m${n}-ok`, t.certo, 0.35, 'back.out(3)'); }
+}
+// detalhes por teste
+tl.fromTo('#s1-rev', { scale: 1 }, { scale: 1.25, transformOrigin: '50% 50%', duration: 0.3, yoyo: true, repeat: 1, immediateRender: false }, 6.6);
+tl.fromTo('#s1-pe', { scale: 1 }, { scale: 1.2, transformOrigin: '50% 50%', duration: 0.3, yoyo: true, repeat: 1, immediateRender: false }, 6.95);
+pop('#s1-q', 6.3);
+pop('#m1-bang', 12.5, 0.2, 'back.out(4)'); treme('#m1', 12.55, 0.3, 14); hide('#m1-bang', 13.3);
+pop('#s2-q', 17.6); tl.fromTo('#s2-sol', { opacity: 0.4 }, { opacity: 1, duration: 0.4, yoyo: true, repeat: 3, immediateRender: false }, 17.1);
+hide('#m2-x', 25.7); pop('#m2-lupa', 25.8, 0.45); pop('#m2-bac', 26.2);
+show('#v2', T[2].certo, T[2].fim); pop('#v2-e1', 27.3); pop('#v2-ok', 28.4, 0.35, 'back.out(3)');
+pop('#s3-q', 30.7);
+pop('#m3-vrum', 36.9, 0.3, 'back.out(3)'); treme('#m3-vrum', 37.2, 0.6, 8); hide('#m3-vrum', 38.0);
+pop('#s4-fala', 42.5); hide('#s4-fala', 43.6); pop('#s4-toc', 43.7, 0.25); treme('#s4-toc', 43.9, 0.5, 8); hide('#s4-toc', 44.5); pop('#s4-braco', 44.6, 0.35, 'back.out(3)');
+pop('#s5-frio', 56.4); treme('#s5-frio', 56.8, 0.6, 6);
+$$('.chama').forEach((c, i) => { gsap.set(c, { transformOrigin: '50% 100%' }); tl.fromTo(c, { scaleY: 0.92 }, { scaleY: 1.12, duration: 0.18, repeat: 80, yoyo: true, ease: 'sine.inOut', immediateRender: false }, 50 + i * 0.1); });
+// final
+show('#fim', FIM);
+pop('#fim-t', FIM + 0.2, 0.6); pop('#fim-c', FIM + 1.3);
+tl.to('#fim-c', { scale: 1.06, duration: 0.4, repeat: 9, yoyo: true, ease: 'sine.inOut' }, FIM + 2.0);
+tl.set({}, {}, END);
+
+// ===================== LEGENDA =====================
+const sem = [];
+for (let n = 1; n <= 5; n++) { const t = T[n]; sem.push([t.card, t.sit], [t.A, t.cont + CONT]); }
+sem.push([FIM, 999]);
+const leg = Legenda($('#legenda'), window.PALAVRAS || [], { y: 330, enfase: ['ZUMBI', 'ZUMBI?', 'MORREU', 'HORDA', 'MORDIDO', 'BACTÉRIA', 'SOBREVIVI'] }).esconder(sem);
+
+// ===================== RENDER =====================
+function opacidade(t, janelas) {
+  let o = 0;
+  for (const [a, b] of janelas) {
+    if (t < a || t > b + FADE) continue;
+    const ent = a === 0 ? 1 : Math.min(1, (t - a) / FADE), sai = t <= b ? 1 : 1 - (t - b) / FADE;
+    o = Math.max(o, Math.min(ent, sai));
+  }
+  return o;
+}
+// posição da moto da resposta 3: entra e freia (x(t)); rodas giram pela distância andada
+function xMoto(t) { const t0 = T[3].se, dur = 1.5, u = Math.min(1, Math.max(0, (t - t0) / dur)); return -320 + 880 * (1 - (1 - u) * (1 - u)); }
+function desenharAtores(t) {
+  for (const A of ATORES) {
+    const o = opacidade(t, A.janelas);
+    A.g.style.display = o > 0 ? '' : 'none';
+    A.g.setAttribute('opacity', o.toFixed(3));
+    if (o > 0) A.b.desenhar(t);
+  }
+  for (const I of ITENS) { const o = opacidade(t, I.janelas); I.g.style.display = o > 0 ? '' : 'none'; I.g.setAttribute('opacity', o.toFixed(3)); }
+  palcoRua.seek(t); palcoNoite.seek(t);
+  // veículos (depois do palco, que só reordena)
+  const t3 = T[3];
+  const xb = 380 + (t - t3.A) * 60; t3.bikeA.setAttribute('transform', `translate(${xb.toFixed(1)} 800)`); palcoRua.girarRodas(t3.bikeA, (t - t3.A) * 60 / 0.5); palcoRua.pedivela(t3.bikeA, 60, 0, t3.A, t);
+  const xm = 520 + (t - t3.B) * 30; t3.motoB.setAttribute('transform', `translate(${xm.toFixed(1)} 1460)`); palcoRua.girarRodas(t3.motoB, (t - t3.B) * 30 / 0.55);
+  const x3 = xMoto(t); t3.moto.setAttribute('transform', `translate(${x3.toFixed(1)} ${F.rua})`); palcoRua.girarRodas(t3.moto, (x3 + 320) / t3.KM);
+  for (const P of PROPS) {
+    const o = opacidade(t, P.janelas);
+    if (o <= 0) { P.el.style.display = 'none'; continue; }
+    const [x, y] = P.ator.mao(P.mao);
+    P.el.style.display = '';
+    P.el.setAttribute('opacity', o.toFixed(3));
+    P.el.setAttribute('transform', `translate(${x.toFixed(1)} ${y.toFixed(1)}) scale(${P.escala})`);
+  }
+}
+window.__timeline = tl;
+window.__duration = tl.duration();
+window.__seek = t => { tl.seek(t, false); desenharAtores(t); leg.seek(t); };
+document.fonts.ready.then(() => { Palco.caberTextos(document); });
+window.__seek(0);
+if (!rendering) {
+  tl.eventCallback('onUpdate', () => { const t = tl.time(); desenharAtores(t); leg.seek(t); });
+  document.addEventListener('click', () => tl.paused() ? tl.play() : tl.pause());
+}
+</script>
+</body>
+</html>

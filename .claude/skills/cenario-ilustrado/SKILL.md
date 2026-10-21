@@ -90,3 +90,9 @@ frente? Há pelo menos 2 sinais de vida por cena? Algo ficou chapado (uma cor s�
 `rua({caos, noite})` (prédios, carros batidos, fumaça), `carro(x, y, k, {cor, portaAberta, quebrado})`,
 `banheiro({abandonado, tampaAberta})`, `lago({bacterias})`, `estrada({noite})`, `fachada({noite})`,
 `noite()` e `fogueira(x, y, k)` (chamas com classe `chama` para animar). Usado no quiz do apocalipse zumbi.
+- `rua({ faixas: { calcadaFundo, rua, calcadaFrente } })`: chão em profundidade com as 3 faixas onde os
+  personagens pisam (use com `Palco` da skill `fisica-de-cena`).
+- `carro(x, y, k, { camada: 'fundo' | 'frente' })`: carro em duas camadas para pôr o motorista dentro
+  (banco e volante no fundo, porta e vidro na frente); `Z.carro.pontos` = assento, pé e volante.
+- `sala({ tv: 'noticia', manchete })` e `telaNoticia(x, y, w, h, manchete)`: telejornal em fonte Anton que
+  sempre cabe na TV; `textoCaber(txt, cx, cy, larg, alt)` para qualquer texto de tela/placa.

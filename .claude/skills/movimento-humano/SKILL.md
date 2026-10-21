@@ -120,3 +120,12 @@ referência visual e para testar mudanças no motor.
 **Zumbi**: figurino e expressão `'zumbi'`; caminhada arrastada (passo 70%, sem balanço de braço,
 braços estendidos à frente). Personagem dentro de veículo: grupo com o boneco **sentado** e o
 veículo desenhado por cima (janela semitransparente), movidos juntos.
+
+**Montado (moto, bicicleta, carro)** — `base(t0, t1, 'montar', { assento, pe | pedivela: { c, r, rpm }, guidao, chao })`:
+quadril no banco, pés na pedaleira (ou girando no pedal), mãos no guidão/volante; o tronco inclina sozinho o
+necessário para alcançar. Nunca usar `sentar` com o chão lá embaixo para veículo (fica "de pé na moto").
+Pontos prontos: `DT.ponto('moto'|'bicicleta', nome, k)` e `Z.carro.pontos`. Regras completas: skill `fisica-de-cena`.
+
+**Gestos novos** (guia de mãos do Sobrevivente): `explicar`, `parar`, `levantar`, `joinha`, `chamar`, `contar` (`{ n }`),
+`cruzar`, `cabeca`, `testa`. Personagens com `luvas: true` desenham **mãos em forma** (aberta, punho, apontar, joinha,
+paz, ok, palma, n1…n5) que seguem o gesto; `b.formaMao(lado, t0, t1, forma)` força uma forma. Detalhes: skill `personagem-sobrevivente`.

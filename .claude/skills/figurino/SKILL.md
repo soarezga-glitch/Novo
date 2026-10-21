@@ -1,6 +1,6 @@
 ---
 name: figurino
-description: Veste os personagens (stickman da skill movimento-humano) com roupas, calçados, cabelos e acessórios de época ou atuais, presos às articulações (mangas seguem os braços, calça segue as pernas, sapato aponta para onde o pé aponta). Traz figurinos prontos — Roma (romano, cidadão de toga, senador, romana de estola e palla, legionário, vendedor, trabalhador), hoje (casual, moletom) e a roupa da MARCA do usuário — e a "bíblia" do PROTAGONISTA, que tem marca registrada fixa (careca, tênis laranja e preto em qualquer época; roupa da marca fora da história). Use sempre que criar ou animar personagens num vídeo, ao trocar de época, quando a narração citar roupa/calçado, ou quando pedirem personagens "de época", "mais detalhados" ou "com a minha cara". Regra do usuário: só o protagonista tem os elementos da marca; todos os outros usam a vestimenta completa da época (roupa, sandália, cabelo, acessórios).
+description: Veste os personagens (stickman da skill movimento-humano) com roupas, calçados, cabelos e acessórios de época ou atuais, presos às articulações (mangas seguem os braços, calça segue as pernas, sapato aponta para onde o pé aponta). Traz figurinos prontos — Roma (romano, cidadão de toga, senador, romana de estola e palla, legionário, vendedor, trabalhador), hoje (casual, moletom) e a roupa da MARCA do usuário — e o protagonista oficial SOBREVIVENTE (figurino 'sobrevivente': cabelo militar, camiseta branca, calça cargo preta, tênis laranja, cachecol laranja, mochila preta — skill personagem-sobrevivente); o antigo protagonista careca de roupa da marca fica só nos vídeos antigos. Use sempre que criar ou animar personagens num vídeo, ao trocar de época, quando a narração citar roupa/calçado, ou quando pedirem personagens "de época", "mais detalhados" ou "com a minha cara". Regra do usuário: só o protagonista tem os elementos da marca; todos os outros usam a vestimenta completa da época (roupa, sandália, cabelo, acessórios).
 ---
 
 # figurino — quem é quem pela roupa
@@ -30,7 +30,13 @@ rede + tridente), `'lanista'` (treinador) e `'imperador'` (toga roxa com louros)
 Protagonista como gladiador: `{ preset: 'gladiador', cor: '#2A2A30', cinto: '#FF7A00', cabelo: 'nenhum', protagonista: true }`
 (tanga preta + cinto laranja + tênis da marca), e `chapeu: 'secutor'` na hora da luta.
 
-## O PROTAGONISTA (bíblia do personagem do usuário)
+## ⚠️ PROTAGONISTA OFICIAL AGORA: o SOBREVIVENTE
+A partir do vídeo do apocalipse zumbi, o personagem principal é o **Sobrevivente** (skill `personagem-sobrevivente`,
+figurino `'sobrevivente'`): cabelo militar preto espetado, camiseta branca, calça cargo preta, tênis laranja,
+cachecol laranja, mochila preta e luvas pretas — o mesmo em qualquer cena. A bíblia antiga abaixo (careca com a
+roupa da marca) fica só para os vídeos antigos (Roma, Coliseu).
+
+## O PROTAGONISTA ANTIGO (vídeos de Roma e Coliseu)
 Decidido pelo usuário — vale para **todo vídeo**:
 | Sempre | Por quê |
 |---|---|

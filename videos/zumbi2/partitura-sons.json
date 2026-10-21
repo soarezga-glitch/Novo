@@ -1,0 +1,633 @@
+{
+ "duracao": 73.28,
+ "voz": "fala_master.wav",
+ "biblioteca": [
+  "../../.claude/skills/sons-de-ambiente/biblioteca/hoje",
+  "../../.claude/skills/sons-de-ambiente/biblioteca/coliseu",
+  "../../.claude/skills/sons-de-ambiente/biblioteca/ui"
+ ],
+ "ambientes": [
+  {
+   "som": "amb_cidade_caos",
+   "de": 0,
+   "ate": 5.1,
+   "db": -11,
+   "fade": 0.4
+  },
+  {
+   "som": "amb_tensao",
+   "de": 7.2700000000000005,
+   "ate": 9.32,
+   "db": -18,
+   "fade": 0.3
+  },
+  {
+   "som": "amb_tensao",
+   "de": 18.57,
+   "ate": 21.18,
+   "db": -18,
+   "fade": 0.3
+  },
+  {
+   "som": "amb_tensao",
+   "de": 31.74,
+   "ate": 33.68,
+   "db": -18,
+   "fade": 0.3
+  },
+  {
+   "som": "amb_tensao",
+   "de": 45.89,
+   "ate": 48.190000000000005,
+   "db": -18,
+   "fade": 0.3
+  },
+  {
+   "som": "amb_tensao",
+   "de": 57.26,
+   "ate": 59.01,
+   "db": -18,
+   "fade": 0.3
+  },
+  {
+   "som": "amb_sala",
+   "de": 6.14,
+   "ate": 7.37,
+   "db": -13,
+   "fade": 0.3
+  },
+  {
+   "som": "amb_cidade_caos",
+   "de": 12.22,
+   "ate": 15.93,
+   "db": -12,
+   "fade": 0.3,
+   "automacao": [
+    [
+     12.3,
+     -16
+    ],
+    [
+     14.0,
+     -9
+    ]
+   ]
+  },
+  {
+   "som": "amb_estrada",
+   "de": 17.04,
+   "ate": 18.67,
+   "db": -12,
+   "fade": 0.3
+  },
+  {
+   "som": "amb_natureza",
+   "de": 24.08,
+   "ate": 27.08,
+   "db": -12,
+   "fade": 0.3
+  },
+  {
+   "som": "amb_banheiro",
+   "de": 27.08,
+   "ate": 29.48,
+   "db": -12,
+   "fade": 0.3
+  },
+  {
+   "som": "amb_cidade_caos",
+   "de": 30.53,
+   "ate": 31.84,
+   "db": -12,
+   "fade": 0.3
+  },
+  {
+   "som": "amb_cidade_caos",
+   "de": 36.58,
+   "ate": 40.9,
+   "db": -14,
+   "fade": 0.3
+  },
+  {
+   "som": "amb_noite_fria",
+   "de": 42.18,
+   "ate": 45.99,
+   "db": -13,
+   "fade": 0.3
+  },
+  {
+   "som": "amb_sala",
+   "de": 51.09,
+   "ate": 54.82,
+   "db": -14,
+   "fade": 0.3
+  },
+  {
+   "som": "amb_noite_fria",
+   "de": 55.98,
+   "ate": 57.36,
+   "db": -11,
+   "fade": 0.3
+  },
+  {
+   "som": "amb_tocha",
+   "de": 57.36,
+   "ate": 57.97,
+   "db": -16,
+   "fade": 0.3
+  },
+  {
+   "som": "amb_noite_fria",
+   "de": 61.91,
+   "ate": 66.09,
+   "db": -15,
+   "fade": 0.3
+  },
+  {
+   "som": "amb_tocha",
+   "de": 61.91,
+   "ate": 66.09,
+   "db": -9,
+   "fade": 0.3
+  }
+ ],
+ "efeitos": [
+  {
+   "som": "whoosh",
+   "em": 0.3,
+   "db": -10
+  },
+  {
+   "som": "sfx_gemido",
+   "em": 0.6,
+   "db": -8
+  },
+  {
+   "som": "impact-bass-1",
+   "em": 1.6,
+   "db": -9
+  },
+  {
+   "som": "sfx_gemido",
+   "em": 2.3,
+   "db": -8
+  },
+  {
+   "som": "impact-bass-2",
+   "em": 2.97,
+   "db": -8
+  },
+  {
+   "som": "sfx_gemido",
+   "em": 3.9,
+   "db": -8
+  },
+  {
+   "som": "whoosh",
+   "em": 5.09,
+   "db": -9
+  },
+  {
+   "som": "pop",
+   "em": 5.29,
+   "db": -10
+  },
+  {
+   "som": "sfx_queda",
+   "em": 6.6,
+   "db": -18
+  },
+  {
+   "som": "pop",
+   "em": 7.37,
+   "db": -10
+  },
+  {
+   "som": "pop",
+   "em": 8.06,
+   "db": -10
+  },
+  {
+   "som": "sfx_relogio_3",
+   "em": 9.22,
+   "db": -4
+  },
+  {
+   "som": "whoosh-short",
+   "em": 12.24,
+   "db": -10
+  },
+  {
+   "som": "sfx_tiro",
+   "em": 12.5,
+   "db": -2
+  },
+  {
+   "som": "sfx_tiro",
+   "em": 12.85,
+   "db": -4
+  },
+  {
+   "som": "sfx_gemido",
+   "em": 13.3,
+   "db": -8
+  },
+  {
+   "som": "sfx_morte",
+   "em": 13.45,
+   "db": -5
+  },
+  {
+   "som": "impact-bass-2",
+   "em": 13.45,
+   "db": -9
+  },
+  {
+   "som": "sfx_gemido",
+   "em": 13.9,
+   "db": -6
+  },
+  {
+   "som": "sfx_gemido",
+   "em": 14.4,
+   "db": -8
+  },
+  {
+   "som": "chime",
+   "em": 14.9,
+   "db": -11
+  },
+  {
+   "som": "sfx_gemido",
+   "em": 15.0,
+   "db": -6
+  },
+  {
+   "som": "sfx_gemido",
+   "em": 15.5,
+   "db": -8
+  },
+  {
+   "som": "whoosh",
+   "em": 15.93,
+   "db": -9
+  },
+  {
+   "som": "pop",
+   "em": 16.13,
+   "db": -10
+  },
+  {
+   "som": "pop",
+   "em": 18.67,
+   "db": -10
+  },
+  {
+   "som": "pop",
+   "em": 19.68,
+   "db": -10
+  },
+  {
+   "som": "sfx_relogio_3",
+   "em": 21.08,
+   "db": -4
+  },
+  {
+   "som": "whoosh-short",
+   "em": 24.07,
+   "db": -10
+  },
+  {
+   "som": "sfx_goles",
+   "em": 24.3,
+   "db": -6
+  },
+  {
+   "som": "sfx_morte",
+   "em": 24.88,
+   "db": -5
+  },
+  {
+   "som": "impact-bass-2",
+   "em": 24.88,
+   "db": -9
+  },
+  {
+   "som": "sfx_queda",
+   "em": 25.3,
+   "db": -12
+  },
+  {
+   "som": "chime",
+   "em": 27.08,
+   "db": -11
+  },
+  {
+   "som": "sfx_goles",
+   "em": 28.3,
+   "db": -7
+  },
+  {
+   "som": "whoosh",
+   "em": 29.48,
+   "db": -9
+  },
+  {
+   "som": "pop",
+   "em": 29.68,
+   "db": -10
+  },
+  {
+   "som": "pop",
+   "em": 31.84,
+   "db": -10
+  },
+  {
+   "som": "pop",
+   "em": 32.84,
+   "db": -10
+  },
+  {
+   "som": "sfx_moto",
+   "em": 32.84,
+   "db": -12
+  },
+  {
+   "som": "sfx_relogio_3",
+   "em": 33.58,
+   "db": -4
+  },
+  {
+   "som": "sfx_moto",
+   "em": 36.58,
+   "db": -3
+  },
+  {
+   "som": "whoosh-short",
+   "em": 36.68,
+   "db": -10
+  },
+  {
+   "som": "sfx_morte",
+   "em": 38.13,
+   "db": -5
+  },
+  {
+   "som": "impact-bass-2",
+   "em": 38.13,
+   "db": -9
+  },
+  {
+   "som": "sfx_gemido",
+   "em": 38.5,
+   "db": -8
+  },
+  {
+   "som": "sfx_gemido",
+   "em": 38.9,
+   "db": -6
+  },
+  {
+   "som": "sfx_gemido",
+   "em": 39.3,
+   "db": -8
+  },
+  {
+   "som": "sfx_gemido",
+   "em": 39.8,
+   "db": -6
+  },
+  {
+   "som": "chime",
+   "em": 39.9,
+   "db": -11
+  },
+  {
+   "som": "sfx_gemido",
+   "em": 40.3,
+   "db": -8
+  },
+  {
+   "som": "whoosh",
+   "em": 40.9,
+   "db": -9
+  },
+  {
+   "som": "pop",
+   "em": 41.1,
+   "db": -10
+  },
+  {
+   "som": "sfx_toc_toc",
+   "em": 43.7,
+   "db": -3
+  },
+  {
+   "som": "pop",
+   "em": 45.99,
+   "db": -10
+  },
+  {
+   "som": "sfx_porta_range",
+   "em": 46.09,
+   "db": -12
+  },
+  {
+   "som": "pop",
+   "em": 47.01,
+   "db": -10
+  },
+  {
+   "som": "sfx_relogio_3",
+   "em": 48.09,
+   "db": -4
+  },
+  {
+   "som": "whoosh-short",
+   "em": 51.19,
+   "db": -10
+  },
+  {
+   "som": "sfx_morte",
+   "em": 52.45,
+   "db": -5
+  },
+  {
+   "som": "impact-bass-2",
+   "em": 52.45,
+   "db": -9
+  },
+  {
+   "som": "sfx_gemido",
+   "em": 52.9,
+   "db": -4
+  },
+  {
+   "som": "sfx_gemido",
+   "em": 53.8,
+   "db": -6
+  },
+  {
+   "som": "chime",
+   "em": 53.9,
+   "db": -11
+  },
+  {
+   "som": "whoosh",
+   "em": 54.82,
+   "db": -9
+  },
+  {
+   "som": "pop",
+   "em": 55.02,
+   "db": -10
+  },
+  {
+   "som": "pop",
+   "em": 57.36,
+   "db": -10
+  },
+  {
+   "som": "pop",
+   "em": 57.97,
+   "db": -10
+  },
+  {
+   "som": "sfx_relogio_3",
+   "em": 58.91,
+   "db": -4
+  },
+  {
+   "som": "sfx_fogo_acende",
+   "em": 61.91,
+   "db": -9
+  },
+  {
+   "som": "whoosh-short",
+   "em": 62.0,
+   "db": -10
+  },
+  {
+   "som": "sfx_morte",
+   "em": 62.96,
+   "db": -5
+  },
+  {
+   "som": "impact-bass-2",
+   "em": 62.96,
+   "db": -9
+  },
+  {
+   "som": "sfx_gemido",
+   "em": 63.4,
+   "db": -8
+  },
+  {
+   "som": "sfx_gemido",
+   "em": 63.9,
+   "db": -6
+  },
+  {
+   "som": "sfx_gemido",
+   "em": 64.4,
+   "db": -8
+  },
+  {
+   "som": "sfx_gemido",
+   "em": 64.9,
+   "db": -6
+  },
+  {
+   "som": "chime",
+   "em": 65.0,
+   "db": -11
+  },
+  {
+   "som": "sfx_gemido",
+   "em": 65.5,
+   "db": -8
+  },
+  {
+   "som": "whoosh",
+   "em": 66.09,
+   "db": -9
+  },
+  {
+   "som": "pop",
+   "em": 66.34,
+   "db": -9
+  },
+  {
+   "som": "chime",
+   "em": 67.39,
+   "db": -9
+  },
+  {
+   "som": "sparkle",
+   "em": 68.09,
+   "db": -12
+  }
+ ],
+ "passos": [
+  {
+   "som": "sfx_passo_rua",
+   "de": 0.2,
+   "ate": 5.0,
+   "intervalo": 0.6,
+   "db": -20
+  },
+  {
+   "som": "sfx_passo_rua",
+   "de": 13.2,
+   "ate": 15.9,
+   "intervalo": 0.35,
+   "db": -14
+  },
+  {
+   "som": "sfx_passo_rua",
+   "de": 17.1,
+   "ate": 17.9,
+   "intervalo": 0.42,
+   "db": -14
+  },
+  {
+   "som": "sfx_passo_rua",
+   "de": 30.6,
+   "ate": 31.8,
+   "intervalo": 0.22,
+   "db": -12
+  },
+  {
+   "som": "sfx_passo_rua",
+   "de": 38.4,
+   "ate": 40.9,
+   "intervalo": 0.33,
+   "db": -14
+  },
+  {
+   "som": "sfx_passo_rua",
+   "de": 42.2,
+   "ate": 43.6,
+   "intervalo": 0.5,
+   "db": -14
+  },
+  {
+   "som": "sfx_passo_rua",
+   "de": 52.9,
+   "ate": 54.8,
+   "intervalo": 0.55,
+   "db": -15
+  },
+  {
+   "som": "sfx_passo_rua",
+   "de": 63.4,
+   "ate": 66.0,
+   "intervalo": 0.4,
+   "db": -16
+  }
+ ],
+ "ducking": {
+  "db": 6
+ },
+ "volume_final_lufs": -10
+}

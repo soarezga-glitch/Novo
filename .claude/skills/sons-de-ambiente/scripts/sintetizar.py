@@ -598,7 +598,7 @@ def ambientes_hoje(r, voz=None):
         'sfx_moto': [motor_moto(5.0, r)], 'sfx_toc_toc': [toc_toc(r)], 'sfx_tique': [tique(r, True)], 'sfx_taque': [tique(r, False)],
         'sfx_porta_range': [porta_range(r)], 'sfx_morte': [morte(r)], 'sfx_goles': [goles(r)], 'sfx_queda': [queda_areia(r)],
         'sfx_passo_rua': [passo(r, 'pedra') for _ in range(4)], 'sfx_fogo_acende': [rugido_fogo(r)],
-        'sfx_relogio_contagem': [relogio_contagem(r)],
+        'sfx_relogio_contagem': [relogio_contagem(r)], 'sfx_relogio_3': [relogio_contagem(r, 3)],
     }
 
 

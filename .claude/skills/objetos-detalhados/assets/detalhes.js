@@ -640,13 +640,13 @@
       },
 
       // bicicleta (de lado, para a direita): quadro, 2 rodas com raios, guidão, selim, corrente e coroa; origem = chão no meio
-      bicicleta: (x, y, k = 1, { cor = '#2E7D4A', raios = 0 } = {}) => {
+      bicicleta: (x, y, k = 1, { cor = '#2E7D4A', raios = 0, pedal = 0 } = {}) => {
         let s = contato(200, 10, 0.25);
-        const roda = (cx) => `<g transform="rotate(${f(raios)} ${cx} -90)"><circle cx="${cx}" cy="-90" r="88" fill="none" stroke="#22252A" stroke-width="14"/><circle cx="${cx}" cy="-90" r="80" fill="none" stroke="#5A5A62" stroke-width="3"/>${[...Array(12)].map((_, i) => `<path d="M${cx} -90 l${f(Math.cos(i / 12 * Math.PI * 2) * 80)} ${f(Math.sin(i / 12 * Math.PI * 2) * 80)}" stroke="#B9BEC6" stroke-width="2"/>`).join('')}<circle cx="${cx}" cy="-90" r="10" fill="#9AA0A8" stroke="${L}" stroke-width="3"/></g>`;
+        const roda = (cx) => `<g class="roda" data-cx="${cx}" data-cy="-90" data-r="88" transform="rotate(${f(raios)} ${cx} -90)"><circle cx="${cx}" cy="-90" r="88" fill="none" stroke="#22252A" stroke-width="14"/><circle cx="${cx}" cy="-90" r="80" fill="none" stroke="#5A5A62" stroke-width="3"/>${[...Array(12)].map((_, i) => `<path d="M${cx} -90 l${f(Math.cos(i / 12 * Math.PI * 2) * 80)} ${f(Math.sin(i / 12 * Math.PI * 2) * 80)}" stroke="#B9BEC6" stroke-width="2"/>`).join('')}<circle cx="${cx}" cy="-90" r="10" fill="#9AA0A8" stroke="${L}" stroke-width="3"/></g>`;
         s += roda(-150) + roda(150);
         s += `<path d="M-150 -90 L-30 -90 L60 -210 L-70 -210 Z M-30 -90 L-80 -230 M60 -210 L150 -90 M60 -210 L70 -250" stroke="${L}" stroke-width="16" fill="none" stroke-linejoin="round" stroke-linecap="round"/><path d="M-150 -90 L-30 -90 L60 -210 L-70 -210 Z M-30 -90 L-80 -230 M60 -210 L150 -90 M60 -210 L70 -250" stroke="${cor}" stroke-width="9" fill="none" stroke-linejoin="round" stroke-linecap="round"/>`;
         s += `<path d="M-112 -238 H-50" stroke="${L}" stroke-width="14" stroke-linecap="round"/><path d="M50 -258 Q80 -262 96 -244" stroke="${L}" stroke-width="10" fill="none" stroke-linecap="round"/>`;   // selim e guidão
-        s += `<circle cx="-30" cy="-90" r="22" fill="#9AA0A8" stroke="${L}" stroke-width="4"/><path d="M-30 -112 L-150 -98 M-30 -68 L-150 -82" stroke="#5A5A62" stroke-width="3"/><path d="M-30 -90 l18 26" stroke="${L}" stroke-width="6" stroke-linecap="round"/>`;
+        s += `<circle cx="-30" cy="-90" r="22" fill="#9AA0A8" stroke="${L}" stroke-width="4"/><path d="M-30 -112 L-150 -98 M-30 -68 L-150 -82" stroke="#5A5A62" stroke-width="3"/><g class="pedivela" data-cx="-30" data-cy="-90" transform="rotate(${f(pedal)} -30 -90)"><path d="M-30 -90 h32 M-30 -90 h-32" stroke="${L}" stroke-width="6" stroke-linecap="round"/><rect x="-6" y="-95" width="16" height="8" rx="2" fill="#22252A" transform="translate(32 0)"/><rect x="-6" y="-95" width="16" height="8" rx="2" fill="#22252A" transform="translate(-60 0)"/></g>`;
         return pos(x, y, k, s);
       },
 
@@ -654,7 +654,7 @@
       moto: (x, y, k = 1, { cor = '#D7263D', fumaca = false } = {}) => {
         const g = lin([[0, tom(cor, 0.3)], [1, tom(cor, -0.35)]]);
         let s = `<defs>${g.def}</defs>` + contato(220, 12, 0.3);
-        const roda = cx => `<circle cx="${cx}" cy="-80" r="80" fill="#22252A" stroke="${L}" stroke-width="6"/><circle cx="${cx}" cy="-80" r="44" fill="#9AA0A8" stroke="${L}" stroke-width="4"/>${[...Array(6)].map((_, i) => `<path d="M${cx} -80 l${f(Math.cos(i / 6 * Math.PI * 2) * 40)} ${f(Math.sin(i / 6 * Math.PI * 2) * 40)}" stroke="#5E666E" stroke-width="5"/>`).join('')}`;
+        const roda = cx => `<g class="roda" data-cx="${cx}" data-cy="-80" data-r="80"><circle cx="${cx}" cy="-80" r="80" fill="#22252A" stroke="${L}" stroke-width="6"/><circle cx="${cx}" cy="-80" r="44" fill="#9AA0A8" stroke="${L}" stroke-width="4"/>${[...Array(6)].map((_, i) => `<path d="M${cx} -80 l${f(Math.cos(i / 6 * Math.PI * 2) * 40)} ${f(Math.sin(i / 6 * Math.PI * 2) * 40)}" stroke="#5E666E" stroke-width="5"/>`).join('')}</g>`;
         s += roda(-170) + roda(170);
         s += `<path d="M-170 -80 L-60 -150 M170 -80 L110 -250" stroke="${L}" stroke-width="16" stroke-linecap="round"/><path d="M-170 -80 L-60 -150 M170 -80 L110 -250" stroke="#8A9098" stroke-width="9" stroke-linecap="round"/>`;
         s += `<rect x="-90" y="-150" width="130" height="80" rx="14" fill="#3A3F45" stroke="${L}" stroke-width="5"/>${[0, 1, 2, 3].map(i => `<path d="M${-80 + i * 30} -148 v76" stroke="#5E666E" stroke-width="4"/>`).join('')}`;   // motor
@@ -666,7 +666,15 @@
         return pos(x, y, k, s);
       },
     };
-    D.lista = Object.keys(D).filter(k => typeof D[k] === 'function' && !['tom', 'mix', 'rnd', 'escala'].includes(k));
+    // Pontos de contato dos veículos (unidades do desenho, origem = chão no meio; multiplique por k).
+    // Usados pela pose 'montar' do boneco (skill fisica-de-cena): quadril no assento, pé na pedaleira/pedal, mãos no guidão.
+    D.pontos = {
+      moto: { assento: [-80, -188], pe: [-40, -74], guidao: [118, -256] },
+      bicicleta: { assento: [-80, -246], pedivela: { c: [-30, -90], r: 32 }, guidao: [92, -248] },
+    };
+    // ponto do veículo já posicionado: D.ponto('moto', 'guidao', k) → [x, y] no grupo do veículo
+    D.ponto = (obj, nome, k = 1) => { const v = D.pontos[obj][nome]; return v.c ? { ...v, c: [v.c[0] * k, v.c[1] * k], r: v.r * k } : [v[0] * k, v[1] * k]; };
+    D.lista = Object.keys(D).filter(k => typeof D[k] === 'function' && !['tom', 'mix', 'rnd', 'escala', 'ponto'].includes(k));
     return D;
   }
   global.Detalhes = Detalhes;

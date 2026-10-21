@@ -19,7 +19,7 @@
     const piso = (x, y, w, h, cor = '#A8835A') => { let s = `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${cor}"/>`; for (let yy = y + 8, k = 0; yy < y + h; yy += 26 + k * 4, k++) s += `<path d="M${x} ${yy} H${x + w}" stroke="${tom(cor, -0.18)}" stroke-width="3"/>`; for (let i = 0; i < 14; i++) { const yy = y + rnd(0, h); s += `<path d="M${f(rnd(x, x + w))} ${f(yy)} v14" stroke="${tom(cor, -0.18)}" stroke-width="3"/>`; } return s; };
 
     // ---------- sala: janela com cortina, TV com noticiário, sofá, porta com tranca ----------
-    Z.sala = ({ x = 0, y = 0, w = 1080, h = 1920, chao = y + h * 0.88, cortina = 'aberta', tv = 'noticia', porta = false, noite = false, cor = '#E8D9B8' } = {}) => {
+    Z.sala = ({ x = 0, y = 0, w = 1080, h = 1920, chao = y + h * 0.88, cortina = 'aberta', tv = 'noticia', manchete = 'ATAQUES NA CIDADE', porta = false, noite = false, cor = '#E8D9B8' } = {}) => {
       let s = parede(x, y, w, chao - y, noite ? tom(cor, -0.45) : cor) + `<rect x="${x}" y="${chao - 30}" width="${w}" height="30" fill="${tom(cor, -0.35)}"/>` + piso(x, chao, w, y + h - chao);
       // janela
       const jx = x + w * 0.08, jy = y + (chao - y) * 0.22, jw = w * 0.36, jh = (chao - y) * 0.42;
@@ -39,14 +39,10 @@
       }
       // TV no rack
       if (tv) {
-        const tx = x + w * 0.62, ty = chao - (chao - y) * 0.34, tw = w * 0.3, th = tw * 0.58;
+        const tx = x + w * 0.6, ty = chao - (chao - y) * 0.34, tw = w * 0.36, th = tw * 0.58;
         s += `<rect x="${f(tx - 20)}" y="${f(ty + th + 10)}" width="${f(tw + 40)}" height="${f((chao - y) * 0.34 - th - 10)}" fill="#6E4A2E" stroke="${L}" stroke-width="5"/>`;
         s += `<rect x="${f(tx)}" y="${f(ty)}" width="${f(tw)}" height="${f(th)}" rx="6" fill="#15171B" stroke="${L}" stroke-width="5"/>`;
-        if (tv === 'noticia') {
-          s += `<rect x="${f(tx + 8)}" y="${f(ty + 8)}" width="${f(tw - 16)}" height="${f(th - 16)}" fill="#3A5A8A"/><path d="M${f(tx + 8)} ${f(ty + th * 0.55)} L${f(tx + tw * 0.3)} ${f(ty + th * 0.35)} L${f(tx + tw * 0.5)} ${f(ty + th * 0.5)} L${f(tx + tw - 8)} ${f(ty + th * 0.3)} V${f(ty + th - 8)} H${f(tx + 8)}Z" fill="#2A3A5A"/>` +
-            `<path d="M${f(tx + tw * 0.55)} ${f(ty + th * 0.4)} q-10 -30 6 -50 q-22 14 -6 50" fill="#E86A3A"/><rect x="${f(tx + 8)}" y="${f(ty + th - 8 - th * 0.26)}" width="${f(tw - 16)}" height="${f(th * 0.26)}" fill="#D7263D"/>` +
-            `<text x="${f(tx + tw / 2)}" y="${f(ty + th - 8 - th * 0.07)}" font-family="'DejaVu Sans', sans-serif" font-weight="800" font-size="${f(th * 0.13)}" fill="#fff" text-anchor="middle">URGENTE: ATAQUES NA CIDADE</text><circle cx="${f(tx + 24)}" cy="${f(ty + 24)}" r="6" fill="#FF3B3B"/>`;
-        }
+        if (tv === 'noticia') s += Z.telaNoticia(tx + 8, ty + 8, tw - 16, th - 16, manchete);
       }
       // sofá
       const sx = x + w * 0.06, sw = w * 0.5, sy = chao;
@@ -54,8 +50,28 @@
       return clip(x, y, w, h, s);
     };
 
+    // texto que SEMPRE cabe numa caixa (largura e altura máximas). Estima a largura pela fonte e marca data-caber
+    // para o ajuste fino no navegador (Palco.caberTextos na skill fisica-de-cena mede de verdade e encolhe se precisar).
+    Z.textoCaber = (txt, cx, cy, larg, alt, { fonte = 'Anton', cor = '#fff', peso = 400, ancora = 'middle', larguraLetra = 0.5 } = {}) => {
+      const fs = Math.min(alt, larg / Math.max(1, txt.length * larguraLetra));
+      return `<text x="${f(cx)}" y="${f(cy)}" font-family="'${fonte}', 'DejaVu Sans Condensed', sans-serif" font-weight="${peso}" font-size="${f(fs)}" fill="${cor}" text-anchor="${ancora}" dominant-baseline="central" data-caber="${f(larg)}">${txt}</text>`;
+    };
+
+    // tela de telejornal (cabe em qualquer TV): imagem ao fundo, selo AO VIVO, faixa vermelha URGENTE + manchete branca, letreiro
+    Z.telaNoticia = (x, y, w, h, manchete = 'ATAQUES NA CIDADE') => {
+      let s = `<rect x="${f(x)}" y="${f(y)}" width="${f(w)}" height="${f(h)}" fill="#2E4A78"/>`;
+      s += `<path d="M${f(x)} ${f(y + h * 0.62)} L${f(x + w * 0.22)} ${f(y + h * 0.38)} L${f(x + w * 0.36)} ${f(y + h * 0.5)} L${f(x + w * 0.58)} ${f(y + h * 0.26)} L${f(x + w * 0.78)} ${f(y + h * 0.44)} L${f(x + w)} ${f(y + h * 0.3)} V${f(y + h)} H${f(x)}Z" fill="#1E2E4E"/>`;   // silhueta da cidade
+      s += `<path d="M${f(x + w * 0.6)} ${f(y + h * 0.42)} q-${f(w * 0.03)} -${f(h * 0.14)} ${f(w * 0.02)} -${f(h * 0.24)} q-${f(w * 0.07)} ${f(h * 0.07)} -${f(w * 0.02)} ${f(h * 0.24)}" fill="#FF8A3A"/>`;   // fogo
+      const bx = x + w * 0.04, bw = w * 0.92, hb = h * 0.2, yb = y + h * 0.6;
+      s += `<rect x="${f(x + w * 0.04)}" y="${f(y + h * 0.06)}" width="${f(w * 0.26)}" height="${f(h * 0.13)}" rx="3" fill="#D7263D"/>` + Z.textoCaber('● AO VIVO', x + w * 0.17, y + h * 0.125, w * 0.22, h * 0.1);
+      s += `<rect x="${f(bx)}" y="${f(yb)}" width="${f(bw * 0.34)}" height="${f(hb)}" fill="#D7263D"/>` + Z.textoCaber('URGENTE', bx + bw * 0.17, yb + hb / 2, bw * 0.3, hb * 0.72);
+      s += `<rect x="${f(bx + bw * 0.34)}" y="${f(yb)}" width="${f(bw * 0.66)}" height="${f(hb)}" fill="#F4F6F8"/>` + Z.textoCaber(manchete, bx + bw * 0.67, yb + hb / 2, bw * 0.6, hb * 0.72, { cor: '#111' });
+      s += `<rect x="${f(x)}" y="${f(y + h * 0.86)}" width="${f(w)}" height="${f(h * 0.14)}" fill="#111"/>` + Z.textoCaber('FIQUEM EM CASA • TRANQUEM AS PORTAS', x + w / 2, y + h * 0.93, w * 0.9, h * 0.09, { cor: '#FFD23F' });
+      return s;
+    };
+
     // ---------- rua: prédios, carros abandonados, fumaça, lixo; caos = portas abertas, fogo, papel ----------
-    Z.rua = ({ x = 0, y = 0, w = 1080, h = 1920, chao = y + h * 0.82, caos = true, noite = false } = {}) => {
+    Z.rua = ({ x = 0, y = 0, w = 1080, h = 1920, chao = y + h * 0.82, caos = true, noite = false, faixas = null } = {}) => {
       let s = `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${noite ? '#1B1E3A' : '#B8C2CC'}"/>`;
       if (!noite) s += `<rect x="${x}" y="${y}" width="${w}" height="${h * 0.6}" fill="#E8B88A" opacity=".45"/>`;   // céu alaranjado de fumaça
       // prédios ao fundo (névoa)
@@ -64,7 +80,18 @@
       // prédio da frente
       s += `<rect x="${x}" y="${f(chao - (chao - y) * 0.62)}" width="${f(w * 0.42)}" height="${f((chao - y) * 0.62)}" fill="${noite ? '#3A3046' : '#C9A88A'}" stroke="${L}" stroke-width="6"/>`;
       for (let r = 0; r < 4; r++) for (let k = 0; k < 2; k++) { const wx = x + 40 + k * w * 0.2, wy = chao - (chao - y) * 0.55 + r * (chao - y) * 0.12; s += `<rect x="${f(wx)}" y="${f(wy)}" width="${f(w * 0.12)}" height="${f((chao - y) * 0.08)}" fill="${noite ? '#14162A' : '#3A4A5A'}" stroke="${L}" stroke-width="4"/>`; if (caos && (r + k) % 3 === 1) s += `<path d="M${f(wx + 8)} ${f(wy + 6)} l20 30 l14 -20 l18 26" stroke="#fff" stroke-width="3" fill="none" opacity=".6"/>`; }
-      // calçada e asfalto
+      // calçada e asfalto. Com faixas ({ calcadaFundo, rua, calcadaFrente } = y do pé em cada faixa, skill fisica-de-cena):
+      // chão em profundidade — calçada do fundo encostada nos prédios, asfalto com faixa amarela, calçada da frente
+      if (faixas) {
+        const F = faixas, c1 = (F.calcadaFundo + F.rua) / 2, c2 = (F.rua + F.calcadaFrente) / 2, esc = noite ? 0.6 : 1;
+        const cc = hex => tom(hex, noite ? -0.4 : 0);
+        s += `<rect x="${x}" y="${f(chao)}" width="${w}" height="${f(c1 - chao)}" fill="${cc('#A9A69C')}"/>`;
+        for (let k = 0; k * 34 < c1 - chao; k++) s += `<path d="M${x} ${f(chao + k * 34 * (1 + k * 0.15))} H${x + w}" stroke="#000" stroke-opacity=".08" stroke-width="2"/>`;
+        s += `<rect x="${x}" y="${f(c1)}" width="${w}" height="${f(c2 - c1)}" fill="${cc('#4A4A52')}"/><rect x="${x}" y="${f(c1)}" width="${w}" height="${f(10 * esc + 4)}" fill="${cc('#C9C6BC')}"/>`;
+        for (let k = 0; k < 7; k++) s += `<rect x="${f(x - 30 + k * 180)}" y="${f(F.rua - 6)}" width="100" height="10" fill="${cc('#F2D04A')}"/>`;
+        s += `<rect x="${x}" y="${f(c2)}" width="${w}" height="${f(y + h - c2)}" fill="${cc('#B4B1A6')}"/><rect x="${x}" y="${f(c2)}" width="${w}" height="18" fill="${cc('#D6D3C8')}"/>`;
+        for (let k = 0; k < 8; k++) s += `<path d="M${f(x + k * 160 - 20)} ${f(c2 + 18)} L${f(x + k * 200 - 160)} ${f(y + h)}" stroke="#000" stroke-opacity=".08" stroke-width="3"/>`;
+      } else
       s += `<rect x="${x}" y="${f(chao)}" width="${w}" height="${f(y + h - chao)}" fill="#4A4A52"/><rect x="${x}" y="${f(chao)}" width="${w}" height="24" fill="#8A8A90"/>` + [...Array(6)].map((_, k) => `<rect x="${f(x + 40 + k * 190)}" y="${f(chao + (y + h - chao) * 0.55)}" width="100" height="12" fill="#E8D06A" opacity=".8"/>`).join('');
       if (caos) {
         // fumaça subindo, fogo num carro, papéis e lixo
@@ -75,18 +102,36 @@
     };
 
     // carro de hoje, de lado (sedã), cor escolhida; porta aberta opcional
-    Z.carro = (x, y, k = 1, { cor = '#3B7DD8', portaAberta = false, quebrado = false, dir = 1 } = {}) => {
+    // carro de lado. camada: 'tudo' (padrão) | 'fundo' (lataria + interior: banco e volante) | 'frente' (porta, vidro e rodas)
+    // Com motorista: desenhe 'fundo', depois o boneco com a pose 'montar' (Z.carro.pontos), depois 'frente'.
+    Z.carro = (x, y, k = 1, { cor = '#3B7DD8', portaAberta = false, quebrado = false, dir = 1, camada = 'tudo' } = {}) => {
+      const fundo = camada !== 'frente', frente = camada !== 'fundo', interior = camada !== 'tudo';
       let s = `<g transform="translate(${f(x)} ${f(y)}) scale(${k * dir} ${k})">`;
-      s += `<ellipse cx="0" cy="4" rx="230" ry="14" fill="#000" opacity=".25"/>`;
-      s += `<path d="M-230 -40 Q-232 -110 -170 -118 L-110 -124 Q-70 -200 20 -200 Q110 -200 150 -126 L210 -116 Q240 -110 238 -40 Z" fill="${cor}" stroke="${L}" stroke-width="7" stroke-linejoin="round"/>`;
-      s += `<path d="M-96 -128 Q-62 -186 14 -186 V-128Z" fill="#9ED3F0" stroke="${L}" stroke-width="5"/><path d="M28 -186 Q96 -186 130 -128 H28Z" fill="#9ED3F0" stroke="${L}" stroke-width="5"/>`;
-      if (quebrado) s += `<path d="M40 -170 l20 18 l-12 10 l26 16 M60 -152 l24 -8" stroke="#fff" stroke-width="3" fill="none"/>`;
-      s += `<path d="M-230 -70 H238" stroke="${tom(cor, -0.3)}" stroke-width="4"/><rect x="-30" y="-108" width="30" height="8" rx="3" fill="${tom(cor, -0.4)}"/><rect x="110" y="-108" width="30" height="8" rx="3" fill="${tom(cor, -0.4)}"/>`;
-      s += `<path d="M-200 -110 Q-110 -120 60 -120" stroke="#fff" stroke-width="6" fill="none" opacity=".35"/><rect x="214" y="-90" width="24" height="18" rx="4" fill="#FFE27A" stroke="${L}" stroke-width="3"/><rect x="-232" y="-90" width="16" height="18" rx="4" fill="#D7263D" stroke="${L}" stroke-width="3"/>`;
-      if (portaAberta) s += `<path d="M28 -128 L-30 -150 L-36 -40 L28 -40Z" fill="${tom(cor, -0.15)}" stroke="${L}" stroke-width="5"/>`;
-      [-140, 150].forEach(rx => { s += `<circle cx="${rx}" cy="-30" r="44" fill="#22252A" stroke="${L}" stroke-width="6"/><circle cx="${rx}" cy="-30" r="20" fill="#B9BEC6" stroke="${L}" stroke-width="4"/>`; });
+      const lataria = `<path d="M-230 -40 Q-232 -110 -170 -118 L-110 -124 Q-70 -200 20 -200 Q110 -200 150 -126 L210 -116 Q240 -110 238 -40 Z" fill="${cor}" stroke="${L}" stroke-width="7" stroke-linejoin="round"/>`;
+      const vidros = (fill, op) => `<path d="M-96 -128 Q-62 -186 14 -186 V-128Z" fill="${fill}" fill-opacity="${op}" stroke="${L}" stroke-width="5"/><path d="M28 -186 Q96 -186 130 -128 H28Z" fill="${fill}" fill-opacity="${op}" stroke="${L}" stroke-width="5"/>`;
+      if (fundo) {
+        s += `<ellipse cx="0" cy="4" rx="230" ry="14" fill="#000" opacity=".25"/>` + lataria;
+        if (interior) {
+          s += `<path d="M-96 -128 Q-62 -186 14 -186 V-128Z M28 -186 Q96 -186 130 -128 H28Z" fill="#2A3038"/>`;   // interior escuro
+          s += `<path d="M-4 -60 L4 -168 Q8 -180 20 -176 L22 -60Z" fill="#4A4A52" stroke="${L}" stroke-width="4"/><rect x="-4" y="-60" width="86" height="16" rx="6" fill="#4A4A52" stroke="${L}" stroke-width="4"/><path d="M-90 -60 L-84 -140 Q-80 -150 -70 -147 L-66 -60Z" fill="#3A3A42" stroke="${L}" stroke-width="4"/>`;   // banco
+          s += `<path d="M150 -96 L122 -132" stroke="${L}" stroke-width="7" stroke-linecap="round"/><ellipse cx="120" cy="-134" rx="7" ry="24" transform="rotate(-28 120 -134)" fill="none" stroke="${L}" stroke-width="7"/>`;   // volante
+        } else s += vidros('#9ED3F0', 1);
+      }
+      if (frente) {
+        if (interior) {
+          s += vidros('#9ED3F0', 0.32) + `<path d="M-226 -116 L-110 -124 L-100 -128 H130 L150 -126 L210 -116 Q240 -110 238 -40 H-230 Q-232 -110 -226 -116Z" fill="${cor}" stroke="${L}" stroke-width="7" stroke-linejoin="round"/>`;   // porta/lataria de baixo por cima das pernas
+          s += `<path d="M14 -186 V-128 M28 -186 V-128" stroke="${L}" stroke-width="6"/>`;
+        }
+        if (quebrado) s += `<path d="M40 -170 l20 18 l-12 10 l26 16 M60 -152 l24 -8" stroke="#fff" stroke-width="3" fill="none"/>`;
+        s += `<path d="M-230 -70 H238" stroke="${tom(cor, -0.3)}" stroke-width="4"/><rect x="-30" y="-108" width="30" height="8" rx="3" fill="${tom(cor, -0.4)}"/><rect x="110" y="-108" width="30" height="8" rx="3" fill="${tom(cor, -0.4)}"/>`;
+        s += `<path d="M-200 -110 Q-110 -120 60 -120" stroke="#fff" stroke-width="6" fill="none" opacity=".35"/><rect x="214" y="-90" width="24" height="18" rx="4" fill="#FFE27A" stroke="${L}" stroke-width="3"/><rect x="-232" y="-90" width="16" height="18" rx="4" fill="#D7263D" stroke="${L}" stroke-width="3"/>`;
+        if (portaAberta) s += `<path d="M28 -128 L-30 -150 L-36 -40 L28 -40Z" fill="${tom(cor, -0.15)}" stroke="${L}" stroke-width="5"/>`;
+        [-140, 150].forEach(rx => { s += `<g class="roda" data-cx="${rx}" data-cy="-30" data-r="44"><circle cx="${rx}" cy="-30" r="44" fill="#22252A" stroke="${L}" stroke-width="6"/><circle cx="${rx}" cy="-30" r="20" fill="#B9BEC6" stroke="${L}" stroke-width="4"/><path d="M${rx - 18} -30 H${rx + 18}" stroke="${L}" stroke-width="4"/></g>`; });
+      }
       return s + `</g>`;
     };
+    // pontos do motorista (unidades do desenho; multiplique por k e some x, y): quadril no banco, pé no pedal, mãos no volante
+    Z.carro.pontos = { assento: [36, -62], pe: [160, -50], guidao: [118, -140] };
 
     // ---------- banheiro: azulejo, privada com a CAIXA DA DESCARGA (tampa aberta), pia; abandonado = sujeira ----------
     Z.banheiro = ({ x = 0, y = 0, w = 1080, h = 1920, chao = y + h * 0.86, abandonado = true, tampaAberta = true } = {}) => {
