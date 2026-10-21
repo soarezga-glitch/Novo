@@ -133,6 +133,8 @@
     expressao(t0, t1, nome) { this.expr.push({ t0, t1, nome }); return this; }
     sujeira(t0, t1) { this.sujo.push({ t0, t1 }); return this; }
     mao(lado) { return this._maos ? this._maos[lado] : [0, 0]; }
+    // forma da mão (luva): 'relaxada' | 'aberta' | 'punho' | 'apontar' | 'indicador' | 'joinha' | 'baixo' | 'paz' | 'ok' | 'palma' | 'n1'..'n5'
+    formaMao(lado, t0, t1, forma) { (lado === 'ambos' ? ['e', 'd'] : [lado]).forEach(l => (this.formas = this.formas || { e: [], d: [] })[l].push({ t0, t1, forma })); return this; }
 
     // ---------- construção do SVG ----------
     build(parent, contorno) {
@@ -151,6 +153,7 @@
       this.el.mangaLonge = mk('path', tecido(F.corManga || F.cor || '#888', 30));
       this.el.manicaLonge = mk('g', {});   // gladiador: protetor de braço (manica) e de ombro (galero)
       this.el.maoLonge = mk('circle', { r: 11 * this.s, fill: this.corLonge });
+      this.el.maoFormaLonge = mk('g', {});   // mão em forma de luva (aberta, punho, apontando, joinha...) — skill personagem-sobrevivente
       this.el.pernaLonge = mk('path', linha(this.corLonge));
       this.el.calcaLonge = mk('path', tecido(F.corPernas || '#3A4A6A', 30));
       this.el.grevaLonge = mk('g', {});    // gladiador: caneleira (ocrea)
@@ -201,6 +204,7 @@
       this.el.mangaPerto = mk('path', tecido(F.corManga || F.cor || '#888', 30));
       this.el.manicaPerto = mk('g', {});
       this.el.maoPerto = mk('circle', { r: 11 * this.s, fill: this.cor });
+      this.el.maoFormaPerto = mk('g', {});
     }
 
     // ---------- poses base ----------
@@ -352,6 +356,21 @@
         case 'segurar': return vista === 'frente' ? { o: 18, c: 80 } : { o: 12, c: 88 };
         case 'cintura': return vista === 'frente' ? { o: 38, c: -95 } : { o: -20, c: 100 };
         case 'pose': return { o: p.o, c: p.c };
+        // gestos do guia de mãos do Sobrevivente
+        case 'explicar': return vista === 'frente' ? { o: 38, c: 52 + Math.sin(tt * 2 * Math.PI * 0.9) * 8 } : { o: 40, c: 55 + Math.sin(tt * 2 * Math.PI * 0.9) * 8 };   // mão aberta, palma para cima
+        case 'parar': return vista === 'frente' ? { o: 80, c: -30 } : { o: 84, c: -38 };      // braço esticado, palma para frente
+        case 'joinha': return vista === 'frente' ? { o: 40, c: 70 } : { o: 50, c: 72 };
+        case 'levantar': return { o: 168, c: 8 };                                              // braço para cima (pedir a palavra / chamar atenção)
+        case 'chamar': return vista === 'frente' ? { o: 55, c: 50 + Math.sin(tt * 2 * Math.PI * 2.2) * 35 } : { o: 70, c: 45 + Math.sin(tt * 2 * Math.PI * 2.2) * 35 };
+        case 'contar': return vista === 'frente' ? { o: 28, c: 120 } : { o: 30, c: 118 };      // mão na altura do ombro mostrando os dedos
+        case 'cruzar': case 'cabeca': case 'testa': {
+          let alvo;
+          if (g.gesto === 'cruzar') alvo = vista === 'frente' ? add(cabeca, [-sx * 22 * s, (M.cabeca + M.pescoco + 70 + (lado === 'e' ? 6 : 0)) * s]) : add(cabeca, [dir * 30 * s, (M.cabeca + 95) * s]);
+          else if (g.gesto === 'cabeca') alvo = add(cabeca, [sx * (vista === 'frente' ? 30 : 0) * s, -M.cabeca * 0.95 * s]);
+          else alvo = add(cabeca, [vista === 'frente' ? sx * 14 * s : dir * 40 * s, -M.cabeca * 0.4 * s]);
+          const r = ik2(ombro, alvo, M.braco * s, M.antebraco * s, sx, vista === 'frente' ? 1 : -1);
+          return { o: r.a1, c: norm(r.a2 - r.a1) };
+        }
         case 'comer': case 'queixo': case 'nariz': case 'alcancar': {
           // mão até um alvo do rosto (ou p.alvo em mundo) via IK; cotovelo para baixo
           let alvo;
@@ -572,6 +591,7 @@
         : { e: add(top, [0, 16 * s]), d: add(top, [0, 16 * s]) };
       const ctx = { vista, dir, cabeca: cab, s };
       const maos = {}, bracos = {};
+      const formaG = { e: null, d: null };
       ['e', 'd'].forEach(l => {
         let ang = { ...P.bracos[l] };
         const lista = this.bracos[l];
@@ -584,6 +604,7 @@
           if (t < g.t0 + ent) w = smooth((t - g.t0) / ent);
           if (t > g.t1) w = 1 - smooth((t - g.t1) / sai);
           ang = { o: lerp(ang.o, alvo.o, w), c: lerp(ang.c, alvo.c, w) };
+          if (w > 0.5) formaG[l] = g.p.mao || (g.gesto === 'contar' ? 'n' + (g.p.n ?? 1) : FORMA_GESTO[g.gesto]);
         }
         const sx = vista === 'frente' ? (l === 'e' ? -1 : 1) : dir;
         const o = vista === 'perfil' ? ang.o + inc : ang.o;
@@ -616,6 +637,15 @@
       const mL = rot(maos[longe.braco]), mP = rot(maos[perto.braco]);
       this.el.maoLonge.setAttribute('cx', mL[0]); this.el.maoLonge.setAttribute('cy', mL[1]);
       this.el.maoPerto.setAttribute('cx', mP[0]); this.el.maoPerto.setAttribute('cy', mP[1]);
+      if (this.fig.luvas) {
+        const baseA = this.acaoEm(this.acoes, t).atual, padrao = baseA && baseA.tipo === 'correr' ? 'punho' : 'relaxada';
+        const formaEm = l => { const ex = ((this.formas || {})[l] || []).filter(x => t >= x.t0 && t <= x.t1).pop(); return ex ? ex.forma : formaG[l] || padrao; };
+        [[longe.braco, this.el.maoFormaLonge, this.el.maoLonge, true], [perto.braco, this.el.maoFormaPerto, this.el.maoPerto, false]].forEach(([l, gEl, circ, eLonge]) => {
+          circ.setAttribute('r', 0);
+          const B = bracos[l], sxL = vista === 'frente' ? (l === 'e' ? -1 : 1) : dir;
+          gEl.innerHTML = Boneco.desenharMao(formaEm(l), rot(B.c), rot(B.m), { s: s * 1.45, vista, sx: sxL, longe: eLonge });   // luva um pouco maior que a bolinha, como na ficha
+        });
+      } else { this.el.maoFormaLonge.innerHTML = ''; this.el.maoFormaPerto.innerHTML = ''; }
       this.el.tronco.setAttribute('d', `M${f(H)} L${f(pescoco)}`);
       // roupa (túnica): trapézio do ombro até um pouco abaixo do quadril
       if (this.el.roupa) {
@@ -1001,6 +1031,84 @@
     const r = { ...base, ...f };
     if (f.protagonista) Object.assign(r, Boneco.PROTAGONISTA);
     return r;
+  };
+
+  // forma da mão para cada gesto de braço (guia de mãos do Sobrevivente)
+  const FORMA_GESTO = { apontar: 'apontar', acenar: 'aberta', cima: 'punho', desespero: 'aberta', encolher: 'aberta', abanar: 'aberta', estender: 'aberta',
+    segurar: 'punho', cintura: 'punho', comer: 'punho', queixo: 'punho', nariz: 'punho', alcancar: 'aberta', explicar: 'aberta', parar: 'palma', joinha: 'joinha',
+    levantar: 'indicador', chamar: 'aberta', cruzar: 'punho', cabeca: 'aberta', testa: 'aberta' };
+  Boneco.FORMA_GESTO = FORMA_GESTO;
+
+  // Desenha a mão de luva preta. E = cotovelo, W = mão (fim do antebraço). Dedos simples e arredondados, 4 dedos + polegar.
+  Boneco.desenharMao = (forma, E, W, { s = 1, vista = 'frente', sx = 1, longe = false } = {}) => {
+    const LUVA = longe ? '#34343C' : '#22222A', BORDA = '#0B0B10', BRILHO = '#5C5C68';
+    let u = [W[0] - E[0], W[1] - E[1]]; const n0 = Math.hypot(u[0], u[1]) || 1; u = [u[0] / n0, u[1] / n0];
+    let v = [-u[1], u[0]];
+    if (vista === 'frente') { if (v[0] * -sx < 0) v = [-v[0], -v[1]]; }      // de frente: polegar para o lado de dentro
+    else if (v[1] > 0) v = [-v[0], -v[1]];                                 // de lado: polegar para cima
+    const P = (a, b) => [W[0] + (u[0] * a + v[0] * b) * s, W[1] + (u[1] * a + v[1] * b) * s];
+    const q = p => p[0].toFixed(1) + ' ' + p[1].toFixed(1);
+    const rotv = (d, ang) => { const c = Math.cos(ang), sn = Math.sin(ang); return [d[0] * c - d[1] * sn, d[0] * sn + d[1] * c]; };
+    const dedo = (b, d, L, w = 7) => { const e = [b[0] + d[0] * L * s, b[1] + d[1] * L * s];
+      return `<path d="M${q(b)} L${q(e)}" stroke="${BORDA}" stroke-width="${(w + 3) * s}" stroke-linecap="round"/><path d="M${q(b)} L${q(e)}" stroke="${LUVA}" stroke-width="${w * s}" stroke-linecap="round"/>`; };
+    const palma = (c, r = 10) => `<circle cx="${c[0].toFixed(1)}" cy="${c[1].toFixed(1)}" r="${r * s}" fill="${LUVA}" stroke="${BORDA}" stroke-width="${2.6 * s}"/>`;
+    const brilho = (c, r = 10) => `<path d="M${q([c[0] - r * 0.55 * s, c[1] - r * 0.25 * s])} Q${q([c[0] - r * 0.2 * s, c[1] - r * 0.75 * s])} ${q([c[0] + r * 0.35 * s, c[1] - r * 0.6 * s])}" stroke="${BRILHO}" stroke-width="${2 * s}" fill="none" stroke-linecap="round" opacity=".8"/>`;
+    const C = P(9, 0), up = [0, -1], lado = [1, 0];
+    const abre = vista === 'frente' ? 1 : 0.45;
+    let h = '';
+    const dedosCima = (k, comPolegar) => {        // k dedos levantados (contagem), saindo do alto do punho
+      let r = '';
+      const dx = [-6, -2, 2, 6];
+      for (let i = 0; i < k; i++) { const b = [C[0] + dx[i] * s * abre, C[1] - 7 * s]; r += dedo(b, rotv(up, (i - (k - 1) / 2) * 0.16 * abre), 12, 6); }
+      if (comPolegar) r += dedo([C[0] - sx * 8 * s * abre, C[1]], rotv(up, -sx * 1.1), 10, 6.5);
+      return r;
+    };
+    const nos = () => `<path d="M${q(P(14, -6))} L${q(P(15, 6))}" stroke="${BRILHO}" stroke-width="${1.6 * s}" stroke-dasharray="${3 * s} ${2.2 * s}" opacity=".7"/>`;   // juntas dos dedos
+    switch (forma) {
+      case 'aberta': {
+        h += palma(P(8, 0), 9.5);
+        [-1.5, -0.5, 0.5, 1.5].forEach((k, i) => {   // dedos em leque: cada um abre para o seu lado
+          const d0 = [u[0] - v[0] * k * 0.42 * abre, u[1] - v[1] * k * 0.42 * abre], nd = Math.hypot(d0[0], d0[1]);
+          h += dedo(P(12, -k * 4.6 * abre), [d0[0] / nd, d0[1] / nd], i === 0 || i === 3 ? 9.5 : 12, 5.6); });
+        { const d0 = [u[0] * 0.4 + v[0], u[1] * 0.4 + v[1]], nd = Math.hypot(d0[0], d0[1]); h += dedo(P(5, 8), [d0[0] / nd, d0[1] / nd], 8, 6.5); }   // polegar para o lado
+        h += brilho(P(8, 0), 9.5); break;
+      }
+      case 'palma': {        // palma para frente, dedos para cima (gesto de parar / cumprimentar)
+        const c = P(6, 0); h += palma(c, 10.5);
+        [-1.5, -0.5, 0.5, 1.5].forEach((k, i) => { h += dedo([c[0] + k * 4.2 * s * abre, c[1] - 8 * s], rotv(up, k * 0.12), i === 0 || i === 3 ? 10 : 12.5, 6); });
+        h += dedo([c[0] - sx * 9 * s * abre, c[1] + 1 * s], rotv(up, -sx * 1.15), 9, 6.5);
+        h += brilho(c, 10.5); break;
+      }
+      case 'apontar': {
+        h += palma(C, 10.5) + nos();
+        h += dedo(P(15, -3), u, 15, 6.5);                             // indicador esticado na direção do braço
+        h += dedo(P(6, 8), rotv(u, 0.5), 7, 6.5); h += brilho(C, 10.5); break;
+      }
+      case 'indicador': case 'n1': h += palma(C, 10.5) + dedosCima(1, false) + brilho(C, 10.5); break;
+      case 'paz': case 'n2': { h += palma(C, 10.5); const b = [C[0], C[1] - 7 * s]; h += dedo([b[0] - 2.5 * s, b[1]], rotv(up, -0.32), 12.5, 6) + dedo([b[0] + 2.5 * s, b[1]], rotv(up, 0.32), 12.5, 6) + brilho(C, 10.5); break; }
+      case 'n3': h += palma(C, 10.5) + dedosCima(3, false) + brilho(C, 10.5); break;
+      case 'n4': h += palma(C, 10.5) + dedosCima(4, false) + brilho(C, 10.5); break;
+      case 'n5': h += palma(C, 10.5) + dedosCima(4, true) + brilho(C, 10.5); break;
+      case 'ok': {
+        h += palma(C, 10);
+        const anel = [C[0] - sx * 8 * s, C[1] - 6 * s];
+        h += `<circle cx="${anel[0].toFixed(1)}" cy="${anel[1].toFixed(1)}" r="${6 * s}" fill="none" stroke="${BORDA}" stroke-width="${8.5 * s}"/><circle cx="${anel[0].toFixed(1)}" cy="${anel[1].toFixed(1)}" r="${6 * s}" fill="none" stroke="${LUVA}" stroke-width="${5.5 * s}"/>`;
+        [0, 1, 2].forEach(i => { h += dedo([C[0] + (i * 4 - 1) * s * sx, C[1] - 7 * s], rotv(up, sx * (0.1 + i * 0.16)), 11, 5.5); });
+        h += brilho(C, 10); break;
+      }
+      case 'joinha': case 'baixo': {
+        h += palma(C, 11) + `<path d="M${q([C[0] - 8 * s, C[1] + 3 * s])} H${q([C[0] + 8 * s, 0]).split(' ')[0]}" stroke="${BRILHO}" stroke-width="${1.6 * s}" opacity=".7"/>`;
+        const d = forma === 'joinha' ? up : [0, 1];
+        h += dedo([C[0] - sx * 3 * s, C[1] + d[1] * 8 * s], d, 11, 7.5) + brilho(C, 11); break;
+      }
+      case 'punho': h += palma(C, 11) + nos() + dedo(P(5, 7), rotv(u, 0.9), 6, 6) + brilho(C, 11); break;
+      default: {             // relaxada: luva arredondada, dedos juntos levemente curvados
+        const c = P(9, 0), ang = Math.atan2(u[1], u[0]) * 180 / Math.PI;
+        h += `<ellipse cx="${c[0].toFixed(1)}" cy="${c[1].toFixed(1)}" rx="${13 * s}" ry="${10 * s}" transform="rotate(${ang.toFixed(1)} ${q(c)})" fill="${LUVA}" stroke="${BORDA}" stroke-width="${2.6 * s}"/>`;
+        h += dedo(P(5, 7.5), rotv(u, 0.55), 6, 6) + brilho(c, 10);
+      }
+    }
+    return h;
   };
 
   Boneco.escada = (x0, y0, larg, alt, n) => x => {
