@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Tênis Laranja: Parte 2</title>
+<!--
+  Série "O garoto do tênis laranja" — PARTE 2 de 5 (narração em fala.mp3, 39,4 s): a fuga.
+  Léo = o SOBREVIVENTE. Elenco fixo (skill elenco-serie): Caio, Duda, Pedrão + NOVO: seu Jorge, o zelador.
+  Enquadramento grande (pés em y ≈ 1450), legenda embaixo (y = 1540), câmera na mão, checklist de cena preenchida.
+-->
+<style>
+  html, body { margin: 0; background: #000; overflow: hidden; }
+  #stage { width: 1080px; height: 1920px; display: block; }
+  @font-face { font-family: 'Luckiest Guy'; src: url(fontes/luckiest-guy.woff2); }
+  @font-face { font-family: 'Anton'; src: url(fontes/anton.woff2); }
+  text:not([font-family]) { font-family: 'Luckiest Guy', 'DejaVu Sans', sans-serif; }
+</style>
+<script src="gsap.min.js"></script>
+<script src="boneco.js"></script>
+<script src="paletas.js"></script>
+<script src="cenario.js"></script>
+<script src="escola.js"></script>
+<script src="detalhes.js"></script>
+<script src="marca.js"></script>
+<script src="palco.js"></script>
+<script src="legenda.js"></script>
+<script src="legenda-dados.js"></script>
+</head>
+<body>
+<svg id="stage" viewBox="0 0 1080 1920" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="outline" x="-20%" y="-20%" width="140%" height="140%">
+      <feMorphology in="SourceAlpha" operator="dilate" radius="5" result="d"/>
+      <feFlood flood-color="#1D1D2B"/>
+      <feComposite in2="d" operator="in" result="o"/>
+      <feMerge><feMergeNode in="o"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="desfoque" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="9"/></filter>
+    <radialGradient id="vin" cx=".5" cy=".5" r=".75"><stop offset=".55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".42"/></radialGradient>
+  </defs>
+  <g id="cam"><g id="scenes"></g><g id="atores"></g><g id="props"></g><g id="primeiroPlano"></g></g>
+  <g id="grades"></g>
+  <g id="topo"></g>
+  <g id="legenda"></g>
+</svg>
+
+<script>
+const NS = 'http://www.w3.org/2000/svg';
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const LARANJA = '#FF7A00', PRETO = '#111111', L = '#1D1D2B';
+const Es = (s, hora = 'dia') => Escola(Cenario({ seed: s, luz: -1, hora, prefixo: 'e' + s }));
+const E0 = Es(30);
+
+// ===================== PLANOS =====================
+const S = {
+  apelido: [0, 4.2],      // "No dia seguinte, ninguém me chamava de Léo, só de cenourinha."
+  portao:  [4.2, 10.05],  // "Na saída, o Caio, o Duda e o Pedrão me esperavam no portão. Vem cá, cenourinha."
+  corre:   [10.05, 12.2], // "Eu não pensei. Só corri."
+  mureta:  [12.2, 13.25], // "Pulei a mureta,"
+  campo:   [13.25, 14.85],// "atravessei o campinho,"
+  esquina: [14.85, 16.35],// "virei a esquina."
+  olha:    [16.35, 20.3], // "Quando olhei pra trás, eles tinham ficado lá longe, sem fôlego."
+  muro:    [20.3, 36.55], // "Encostei no muro, ofegante. Do lado, o zelador, seu Jorge... Ele sorriu." (mesma esquina)
+};
+const QUADRA = [36.55, 39.44];   // "Amanhã, cinco da manhã, na quadra." (mostra a quadra)
+const FIM_FALA = 39.44, END = 42.4;
+const PE = 1450, PISO_LEG = 1540, KL = 1.45;
+
+// ===================== CENAS =====================
+const scenes = [];
+const cena = (id, corpo) => scenes.push(`<g id="${id}" class="scene">${corpo}</g>`);
+const vin = `<rect width="1080" height="1920" fill="url(#vin)"/>`;
+const etq = (id, x, y, t, fs = 48) => `<g id="${id}" transform="translate(${x} ${y})">${Marca.etiqueta(0, 0, t, { fs })}</g>`;
+const apoio = (id, x, y, t, fs = 90, rot = -5) => `<g id="${id}" transform="translate(${x} ${y})">${Marca.apoio(0, 0, t, { fs, rot })}</g>`;
+const imp = (id, x, y, t, fs = 150, rot = -4) => `<g id="${id}" transform="translate(${x} ${y})">${Marca.impacto(0, 0, t, { fs, rot })}</g>`;
+const balao = (id, x, y, t, fs = 54, ponta = [40, 130]) => `<g id="${id}" transform="translate(${x} ${y})">${Marca.balao(0, 0, t, { fs, ponta })}</g>`;
+// bilhete colado no armário com a cenoura desenhada
+const bilhete = `<g transform="translate(120 1010) rotate(-8)"><rect x="-70" y="-90" width="150" height="180" fill="#FFFBEA" stroke="${L}" stroke-width="5"/><path d="M-20 40 L30 -40 Q40 -52 50 -40 L0 50Z" fill="${LARANJA}" stroke="${L}" stroke-width="4"/><path d="M38 -46 l6 -22 M44 -44 l18 -14 M44 -40 l20 -2" stroke="#3E8A4A" stroke-width="5" stroke-linecap="round"/><text x="5" y="80" font-family="'DejaVu Sans', sans-serif" font-weight="800" font-size="22" text-anchor="middle" fill="#D7263D">CENOURINHA</text><rect x="-20" y="-98" width="40" height="16" fill="#E8E2C8" opacity=".9"/></g>`;
+
+cena('c-apelido', Es(2).corredor({ chao: 1180 }) + bilhete + vin + `<g id="a-leo">${Marca.etiqueta(540, 330, 'LÉO', { fs: 64 })}<path id="a-x" d="M470 290 L610 370 M610 290 L470 370" stroke="#D7263D" stroke-width="16" stroke-linecap="round"/></g>` + imp('a-cen', 540, 470, 'CENOURINHA', 120, -5));
+cena('c-portao', Es(3, 'tarde').fachada({ chao: 1300, tarde: true }) + vin);
+cena('c-corre', `<g id="r-linhas">${[0, 1, 2, 3, 4].map(k => `<path d="M${560 + k * 30} ${700 + k * 120} H${1000 + k * 20}" stroke="#FFFFFF" stroke-width="10" stroke-linecap="round" opacity=".8"/>`).join('')}</g>`);
+cena('c-mureta', Es(4, 'tarde').campinho({ chao: 1150, mureta: false, tarde: true }) + vin);
+cena('c-campo', Es(5, 'tarde').campinho({ chao: 1100, mureta: false, tarde: true }) + vin);
+cena('c-esquina', Es(6, 'tarde').esquina({ chao: 1270, tarde: true }) + vin);
+cena('c-muro', Es(7, 'tarde').esquina({ chao: 1270, tarde: true }) + vin);
+$('#topo').innerHTML = balao('p-vem', 600, 300, 'VEM CÁ, CENOURINHA!', 60, [60, 140]) + etq('j-nome', 700, 300, 'SEU JORGE • ZELADOR', 48) +
+  balao('j-pergunta', 560, 290, 'QUEM TE ENSINOU A CORRER ASSIM?', 42, [130, 150]) + balao('l-resposta', 520, 290, 'NINGUÉM. EU SÓ SEI FUGIR.', 50, [-80, 150]);
+cena('c-quadra', Es(8, 'amanhecer').quadra({ chao: 1150 }) + vin + `<g id="qd-1">${Marca.etiqueta(540, 330, 'AMANHÃ', { fs: 64 })}</g><g id="qd-2">${Marca.impacto(540, 500, '5 DA MANHÃ', { fs: 130, rot: -4 })}</g><g id="qd-3">${Marca.apoio(540, 680, 'NA QUADRA', { fs: 100, rot: 3 })}</g>`);
+scenes.push(Marca.final({ linhas: ['PARTE 2', 'CONTINUA...'], destaque: 'PARTE 3', chamada: 'SEGUE PRA PARTE 3 ↓' }));
+$('#scenes').innerHTML = scenes.join('');
+
+// ===================== ELENCO =====================
+const LEO = { figurino: 'sobrevivente' }, CAIO = { figurino: 'caio' }, DUDA = { figurino: 'duda' }, PEDRAO = { figurino: 'pedrao' }, JORGE = { figurino: 'jorge', seed: 50 };
+const ALUNOS = ['#5A7A9A', '#C98A3A', '#8A5A8A', '#4A8A6A', '#9A4A4A', '#6A6A7A'];
+const aluno = (i, extra = {}) => ({ figurino: { preset: 'aluno', cor: ALUNOS[i % 6], corPernas: ['#2E3A4A', '#4A3A2A', '#3A3A3A'][i % 3], cabelo: ['curto', 'cacheado', 'longo', 'coque'][i % 4], corCabelo: ['#2A1E16', '#5A3A1A', '#1A1A1A', '#8A5A2A'][i % 4], ...extra }, seed: 20 + i });
+const ATORES = [], ITENS = [];
+function ator(escala, janelas, opts = {}, pai = '#atores') {
+  const g = document.createElementNS(NS, 'g'); if (pai) $(pai).appendChild(g);
+  const b = new Boneco(g, { escala, seed: 4, ...opts }); b.grupo = g;
+  ATORES.push({ b, g, janelas }); return b;
+}
+function item(svg, janelas, pai = '#atores') { const g = document.createElementNS(NS, 'g'); $(pai).appendChild(g); g.innerHTML = svg; ITENS.push({ g, janelas }); return g; }
+const J = n => [[S[n][0], S[n][1]]];
+const vassoura = (k = 1) => `<g transform="scale(${k})"><path d="M0 -170 L0 160" stroke="#8A5A34" stroke-width="9" stroke-linecap="round"/><path d="M0 -170 L0 160" stroke="${L}" stroke-width="2" opacity=".5"/><path d="M-34 160 H34 L46 230 H-46Z" fill="#E2B33C" stroke="${L}" stroke-width="5"/>${[-30, -15, 0, 15, 30].map(x => `<path d="M${x} 170 l${x * 0.3} 56" stroke="#B88A2A" stroke-width="3"/>`).join('')}<rect x="-38" y="150" width="76" height="16" rx="4" fill="#D7263D" stroke="${L}" stroke-width="3"/></g>`;
+
+// ---- 1. apelido: alunos apontando e cochichando no corredor ----
+{ const a = ator(1.0, J('apelido'), aluno(1)); a.base(0, S.apelido[1], 'parado', { x: 820, y: 1260, vista: 'perfil', dir: -1 }); a.braco('d', 1.2, S.apelido[1], 'apontar'); a.expressao(0, S.apelido[1], 'alegre');
+  const b = ator(0.97, J('apelido'), aluno(4)); b.base(0, S.apelido[1], 'parado', { x: 960, y: 1255, vista: 'perfil', dir: -1 }); b.braco('d', 0.5, S.apelido[1], 'queixo'); b.expressao(0, S.apelido[1], 'alegre');
+  const c = ator(0.7, J('apelido'), aluno(2)); c.base(0, S.apelido[1], 'parado', { x: 640, y: 1080, vista: 'frente' }); c.braco('ambos', 2.0, S.apelido[1], 'abanar'); c.expressao(0, S.apelido[1], 'alegre'); }
+const l1 = ator(KL, J('apelido'), LEO);
+l1.base(0, S.apelido[1], 'andar', { de: [80, PE], ate: [560, PE], passo: 95 }); l1.cabeca(0, S.apelido[1], { baixar: 24 }); l1.expressao(0, S.apelido[1], 'triste');
+// ---- 2. portão: o trio esperando; Léo para ----
+const KT = 1.25, PT = 1340;
+const d2 = ator(KT * 0.97, J('portao'), DUDA); d2.base(S.portao[0], S.portao[1], 'parado', { x: 470, y: PT, vista: 'frente' }); d2.braco('d', S.portao[0], S.portao[1], 'contar', { mao: 'punho' }); d2.expressao(S.portao[0], S.portao[1], 'alegre');
+const p2 = ator(KT * 1.04, J('portao'), PEDRAO); p2.base(S.portao[0], S.portao[1], 'parado', { x: 870, y: PT, vista: 'frente' }); p2.braco('ambos', S.portao[0], S.portao[1], 'cintura'); p2.expressao(S.portao[0], S.portao[1], 'serio');
+const c2 = ator(KT * 1.12, J('portao'), CAIO); c2.base(S.portao[0], S.portao[1], 'parado', { x: 680, y: PT + 10, vista: 'frente' }); c2.braco('ambos', S.portao[0], 8.6, 'cruzar'); c2.braco('d', 8.7, S.portao[1], 'chamar'); c2.expressao(S.portao[0], 8.6, 'desconfiado'); c2.expressao(8.6, S.portao[1], 'alegre');
+const l2 = ator(KL, J('portao'), LEO);
+l2.base(S.portao[0], 5.6, 'andar', { de: [-60, PE + 60], ate: [230, PE + 60], passo: 100 }); l2.base(5.6, S.portao[1], 'parado', { x: 230, y: PE + 60, vista: 'perfil', dir: 1 });
+l2.expressao(S.portao[0], 5.2, 'normal'); l2.expressao(5.2, S.portao[1], 'medo'); l2.braco('d', 5.6, 9.4, 'pose', { o: 10, c: 60, mao: 'punho' });
+// ---- 3. corre: susto e dispara para a esquerda (cachecol voando) ----
+const l3 = ator(KL, J('corre'), LEO);
+l3.base(S.corre[0], 11.3, 'parado', { x: 560, y: PE, vista: 'frente' }); l3.base(11.3, S.corre[1], 'correr', { de: [560, PE], ate: [-500, PE], transicao: 0.15 });
+l3.expressao(S.corre[0], 11.0, 'espanto'); l3.expressao(11.0, S.corre[1], 'determinado'); l3.braco('ambos', S.corre[0], 11.2, 'desespero');
+// ---- 4. mureta: corre, pula por cima do muro baixo (arco com preparação e aterrissagem), segue correndo ----
+const MX = 540, MH = 170, KM = 1.2, PM = 1430;
+const PULO = [12.55, 13.05], DX = 380;
+item(`<g transform="translate(${MX} ${PM})"><ellipse cx="0" cy="6" rx="190" ry="16" fill="#1A1424" opacity=".25"/><rect x="-90" y="${-MH}" width="180" height="${MH}" fill="#B9B2A4" stroke="${L}" stroke-width="6"/>${[0, 1, 2].map(r => [0, 1].map(k => `<rect x="${-90 + k * 90 + (r % 2) * 45 - (r % 2 && k ? 90 : 0)}" y="${-MH + r * 56}" width="88" height="54" fill="#C2BBAD" stroke="#8A8478" stroke-width="2"/>`).join('')).join('')}<rect x="-100" y="${-MH - 18}" width="200" height="22" fill="#CFC8BA" stroke="${L}" stroke-width="5"/></g>`, J('mureta'));
+const l4 = ator(KM, J('mureta'), LEO);
+l4.base(S.mureta[0], PULO[0], 'correr', { de: [60, PM], ate: [MX - 190, PM] });
+l4.base(PULO[0], PULO[1], 'pular', { x: MX - 190, y: PM, vista: 'perfil', dir: 1, altura: 40, transicao: 0.05 });
+l4.base(PULO[1], S.mureta[1], 'correr', { de: [MX - 190, PM], ate: [MX - 190 + 160, PM], transicao: 0.08 });
+l4.expressao(S.mureta[0], S.mureta[1], 'determinado');
+// ---- 5. campinho: atravessa correndo; o trio vem atrás, mais longe ----
+const l5 = ator(1.15, J('campo'), LEO); l5.base(S.campo[0], S.campo[1], 'correr', { de: [80, 1420], ate: [1250, 1420] }); l5.expressao(S.campo[0], S.campo[1], 'determinado');
+[[CAIO, -350, 1.12, 'bravo'], [PEDRAO, -560, 1.04, 'cansado'], [DUDA, -460, 0.97, 'bravo']].forEach(([fig, x0, m, ex], i) => { const a = ator(0.62 * m, J('campo'), fig); a.base(S.campo[0], S.campo[1], 'correr', { de: [x0 + 500, 1230 - i * 8], ate: [x0 + 1150, 1230 - i * 8] }); a.expressao(S.campo[0], S.campo[1], ex); });
+// ---- 6. esquina: dobra correndo e sai pela direita ----
+const l6 = ator(KL, J('esquina'), LEO); l6.base(S.esquina[0], S.esquina[1], 'correr', { de: [-150, PE], ate: [1400, PE] }); l6.expressao(S.esquina[0], S.esquina[1], 'determinado');
+// ---- 7. olha pra trás: o trio lá longe, curvado, sem fôlego ----
+[[CAIO, 820, 1.12], [DUDA, 900, 0.97], [PEDRAO, 990, 1.04]].forEach(([fig, x, m], i) => { const a = ator(0.42 * m, J('olha'), fig);
+  a.base(S.olha[0], S.olha[1], 'agachar', { x, y: 1300, vista: 'perfil', dir: -1, quanto: 30, inclina: 38, ofegante: 1 }); a.braco('ambos', S.olha[0], S.olha[1], 'pose', { o: 30, c: 10 }); a.expressao(S.olha[0], S.olha[1], 'cansado'); });
+const l7 = ator(KL, J('olha'), LEO);
+l7.base(S.olha[0], S.olha[1], 'parado', { x: 330, y: PE, vista: 'perfil', dir: 1, ofegante: 0.8 }); l7.cabeca(16.5, S.olha[1], { virar: 0.2 }); l7.expressao(S.olha[0], 18.6, 'cansado'); l7.expressao(18.6, S.olha[1], 'aliviado');
+// ---- 8. encostado no muro; seu Jorge do lado com a vassoura ----
+const jg = ator(KL * 1.08, J('muro'), JORGE);
+jg.base(S.muro[0], S.muro[1], 'parado', { x: 820, y: PE - 10, vista: 'perfil', dir: -1 });
+jg.braco('ambos', S.muro[0], 23.6, 'segurar'); jg.braco('ambos', 23.6, 35.0, 'segurar'); jg.braco('e', 35.4, 36.4, 'joinha'); jg.braco('d', 36.6, S.muro[1], 'apontar');
+jg.cabeca(S.muro[0], 23.6, { baixar: 14 }); jg.expressao(S.muro[0], 23.6, 'normal'); jg.expressao(23.6, 27.3, 'espanto'); jg.expressao(27.3, 35.1, 'surpreso'); jg.expressao(35.1, S.muro[1], 'feliz');
+const l8 = ator(KL, J('muro'), LEO);
+l8.base(S.muro[0], S.muro[1], 'parado', { x: 360, y: PE, vista: 'frente', ofegante: 1 }); l8.cabeca(S.muro[0], 23.0, { baixar: -10 }); l8.cabeca(23.3, 30.3, { virar: 0.55 });
+l8.cabeca(30.4, 35.0, { baixar: 22, virar: 0.25 }); l8.cabeca(35.2, S.muro[1], { virar: 0.5 });
+l8.expressao(S.muro[0], 22.8, 'cansado'); l8.expressao(22.8, 30.3, 'surpreso'); l8.expressao(30.3, 35.2, 'triste'); l8.expressao(35.2, S.muro[1], 'surpreso');
+l8.braco('ambos', S.muro[0], 22.6, 'pose', { o: 20, c: 25 });
+// ---- final ----
+const lf = ator(0.75, [[FIM_FALA, 999]], LEO); lf.base(FIM_FALA, 999, 'parado', { x: 540, y: 1640, vista: 'frente' }); lf.braco('d', FIM_FALA + 0.4, 999, 'joinha'); lf.expressao(FIM_FALA, 999, 'determinado');
+
+// objetos na mão: a vassoura do seu Jorge (varre até se espantar)
+$('#props').insertAdjacentHTML('beforeend', `<g id="p-vass">${vassoura(1.05)}</g><g id="p-cel2">${Detalhes({ seed: 8, sombra: false }).celular(0, 0, 0.27)}</g>`);
+const PROPS = [
+  { el: $('#p-vass'), ator: jg, mao: 'ambos', janelas: J('muro'), dy: 30, varre: [20.3, 23.6] },
+  { el: $('#p-cel2'), ator: d2, mao: 'd', janelas: J('portao'), dy: 30 },
+];
+// primeiro plano desfocado
+const folhas = (x, y, flip = 1) => `<g transform="translate(${x} ${y}) scale(${flip} 1)" filter="url(#desfoque)" opacity=".92">${[[-20, -260, -30], [40, -320, 5], [90, -240, 30], [10, -200, -55], [70, -380, 15]].map(([dx, dy, r]) => `<path d="M0 0 Q${dx * 0.4} ${dy / 2} ${dx} ${dy} Q${dx + 60} ${dy + 80} 10 0Z" fill="${r > 0 ? '#2E5A2E' : '#244A26'}" transform="rotate(${r} 0 0)"/>`).join('')}</g>`;
+[[J('portao'), folhas(1110, 1640, -1)], [J('campo'), `<g filter="url(#desfoque)" opacity=".85">${[...Array(9)].map((_, k) => `<path d="M${k * 140 - 40} 1920 l40 -160 l30 160Z" fill="#3E6A2E"/>`).join('')}</g>`], [J('muro'), folhas(-30, 1680)]].forEach(([jan, svg]) => { const g = document.createElementNS(NS, 'g'); g.innerHTML = svg; $('#primeiroPlano').appendChild(g); ITENS.push({ g, janelas: jan }); });
+
+// cor da emoção por plano
+const GRADES = [[S.apelido, 'tensao', 0.45], [S.portao, 'perigo', 0.55], [S.corre, 'perigo', 0.7], [S.mureta, 'esforco', 0.8], [S.campo, 'esforco', 0.8], [S.esquina, 'esforco', 0.6], [S.olha, 'alivio', 0.8], [[20.3, 35.1], 'alivio', 0.5], [[35.1, 36.55], 'descoberta', 0.8], [QUADRA, 'descoberta', 1]];
+const gradeEls = GRADES.map(([[de, ate], nome, op]) => { const g = document.createElementNS(NS, 'g'); g.innerHTML = Paleta.grade(nome); g.setAttribute('opacity', op); $('#grades').appendChild(g); return { g, de, ate }; });
+
+// ===================== CÂMERA =====================
+const CAM = [
+  [0, 1.05, 540, 960], [4.2, 1.0, 540, 960],
+  [4.2, 1, 540, 960], [8.5, 1.08, 600, 900], [8.75, 1.55, 690, 860], [10.0, 1.6, 690, 860],
+  [10.05, 1.35, 560, 1060], [11.2, 1.45, 560, 1040], [11.5, 1.0, 540, 960], [12.2, 1.0, 540, 960],
+  [12.2, 1, 540, 960], [13.25, 1, 560, 960],
+  [13.25, 1, 400, 960], [14.85, 1, 760, 960],
+  [14.85, 1, 540, 960], [16.35, 1, 600, 960],
+  [16.35, 1.0, 540, 960], [17.4, 1.0, 540, 960], [18.0, 1.9, 900, 1150], [19.4, 1.9, 900, 1150], [19.8, 1.0, 540, 960], [20.3, 1.0, 540, 960],
+  [20.3, 1.25, 380, 1000], [22.6, 1.25, 380, 1000], [23.6, 1.0, 560, 960], [27.3, 1.0, 560, 960], [27.8, 1.12, 640, 940], [30.3, 1.12, 640, 940],
+  [30.6, 1.4, 380, 960], [35.0, 1.45, 380, 960], [35.3, 1.5, 800, 900], [36.5, 1.55, 800, 900],
+  [36.55, 1.0, 540, 960], [39.44, 1.1, 540, 900],
+  [39.44, 1, 540, 960], [99, 1, 540, 960],
+];
+const sm = u => u * u * (3 - 2 * u);
+function camEm(t) {
+  let a = CAM[0], b = CAM[0];
+  for (let i = 0; i < CAM.length - 1; i++) if (t >= CAM[i][0] && t < CAM[i + 1][0]) { a = CAM[i]; b = CAM[i + 1]; break; }
+  const u = b[0] > a[0] ? sm((t - a[0]) / (b[0] - a[0])) : 0;
+  const k = a[1] + (b[1] - a[1]) * u, cx = a[2] + (b[2] - a[2]) * u, cy = a[3] + (b[3] - a[3]) * u;
+  const corre = (t > 11.3 && t < 16.35) ? 2.2 : 1;   // câmera mais agitada na correria
+  const bx = (Math.sin(t * 1.3) * 4 + Math.sin(t * 3.1) * 1.5) * corre, by = (Math.cos(t * 1.1) * 3 + Math.sin(t * 2.7 * corre) * 1.2) * corre, rot = Math.sin(t * 0.9) * 0.35 * corre;
+  return `translate(${540 + bx} ${960 + by}) rotate(${rot.toFixed(3)}) scale(${k.toFixed(4)}) translate(${-cx} ${-cy})`;
+}
+
+// ===================== TIMELINE =====================
+const rendering = navigator.webdriver;
+const tl = gsap.timeline({ paused: true, defaults: { ease: 'power2.inOut' } });
+$$('.scene').forEach(s => gsap.set(s, { autoAlpha: 0 }));
+function show(sel, t0, t1) { tl.fromTo(sel, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.01, ease: 'none', immediateRender: false }, t0); if (t1 != null) tl.to(sel, { autoAlpha: 0, duration: 0.01, ease: 'none' }, t1); }
+function pop(sel, t, d = 0.4, ease = 'back.out(2.4)') { gsap.set(sel, { autoAlpha: 0, scale: 0.2, transformOrigin: '50% 50%' }); tl.fromTo(sel, { autoAlpha: 0, scale: 0.2 }, { autoAlpha: 1, scale: 1, duration: d, ease, immediateRender: false }, t); }
+function hide(sel, t, d = 0.2) { tl.to(sel, { autoAlpha: 0, duration: d, ease: 'power1.in' }, t); }
+function treme(sel, t, dur = 0.5, forca = 10) { tl.to(sel, { x: `+=${forca}`, duration: 0.05, repeat: Math.round(dur / 0.05), yoyo: true }, t).set(sel, { x: 0 }, t + dur + 0.06); }
+show('#c-apelido', ...S.apelido); show('#c-portao', S.portao[0], S.corre[1]); show('#c-corre', ...S.corre); show('#c-mureta', ...S.mureta); show('#c-campo', ...S.campo);
+show('#c-esquina', S.esquina[0], S.olha[1]); show('#c-muro', 20.3, QUADRA[0]); show('#c-quadra', ...QUADRA);
+pop('#a-leo', 2.5, 0.35); gsap.set('#a-x', { autoAlpha: 0 }); tl.to('#a-x', { autoAlpha: 1, duration: 0.15 }, 2.9); hide('#a-leo', 3.3); pop('#a-cen', 3.35, 0.35, 'back.out(3)'); treme('#a-cen', 3.7, 0.4, 8);
+pop('#p-vem', 8.75, 0.35, 'back.out(3)'); hide('#p-vem', 9.95, 0.1);
+gsap.set('#r-linhas', { autoAlpha: 0 }); tl.to('#r-linhas', { autoAlpha: 1, duration: 0.1 }, 11.35); hide('#r-linhas', 12.1, 0.1);
+pop('#j-nome', 24.6, 0.35, 'back.out(3)'); hide('#j-nome', 27.2);
+pop('#j-pergunta', 27.4, 0.35, 'back.out(3)'); hide('#j-pergunta', 30.2);
+pop('#l-resposta', 32.85, 0.35, 'back.out(3)'); hide('#l-resposta', 35.05);
+pop('#qd-1', 36.6, 0.35, 'back.out(3)'); pop('#qd-2', 37.0, 0.35, 'back.out(3)'); pop('#qd-3', 38.28, 0.35, 'back.out(3)');
+show('#fim', FIM_FALA); pop('#fim-t', FIM_FALA + 0.2, 0.6); pop('#fim-c', FIM_FALA + 1.0);
+tl.to('#fim-c', { scale: 1.06, duration: 0.4, repeat: 5, yoyo: true, ease: 'sine.inOut' }, FIM_FALA + 1.6);
+tl.set({}, {}, END);
+
+// ===================== LEGENDA =====================
+const leg = Legenda($('#legenda'), window.PALAVRAS || [], { y: PISO_LEG, enfase: ['LÉO', 'CENOURINHA', 'CORRI', 'JORGE', 'NINGUÉM', 'FUGIR', 'QUADRA'] }).esconder([[FIM_FALA, 999]]);
+
+// ===================== RENDER =====================
+function dentro(t, janelas) { for (const [a, b] of janelas) if (t >= a && t < b) return 1; return 0; }
+function desenhar(t) {
+  $('#cam').setAttribute('transform', camEm(t));
+  gradeEls.forEach(G => G.g.style.display = t >= G.de && t < G.ate ? '' : 'none');
+  for (const A of ATORES) { const o = dentro(t, A.janelas); A.g.style.display = o ? '' : 'none'; if (o) A.b.desenhar(t); }
+  for (const I of ITENS) I.g.style.display = dentro(t, I.janelas) ? '' : 'none';
+  // pulo da mureta: o corpo avança no ar (arco) enquanto as pernas fazem preparação → voo → aterrissagem
+  if (t >= PULO[0] && t < PULO[1]) { const u = (t - PULO[0]) / (PULO[1] - PULO[0]), v = Math.min(1, Math.max(0, (u - 0.22) / 0.6)), dx = DX * sm(v), arco = Math.sin(Math.PI * v) * (MH + 70);
+    l4.grupo.setAttribute('transform', `translate(${dx.toFixed(1)} ${(-arco).toFixed(1)})`); }
+  else l4.grupo.setAttribute('transform', t >= PULO[1] ? `translate(${DX} 0)` : '');
+  for (const P of PROPS) {
+    if (!dentro(t, P.janelas)) { P.el.style.display = 'none'; continue; }
+    const m = P.mao === 'ambos' ? [(P.ator.mao('e')[0] + P.ator.mao('d')[0]) / 2, (P.ator.mao('e')[1] + P.ator.mao('d')[1]) / 2] : P.ator.mao(P.mao);
+    const varrendo = P.varre && t >= P.varre[0] && t < P.varre[1] ? Math.sin(t * 7) * 14 : 0;
+    P.el.style.display = ''; P.el.setAttribute('transform', `translate(${m[0].toFixed(1)} ${(m[1] + (P.dy || 0)).toFixed(1)}) rotate(${(varrendo - 8).toFixed(1)})`);
+  }
+  $$('.bandeira').forEach(b => b.setAttribute('transform', `rotate(${(Math.sin(t * 3.2) * 3).toFixed(2)} ${b.dataset.cx} ${b.dataset.cy}) skewY(${(Math.sin(t * 4.1) * 2).toFixed(2)})`));
+  $$('.faixa-balanca').forEach(b => b.setAttribute('transform', `rotate(${(Math.sin(t * 1.7) * 1.2).toFixed(2)} ${b.dataset.cx} ${b.dataset.cy})`));
+  $$('.lampada').forEach((l, i) => l.setAttribute('opacity', i === 2 && Math.sin(t * 13) > 0.85 ? '0.4' : '1'));
+}
+window.__timeline = tl;
+window.__duration = tl.duration();
+window.__seek = t => { tl.seek(t, false); desenhar(t); leg.seek(t); };
+document.fonts.ready.then(() => Palco.caberTextos(document));
+window.__seek(0);
+if (!rendering) { tl.eventCallback('onUpdate', () => { const t = tl.time(); desenhar(t); leg.seek(t); }); document.addEventListener('click', () => tl.paused() ? tl.play() : tl.pause()); }
+</script>
+</body>
+</html>

@@ -218,7 +218,8 @@
       const s = this.s, p = a.p;
       const vista = p.vista ?? (['andar', 'correr', 'subir', 'sentar', 'deitado'].includes(a.tipo) ? 'perfil' : 'frente');
       const dir = p.dir ?? (a.tipo === 'andar' || a.tipo === 'correr' || a.tipo === 'subir' ? Math.sign((p.ate[0] - p.de[0]) || 1) : 1);
-      const respira = Math.sin(t * 2 * Math.PI / 3.2) * 2.2 * s;
+      // p.ofegante: respiração curta e forte (depois de correr) — o tronco sobe e desce rápido
+      const respira = p.ofegante ? Math.sin(t * 2 * Math.PI * 1.9) * 7 * s * p.ofegante : Math.sin(t * 2 * Math.PI / 3.2) * 2.2 * s;
       if (a.tipo === 'parado' || a.tipo === 'deitado' || a.tipo === 'agachar') {
         const x = p.x, y = p.y, chao = y;
         const agacha = a.tipo === 'agachar' ? (p.quanto ?? 60) * s : 0;
@@ -230,7 +231,7 @@
             bracos: { e: { o: 10, c: 10 }, d: { o: 10, c: 10 } } };
         }
         const pass = (p.passada ?? 14) * s;
-        return { vista, dir, R: [x, y], giro: a.tipo === 'deitado' ? (p.giro ?? -90) : 0, inclina: a.tipo === 'agachar' ? 14 : 1, quadril: [x - dir * 4 * s, y - hq], respira,
+        return { vista, dir, R: [x, y], giro: a.tipo === 'deitado' ? (p.giro ?? -90) : 0, inclina: p.inclina ?? (a.tipo === 'agachar' ? 14 : 1), quadril: [x - dir * 4 * s, y - hq], respira,
           pes: [{ tz: [x + dir * pass, chao - M.tornozelo * s], inc: 0 }, { tz: [x - dir * pass, chao - M.tornozelo * s], inc: 0 }],
           bracos: { e: { o: 4, c: 12 }, d: { o: -4, c: 12 } } };
       }
@@ -1061,6 +1062,7 @@
     'pedrao':        { tronco: 'moletomLargo', cor: '#6A6E78', mangas: 'longa', pernas: 'calca', corPernas: '#2A2A30', pes: 'tenis', corPes: '#2E4A7A', corPes2: '#F2F2F2', cabelo: 'curto', corCabelo: '#1A1A1A', chapeu: 'bone', corChapeu: '#2E4A7A', boneTras: true, semBochecha: true },
     'menina':        { tronco: 'camiseta', cor: '#7A4AA8', mangas: 'curta', pernas: 'calca', corPernas: '#6A8AB8', pes: 'tenis', corPes: '#F2F2F2', corPes2: '#7A4AA8', cabelo: 'longo', corCabelo: '#3A2418', chapeu: 'tiara', corChapeu: '#F2C230', semBochecha: true },
     'merendeira':    { tronco: 'camiseta', cor: '#F2F2EE', mangas: 'curta', pernas: 'calca', corPernas: '#F2F2EE', pes: 'tenis', corPes: '#F2F2F2', corPes2: '#8A8A8A', cabelo: 'curto', corCabelo: '#5A3A2A', chapeu: 'touca', corChapeu: '#FFFFFF', extras: ['avental'], semBochecha: true },
+    'jorge':         { tronco: 'moletom', cor: '#3E5E8A', mangas: 'longa', pernas: 'calca', corPernas: '#3E5E8A', pes: 'bota', corPes: '#4A3420', cabelo: 'curto', corCabelo: '#BDBDBD', chapeu: 'bone', corChapeu: '#2A3A5A', cinto: '#2A2A30', semBochecha: true },   // seu Jorge, o zelador (macacão azul)
     'aluno':         { tronco: 'camiseta', cor: '#5A7A9A', mangas: 'curta', pernas: 'calca', corPernas: '#2E3A4A', pes: 'tenis', corPes: '#F2F2F2', corPes2: '#5A5A60', cabelo: 'curto', corCabelo: '#2A1E16', semBochecha: true },
     // --- SOBREVIVENTE: personagem oficial (skill personagem-sobrevivente) ---
     'sobrevivente':  { tronco: 'camiseta', cor: '#FFFFFF', mangas: 'curta', pernas: 'calca', corPernas: '#26262B', cargo: true, pes: 'tenis', corPes: '#FF7A00', corPes2: '#111111', cabelo: 'militar', corCabelo: '#111111', extras: ['cachecol', 'mochila'], luvas: true, semBochecha: true, cinto: 'none' }

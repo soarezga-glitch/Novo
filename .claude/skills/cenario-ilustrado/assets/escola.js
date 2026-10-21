@@ -56,11 +56,11 @@
 
     // ---------- FACHADA: manhã, luz da esquerda. Prédio de 2 andares com volume, marquise na entrada,
     // faixa BEM-VINDOS, mastro com bandeira, mural pintado, bicicletário, van escolar, árvores, calçada gasta ----------
-    E.fachada = ({ x = 0, y = 0, w = 1080, h = 1920, chao = y + h * 0.65, nome = 'ESCOLA ESTADUAL' } = {}) => {
-      const gc = uid('ceu');
-      let s = defs() + `<defs><linearGradient id="${gc}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8CCBF0"/><stop offset=".7" stop-color="#DDF0FA"/><stop offset="1" stop-color="#FCEFD8"/></linearGradient></defs>`;
+    E.fachada = ({ x = 0, y = 0, w = 1080, h = 1920, chao = y + h * 0.65, nome = 'ESCOLA ESTADUAL', tarde = false } = {}) => {
+      const gc = uid('ceu'), ceu = tarde ? ['#6A8FD0', '#F6B98A', '#FFD9A0'] : ['#8CCBF0', '#DDF0FA', '#FCEFD8'];
+      let s = defs() + `<defs><linearGradient id="${gc}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${ceu[0]}"/><stop offset=".7" stop-color="${ceu[1]}"/><stop offset="1" stop-color="${ceu[2]}"/></linearGradient></defs>`;
       s += `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="url(#${gc})"/>`;
-      s += `<circle cx="${f(x + 120)}" cy="${f(y + 250)}" r="70" fill="#FFF3C4"/><circle cx="${f(x + 120)}" cy="${f(y + 250)}" r="130" fill="#FFF3C4" opacity=".3"/>`;
+      s += tarde ? `<circle cx="${f(x + 140)}" cy="${f(chao - 520)}" r="80" fill="#FFC27A"/><circle cx="${f(x + 140)}" cy="${f(chao - 520)}" r="170" fill="#FFC27A" opacity=".3"/>` : `<circle cx="${f(x + 120)}" cy="${f(y + 250)}" r="70" fill="#FFF3C4"/><circle cx="${f(x + 120)}" cy="${f(y + 250)}" r="130" fill="#FFF3C4" opacity=".3"/>`;
       s += [[0.35, 0.1, 1], [0.78, 0.17, 0.8]].map(([u, v, k]) => C.nuvem ? C.nuvem(x + w * u, y + (chao - y) * v + 100, k) : '').join('');
       // cidade ao fundo em 2 camadas de névoa (perspectiva atmosférica)
       [[0.42, '#B9CBD8', 0.62], [0.36, '#A3B6C6', 0.8]].forEach(([alt, cor, op]) => { let px = x - 30; while (px < x + w) { const pw = rnd(70, 150), ph = (chao - y) * rnd(alt * 0.6, alt); s += `<rect x="${f(px)}" y="${f(chao - 140 - ph)}" width="${f(pw)}" height="${f(ph + 140)}" fill="${cor}" opacity="${op}"/>`; for (let r = 0; r < 4; r++) s += `<rect x="${f(px + 12)}" y="${f(chao - 120 - ph + 30 + r * 50)}" width="${f(pw - 24)}" height="10" fill="#fff" opacity=".18"/>`; px += pw + rnd(4, 20); } });
@@ -111,6 +111,7 @@
       s += `<rect x="${x}" y="${f(y + h - 110)}" width="${w}" height="110" fill="#5A5A62"/><rect x="${x}" y="${f(y + h - 124)}" width="${w}" height="18" fill="#E2DED4"/>`;
       // bicicletário com duas bicicletas
       s += `<g transform="translate(${f(x + w * 0.83)} ${f(chao + 90)}) scale(.42)"><path d="M-300 0 V-160 H300 V0" stroke="#8A9098" stroke-width="14" fill="none"/></g>`;
+      if (tarde) s += `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#FF9A4A" opacity=".12" style="mix-blend-mode:multiply"/>`;
       return clip(x, y, w, h, s + acabamento(0.18));
     };
 
@@ -206,6 +207,96 @@
       return clip(x, y, w, h, s + acabamento(0.18));
     };
     const lerp = (a, b, u) => a + (b - a) * u;
+
+    // céu de fim de tarde/amanhecer reaproveitável
+    const ceuGrad = (x, y, w, h, cores) => { const g = uid('cg'); return `<defs><linearGradient id="${g}" x1="0" y1="0" x2="0" y2="1">${cores.map((c, i) => `<stop offset="${(i / (cores.length - 1)).toFixed(2)}" stop-color="${c}"/>`).join('')}</linearGradient></defs><rect x="${x}" y="${y}" width="${w}" height="${h}" fill="url(#${g})"/>`; };
+    const casinhas = (x, w, base, alt, cores, op = 1) => { let s = '', px = x - 20; while (px < x + w) { const pw = rnd(150, 230), ph = alt * rnd(0.7, 1.1), c = pick(cores);
+      s += `<g opacity="${op}"><rect x="${f(px)}" y="${f(base - ph)}" width="${f(pw)}" height="${f(ph)}" fill="${c}" stroke="${L}" stroke-width="4"/><path d="M${f(px - 10)} ${f(base - ph)} L${f(px + pw / 2)} ${f(base - ph - 60)} L${f(px + pw + 10)} ${f(base - ph)}Z" fill="#B5543A" stroke="${L}" stroke-width="4"/><rect x="${f(px + pw * 0.2)}" y="${f(base - ph * 0.7)}" width="${f(pw * 0.25)}" height="${f(ph * 0.3)}" fill="#FFE6A8" stroke="${L}" stroke-width="3"/><rect x="${f(px + pw * 0.58)}" y="${f(base - ph * 0.55)}" width="${f(pw * 0.25)}" height="${f(ph * 0.55)}" fill="${tom(c, -0.35)}" stroke="${L}" stroke-width="3"/><rect x="${f(px + pw - 26)}" y="${f(base - ph)}" width="22" height="${f(ph)}" fill="${tom(c, -0.2)}" opacity=".6"/></g>`; px += pw + rnd(6, 30); } return s; };
+
+    // ---------- CAMPINHO de terra: traves com rede rasgada, alambrado, bola, casas e morro ao fundo,
+    // mureta baixa na frente (para pular), marcas de chuteira, tufos de grama; fim de tarde ----------
+    E.campinho = ({ x = 0, y = 0, w = 1080, h = 1920, chao = y + h * 0.55, mureta = true, tarde = true } = {}) => {
+      let s = defs() + ceuGrad(x, y, w, chao - y, tarde ? ['#5A7BC0', '#E8A27A', '#FFD3A0'] : ['#8CCBF0', '#CFEAF8', '#F4EAD0']);
+      if (tarde) s += `<circle cx="${f(x + w * 0.8)}" cy="${f(chao - 160)}" r="90" fill="#FFB25A"/><circle cx="${f(x + w * 0.8)}" cy="${f(chao - 160)}" r="200" fill="#FFB25A" opacity=".25"/>`;
+      s += `<path d="M${x} ${f(chao - 220)} Q${f(x + w * 0.3)} ${f(chao - 380)} ${f(x + w * 0.55)} ${f(chao - 260)} T${x + w} ${f(chao - 300)} V${f(chao)} H${x}Z" fill="#8FA88A" opacity=".75"/>`;   // morro com névoa
+      s += casinhas(x, w, chao - 40, 190, ['#E8C99A', '#C9D9A8', '#E2B0A0', '#A8C8D8'], 0.85);
+      // alambrado (tela) com postes
+      s += `<rect x="${x}" y="${f(chao - 260)}" width="${w}" height="230" fill="url(#${uid('x')})" opacity="0"/>`;
+      for (let k = 0; k <= 8; k++) s += `<path d="M${f(x + k * 140)} ${f(chao - 270)} V${f(chao - 20)}" stroke="#7A8088" stroke-width="7"/>`;
+      for (let i = -20; i < 40; i++) s += `<path d="M${f(x + i * 34)} ${f(chao - 260)} l120 240 M${f(x + i * 34 + 120)} ${f(chao - 260)} l-120 240" stroke="#9AA0A8" stroke-width="1.5" opacity=".6"/>`;
+      s += `<path d="M${x} ${f(chao - 260)} H${x + w}" stroke="#7A8088" stroke-width="5"/>`;
+      // chão de terra batida com grama nas bordas, marcas e linhas de cal apagadas
+      s += `<rect x="${x}" y="${f(chao - 30)}" width="${w}" height="${f(y + h - chao + 30)}" fill="#C99A62"/>`;
+      for (let i = 0; i < 40; i++) s += `<ellipse cx="${f(rnd(x, x + w))}" cy="${f(rnd(chao, y + h))}" rx="${f(rnd(20, 90))}" ry="${f(rnd(6, 18))}" fill="${pick(['#B5884F', '#D9AE78', '#A97A44'])}" opacity=".6"/>`;
+      for (let i = 0; i < 26; i++) { const gx = rnd(x, x + w), gy = rnd(chao - 20, y + h); s += `<path d="M${f(gx)} ${f(gy)} l-7 -16 M${f(gx)} ${f(gy)} l2 -18 M${f(gx)} ${f(gy)} l9 -13" stroke="#6E9A4A" stroke-width="3.5"/>`; }
+      s += `<path d="M${f(x + w * 0.5)} ${f(chao - 10)} L${f(x + w * 0.5)} ${f(y + h)}" stroke="#F2EEE6" stroke-width="8" opacity=".45"/><ellipse cx="${f(x + w * 0.5)}" cy="${f(chao + (y + h - chao) * 0.35)}" rx="230" ry="60" fill="none" stroke="#F2EEE6" stroke-width="7" opacity=".4"/>`;
+      // trave (gol) ao fundo à esquerda com rede rasgada
+      const tx = x + 120, ty = chao + 10;
+      s += `<path d="M${f(tx)} ${f(ty)} V${f(ty - 240)} H${f(tx + 330)} V${f(ty)}" stroke="#F4F6F8" stroke-width="14" fill="none"/><path d="M${f(tx)} ${f(ty)} V${f(ty - 240)} H${f(tx + 330)} V${f(ty)}" stroke="${L}" stroke-width="3" fill="none"/>`;
+      for (let i = 0; i < 12; i++) s += `<path d="M${f(tx + 10 + i * 27)} ${f(ty - 236)} l-20 60 V${f(ty - 10)}" stroke="#EDEDED" stroke-width="2" opacity="${i === 5 ? 0 : 0.7}"/>`;
+      for (let j = 0; j < 7; j++) s += `<path d="M${f(tx + 6)} ${f(ty - 210 + j * 32)} H${f(tx + 326)}" stroke="#EDEDED" stroke-width="2" opacity=".7"/>`;
+      // bola de futebol parada perto da trave
+      s += `<g transform="translate(${f(x + w * 0.66)} ${f(chao + 120)})"><ellipse cx="6" cy="30" rx="34" ry="8" fill="#1A1424" opacity=".25"/><circle r="30" fill="#FFFFFF" stroke="${L}" stroke-width="4"/><path d="M0 -12 l11 8 -4 13 h-14 l-4 -13Z" fill="${L}"/><path d="M-22 -18 l8 6 M22 -18 l-8 6 M-26 12 l10 -4 M26 12 l-10 -4" stroke="${L}" stroke-width="3"/></g>`;
+      // mureta baixa de bloco (na frente) para pular
+      if (mureta) { const my = y + h - 330, mh = 150;
+        s += `<rect x="${x}" y="${f(my - mh)}" width="${w}" height="${mh}" fill="#B9B2A4" stroke="${L}" stroke-width="6"/>`;
+        for (let r = 0; r < 3; r++) for (let k = -1; k < 12; k++) s += `<rect x="${f(x + k * 110 + (r % 2) * 55)}" y="${f(my - mh + r * 50)}" width="108" height="48" fill="${tom('#B9B2A4', rnd(-0.08, 0.06))}" stroke="${tom('#B9B2A4', -0.3)}" stroke-width="2"/>`;
+        s += `<rect x="${x}" y="${f(my - mh - 16)}" width="${w}" height="20" fill="#CFC8BA" stroke="${L}" stroke-width="5"/><rect x="${x}" y="${f(my)}" width="${w}" height="${f(y + h - my)}" fill="#9A9A90"/>` + sujeiraParede(x, my, w, '#B9B2A4');
+        s += `<text x="${f(x + w * 0.62)}" y="${f(my - 60)}" font-family="'DejaVu Sans', sans-serif" font-weight="800" font-size="40" fill="#D7263D" opacity=".6" transform="rotate(-5 ${f(x + w * 0.62)} ${f(my - 60)})">VILA</text>`; }
+      if (tarde) s += `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#FF9A4A" opacity=".1" style="mix-blend-mode:multiply"/>`;
+      return clip(x, y, w, h, s + acabamento(0.2));
+    };
+    E.campinho.topoMureta = 330 + 150 + 16;   // a mureta fica com o topo em (y + h - este valor)
+
+    // ---------- ESQUINA / lateral da escola: muro alto pichado (onde ele encosta), portão de serviço,
+    // poste com fiação, placa de rua, árvore, calçada com folhas, carro parado ao fundo; fim de tarde ----------
+    E.esquina = ({ x = 0, y = 0, w = 1080, h = 1920, chao = y + h * 0.66, tarde = true } = {}) => {
+      let s = defs() + ceuGrad(x, y, w, chao - y, tarde ? ['#4E6FB8', '#E09A7A', '#FFD3A0'] : ['#8CCBF0', '#CFEAF8', '#F4EAD0']);
+      // casas do outro lado da rua (ao fundo, menores, enevoadas) e fiação
+      s += casinhas(x, w, chao - 470, 150, ['#D9C9A8', '#C9D9C0', '#E2C0B0'], 0.7);
+      s += `<path d="M${x} ${f(y + 260)} Q${f(x + w / 2)} ${f(y + 330)} ${x + w} ${f(y + 250)} M${x} ${f(y + 300)} Q${f(x + w / 2)} ${f(y + 370)} ${x + w} ${f(y + 290)}" stroke="#2A2A30" stroke-width="3" fill="none"/>`;
+      // muro alto da escola (reboco com tijolo aparecendo, pichações, rachadura, limo embaixo)
+      const mt = chao - 640;
+      s += `<rect x="${x}" y="${f(mt)}" width="${w}" height="${f(chao - mt)}" fill="#E6D8BC" stroke="${L}" stroke-width="6"/><rect x="${x}" y="${f(mt - 24)}" width="${w}" height="28" fill="#CFC2A6" stroke="${L}" stroke-width="5"/><rect x="${x}" y="${f(mt + 4)}" width="${w}" height="22" fill="#000" opacity=".12"/>`;
+      for (let i = 0; i < 9; i++) s += `<ellipse cx="${f(rnd(x, x + w))}" cy="${f(rnd(mt, chao))}" rx="${f(rnd(60, 150))}" ry="${f(rnd(30, 80))}" fill="${tom('#E6D8BC', rnd(-0.1, 0.04))}" opacity=".5"/>`;
+      [[x + 120, mt + 160], [x + w - 260, mt + 360]].forEach(([bx, by]) => { s += `<path d="M${f(bx)} ${f(by)} q40 -30 120 -10 q30 40 -10 80 q-80 20 -110 -70Z" fill="#B5654A"/>`; for (let r = 0; r < 3; r++) for (let k = 0; k < 3; k++) s += `<rect x="${f(bx + 10 + k * 34 + (r % 2) * 16)}" y="${f(by - 14 + r * 22)}" width="30" height="18" fill="#A8553A" stroke="#7A3A26" stroke-width="2"/>`; });
+      s += `<path d="M${f(x + w * 0.42)} ${f(mt + 30)} l-20 70 l26 40 l-18 90" stroke="${tom('#E6D8BC', -0.4)}" stroke-width="3" fill="none"/>`;
+      s += `<text x="${f(x + w * 0.52)}" y="${f(mt + 250)}" font-family="'DejaVu Sans', sans-serif" font-weight="800" font-size="62" fill="#3B7DD8" opacity=".55" transform="rotate(-7 ${f(x + w * 0.52)} ${f(mt + 250)})">GALERA 3ºB</text><text x="${f(x + 90)}" y="${f(mt + 470)}" font-family="'DejaVu Sans', sans-serif" font-weight="800" font-size="46" fill="#2E7D4A" opacity=".5">PAZ</text>`;
+      s += `<rect x="${x}" y="${f(chao - 90)}" width="${w}" height="90" fill="#6E8A5A" opacity=".25"/>` + sujeiraParede(x, chao, w, '#E6D8BC');
+      // portão de serviço de ferro (fechado) com placa
+      const px = x + w * 0.66;
+      s += `<rect x="${f(px)}" y="${f(chao - 420)}" width="240" height="420" fill="#4A5A6A" stroke="${L}" stroke-width="6"/>` + [...Array(7)].map((_, k) => `<path d="M${f(px + 20 + k * 33)} ${f(chao - 410)} V${f(chao - 10)}" stroke="#3A4A5A" stroke-width="8"/>`).join('') + `<rect x="${f(px + 40)}" y="${f(chao - 330)}" width="160" height="56" fill="#F2EEE6" stroke="${L}" stroke-width="3"/>` + texto('SÓ FUNCIONÁRIOS', px + 120, chao - 302, 140, 22, '#D7263D');
+      // poste de concreto com luminária e placa de rua
+      const pox = x + 90;
+      s += `<path d="M${f(pox)} ${f(chao + 60)} V${f(y + 200)}" stroke="#A8A8A0" stroke-width="26"/><path d="M${f(pox - 8)} ${f(chao + 60)} V${f(y + 200)}" stroke="#C9C9C0" stroke-width="7"/><path d="M${f(pox)} ${f(y + 230)} q60 -10 110 10" stroke="#5A5A62" stroke-width="10" fill="none"/><rect x="${f(pox + 100)}" y="${f(y + 236)}" width="60" height="22" rx="8" fill="#FFF3C4" stroke="${L}" stroke-width="3"/>`;
+      s += `<rect x="${f(pox + 16)}" y="${f(chao - 330)}" width="170" height="56" rx="6" fill="#1E5AA8" stroke="#fff" stroke-width="4"/>` + texto('RUA DAS FLORES', pox + 101, chao - 302, 150, 24, '#FFFFFF');
+      // calçada com folhas secas, guia e rua
+      s += piso(x, chao, w, y + h - chao, '#CFC8BA');
+      for (let i = 0; i < 18; i++) { const lx = rnd(x, x + w), ly = rnd(chao + 20, y + h - 160); s += `<ellipse cx="${f(lx)}" cy="${f(ly)}" rx="9" ry="5" fill="${pick(['#C9963A', '#A86A2A', '#D9B04A'])}" transform="rotate(${f(rnd(0, 180))} ${f(lx)} ${f(ly)})"/>`; }
+      s += `<rect x="${x}" y="${f(y + h - 120)}" width="${w}" height="120" fill="#55555D"/><rect x="${x}" y="${f(y + h - 134)}" width="${w}" height="18" fill="#E2DED4"/>`;
+      // árvore na calçada (copa em 3 tons)
+      const ax = x + w - 80;
+      s += `<path d="M${f(ax - 14)} ${f(chao + 40)} L${f(ax - 8)} ${f(mt - 120)} H${f(ax + 8)} L${f(ax + 14)} ${f(chao + 40)}Z" fill="#7A5432" stroke="${L}" stroke-width="5"/>` + [[0, -260, 150, '#4E8A4A'], [-80, -300, 100, '#5FA25A'], [70, -220, 110, '#3E6A3A']].map(([dx, dy, r, c]) => `<circle cx="${f(ax + dx)}" cy="${f(mt + dy)}" r="${r}" fill="${c}" stroke="${L}" stroke-width="5"/>`).join('');
+      if (tarde) s += `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#FF9A4A" opacity=".1" style="mix-blend-mode:multiply"/>`;
+      return clip(x, y, w, h, s + acabamento(0.2));
+    };
+
+    // ---------- QUADRA coberta ao amanhecer: arquibancada, tabela de basquete, linhas, refletores, céu rosado ----------
+    E.quadra = ({ x = 0, y = 0, w = 1080, h = 1920, chao = y + h * 0.6 } = {}) => {
+      let s = defs() + ceuGrad(x, y, w, chao - y, ['#2E3A6E', '#C97A8A', '#FFC9A0']);
+      // estrutura da cobertura (treliças) e refletores acesos
+      s += `<path d="M${x} ${f(y + 160)} Q${f(x + w / 2)} ${f(y + 40)} ${x + w} ${f(y + 160)}" stroke="#5A5A62" stroke-width="18" fill="none"/>` + [...Array(10)].map((_, k) => `<path d="M${f(x + k * 120)} ${f(y + 160 - Math.sin(k / 9 * Math.PI) * 110)} L${f(x + k * 120 + 60)} ${f(y + 230)}" stroke="#6A6A72" stroke-width="6"/>`).join('') + `<path d="M${x} ${f(y + 230)} H${x + w}" stroke="#5A5A62" stroke-width="12"/>`;
+      [0.2, 0.5, 0.8].forEach(u => { s += `<rect x="${f(x + w * u - 40)}" y="${f(y + 236)}" width="80" height="30" rx="6" fill="#FFFDF0" stroke="${L}" stroke-width="4"/><path d="M${f(x + w * u - 40)} ${f(y + 266)} L${f(x + w * u - 220)} ${f(chao + 300)} H${f(x + w * u + 220)} L${f(x + w * u + 40)} ${f(y + 266)}Z" fill="#FFF6D8" opacity=".12"/>`; });
+      // arquibancada de concreto (degraus) e tabela de basquete
+      for (let k = 0; k < 4; k++) s += `<rect x="${x}" y="${f(chao - 260 + k * 60)}" width="${f(w * 0.55 - k * 30)}" height="60" fill="${tom('#B9B2A4', -k * 0.06)}" stroke="${L}" stroke-width="4"/>`;
+      const bx = x + w * 0.8;
+      s += `<path d="M${f(bx)} ${f(chao + 10)} V${f(chao - 420)}" stroke="#3A4A5A" stroke-width="18"/><rect x="${f(bx - 110)}" y="${f(chao - 560)}" width="220" height="150" fill="#F4F6F8" stroke="${L}" stroke-width="6"/><rect x="${f(bx - 40)}" y="${f(chao - 500)}" width="80" height="60" fill="none" stroke="#D7263D" stroke-width="5"/><ellipse cx="${f(bx)}" cy="${f(chao - 425)}" rx="46" ry="10" fill="none" stroke="#FF7A00" stroke-width="6"/>` + [...Array(6)].map((_, k) => `<path d="M${f(bx - 40 + k * 16)} ${f(chao - 422)} l6 50" stroke="#fff" stroke-width="2"/>`).join('');
+      // piso da quadra (verde e azul) com linhas brancas em perspectiva e brilho
+      s += `<rect x="${x}" y="${f(chao)}" width="${w}" height="${f(y + h - chao)}" fill="#3E7A6A"/><path d="M${f(x + 80)} ${f(chao + 30)} H${f(x + w - 80)} L${f(x + w + 200)} ${f(y + h)} H${f(x - 200)}Z" fill="#3A6EA8"/>`;
+      s += `<path d="M${f(x + 80)} ${f(chao + 30)} H${f(x + w - 80)} L${f(x + w + 200)} ${f(y + h)} M${f(x + 80)} ${f(chao + 30)} L${f(x - 200)} ${f(y + h)} M${f(x + w / 2)} ${f(chao + 30)} V${f(y + h)}" stroke="#F4F6F8" stroke-width="7" fill="none"/><ellipse cx="${f(x + w / 2)}" cy="${f(chao + (y + h - chao) * 0.45)}" rx="200" ry="70" fill="none" stroke="#F4F6F8" stroke-width="7"/>`;
+      s += `<ellipse cx="${f(x + w / 2)}" cy="${f(chao + 200)}" rx="420" ry="80" fill="#FFFFFF" opacity=".1"/>`;
+      return clip(x, y, w, h, s + acabamento(0.22));
+    };
 
     // ---------- móveis do refeitório (pés no piso yPiso; k = escala pela distância) ----------
     E.mesa = (x, yPiso, k = 1, { cor = '#E9E4D8' } = {}) => {
