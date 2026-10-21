@@ -1,0 +1,644 @@
+[
+ {
+  "text": "Você",
+  "start": 0.17,
+  "end": 0.3,
+  "id": "w0"
+ },
+ {
+  "text": "sobreviveria",
+  "start": 0.3,
+  "end": 1.19,
+  "id": "w1"
+ },
+ {
+  "text": "a",
+  "start": 1.19,
+  "end": 1.26,
+  "id": "w2"
+ },
+ {
+  "text": "um",
+  "start": 1.26,
+  "end": 1.41,
+  "id": "w3"
+ },
+ {
+  "text": "apocalipse",
+  "start": 1.41,
+  "end": 2.16,
+  "id": "w4"
+ },
+ {
+  "text": "zumbi?",
+  "start": 2.16,
+  "end": 2.63,
+  "id": "w5"
+ },
+ {
+  "text": "Errou,",
+  "start": 2.97,
+  "end": 3.61,
+  "id": "w6"
+ },
+ {
+  "text": "virou",
+  "start": 3.61,
+  "end": 4.19,
+  "id": "w7"
+ },
+ {
+  "text": "zumbi.",
+  "start": 4.19,
+  "end": 4.94,
+  "id": "w8"
+ },
+ {
+  "text": "Teste",
+  "start": 5.09,
+  "end": 5.71,
+  "id": "w9"
+ },
+ {
+  "text": "um,",
+  "start": 5.71,
+  "end": 6.14,
+  "id": "w10"
+ },
+ {
+  "text": "sua",
+  "start": 6.14,
+  "end": 6.59,
+  "id": "w11"
+ },
+ {
+  "text": "arma.",
+  "start": 6.59,
+  "end": 7.2,
+  "id": "w12"
+ },
+ {
+  "text": "Revólver",
+  "start": 7.37,
+  "end": 7.89,
+  "id": "w13"
+ },
+ {
+  "text": "ou",
+  "start": 7.89,
+  "end": 8.06,
+  "id": "w14"
+ },
+ {
+  "text": "pé",
+  "start": 8.06,
+  "end": 8.23,
+  "id": "w15"
+ },
+ {
+  "text": "de",
+  "start": 8.23,
+  "end": 8.4,
+  "id": "w16"
+ },
+ {
+  "text": "cabra?",
+  "start": 8.4,
+  "end": 9.12,
+  "id": "w17"
+ },
+ {
+  "text": "Revólver?",
+  "start": 12.29,
+  "end": 13.45,
+  "id": "w18"
+ },
+ {
+  "text": "Morreu.",
+  "start": 13.45,
+  "end": 14.05,
+  "id": "w19"
+ },
+ {
+  "text": "O",
+  "start": 14.05,
+  "end": 14.25,
+  "id": "w20"
+ },
+ {
+  "text": "tiro",
+  "start": 14.25,
+  "end": 14.5,
+  "id": "w21"
+ },
+ {
+  "text": "chamou",
+  "start": 14.5,
+  "end": 15.01,
+  "id": "w22"
+ },
+ {
+  "text": "a",
+  "start": 15.01,
+  "end": 15.08,
+  "id": "w23"
+ },
+ {
+  "text": "horda.",
+  "start": 15.09,
+  "end": 15.82,
+  "id": "w24"
+ },
+ {
+  "text": "Teste",
+  "start": 15.93,
+  "end": 16.37,
+  "id": "w25"
+ },
+ {
+  "text": "dois,",
+  "start": 16.37,
+  "end": 17.04,
+  "id": "w26"
+ },
+ {
+  "text": "você",
+  "start": 17.04,
+  "end": 17.32,
+  "id": "w27"
+ },
+ {
+  "text": "está",
+  "start": 17.4,
+  "end": 17.72,
+  "id": "w28"
+ },
+ {
+  "text": "com",
+  "start": 17.72,
+  "end": 17.97,
+  "id": "w29"
+ },
+ {
+  "text": "sede.",
+  "start": 17.97,
+  "end": 18.45,
+  "id": "w30"
+ },
+ {
+  "text": "Água",
+  "start": 18.67,
+  "end": 18.95,
+  "id": "w31"
+ },
+ {
+  "text": "do",
+  "start": 18.95,
+  "end": 19.13,
+  "id": "w32"
+ },
+ {
+  "text": "lago",
+  "start": 19.13,
+  "end": 19.5,
+  "id": "w33"
+ },
+ {
+  "text": "ou",
+  "start": 19.5,
+  "end": 19.68,
+  "id": "w34"
+ },
+ {
+  "text": "da",
+  "start": 19.68,
+  "end": 19.86,
+  "id": "w35"
+ },
+ {
+  "text": "descarga?",
+  "start": 19.86,
+  "end": 20.92,
+  "id": "w36"
+ },
+ {
+  "text": "Lago?",
+  "start": 24.12,
+  "end": 24.88,
+  "id": "w37"
+ },
+ {
+  "text": "Morreu,",
+  "start": 24.88,
+  "end": 25.8,
+  "id": "w38"
+ },
+ {
+  "text": "tinha",
+  "start": 25.8,
+  "end": 26.2,
+  "id": "w39"
+ },
+ {
+  "text": "bactéria.",
+  "start": 26.2,
+  "end": 27.08,
+  "id": "w40"
+ },
+ {
+  "text": "A",
+  "start": 27.08,
+  "end": 27.25,
+  "id": "w41"
+ },
+ {
+  "text": "descarga",
+  "start": 27.25,
+  "end": 27.76,
+  "id": "w42"
+ },
+ {
+  "text": "tem",
+  "start": 27.76,
+  "end": 27.99,
+  "id": "w43"
+ },
+ {
+  "text": "água",
+  "start": 27.99,
+  "end": 28.3,
+  "id": "w44"
+ },
+ {
+  "text": "da",
+  "start": 28.3,
+  "end": 28.45,
+  "id": "w45"
+ },
+ {
+  "text": "torneira.",
+  "start": 28.45,
+  "end": 29.38,
+  "id": "w46"
+ },
+ {
+  "text": "Teste",
+  "start": 29.48,
+  "end": 29.89,
+  "id": "w47"
+ },
+ {
+  "text": "três,",
+  "start": 29.91,
+  "end": 30.53,
+  "id": "w48"
+ },
+ {
+  "text": "pra",
+  "start": 30.53,
+  "end": 30.85,
+  "id": "w49"
+ },
+ {
+  "text": "fugir.",
+  "start": 30.85,
+  "end": 31.74,
+  "id": "w50"
+ },
+ {
+  "text": "Bicicleta",
+  "start": 31.84,
+  "end": 32.64,
+  "id": "w51"
+ },
+ {
+  "text": "ou",
+  "start": 32.64,
+  "end": 32.84,
+  "id": "w52"
+ },
+ {
+  "text": "moto?",
+  "start": 32.84,
+  "end": 33.56,
+  "id": "w53"
+ },
+ {
+  "text": "Moto?",
+  "start": 36.73,
+  "end": 37.96,
+  "id": "w54"
+ },
+ {
+  "text": "Morreu,",
+  "start": 38.13,
+  "end": 38.7,
+  "id": "w55"
+ },
+ {
+  "text": "o",
+  "start": 38.7,
+  "end": 38.79,
+  "id": "w56"
+ },
+ {
+  "text": "barulho",
+  "start": 38.79,
+  "end": 39.43,
+  "id": "w57"
+ },
+ {
+  "text": "atraiu",
+  "start": 39.43,
+  "end": 39.98,
+  "id": "w58"
+ },
+ {
+  "text": "todos.",
+  "start": 39.98,
+  "end": 40.59,
+  "id": "w59"
+ },
+ {
+  "text": "Teste",
+  "start": 40.9,
+  "end": 41.31,
+  "id": "w60"
+ },
+ {
+  "text": "quatro,",
+  "start": 41.33,
+  "end": 42.18,
+  "id": "w61"
+ },
+ {
+  "text": "um",
+  "start": 42.18,
+  "end": 42.3,
+  "id": "w62"
+ },
+ {
+  "text": "sobrevivente",
+  "start": 42.38,
+  "end": 43.24,
+  "id": "w63"
+ },
+ {
+  "text": "quer",
+  "start": 43.24,
+  "end": 43.42,
+  "id": "w64"
+ },
+ {
+  "text": "entrar,",
+  "start": 43.98,
+  "end": 44.19,
+  "id": "w65"
+ },
+ {
+  "text": "mas",
+  "start": 44.19,
+  "end": 44.41,
+  "id": "w66"
+ },
+ {
+  "text": "esconde",
+  "start": 44.65,
+  "end": 44.96,
+  "id": "w67"
+ },
+ {
+  "text": "o",
+  "start": 44.96,
+  "end": 45.03,
+  "id": "w68"
+ },
+ {
+  "text": "braço.",
+  "start": 45.03,
+  "end": 45.41,
+  "id": "w69"
+ },
+ {
+  "text": "Você",
+  "start": 45.85,
+  "end": 45.99,
+  "id": "w70"
+ },
+ {
+  "text": "deixa",
+  "start": 45.99,
+  "end": 46.38,
+  "id": "w71"
+ },
+ {
+  "text": "entrar",
+  "start": 46.38,
+  "end": 46.85,
+  "id": "w72"
+ },
+ {
+  "text": "ou",
+  "start": 46.85,
+  "end": 47.01,
+  "id": "w73"
+ },
+ {
+  "text": "pede",
+  "start": 47.01,
+  "end": 47.33,
+  "id": "w74"
+ },
+ {
+  "text": "pra",
+  "start": 47.33,
+  "end": 47.57,
+  "id": "w76"
+ },
+ {
+  "text": "ver?",
+  "start": 47.57,
+  "end": 48.08,
+  "id": "w77"
+ },
+ {
+  "text": "Deixou",
+  "start": 51.24,
+  "end": 51.54,
+  "id": "w78"
+ },
+ {
+  "text": "entrar?",
+  "start": 51.54,
+  "end": 52.28,
+  "id": "w79"
+ },
+ {
+  "text": "Morreu,",
+  "start": 52.45,
+  "end": 53.0,
+  "id": "w80"
+ },
+ {
+  "text": "ele",
+  "start": 53.0,
+  "end": 53.27,
+  "id": "w81"
+ },
+ {
+  "text": "estava",
+  "start": 53.27,
+  "end": 53.78,
+  "id": "w82"
+ },
+ {
+  "text": "mordido.",
+  "start": 53.86,
+  "end": 54.72,
+  "id": "w83"
+ },
+ {
+  "text": "Teste",
+  "start": 54.82,
+  "end": 55.23,
+  "id": "w84"
+ },
+ {
+  "text": "cinco,",
+  "start": 55.25,
+  "end": 55.98,
+  "id": "w85"
+ },
+ {
+  "text": "noite",
+  "start": 55.98,
+  "end": 56.51,
+  "id": "w86"
+ },
+ {
+  "text": "fria.",
+  "start": 56.51,
+  "end": 57.28,
+  "id": "w87"
+ },
+ {
+  "text": "Fogueira",
+  "start": 57.36,
+  "end": 57.97,
+  "id": "w88"
+ },
+ {
+  "text": "ou",
+  "start": 57.97,
+  "end": 58.14,
+  "id": "w89"
+ },
+ {
+  "text": "escuro?",
+  "start": 58.14,
+  "end": 61.93,
+  "id": "w90"
+ },
+ {
+  "text": "Fogueira?",
+  "start": 62.05,
+  "end": 62.96,
+  "id": "w91"
+ },
+ {
+  "text": "Morreu.",
+  "start": 62.96,
+  "end": 63.88,
+  "id": "w92"
+ },
+ {
+  "text": "A",
+  "start": 63.88,
+  "end": 64.05,
+  "id": "w93"
+ },
+ {
+  "text": "luz",
+  "start": 64.05,
+  "end": 64.23,
+  "id": "w94"
+ },
+ {
+  "text": "atraiu",
+  "start": 64.24,
+  "end": 64.79,
+  "id": "w95"
+ },
+ {
+  "text": "todos",
+  "start": 64.79,
+  "end": 65.25,
+  "id": "w96"
+ },
+ {
+  "text": "eles.",
+  "start": 65.25,
+  "end": 65.92,
+  "id": "w97"
+ },
+ {
+  "text": "Passou",
+  "start": 66.09,
+  "end": 66.42,
+  "id": "w98"
+ },
+ {
+  "text": "nos",
+  "start": 66.42,
+  "end": 66.59,
+  "id": "w99"
+ },
+ {
+  "text": "5?",
+  "start": 66.59,
+  "end": 67.28,
+  "id": "w100"
+ },
+ {
+  "text": "Comenta",
+  "start": 67.45,
+  "end": 67.89,
+  "id": "w101"
+ },
+ {
+  "text": "SOBREVIVI.",
+  "start": 67.89,
+  "end": 68.8,
+  "id": "w102"
+ },
+ {
+  "text": "Se",
+  "start": 68.8,
+  "end": 68.97,
+  "id": "w103"
+ },
+ {
+  "text": "não,",
+  "start": 68.97,
+  "end": 69.39,
+  "id": "w104"
+ },
+ {
+  "text": "comenta",
+  "start": 69.39,
+  "end": 69.98,
+  "id": "w105"
+ },
+ {
+  "text": "onde",
+  "start": 69.98,
+  "end": 70.3,
+  "id": "w106"
+ },
+ {
+  "text": "morreu.",
+  "start": 70.38,
+  "end": 71.12,
+  "id": "w107"
+ }
+]
