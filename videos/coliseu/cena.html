@@ -25,6 +25,8 @@
 <script src="detalhes.js"></script>
 <script src="animal.js"></script>
 <script src="marca.js"></script>
+<script src="legenda.js"></script>
+<script src="legenda-dados.js"></script>
 </head>
 <body>
 <svg id="stage" viewBox="0 0 1080 1920" xmlns="http://www.w3.org/2000/svg">
@@ -44,6 +46,7 @@
   <g id="fgs"></g>
   <g id="props"></g>
   <g id="voos"></g>
+  <g id="legenda"></g>
   <g id="topo"></g>
 </svg>
 
@@ -193,7 +196,7 @@ scenes.push(card('c3', 3, 'O CAPACETE', DT.capacete(0, 120, 0.8)));
   v += `<g id="s8-rede-chao" opacity="0">${DT.rede(140, 1750, 0.45, { abertura: 0.7 })}</g><g id="s8-tri-chao" opacity="0"><g transform="translate(1000 1760) rotate(80)">${DT.tridente(0, 0, 0.42)}</g></g>`;
   v += `<g id="s8-50mil">${Marca.carimbo(540, 640, '50 MIL', { fs: 150, rot: -8 })}</g>`;
   v += `<g id="s8-comecou" transform="translate(540 860)">${Marca.impacto(0, 0, 'COMEÇOU!', { fs: 170 })}</g>`;
-  v += `<g id="s8-clang" transform="translate(520 1180)">${Marca.apoio(0, 0, 'CLANG!', { fs: 96, rot: -8 })}</g>`;
+  v += `<g id="s8-clang" transform="translate(520 1290)">${Marca.apoio(0, 0, 'CLANG!', { fs: 96, rot: -8 })}</g>`;
   v += `<g id="s8-desisto" transform="translate(760 1300)">${Marca.etiqueta(0, 0, 'SINAL: EU DESISTO', { fs: 44 })}</g>`;
   v += C.atmosfera({ grao: 0.22, raios: true }) + `</g>`;
   scenes.push(v); }
@@ -530,6 +533,11 @@ pop('#fim-t', 94.8, 0.6); pop('#fim-c', 95.8);
 tl.to('#fim-c', { scale: 1.06, duration: 0.4, repeat: Math.max(1, Math.floor((END - 96.4) / 0.4) - 1), yoyo: true, ease: 'sine.inOut' }, 96.4);
 tl.set({}, {}, END);
 
+// ===================== LEGENDA (skill legenda-dinamica) =====================
+const leg = Legenda($('#legenda'), window.PALAVRAS || [], { y: 1480, enfase: ['COLISEU', 'GLADIADOR', 'LEÃO', 'URSO', 'CAPACETE', 'SOLTA', 'MATA', 'SOLTAR', 'TRIDENTE', 'REDE', 'CINZA'] })
+  .esconder([[24.0, 26.0], [36.2, 38.3], [47.2, 50.0], [83.9, 85.0], [94.6, 999]])
+  .mover([[15.0, 17.0, 1160], [61.0, 80.0, 1100]]);
+
 // ===================== API DO RENDER =====================
 function opacidade(t, janelas) {
   let o = 0;
@@ -560,10 +568,10 @@ function desenharAtores(t) {
 }
 window.__timeline = tl;
 window.__duration = tl.duration();
-window.__seek = t => { tl.seek(t, false); desenharAtores(t); if (t > 38.0 && t < 47.6) FERAS.forEach(a => a.desenhar(t)); };
+window.__seek = t => { tl.seek(t, false); desenharAtores(t); leg.seek(t); if (t > 38.0 && t < 47.6) FERAS.forEach(a => a.desenhar(t)); };
 window.__seek(0);
 if (!rendering) {
-  tl.eventCallback('onUpdate', () => { const t = tl.time(); desenharAtores(t); if (t > 38.0 && t < 47.6) FERAS.forEach(a => a.desenhar(t)); });
+  tl.eventCallback('onUpdate', () => { const t = tl.time(); desenharAtores(t); leg.seek(t); if (t > 38.0 && t < 47.6) FERAS.forEach(a => a.desenhar(t)); });
   document.addEventListener('click', () => tl.paused() ? tl.play() : tl.pause());
 }
 </script>
