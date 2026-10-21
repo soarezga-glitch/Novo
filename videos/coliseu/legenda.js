@@ -61,8 +61,8 @@
       return { g, p, ws: palavrasEls, medido: false };
     });
     function medir(E) {
-      const esp = o.fs * 0.42;
       let larg = E.ws.map(x => x.t.getComputedTextLength());
+      const esp = o.fs * 0.42 + 0.1 * Math.max(...larg);   // folga para o pulinho (escala) da palavra falada não encostar na vizinha
       let total = larg.reduce((a, b) => a + b, 0) + esp * (E.ws.length - 1);
       const k = total > o.largura ? o.largura / total : 1;     // encolhe se não couber
       let x = -total * k / 2;
@@ -80,7 +80,7 @@
           const { p } = E;
           const vis = !oculto && t >= p.ini - 0.05 && t < p.fimTela;
           E.g.style.display = vis ? '' : 'none';
-          if (!vis) return;
+          if (!vis) { E.medido = false; return; }   // mede de novo quando reaparece (a fonte pode ter carregado depois)
           if (!E.medido) medir(E);
           const ent = clamp((t - (p.ini - 0.05)) / 0.16, 0, 1), sai = clamp((p.fimTela - t) / 0.08, 0, 1);
           const sc = 0.85 + 0.15 * back(ent);

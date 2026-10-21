@@ -474,12 +474,120 @@ def ambientes_coliseu(r, voz):
     }
 
 
+# ---------------------------------------------------------------- hoje / apocalipse zumbi
+def gemido_zumbi(r, dur=1.4):
+    """gemido de zumbi: voz grave rouca (dente de serra com vibrato irregular) passando por formantes de "uhh" + chiado"""
+    L = int(dur * SR); t = np.arange(L) / SR
+    f0 = r.uniform(70, 105) * (1 + 0.08 * np.sin(2 * np.pi * 3.1 * t) + 0.05 * filtro(r.standard_normal(L), 'baixa', 6) * 10)
+    fase = 2 * np.pi * np.cumsum(f0) / SR
+    serra = (fase / np.pi) % 2 - 1
+    voz = filtro(serra, 'banda', (220, 420)) + 0.6 * filtro(serra, 'banda', (650, 950)) + 0.25 * filtro(serra, 'banda', (2200, 2800))
+    rouco = filtro(r.standard_normal(L), 'banda', (300, 1500)) * 0.35
+    env_ = np.sin(np.pi * np.clip(t / dur, 0, 1)) ** 0.7
+    return normaliza(reverb((voz + rouco) * env_, 0.6, 0.3), -2)
+
+
+def tiro(r):
+    """tiro de revólver: estalo forte + estrondo grave + eco de rua"""
+    L = int(1.8 * SR); t = np.arange(L) / SR
+    x = r.standard_normal(L) * np.exp(-t * 45) * 1.5 + np.sin(2 * np.pi * 60 * t) * np.exp(-t * 9) * 1.2 + filtro(r.standard_normal(L), 'baixa', 400) * np.exp(-t * 6)
+    return normaliza(reverb(x, 0.95, 0.45), -0.5)
+
+
+def clique_vazio(r):
+    L = int(0.25 * SR); t = np.arange(L) / SR
+    x = filtro(r.standard_normal(L), 'alta', 2500) * np.exp(-t * 120) + np.sin(2 * np.pi * 1800 * t) * np.exp(-t * 90) * 0.4
+    return normaliza(x, -3)
+
+
+def motor_moto(dur, r, acelera=True):
+    """ronco de moto: pulsos de explosão do motor (dente de serra grave) subindo de rotação + escapamento"""
+    L = int(dur * SR); t = np.arange(L) / SR
+    rpm = 30 + (60 * np.minimum(1, t / 1.2) if acelera else 0) + 4 * np.sin(2 * np.pi * 0.7 * t)
+    fase = 2 * np.pi * np.cumsum(rpm) / SR
+    x = ((fase / np.pi) % 2 - 1) ** 3
+    x = filtro(x, 'baixa', 900) + 0.4 * filtro(r.standard_normal(L), 'banda', (200, 1200)) * (0.5 + 0.5 * np.sin(fase))
+    return normaliza(x, -2)
+
+
+def toc_toc(r):
+    """batidas numa porta de madeira (3 toques)"""
+    L = int(1.1 * SR); out = np.zeros(L)
+    for k, at_s in enumerate([0, 0.22, 0.44]):
+        at = int(at_s * SR); M = int(0.2 * SR); tt = np.arange(M) / SR
+        out[at:at + M] += (np.sin(2 * np.pi * 160 * tt) + 0.5 * np.sin(2 * np.pi * 410 * tt)) * np.exp(-tt * 35) + filtro(r.standard_normal(M), 'banda', (300, 2000)) * np.exp(-tt * 70) * 0.5
+    return normaliza(reverb(out, 0.6, 0.25), -1)
+
+
+def tique(r, agudo=True):
+    L = int(0.12 * SR); t = np.arange(L) / SR
+    x = np.sin(2 * np.pi * (2400 if agudo else 1600) * t) * np.exp(-t * 90) + filtro(r.standard_normal(L), 'alta', 3000) * np.exp(-t * 200) * 0.4
+    return normaliza(x, -3)
+
+
+def porta_range(r):
+    """porta de madeira rangendo ao abrir"""
+    L = int(1.3 * SR); t = np.arange(L) / SR
+    f = 380 + 260 * np.sin(np.pi * t / 1.3) + 40 * filtro(r.standard_normal(L), 'baixa', 8) * 10
+    x = np.sign(np.sin(2 * np.pi * np.cumsum(f) / SR)) * (r.random(L) < 0.7)
+    return normaliza(filtro(x, 'banda', (400, 2500)) * np.sin(np.pi * t / 1.3), -3)
+
+
+def morte(r):
+    """o 'você morreu': pancada grave + acorde dissonante descendo"""
+    L = int(2.2 * SR); t = np.arange(L) / SR
+    x = np.sin(2 * np.pi * 48 * t) * np.exp(-t * 3) * 1.2
+    for f in (233, 247, 330):
+        x += np.sin(2 * np.pi * f * (1 - 0.08 * t) * t) * np.exp(-t * 1.6) * 0.35
+    return normaliza(reverb(x, 0.9, 0.35), -1)
+
+
+def sirenes(dur, r):
+    """sirenes ao longe subindo e descendo"""
+    L = int(dur * SR); t = np.arange(L) / SR; out = np.zeros(L)
+    for k in range(2):
+        f = 700 + 250 * np.sin(2 * np.pi * (0.18 + k * 0.07) * t + k)
+        out += np.sin(2 * np.pi * np.cumsum(f) / SR) * (0.5 + 0.5 * np.sin(2 * np.pi * 0.05 * t + k * 2))
+    return normaliza(reverb(filtro(out, 'baixa', 1500), 0.95, 0.7), -6)
+
+
+def gemidos_ao_longe(dur, r, n=6):
+    L = int(dur * SR); out = np.zeros(L)
+    for _ in range(n):
+        g = gemido_zumbi(r, r.uniform(1.0, 2.0)); at = r.integers(0, L - len(g))
+        out[at:at + len(g)] += g * r.uniform(0.3, 0.8)
+    return normaliza(reverb(filtro(out, 'baixa', 1600), 0.9, 0.6), -6)
+
+
+def ambientes_hoje(r, voz=None):
+    D = 25
+    def mix(*partes):
+        n = int(D * SR); x = np.zeros(n)
+        for p, g in partes:
+            x += p[:n] * 10 ** (g / 20)
+        return loop_suave(normaliza(x, -4))
+    return {
+        'amb_cidade_caos': mix((vento(D, r, 0.9), -6), (sirenes(D, r), -8), (gemidos_ao_longe(D, r, 7), -6), (fogo(D, r, 0.3), -18)),
+        'amb_sala':        mix((tom_sala(D, r), -2), (gemidos_ao_longe(D, r, 2), -20)),
+        'amb_tensao':      mix((tom_sala(D, r), -6), (batida_coracao(D, r, 92), -4), (vento(D, r, 0.4), -14)),
+        'amb_natureza':    mix((passaros(D, r, 14), -3), (vento(D, r, 0.5), -12), (agua_corrente(D, r, 0.3), -16)),
+        'amb_estrada':     mix((vento(D, r, 0.8), -3), (passaros(D, r, 4), -14)),
+        'amb_noite_fria':  mix((vento(D, r, 1.1), -3), (grilos(D, r), -12), (gemidos_ao_longe(D, r, 2), -18)),
+        'amb_banheiro':    mix((reverb(tom_sala(D, r), 0.95, 0.6), -2), (gotas(D, r, 6), -8)),
+    }, {
+        'sfx_gemido': [gemido_zumbi(r) for _ in range(4)], 'sfx_tiro': [tiro(r)], 'sfx_clique_vazio': [clique_vazio(r)],
+        'sfx_moto': [motor_moto(5.0, r)], 'sfx_toc_toc': [toc_toc(r)], 'sfx_tique': [tique(r, True)], 'sfx_taque': [tique(r, False)],
+        'sfx_porta_range': [porta_range(r)], 'sfx_morte': [morte(r)], 'sfx_goles': [goles(r)], 'sfx_queda': [queda_areia(r)],
+        'sfx_passo_rua': [passo(r, 'pedra') for _ in range(4)], 'sfx_fogo_acende': [rugido_fogo(r)],
+    }
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--saida', default='biblioteca')
     ap.add_argument('--voz', default=None, help='arquivo de voz para fazer a multidão (walla)')
     ap.add_argument('--seed', type=int, default=7)
-    ap.add_argument('--conjunto', default='roma', choices=['roma', 'coliseu'], help='roma = cidade; coliseu = arena, subsolo, feras, corneta')
+    ap.add_argument('--conjunto', default='roma', choices=['roma', 'coliseu', 'hoje'], help='roma = cidade; coliseu = arena, subsolo, feras, corneta')
     a = ap.parse_args()
     os.makedirs(a.saida, exist_ok=True)
     r = rng_for(a.seed)
@@ -490,6 +598,8 @@ def main():
     feitos = []
     if a.conjunto == 'coliseu':
         amb, efeitos = ambientes_coliseu(r, voz)
+    elif a.conjunto == 'hoje':
+        amb, efeitos = ambientes_hoje(r, voz)
     else:
         amb = ambientes(r, voz)
         efeitos = {
