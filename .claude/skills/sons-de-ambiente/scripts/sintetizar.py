@@ -287,11 +287,124 @@ def ambientes(r, voz):
     }
 
 
+# ---------------------------------------------------------------- Coliseu (arena, subsolo, feras)
+def gotas(dur, r, quantas=10):
+    """gotas pingando num subsolo de pedra"""
+    n = int(dur * SR); out = np.zeros(n)
+    for _ in range(int(dur * quantas / 10)):
+        at = r.integers(0, n - 6000); L = int(0.08 * SR); t = np.arange(L) / SR
+        f0 = r.uniform(900, 1800)
+        out[at:at + L] += np.sin(2 * np.pi * (f0 + 900 * t) * t) * np.exp(-t * 60) * r.uniform(0.3, 1)
+    return normaliza(reverb(out, 0.95, 0.6), -6)
+
+
+def ronco_multidao(dur, r, voz, abafado=False, densidade=40):
+    """multidão gigante: walla densa + rugido grave (o 'mar' de gente); abafado = ouvido do subsolo, através do chão"""
+    w = walla(dur, r, voz, densidade=densidade, tom=(0.75, 1.35), abafar=600 if abafado else 3200, sala=0.7)
+    n = int(dur * SR)
+    mar = filtro(ruido(n, 'rosa', r), 'banda', (120, 900 if abafado else 2600))
+    mar *= 0.75 + 0.25 * filtro(r.standard_normal(n), 'baixa', 0.6) * 8
+    return normaliza(w[:n] + 0.8 * mar / (np.abs(mar).max() + 1e-9), -4)
+
+
+def grito_multidao(r, voz, dur=2.6):
+    """a multidão 'explode' (UUUH!, 50 mil, SOLTA!): subida rápida e queda lenta"""
+    x = ronco_multidao(dur, r, voz, densidade=70)
+    t = np.arange(len(x)) / SR
+    return normaliza(x * np.minimum(1, t / 0.25) * np.exp(-np.maximum(0, t - 0.8) * 1.4), -1)
+
+
+def rugido(r, tipo='leao'):
+    """rugido de fera: voz grave pulsante (dente de serra com tremolo) + respiração ruidosa com formantes"""
+    dur = 1.9 if tipo == 'leao' else 1.6
+    L = int(dur * SR); t = np.arange(L) / SR
+    f0 = (95 if tipo == 'leao' else 70) * (1 + 0.25 * np.sin(np.pi * t / dur)) * (1 + 0.04 * np.sin(2 * np.pi * 23 * t))
+    fase = 2 * np.pi * np.cumsum(f0) / SR
+    serra = (fase / np.pi) % 2 - 1
+    corpo = filtro(serra, 'baixa', 900) * (0.6 + 0.4 * np.sin(2 * np.pi * (31 if tipo == 'leao' else 18) * t))
+    sopro = filtro(r.standard_normal(L), 'banda', (250, 1800 if tipo == 'leao' else 1100))
+    env_ = np.minimum(1, t / 0.12) * np.exp(-np.maximum(0, t - dur * 0.55) * 4)
+    x = (corpo + 0.7 * sopro) * env_
+    return normaliza(reverb(x, 0.8, 0.35), -1)
+
+
+def corneta(r):
+    """corneta romana (cornu): metal grave com harmônicos, vibrato e um 'tuuu-tu-tuuu'"""
+    out = np.zeros(int(2.2 * SR))
+    for ini, dur_, f in [(0, 0.55, 233), (0.62, 0.22, 233), (0.9, 1.1, 311)]:
+        L = int(dur_ * SR); t = np.arange(L) / SR
+        ff = f * (1 + 0.006 * np.sin(2 * np.pi * 5.5 * t))
+        fase = 2 * np.pi * np.cumsum(ff) / SR
+        x = sum(np.sin(k * fase) / k ** 0.8 for k in range(1, 12))
+        x = filtro(x, 'baixa', 2600) * np.minimum(1, t / 0.04) * np.minimum(1, (dur_ - t) / 0.06)
+        at = int(ini * SR); out[at:at + L] += x
+    return normaliza(reverb(out, 0.9, 0.35), -1)
+
+
+def clang(r):
+    """tridente batendo no escudo: parciais inarmônicas de metal + estalo"""
+    L = int(1.3 * SR); t = np.arange(L) / SR
+    x = sum(np.sin(2 * np.pi * f * t) * np.exp(-t * d) * a for f, d, a in [(520, 6, 1), (1240, 8, 0.8), (2210, 10, 0.6), (3390, 14, 0.5), (5150, 20, 0.3)])
+    x += filtro(r.standard_normal(L), 'alta', 2000) * np.exp(-t * 60) * 1.2
+    x += np.sin(2 * np.pi * 110 * t) * np.exp(-t * 25) * 0.8      # pancada na madeira do escudo
+    return normaliza(reverb(x, 0.6, 0.3), -1)
+
+
+def portao(r):
+    """portão de ferro subindo: correntes chacoalhando + rangido + baque no fim"""
+    L = int(1.6 * SR); t = np.arange(L) / SR
+    corrente = np.zeros(L)
+    for _ in range(60):
+        at = r.integers(0, L - 4000); M = 3000; tt = np.arange(M) / SR
+        corrente[at:at + M] += np.sin(2 * np.pi * r.uniform(1800, 4200) * tt) * np.exp(-tt * 70) * r.uniform(0.2, 0.7)
+    rangido = filtro(np.sign(np.sin(2 * np.pi * (60 + 40 * t) * t)) * (r.random(L) < 0.6), 'banda', (300, 1500)) * 0.4
+    baque = np.zeros(L); at = int(1.2 * SR); M = L - at; tt = np.arange(M) / SR
+    baque[at:] = np.sin(2 * np.pi * 70 * tt) * np.exp(-tt * 12) * 1.2
+    return normaliza(reverb(corrente + rangido + baque, 0.8, 0.4), -1)
+
+
+def areia_caindo(r, dur=1.2):
+    """poeira/areia escorrendo pelas frestas"""
+    L = int(dur * SR); t = np.arange(L) / SR
+    graos = (r.random(L) < 0.02) * r.standard_normal(L)
+    x = filtro(graos, 'alta', 3000) + 0.3 * filtro(r.standard_normal(L), 'banda', (2000, 7000))
+    return normaliza(x * np.sin(np.pi * t / dur) ** 0.5, -6)
+
+
+def respira_capacete(r, dur=4.0):
+    """respiração ofegante abafada e com eco dentro do capacete de metal"""
+    x = respiracao_ofegante(r, dur)
+    x = filtro(x, 'banda', (250, 1400)) * 2.5
+    return normaliza(reverb(x, 0.25, 0.55), -3)
+
+
+def ambientes_coliseu(r, voz):
+    D = 25
+    def mix(*partes):
+        n = int(D * SR); x = np.zeros(n)
+        for p, g in partes:
+            x += p[:n] * 10 ** (g / 20)
+        return loop_suave(normaliza(x, -4))
+    return {
+        'amb_cela':        mix((tom_sala(D, r), -3), (gotas(D, r, 8), -10), (ronco_multidao(D, r, voz, abafado=True, densidade=20), -12)),
+        'amb_subsolo':     mix((ronco_multidao(D, r, voz, abafado=True, densidade=40), -2), (tom_sala(D, r), -8), (gotas(D, r, 4), -16)),
+        'amb_tunel':       mix((tom_sala(D, r), -2), (ronco_multidao(D, r, voz, abafado=True, densidade=30), -8), (batida_coracao(D, r, 96), -10)),
+        'amb_arena':       mix((ronco_multidao(D, r, voz, densidade=45), -1), (vento(D, r, 0.5), -18)),
+        'amb_fim_tarde':   mix((passaros(D, r, 8), -6), (vento(D, r, 0.6), -10), (ronco_multidao(D, r, voz, abafado=True, densidade=12), -16)),
+    }, {
+        'sfx_rugido_leao': [rugido(r, 'leao')], 'sfx_rugido_urso': [rugido(r, 'urso')], 'sfx_corneta': [corneta(r)],
+        'sfx_clang': [clang(r)], 'sfx_portao': [portao(r)], 'sfx_areia': [areia_caindo(r)], 'sfx_respira_capacete': [respira_capacete(r)],
+        'sfx_grito_multidao': [grito_multidao(r, voz)], 'sfx_baque_madeira': [baque_madeira(r)],
+        'sfx_passo_pedra': [passo(r, 'pedra') for _ in range(4)], 'sfx_passo_areia': [passo(r, 'terra') for _ in range(4)],
+    }
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--saida', default='biblioteca')
     ap.add_argument('--voz', default=None, help='arquivo de voz para fazer a multidão (walla)')
     ap.add_argument('--seed', type=int, default=7)
+    ap.add_argument('--conjunto', default='roma', choices=['roma', 'coliseu'], help='roma = cidade; coliseu = arena, subsolo, feras, corneta')
     a = ap.parse_args()
     os.makedirs(a.saida, exist_ok=True)
     r = rng_for(a.seed)
@@ -300,14 +413,18 @@ def main():
         raw = subprocess.run(['ffmpeg', '-v', 'error', '-i', a.voz, '-ac', '1', '-ar', str(SR), '-f', 'f32le', '-'], capture_output=True, check=True).stdout
         voz = np.frombuffer(raw, dtype=np.float32).astype(np.float64)
     feitos = []
-    for nome, x in ambientes(r, voz).items():
+    if a.conjunto == 'coliseu':
+        amb, efeitos = ambientes_coliseu(r, voz)
+    else:
+        amb = ambientes(r, voz)
+        efeitos = {
+            'sfx_passo_pedra': [passo(r, 'pedra') for _ in range(4)],
+            'sfx_passo_madeira': [passo(r, 'madeira') for _ in range(4)],
+            'sfx_moeda': [moeda(r)], 'sfx_splash': [splash(r)], 'sfx_baque_madeira': [baque_madeira(r)],
+            'sfx_rugido_fogo': [rugido_fogo(r)], 'sfx_ofegante': [respiracao_ofegante(r)],
+        }
+    for nome, x in amb.items():
         salvar(os.path.join(a.saida, nome + '.wav'), estereo(x, r)); feitos.append(nome)
-    efeitos = {
-        'sfx_passo_pedra': [passo(r, 'pedra') for _ in range(4)],
-        'sfx_passo_madeira': [passo(r, 'madeira') for _ in range(4)],
-        'sfx_moeda': [moeda(r)], 'sfx_splash': [splash(r)], 'sfx_baque_madeira': [baque_madeira(r)],
-        'sfx_rugido_fogo': [rugido_fogo(r)], 'sfx_ofegante': [respiracao_ofegante(r)],
-    }
     for nome, lista in efeitos.items():
         for i, x in enumerate(lista):
             arq = nome + (f'_{i + 1}' if len(lista) > 1 else '')

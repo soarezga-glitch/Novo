@@ -147,13 +147,16 @@
       this.el.capa = mk('path', { fill: F.corCapa || '#7A3A2A', stroke: 'none' });
       this.el.bracoLonge = mk('path', linha(this.corLonge));
       this.el.mangaLonge = mk('path', tecido(F.corManga || F.cor || '#888', 30));
+      this.el.manicaLonge = mk('g', {});   // gladiador: protetor de braço (manica) e de ombro (galero)
       this.el.maoLonge = mk('circle', { r: 11 * this.s, fill: this.corLonge });
       this.el.pernaLonge = mk('path', linha(this.corLonge));
       this.el.calcaLonge = mk('path', tecido(F.corPernas || '#3A4A6A', 30));
+      this.el.grevaLonge = mk('g', {});    // gladiador: caneleira (ocrea)
       this.el.peLonge = mk('g', {});
       // pernas ficam atrás da roupa: só aparecem abaixo da barra
       this.el.pernaPerto = mk('path', linha(this.cor));
       this.el.calcaPerto = mk('path', tecido(F.corPernas || '#3A4A6A', 30));
+      this.el.grevaPerto = mk('g', {});
       this.el.pePerto = mk('g', {});
       this.el.tronco = mk('path', linha(this.cor));
       if (this.roupa) {
@@ -191,6 +194,7 @@
       this.el.chapeu = mk('g', {}, h);
       this.el.bracoPerto = mk('path', linha(this.cor));
       this.el.mangaPerto = mk('path', tecido(F.corManga || F.cor || '#888', 30));
+      this.el.manicaPerto = mk('g', {});
       this.el.maoPerto = mk('circle', { r: 11 * this.s, fill: this.cor });
     }
 
@@ -349,6 +353,27 @@
       };
       el.calcaLonge.setAttribute('d', calca(pernas[longe.perna]));
       el.calcaPerto.setAttribute('d', calca(pernas[perto.perna]));
+      // gladiador: manica (braço acolchoado em faixas), galero (placa de metal no ombro), ocrea (caneleira)
+      const T_ = this.tinta;
+      const manica = (B, lado) => {
+        let h = '';
+        if (F.manica === lado) {
+          const pts = [B.o, B.c, B.m].map(f).join(' L');
+          h += `<path d="M${pts}" fill="none" stroke="${T_}" stroke-width="${30 * s}" stroke-linecap="round" stroke-linejoin="round"/><path d="M${pts}" fill="none" stroke="${F.corManica || '#D9CBAE'}" stroke-width="${23 * s}" stroke-linecap="round" stroke-linejoin="round"/>`;
+          for (let u = 0.12; u < 0.95; u += 0.17) { h += `<path d="M${f(P_(B.o, B.c, u))} L${f(P_(B.o, B.c, u + 0.05))} M${f(P_(B.c, B.m, u))} L${f(P_(B.c, B.m, u + 0.05))}" stroke="#9A8A6A" stroke-width="${23 * s}" opacity=".35"/>`; }
+        }
+        if (F.galero === lado) {
+          const o = B.o, up = [0, -1];
+          h += `<path d="M${f([o[0] - 26 * s, o[1] + 8 * s])} L${f([o[0] - 22 * s, o[1] - 52 * s])} Q${f([o[0] + 6 * s, o[1] - 70 * s])} ${f([o[0] + 30 * s, o[1] - 44 * s])} L${f([o[0] + 26 * s, o[1] + 14 * s])}Z" fill="#B9BCC4" stroke="${T_}" stroke-width="${4 * s}"/><path d="M${f([o[0] - 16 * s, o[1] - 44 * s])} Q${f([o[0] + 4 * s, o[1] - 58 * s])} ${f([o[0] + 20 * s, o[1] - 38 * s])}" stroke="#fff" stroke-width="${3 * s}" fill="none" opacity=".7"/>`;
+        }
+        return h;
+      };
+      el.manicaLonge.innerHTML = manica(bracos[longe.braco], longe.braco);
+      el.manicaPerto.innerHTML = manica(bracos[perto.braco], perto.braco);
+      const greva = (L, i) => F.greva == null || F.greva !== i ? '' :
+        `<path d="M${f(P_(L.j, L.tz, 0.05))} L${f(P_(L.j, L.tz, 0.86))}" stroke="${T_}" stroke-width="${30 * s}" stroke-linecap="round"/><path d="M${f(P_(L.j, L.tz, 0.05))} L${f(P_(L.j, L.tz, 0.86))}" stroke="${F.corGreva || '#B9BCC4'}" stroke-width="${23 * s}" stroke-linecap="round"/><path d="M${f(P_(L.j, L.tz, 0.12))} L${f(P_(L.j, L.tz, 0.8))}" stroke="#fff" stroke-width="${4 * s}" opacity=".6" transform="translate(${-5 * s} 0)"/>`;
+      el.grevaLonge.innerHTML = greva(pernas[longe.perna], longe.perna);
+      el.grevaPerto.innerHTML = greva(pernas[perto.perna], perto.perna);
       // calçados
       el.peLonge.innerHTML = this.calcado(pernas[longe.perna], vista, dir, f, true);
       el.pePerto.innerHTML = this.calcado(pernas[perto.perna], vista, dir, f, false);
@@ -518,7 +543,8 @@
         const desce = T.desce * s;
         const wO = (vista === 'frente' ? 34 : 20) * s * (T.ombro || 1);
         const wB = Math.max((vista === 'frente' ? T.barra : T.barra * 0.76) * s, T.desce > 120 ? abertura + 26 * s : 0);
-        const o0 = add(top, [lat[0] * -wO, lat[1] * -wO]), o1 = add(top, [lat[0] * wO, lat[1] * wO]);
+        let o0 = add(top, [lat[0] * -wO, lat[1] * -wO]), o1 = add(top, [lat[0] * wO, lat[1] * wO]);
+        if (T.cintura) { const wc = wB * 0.95; o0 = add(H, [up[0] * 58 * s + lat[0] * -wc, up[1] * 58 * s + lat[1] * -wc]); o1 = add(H, [up[0] * 58 * s + lat[0] * wc, up[1] * 58 * s + lat[1] * wc]); }   // tanga: só da cintura para baixo
         const bc = add(H, [-up[0] * desce, -up[1] * desce]);
         // no perfil/sentado a barra segue a coxa da frente
         const b0 = add(bc, [lat[0] * -wB, lat[1] * -wB]), b1 = add(bc, [lat[0] * wB, lat[1] * wB]);
@@ -593,6 +619,18 @@
           return `M${x} ${C[1]} L${x} ${C[1] + r * 0.62} L${x + w} ${C[1] + r * 0.5} L${x + w * 0.85} ${C[1]}Z`; }).join(' ');
         if (pb) h += `<path d="${pb}" fill="#A9ACB4" stroke="${T}" stroke-width="${3 * s}"/>`;
         h += `<path d="M${C[0] - r * 0.7} ${C[1] - r * 1.0} Q${C[0]} ${C[1] - r * 1.75} ${C[0] + r * 0.7} ${C[1] - r * 1.0} Q${C[0]} ${C[1] - r * 1.25} ${C[0] - r * 0.7} ${C[1] - r * 1.0}Z" fill="${cc}" stroke="${T}" stroke-width="${3 * s}"/>`;
+      } else if (ch === 'secutor') {
+        // capacete de gladiador secutor: liso e redondo (a rede escorrega), dois furinhos para os olhos, crista baixa, aba na nuca
+        const cx = C[0], cy = C[1] - r * 0.08, rx = r * 1.14, ry = r * 1.2, lat = Math.abs(Math.sin(TH));
+        h = `<path d="M${cx - rx * 0.95} ${C[1] + r * 0.55} Q${cx} ${C[1] + r * 0.95} ${cx + rx * 0.95} ${C[1] + r * 0.55} L${cx + rx * 1.06} ${C[1] + r * 0.82} Q${cx} ${C[1] + r * 1.22} ${cx - rx * 1.06} ${C[1] + r * 0.82}Z" fill="#9EA2AA" stroke="${T}" stroke-width="${4 * s}"/>`;
+        const wc = rx * (0.08 + 0.72 * lat);
+        h += `<path d="M${cx - wc} ${cy - ry * 0.72} Q${cx} ${cy - ry * 1.42} ${cx + wc} ${cy - ry * 0.72} Q${cx} ${cy - ry * 1.08} ${cx - wc} ${cy - ry * 0.72}Z" fill="#A9ACB4" stroke="${T}" stroke-width="${4 * s}"/>`;
+        h += `<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="#C3C6CD" stroke="${T}" stroke-width="${5 * s}"/>`;
+        h += `<path d="M${cx + rx * 0.25} ${cy - ry * 0.96} A${rx} ${ry} 0 0 1 ${cx + rx * 0.25} ${cy + ry * 0.96} A${rx * 0.78} ${ry * 0.97} 0 0 0 ${cx + rx * 0.25} ${cy - ry * 0.96}Z" fill="#7E838C" opacity=".5"/>`;
+        h += `<path d="M${cx - rx * 0.62} ${cy - ry * 0.25} Q${cx - rx * 0.55} ${cy - ry * 0.78} ${cx - rx * 0.08} ${cy - ry * 0.88}" stroke="#FFFFFF" stroke-width="${7 * s}" fill="none" opacity=".75" stroke-linecap="round"/>`;
+        h += `<path d="M${cx - rx * 0.96} ${cy + ry * 0.38} Q${cx} ${cy + ry * 0.62} ${cx + rx * 0.96} ${cy + ry * 0.38}" stroke="#8E929A" stroke-width="${3 * s}" fill="none"/>`;
+        [-0.42, 0.42].forEach(lg => { const c = Math.cos(lg + TH); if (c > 0.15) { const x = cx + r * 0.9 * Math.sin(lg + TH); h += `<ellipse cx="${x}" cy="${C[1] - r * 0.22}" rx="${6 * s * Math.max(0.45, c)}" ry="${6.5 * s}" fill="#0E0E14"/><path d="M${x - 7 * s * c} ${C[1] - r * 0.22 - 8 * s} q${7 * s * c} -4 ${14 * s * c} 0" stroke="#8E929A" stroke-width="${2.5 * s}" fill="none"/>`; } });
+        for (let k = 0; k < 7; k++) { const a = Math.PI * (0.15 + k * 0.117) + TH * 0.0, px = cx + rx * 0.9 * Math.cos(a), py = cy + ry * 0.9 * Math.sin(a); if (py > cy) h += `<circle cx="${px}" cy="${py}" r="${2.6 * s}" fill="#6E727A"/>`; }
       } else if (ch === 'bone') {
         const fr = yaw === 0 ? 0 : Math.sign(yaw);
         h = `<path d="M${C[0] - r * 1.0} ${C[1] - r * 0.25} A${r} ${r * 1.0} 0 0 1 ${C[0] + r * 1.0} ${C[1] - r * 0.25}Z" fill="${cc}" stroke="${T}" stroke-width="${4 * s}"/>`;
@@ -830,7 +868,8 @@
     vestido:     { desce: 120, barra: 76 },
     armadura:    { desce: 52, barra: 60, ombro: 1.1 },
     camiseta:    { desce: 14, barra: 50, cinto: false },
-    moletom:     { desce: 22, barra: 54, cinto: false }
+    moletom:     { desce: 22, barra: 54, cinto: false },
+    subligaculo: { desce: 40, barra: 46, cintura: true }      // tanga de gladiador (peito de fora)
   };
   const _hex = h => { h = h.replace('#', ''); const n = parseInt(h, 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; };
   Boneco.tomLonge = c => { const v = _hex(c).map(x => Math.round(x * 0.78 + 20)); return '#' + v.map(x => Math.min(255, x).toString(16).padStart(2, '0')).join(''); };
@@ -843,6 +882,11 @@
     'romana':        { tronco: 'estola', cor: '#3B5E8C', mangas: 'curta', pes: 'sandalia', corPes: '#7A4E2C', cabelo: 'coque', corCabelo: '#3A2418', chapeu: 'palla', corChapeu: '#E8DCC4', cinto: 'none' },
     'legionario':    { tronco: 'armadura', cor: '#9E2A22', mangas: 'curta', pes: 'caliga', corPes: '#6B4A2E', chapeu: 'capacete', corChapeu: '#9E2A22', extras: ['capa'], corCapa: '#9E2A22', cinto: '#5E3B1C' },
     'vendedor':      { tronco: 'tunica', cor: '#7A6A4A', mangas: 'curta', pes: 'sandalia', corPes: '#5E3B1C', cabelo: 'cacheado', corCabelo: '#2A1E16', extras: ['avental'] },
+    'gladiador':     { tronco: 'subligaculo', cor: '#E8DCC4', pes: 'descalco', manica: 'd', greva: 0, cabelo: 'curto', corCabelo: '#2A1E16', cinto: '#7A2E1F' },
+    'secutor':       { tronco: 'subligaculo', cor: '#E8DCC4', pes: 'descalco', manica: 'd', greva: 0, chapeu: 'secutor', cinto: '#7A2E1F' },
+    'reciario':      { tronco: 'subligaculo', cor: '#3B5E8C', pes: 'descalco', manica: 'e', galero: 'e', cabelo: 'cacheado', corCabelo: '#2A1E16', cinto: '#C9A24A' },
+    'lanista':       { tronco: 'tunicaLonga', cor: '#6B4A2E', mangas: 'curta', pes: 'sandalia', corPes: '#4A3420', cabelo: 'curto', corCabelo: '#7A7A7A', cinto: '#2A1E16' },
+    'imperador':     { tronco: 'toga', cor: '#6B2A6B', cor2: '#C9A24A', mangas: 'curta', pes: 'sapato', corPes: '#C9A24A', cabelo: 'curto', corCabelo: '#4A3A2A', chapeu: 'louros', cinto: 'none' },
     'trabalhador':   { tronco: 'tunica', cor: '#A08A68', mangas: 'nenhuma', pes: 'descalco', cabelo: 'curto', corCabelo: '#2A1E16', cinto: '#5E3B1C' },
     // --- hoje ---
     'casual':        { tronco: 'camiseta', cor: '#3B7DD8', mangas: 'curta', pernas: 'calca', corPernas: '#2E4A7A', pes: 'tenis', corPes: '#FFFFFF', corPes2: '#3B7DD8', cabelo: 'curto', corCabelo: '#3A2A20' },

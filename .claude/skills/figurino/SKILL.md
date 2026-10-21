@@ -22,6 +22,14 @@ Campos: `tronco` (`tunica`, `tunicaLonga`, `toga`, `estola`, `vestido`, `armadur
 
 `assets/passarela.html` (e `passarela.jpg`) mostra todos os figurinos de frente e andando.
 
+**Gladiadores / Coliseu** (`videos/coliseu`): `'gladiador'` (tanga *subligaculum* — tronco `subligaculo`,
+peito de fora — com `manica` no braço e `greva` na canela), `'secutor'` (o mesmo + `chapeu: 'secutor'`,
+capacete liso com dois furinhos que gira com a cabeça), `'reciario'` (tanga azul, `galero` no ombro,
+rede + tridente), `'lanista'` (treinador) e `'imperador'` (toga roxa com louros). Campos novos:
+`manica: 'd'|'e'`, `galero: 'd'|'e'`, `greva: 0|1` (perna), `corManica`, `corGreva`.
+Protagonista como gladiador: `{ preset: 'gladiador', cor: '#2A2A30', cinto: '#FF7A00', cabelo: 'nenhum', protagonista: true }`
+(tanga preta + cinto laranja + tênis da marca), e `chapeu: 'secutor'` na hora da luta.
+
 ## O PROTAGONISTA (bíblia do personagem do usuário)
 Decidido pelo usuário — vale para **todo vídeo**:
 | Sempre | Por quê |

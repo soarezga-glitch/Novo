@@ -22,11 +22,15 @@ Corta grave inútil (<80 Hz), comprime levemente (sobe as partes fracas), realç
 ## 2. Biblioteca de sons
 ```bash
 python3 scripts/sintetizar.py --saida biblioteca/roma --voz vozes_latim.wav --seed 7
+python3 scripts/sintetizar.py --saida biblioteca/coliseu --voz vozes_coliseu.wav --seed 11 --conjunto coliseu
 ```
 - `--voz`: vozes para a multidão (*walla*). Gere frases na língua/época com o TTS do
   HyperFrames (`npx hyperframes tts "..." --voice pm_alex|pm_santa|pf_dora`), várias vozes
   concatenadas. O script pica, muda o tom, inverte e sobrepõe até virar burburinho sem palavras.
-- `biblioteca/roma/` já pronta (MP3). `biblioteca/ui/`: pop, whoosh, impacto, chime, riser,
+- `biblioteca/roma/` já pronta (MP3).
+- `biblioteca/coliseu/` já pronta: cela (gotas + multidão abafada), subsolo, túnel (coração), arena
+  (multidão gigante), fim de tarde; efeitos: rugido de leão e de urso, corneta romana, clang (tridente
+  no escudo), portão de ferro, areia caindo, respiração dentro do capacete, grito da multidão, passos na areia. `biblioteca/ui/`: pop, whoosh, impacto, chime, riser,
   sparkle (Pixabay, uso livre — ver CREDITS.md), vindos da skill `media-use`.
 - Sons gravados reais (opcional, melhor qualidade): a skill `media-use` busca no Openverse
   (precisa liberar `api.openverse.org` na rede do ambiente) ou a skill `sound-effects` da

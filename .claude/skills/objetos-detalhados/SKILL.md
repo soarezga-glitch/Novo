@@ -51,7 +51,19 @@ s += D.carrinhoMercado(700, 1700, D.escala('carrinhoMercado', 0.62));
 | `celular` | `cor` | moldura, botões laterais, câmera, barra de status, ícones de app, dock, reflexo |
 | `liquidificador` | `cor`, `suco` | base com botões e seletor, copo de vidro com medidas, alça, tampa, lâminas, suco com bolhas |
 
+| `tigela` | `cor`, `colher`, `vapor` | tigela de barro com cevada e feijão, anéis do torno, colher de pau, vapor |
+| `copo` | `cor`, `cinza` | copo de barro com água acinzentada e flocos de cinza |
+| `capacete` | `cor` | capacete de secutor: casco liso, crista baixa, dois furinhos, aba, rebites, amassadinhos |
+| `rudis` / `gladio` | `rot` | espada de treino de madeira (veios, cabo amarrado) / espada curta de ferro (para a mão) |
+| `escudo` | `cor`, `cor2` | escudo curvo com borda de metal, faixas e umbo de bronze (para a mão) |
+| `tridente` / `rede` | `abertura` | arma e rede do reciário (rede com malha e pesos de chumbo) |
+| `corneta` | — | corneta romana (cornu) em G com travessa de madeira |
+| `palma` | — | folha de palmeira do vencedor |
+| `leao` / `urso` | `rugindo`, `cor` | feras de lado: juba em mechas, pelo em tufos, garras, boca aberta ao rugir |
+
 `assets/vitrine.html` (e `vitrine.jpg`) mostra todos lado a lado.
+
+`assets/vitrine2.html` mostra os objetos de gladiador / Coliseu.
 
 ## Regras (o que faz um objeto parecer caprichado)
 

@@ -58,6 +58,14 @@ Horas: `dia`, `tarde`, `amanhecer`, `noite`, `interior`.
   balcão, mureta) a um retângulo da cor da parede.
 - Elementos animados (fogo, fumaça, objetos que caem) ficam fora das peças, em grupos com id.
 
+## Coliseu / arena (`assets/arena.js`)
+`Arena(C)` (carregue depois de `cenario.js`) traz as peças do anfiteatro: `blocos` (parede de pedra do
+subsolo com juntas, trincas, umidade e musgo), `tetoFrestas` (tábuas da arena vistas por baixo, com
+raios de luz e id para animar), `grade` (ferro com rebites e ferrugem), `arco` (aduelas e pedra-chave,
+fundo escuro ou de luz), `areia`, `podio` (muro com faixa vermelha e rede de proteção),
+`arquibancada` (fileiras de gente em `<g class="torcida">` para animar; `tam` aumenta as pessoas no
+close), `vomitorio`, `velario` (toldo listrado) e `camarote` (do imperador). Usado em `videos/coliseu`.
+
 ## Texto no cenário = português
 
 Placas, pichações, inscrições e letreiros do cenário são sempre escritos em **português**
