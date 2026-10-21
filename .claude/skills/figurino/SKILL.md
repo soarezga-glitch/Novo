@@ -59,3 +59,7 @@ Adaptadas de `character-design` (omer-metin) e `character-design-continuity` (ca
 4. **Continuidade**: o mesmo personagem mantém o mesmo figurino a cena toda (só muda se a história mudar).
 5. **Movimento**: roupas longas (toga, estola) andam mais devagar e com passos menores; armadura
    = postura mais rígida (braços afastados).
+
+## Zumbi
+`figurino: 'zumbi'` (roupa rasgada e suja, pele `#A9C79A`) com `expressao: 'zumbi'` (olhos vazios, boca torta).
+Ande devagar (passo ~70% do normal), braços em `'estender'`, cabeça caída para um lado.

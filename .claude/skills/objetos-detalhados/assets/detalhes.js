@@ -50,7 +50,7 @@
       paoFrances: [320, 0.18], paoRomano: [320, 0.24], uvas: [190, 0.16], peixe: [360, 0.35], anfora: [210, 0.4], moeda: [210, 0.022],
       queijo: [430, 0.3], geladeira: [270, 0.75], carrinhoMercado: [460, 0.95], microondas: [330, 0.5], fogao: [300, 0.6],
       tv: [440, 1.0], celular: [130, 0.075], liquidificador: [190, 0.2],
-      tigela: [300, 0.2], copo: [120, 0.1], capacete: [300, 0.4], rudis: [370, 0.75], gladio: [52, 0.08], escudo: [180, 0.65], tridente: [100, 0.2], rede: [320, 2.5], corneta: [330, 1.2], palma: [160, 0.5], leao: [640, 2.2], urso: [600, 2.0]
+      tigela: [300, 0.2], copo: [120, 0.1], capacete: [300, 0.4], rudis: [370, 0.75], gladio: [52, 0.08], escudo: [180, 0.65], tridente: [100, 0.2], rede: [320, 2.5], corneta: [330, 1.2], palma: [160, 0.5], leao: [640, 2.2], urso: [600, 2.0], revolver: [220, 0.25], peDeCabra: [130, 0.6], bicicleta: [480, 1.7], moto: [500, 2.0]
     };
 
     const D = {
@@ -612,6 +612,57 @@
         s += `<path d="M310 -230 Q350 -224 360 -200 Q330 -190 304 -196Z" fill="#C9A882" stroke="${L}" stroke-width="3.5"/><ellipse cx="352" cy="-212" rx="10" ry="7" fill="#1D1D2B"/>`;
         if (rugindo) s += `<path d="M360 -200 Q340 -150 290 -160 Q320 -182 360 -200Z" fill="#7A1A1A" stroke="${L}" stroke-width="4"/><path d="M350 -196 l-4 12 -6 -10" fill="#fff" stroke="${L}" stroke-width="2"/>`;
         s += `<circle cx="280" cy="-244" r="7" fill="${L}"/><circle cx="278" cy="-246" r="2.2" fill="#fff"/><circle cx="236" cy="-282" r="18" fill="${tom(cor, -0.1)}" stroke="${L}" stroke-width="4"/><circle cx="236" cy="-282" r="8" fill="${tom(cor, -0.5)}"/></g>`;
+        return pos(x, y, k, s);
+      },
+
+      // ===================== HOJE / APOCALIPSE =====================
+      // revólver (de lado, cano para a direita): tambor com 6 câmaras, cano, mira, gatilho, cabo de madeira; origem = cabo (mão)
+      revolver: (x, y, k = 1) => {
+        const mt = metal(false), mad = lin([[0, '#9A6A3A'], [1, '#5A3A1E']], 0, 0, 1, 0);
+        let s = `<defs>${mt.def}${mad.def}</defs>`;
+        s += `<path d="M-30 -4 L-50 70 Q-52 84 -36 86 L-6 86 Q6 84 6 70 L14 0Z" fill="${mad.id}" stroke="${L}" stroke-width="4"/>${[0, 1, 2, 3].map(i => `<path d="M${-36 + i * 6} ${20 + i * 12} l20 0" stroke="#3A2414" stroke-width="2"/>`).join('')}`;
+        s += `<path d="M-6 6 Q2 34 18 30" stroke="${L}" stroke-width="5" fill="none"/><path d="M-6 6 Q2 34 18 30 L22 10Z" fill="none"/><path d="M4 8 q4 14 -4 18" stroke="#5E666E" stroke-width="4" fill="none"/>`;   // gatilho e guarda
+        s += `<rect x="-40" y="-30" width="70" height="36" rx="8" fill="${mt.id}" stroke="${L}" stroke-width="4"/>`;
+        s += `<rect x="-8" y="-38" width="54" height="44" rx="10" fill="#8A9098" stroke="${L}" stroke-width="4"/>${[0, 1, 2].map(i => `<path d="M${-2 + i * 16} -36 V2" stroke="#5E666E" stroke-width="3"/>`).join('')}`;   // tambor
+        s += `<rect x="40" y="-30" width="120" height="18" rx="4" fill="${mt.id}" stroke="${L}" stroke-width="4"/><rect x="40" y="-14" width="90" height="10" rx="3" fill="#6E747C" stroke="${L}" stroke-width="3"/><rect x="146" y="-40" width="8" height="12" fill="#5E666E" stroke="${L}" stroke-width="2"/>`;
+        s += `<path d="M-46 -30 l-18 -10 l6 14Z" fill="#5E666E" stroke="${L}" stroke-width="3"/><path d="M-30 -24 H150" stroke="#fff" stroke-width="3" opacity=".6"/>`;
+        return `<g transform="translate(${f(x)} ${f(y)}) scale(${k})">${s}</g>`;
+      },
+
+      // pé de cabra (alavanca de ferro): haste hexagonal pintada, ponta em gancho com fenda, ponta chata; origem = meio (mão)
+      peDeCabra: (x, y, k = 1, { cor = '#C8302E' } = {}) => {
+        let s = `<path d="M0 220 L0 -200 Q0 -260 -50 -270 Q-90 -270 -100 -236" stroke="${L}" stroke-width="30" fill="none" stroke-linecap="round"/><path d="M0 220 L0 -200 Q0 -260 -50 -270 Q-90 -270 -100 -236" stroke="${cor}" stroke-width="20" fill="none" stroke-linecap="round"/>`;
+        s += `<path d="M-6 200 L-6 -190 Q-6 -250 -50 -260" stroke="#fff" stroke-width="5" fill="none" opacity=".45"/>`;
+        s += `<path d="M-100 -236 l-12 22 l14 -6 l10 10Z" fill="#9AA0A8" stroke="${L}" stroke-width="3"/><path d="M-96 -250 l-10 30" stroke="${L}" stroke-width="3"/>`;   // fenda do gancho
+        s += `<path d="M-10 200 L10 200 L18 250 L-4 250Z" fill="#9AA0A8" stroke="${L}" stroke-width="4"/>`;   // ponta chata
+        s += pontos(10, -8, 8, -150, 180, '#7A2A1A', 1.5, 3, 0.3, 0.6);   // tinta descascada
+        return `<g transform="translate(${f(x)} ${f(y)}) scale(${k})">${s}</g>`;
+      },
+
+      // bicicleta (de lado, para a direita): quadro, 2 rodas com raios, guidão, selim, corrente e coroa; origem = chão no meio
+      bicicleta: (x, y, k = 1, { cor = '#2E7D4A', raios = 0 } = {}) => {
+        let s = contato(200, 10, 0.25);
+        const roda = (cx) => `<g transform="rotate(${f(raios)} ${cx} -90)"><circle cx="${cx}" cy="-90" r="88" fill="none" stroke="#22252A" stroke-width="14"/><circle cx="${cx}" cy="-90" r="80" fill="none" stroke="#5A5A62" stroke-width="3"/>${[...Array(12)].map((_, i) => `<path d="M${cx} -90 l${f(Math.cos(i / 12 * Math.PI * 2) * 80)} ${f(Math.sin(i / 12 * Math.PI * 2) * 80)}" stroke="#B9BEC6" stroke-width="2"/>`).join('')}<circle cx="${cx}" cy="-90" r="10" fill="#9AA0A8" stroke="${L}" stroke-width="3"/></g>`;
+        s += roda(-150) + roda(150);
+        s += `<path d="M-150 -90 L-30 -90 L60 -210 L-70 -210 Z M-30 -90 L-80 -230 M60 -210 L150 -90 M60 -210 L70 -250" stroke="${L}" stroke-width="16" fill="none" stroke-linejoin="round" stroke-linecap="round"/><path d="M-150 -90 L-30 -90 L60 -210 L-70 -210 Z M-30 -90 L-80 -230 M60 -210 L150 -90 M60 -210 L70 -250" stroke="${cor}" stroke-width="9" fill="none" stroke-linejoin="round" stroke-linecap="round"/>`;
+        s += `<path d="M-112 -238 H-50" stroke="${L}" stroke-width="14" stroke-linecap="round"/><path d="M50 -258 Q80 -262 96 -244" stroke="${L}" stroke-width="10" fill="none" stroke-linecap="round"/>`;   // selim e guidão
+        s += `<circle cx="-30" cy="-90" r="22" fill="#9AA0A8" stroke="${L}" stroke-width="4"/><path d="M-30 -112 L-150 -98 M-30 -68 L-150 -82" stroke="#5A5A62" stroke-width="3"/><path d="M-30 -90 l18 26" stroke="${L}" stroke-width="6" stroke-linecap="round"/>`;
+        return pos(x, y, k, s);
+      },
+
+      // moto (de lado, para a direita): tanque, banco, motor, escapamento, farol, rodas largas; fumaça opcional
+      moto: (x, y, k = 1, { cor = '#D7263D', fumaca = false } = {}) => {
+        const g = lin([[0, tom(cor, 0.3)], [1, tom(cor, -0.35)]]);
+        let s = `<defs>${g.def}</defs>` + contato(220, 12, 0.3);
+        const roda = cx => `<circle cx="${cx}" cy="-80" r="80" fill="#22252A" stroke="${L}" stroke-width="6"/><circle cx="${cx}" cy="-80" r="44" fill="#9AA0A8" stroke="${L}" stroke-width="4"/>${[...Array(6)].map((_, i) => `<path d="M${cx} -80 l${f(Math.cos(i / 6 * Math.PI * 2) * 40)} ${f(Math.sin(i / 6 * Math.PI * 2) * 40)}" stroke="#5E666E" stroke-width="5"/>`).join('')}`;
+        s += roda(-170) + roda(170);
+        s += `<path d="M-170 -80 L-60 -150 M170 -80 L110 -250" stroke="${L}" stroke-width="16" stroke-linecap="round"/><path d="M-170 -80 L-60 -150 M170 -80 L110 -250" stroke="#8A9098" stroke-width="9" stroke-linecap="round"/>`;
+        s += `<rect x="-90" y="-150" width="130" height="80" rx="14" fill="#3A3F45" stroke="${L}" stroke-width="5"/>${[0, 1, 2, 3].map(i => `<path d="M${-80 + i * 30} -148 v76" stroke="#5E666E" stroke-width="4"/>`).join('')}`;   // motor
+        s += `<path d="M-60 -100 L-230 -110 L-236 -90 L-60 -78Z" fill="#B9BEC6" stroke="${L}" stroke-width="4"/>`;   // escapamento
+        s += `<path d="M-20 -190 Q20 -240 100 -220 L110 -170 Q40 -150 -20 -160Z" fill="${g.id}" stroke="${L}" stroke-width="5"/><path d="M0 -200 Q40 -228 90 -214" stroke="#fff" stroke-width="5" opacity=".5" fill="none"/>`;   // tanque
+        s += `<path d="M-150 -180 Q-90 -200 -20 -186 L-20 -164 Q-90 -170 -150 -160Z" fill="#22252A" stroke="${L}" stroke-width="5"/>`;   // banco
+        s += `<path d="M100 -250 L140 -262" stroke="${L}" stroke-width="10" stroke-linecap="round"/><ellipse cx="140" cy="-220" rx="20" ry="24" fill="#FFE27A" stroke="${L}" stroke-width="4"/>`;
+        if (fumaca) s += [0, 1, 2].map(i => `<circle cx="${-260 - i * 50}" cy="${-110 - i * 20}" r="${20 + i * 12}" fill="#8A8A90" opacity="${0.6 - i * 0.15}"/>`).join('');
         return pos(x, y, k, s);
       },
     };

@@ -75,7 +75,8 @@
     determinado: { sobAlt: [-4, -4], sobInt: [6, 6], palpebra: 0.2, palpebraInc: 0.3, boca: 'torta', fala: 'dentes' },
     aliviado:    { sobAlt: [3, 3], sobInt: [-4, -4], olho: 'fechado', boca: 'sorriso', fala: 'feliz', extras: ['suor'] },
     tonto:       { olho: 'x', boca: 'tremula', fala: 'normal' },
-    dormindo:    { olho: 'fechado', boca: 'reta', extras: ['zzz'] }
+    dormindo:    { olho: 'fechado', boca: 'reta', extras: ['zzz'] },
+    zumbi:       { sobAlt: [-5, 7], sobInt: [9, -5], sobCurva: -1, olho: 'branco', olhoTam: 12, olharX: 3, boca: 'torta', fala: 'grito', falaAbre: 1.3, rubor: 0 }
   };
 
   function mulberry32(a) { return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
@@ -887,6 +888,7 @@
     'reciario':      { tronco: 'subligaculo', cor: '#3B5E8C', pes: 'descalco', manica: 'e', galero: 'e', cabelo: 'cacheado', corCabelo: '#2A1E16', cinto: '#C9A24A' },
     'lanista':       { tronco: 'tunicaLonga', cor: '#6B4A2E', mangas: 'curta', pes: 'sandalia', corPes: '#4A3420', cabelo: 'curto', corCabelo: '#7A7A7A', cinto: '#2A1E16' },
     'imperador':     { tronco: 'toga', cor: '#6B2A6B', cor2: '#C9A24A', mangas: 'curta', pes: 'sapato', corPes: '#C9A24A', cabelo: 'curto', corCabelo: '#4A3A2A', chapeu: 'louros', cinto: 'none' },
+    'zumbi':         { tronco: 'camiseta', cor: '#6E7A5A', cor2: '#4A5240', mangas: 'curta', pernas: 'calca', corPernas: '#3A4A5A', pes: 'tenis', corPes: '#8A8A80', corPes2: '#5A5A50', cabelo: 'curto', corCabelo: '#3A3A30' },
     'trabalhador':   { tronco: 'tunica', cor: '#A08A68', mangas: 'nenhuma', pes: 'descalco', cabelo: 'curto', corCabelo: '#2A1E16', cinto: '#5E3B1C' },
     // --- hoje ---
     'casual':        { tronco: 'camiseta', cor: '#3B7DD8', mangas: 'curta', pernas: 'calca', corPernas: '#2E4A7A', pes: 'tenis', corPes: '#FFFFFF', corPes2: '#3B7DD8', cabelo: 'curto', corCabelo: '#3A2A20' },
