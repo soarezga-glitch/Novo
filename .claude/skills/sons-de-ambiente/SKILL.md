@@ -63,3 +63,10 @@ automação de volume, efeitos pontuais, sequências de passos, ducking, volume 
 6. **Emoção também no som** (acompanha o roteiro de cores da `paleta-de-epoca`): tensão = sons
    graves e coração; perigo = fogo + gritos; alívio = pássaros e silêncio.
 7. Não usar música com letra sob narração; se usar trilha, abaixo do ambiente e com ducking.
+
+## Conjunto "hoje" (`sintetizar.py --conjunto hoje`)
+Ambientes: cidade em caos, sala, tensão, natureza, estrada, noite fria, banheiro. Efeitos: gemidos
+de zumbi (1–4), tiro, clique vazio, moto, toc-toc, tique/taque (contagem regressiva), porta rangendo,
+morte, goles, queda, passos na rua, fogo acendendo.
+**Quiz com contagem regressiva**: tique/taque em cada segundo, um "riser" no último, som de morte na
+palavra "morreu" e chime em "sobreviveu".

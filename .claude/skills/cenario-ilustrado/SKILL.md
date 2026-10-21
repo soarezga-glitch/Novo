@@ -84,3 +84,9 @@ com `rnd`) e acrescente aqui.
 Gere quadros de prévia e olhe: a luz vem do mesmo lado em tudo? O fundo está mais claro que a
 frente? Há pelo menos 2 sinais de vida por cena? Algo ficou chapado (uma cor só num volume grande)?
 `assets/demo-rua.html?hora=dia|tarde|amanhecer|noite` mostra uma rua romana completa.
+
+## Hoje / cidade (`assets/cidade.js`)
+`const cid = Cidade(C)` desenha cenários atuais no mesmo acabamento: `sala({tv:'noticia', porta:'trancada', noite})`,
+`rua({caos, noite})` (prédios, carros batidos, fumaça), `carro(x, y, k, {cor, portaAberta, quebrado})`,
+`banheiro({abandonado, tampaAberta})`, `lago({bacterias})`, `estrada({noite})`, `fachada({noite})`,
+`noite()` e `fogueira(x, y, k)` (chamas com classe `chama` para animar). Usado no quiz do apocalipse zumbi.

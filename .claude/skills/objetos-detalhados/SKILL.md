@@ -95,3 +95,5 @@ s += D.carrinhoMercado(700, 1700, D.escala('carrinhoMercado', 0.62));
 4. Peças por cima, contorno `#1D1D2B` (5 no contorno externo, 2–4 nas peças), sombra com `contato()`.
 5. Ponha na tabela `REAL` (largura do desenho, largura real em metros) e na vitrine; renderize a
    vitrine e **olhe o PNG** de longe e de perto antes de usar no vídeo.
+
+Novos (hoje): `revolver`, `peDeCabra`, `bicicleta`, `moto`.

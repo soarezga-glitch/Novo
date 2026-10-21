@@ -116,3 +116,7 @@ Gere quadros de prévia com `../edit/scripts/render.mjs cena.html --frames ...` 
 a direção do movimento, pé de apoio parado no mesmo lugar entre dois quadros, joelho nunca dobrado
 para frente, mão chegando no alvo. `assets/demo.html` mostra todos os movimentos — use como
 referência visual e para testar mudanças no motor.
+
+**Zumbi**: figurino e expressão `'zumbi'`; caminhada arrastada (passo 70%, sem balanço de braço,
+braços estendidos à frente). Personagem dentro de veículo: grupo com o boneco **sentado** e o
+veículo desenhado por cima (janela semitransparente), movidos juntos.
