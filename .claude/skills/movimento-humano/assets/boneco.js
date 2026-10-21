@@ -588,7 +588,10 @@
       if (ch === 'louros') { for (let k = 0; k < 10; k++) { const a = Math.PI * (1.0 + k * 0.11), x = C[0] + Math.cos(a) * r * 0.98, y = C[1] + Math.sin(a) * r * 0.98 + r * 0.25; h += `<ellipse cx="${x}" cy="${y}" rx="${10 * s}" ry="${5 * s}" fill="${k % 2 ? '#5C7A3A' : '#7A9A4A'}" stroke="${T}" stroke-width="${2 * s}" transform="rotate(${a * 57.3 + 90} ${x} ${y})"/>`; } }
       else if (ch === 'capacete') {
         h = `<path d="M${C[0] - r * 1.05} ${C[1] - r * 0.05} A${r * 1.05} ${r * 1.1} 0 0 1 ${C[0] + r * 1.05} ${C[1] - r * 0.05} L${C[0] + r * 1.12} ${C[1] + r * 0.12} H${C[0] - r * 1.12}Z" fill="#B9BCC4" stroke="${T}" stroke-width="${4 * s}"/>`;
-        h += `<path d="M${C[0] - r * 0.95} ${C[1]} L${C[0] - r * 0.95} ${C[1] + r * 0.62} L${C[0] - r * 0.62} ${C[1] + r * 0.5} L${C[0] - r * 0.7} ${C[1]}Z M${C[0] + r * 0.95} ${C[1]} L${C[0] + r * 0.95} ${C[1] + r * 0.62} L${C[0] + r * 0.62} ${C[1] + r * 0.5} L${C[0] + r * 0.7} ${C[1]}Z" fill="#A9ACB4" stroke="${T}" stroke-width="${3 * s}"/>`;
+        // protetores de bochecha presos na esfera (longitude ±1,15): giram com o rosto e somem atrás da cabeça
+        const pb = [-1.15, 1.15].filter(lg => Math.cos(lg + TH) > 0.05).map(lg => { const x = C[0] + r * 0.95 * Math.sin(lg + TH), w = r * 0.3 * Math.max(0.35, Math.cos(lg + TH)) * Math.sign(-Math.sin(lg + TH) || 1);
+          return `M${x} ${C[1]} L${x} ${C[1] + r * 0.62} L${x + w} ${C[1] + r * 0.5} L${x + w * 0.85} ${C[1]}Z`; }).join(' ');
+        if (pb) h += `<path d="${pb}" fill="#A9ACB4" stroke="${T}" stroke-width="${3 * s}"/>`;
         h += `<path d="M${C[0] - r * 0.7} ${C[1] - r * 1.0} Q${C[0]} ${C[1] - r * 1.75} ${C[0] + r * 0.7} ${C[1] - r * 1.0} Q${C[0]} ${C[1] - r * 1.25} ${C[0] - r * 0.7} ${C[1] - r * 1.0}Z" fill="${cc}" stroke="${T}" stroke-width="${3 * s}"/>`;
       } else if (ch === 'bone') {
         const fr = yaw === 0 ? 0 : Math.sign(yaw);
@@ -597,7 +600,13 @@
                       : `<path d="M${C[0] + fr * r * 0.6} ${C[1] - r * 0.28} L${C[0] + fr * r * 1.7} ${C[1] - r * 0.18} L${C[0] + fr * r * 0.6} ${C[1] - r * 0.1}Z" fill="${Boneco.tomLonge(cc)}" stroke="${T}" stroke-width="${3 * s}"/>`;
       } else if (ch === 'capuz' || ch === 'palla') {
         const c2 = ch === 'palla' ? (F.corChapeu || '#E8DCC4') : cc;
-        h = `<path transform="translate(${(-giroX * r * 0.22).toFixed(1)} 0)" d="M${C[0] - r * 1.18} ${C[1] + r * 0.9} Q${C[0] - r * 1.3} ${C[1] - r * 1.35} ${C[0]} ${C[1] - r * 1.25} Q${C[0] + r * 1.3} ${C[1] - r * 1.35} ${C[0] + r * 1.18} ${C[1] + r * 0.9} L${C[0] + r * 0.9} ${C[1] + r * 0.9} Q${C[0] + r * 1.0} ${C[1] - r * 1.0} ${C[0]} ${C[1] - r * 1.02} Q${C[0] - r * 1.0} ${C[1] - r * 1.0} ${C[0] - r * 0.9} ${C[1] + r * 0.9}Z" fill="${c2}" stroke="${T}" stroke-width="${3 * s}"/>`;
+        // manto sobre a cabeça: a abertura do rosto gira junto com a cabeça (mesma esfera do rosto);
+        // de perfil o pano cobre a nuca e a abertura fica só do lado para onde ele olha
+        const ox = C[0] - giroX * r * 0.12, f = n => n.toFixed(1);
+        const fx = C[0] + giroX * r * 0.62, hw = r * 0.9 * (0.55 + 0.45 * Math.cos(TH));
+        const ab = [Math.max(ox - r * 1.06, fx - hw), Math.min(ox + r * 1.06, fx + hw)];   // bordas da abertura
+        const topo = C[1] - r * 1.02, pe = C[1] + r * 0.9;
+        h = `<path d="M${f(ox - r * 1.18)} ${f(pe)} Q${f(ox - r * 1.3)} ${f(C[1] - r * 1.35)} ${f(ox)} ${f(C[1] - r * 1.25)} Q${f(ox + r * 1.3)} ${f(C[1] - r * 1.35)} ${f(ox + r * 1.18)} ${f(pe)} L${f(ab[1])} ${f(pe)} Q${f(ab[1] + r * 0.1)} ${f(C[1] - r * 1.0)} ${f((ab[0] + ab[1]) / 2)} ${f(topo)} Q${f(ab[0] - r * 0.1)} ${f(C[1] - r * 1.0)} ${f(ab[0])} ${f(pe)}Z" fill="${c2}" stroke="${T}" stroke-width="${3 * s}"/>`;
       } else if (ch === 'chapeu') {
         h = `<ellipse cx="${C[0]}" cy="${C[1] - r * 0.6}" rx="${r * 1.6}" ry="${r * 0.22}" fill="${cc}" stroke="${T}" stroke-width="${4 * s}"/><path d="M${C[0] - r * 0.75} ${C[1] - r * 0.6} L${C[0] - r * 0.6} ${C[1] - r * 1.45} H${C[0] + r * 0.6} L${C[0] + r * 0.75} ${C[1] - r * 0.6}Z" fill="${cc}" stroke="${T}" stroke-width="${4 * s}"/>`;
       }

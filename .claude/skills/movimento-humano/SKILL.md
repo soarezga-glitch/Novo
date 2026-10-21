@@ -35,6 +35,14 @@ Leia `references/biomecanica.md` para os números. Resumo:
    rosto para cima). Falando, a cabeça acompanha levemente as sílabas.
 9. **Escala**: o boneco tem ~570 unidades de altura com `escala: 1`. Use escala para caber na cena,
    nunca estique só uma parte.
+11. **Todo mundo pisa no chão desenhado** (inclusive figurantes): o `y` dos pés tem que cair na faixa
+   do chão da cena (calçada, piso, degrau) — nunca em cima de parede, balcão ou céu. Confira num quadro
+   de prévia onde o chão começa antes de posicionar alguém.
+12. **Perspectiva**: quem está mais longe (pés mais para cima no chão) é menor; quem está mais perto é
+   maior. Escolha a escala pela altura dos pés, de forma coerente com os outros da mesma cena
+   (ex.: pés em 1300 → 0,5; em 1700 → 0,8).
+13. **Cabeça é uma esfera**: ao virar, olhos, sobrancelhas, boca, cabelo, nuca e tudo o que está
+   preso na cabeça (manto/palla, capuz, capacete) giram juntos; o que passa para trás some.
 
 ## Uso
 

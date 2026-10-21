@@ -320,11 +320,11 @@ ana.base(11.1, 19.6, 'andar', { de: [-120, 1745], ate: [1180, 1745] });
 const cli = ator(0.72, [[30.5, 40.9]], { figurino: { preset: 'romana', cor: '#9E2A22' }, seed: 43 });   // freguesa na banca
 cli.base(30.5, 40.9, 'parado', { x: 110, y: 1690, vista: 'frente' }); cli.cabeca(31.0, 37.2, { virar: 0.6 });
 cli.expressao(37.3, 39.0, 'nojo'); cli.cabeca(37.3, 39.0, { virar: 0.6, gesto: 'nao' }); cli.braco('d', 37.4, 38.9, 'nariz');
-const cid = ator(0.5, [[33.0, 40.9]], { figurino: 'romano-cidadao', seed: 44 });
-cid.base(33.0, 40.9, 'andar', { de: [1180, 1610], ate: [-150, 1610] });
+const cid = ator(0.56, [[33.0, 40.9]], { figurino: 'romano-cidadao', seed: 44 });
+cid.base(33.0, 40.9, 'andar', { de: [1180, 1690], ate: [-150, 1690] });
 const agua = ator(0.72, [[43.2, 46.6]], { figurino: { preset: 'romana', cor: '#5C7A3A' }, seed: 45 });  // esperando a vez na fonte
 agua.base(43.2, 46.6, 'parado', { x: 980, y: 1720, vista: 'perfil', dir: -1 }); agua.expressao(43.2, 46.6, 'cansado');
-const carreg = ator(0.45, [[43.2, 46.6]], { figurino: 'trabalhador', seed: 46 });
+const carreg = ator(0.59, [[43.2, 46.6]], { figurino: 'trabalhador', seed: 46 });
 carreg.base(43.2, 46.6, 'andar', { de: [640, 1420], ate: [-140, 1420] });
 const fug = [[1200, -160, 0], [1260, -120, 0.45]].map(([x0, x1, atraso], i) => {   // vizinhos fugindo do fogo
   const b = ator(0.55, [[68.5, 71.8]], { figurino: i ? { preset: 'romana', cor: '#C9A24A' } : { preset: 'romano', cor: '#3B5E8C' }, seed: 47 + i });

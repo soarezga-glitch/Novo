@@ -9,7 +9,7 @@
 <script>
 // Teste de cabelo virando: 3 estilos (curto, cacheado, coque) giram frente → perfil direita → frente → perfil esquerda
 const g = document.querySelector('#a');
-const B = ['romano', 'vendedor', 'romana'].map((f, i) => {
+const B = ['legionario', 'vendedor', 'romana'].map((f, i) => {
   const b = new Boneco(g.appendChild(document.createElementNS('http://www.w3.org/2000/svg', 'g')), { escala: 1.1, seed: i + 3, figurino: Boneco.figurino(f) });
   b.base(0, 9, 'parado', { x: 480 + i * 480, y: 860, vista: 'frente', dir: 1 });
   b.cabeca(0.5, 1.5, { virar: 0.5 }); b.cabeca(1.5, 2.5, { virar: 1 }); b.cabeca(2.5, 3.5, { virar: 0 }); b.cabeca(3.5, 4.5, { virar: -1 });
