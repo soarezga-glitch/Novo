@@ -281,6 +281,44 @@
       return clip(x, y, w, h, s + acabamento(0.2));
     };
 
+
+    // ---------- RUA EM PERSPECTIVA (visão de quem olha pra trás — câmera subjetiva): muro alto da escola à esquerda
+    // fugindo para o ponto de fuga, calçada, asfalto com faixa, casas e postes à direita; fim de tarde ----------
+    E.ruaFuga = ({ x = 0, y = 0, w = 1080, h = 1920, fuga = [x + w * 0.52, y + h * 0.47], tarde = true } = {}) => {
+      const [vx, vy] = fuga;
+      let s = defs() + ceuGrad(x, y, w, vy - y + 40, tarde ? ['#4E6FB8', '#E09A7A', '#FFD3A0'] : ['#8CCBF0', '#CFEAF8', '#F4EAD0']);
+      if (tarde) s += `<circle cx="${f(vx + 40)}" cy="${f(vy - 60)}" r="70" fill="#FFB25A"/><circle cx="${f(vx + 40)}" cy="${f(vy - 60)}" r="170" fill="#FFB25A" opacity=".3"/>`;
+      // chão: asfalto em trapézio + calçadas dos dois lados
+      s += `<path d="M${x} ${f(vy)} H${x + w} V${y + h} H${x}Z" fill="#CFC8BA"/>`;
+      s += `<path d="M${f(vx - 20)} ${f(vy)} H${f(vx + 20)} L${f(x + w * 0.95)} ${y + h} H${f(x + w * 0.05)}Z" fill="#55555D"/>`;
+      s += `<path d="M${f(vx - 20)} ${f(vy)} L${f(x + w * 0.05)} ${y + h}" stroke="#E2DED4" stroke-width="16"/><path d="M${f(vx + 20)} ${f(vy)} L${f(x + w * 0.95)} ${y + h}" stroke="#E2DED4" stroke-width="16"/>`;
+      for (let k = 0; k < 8; k++) { const u0 = Math.pow(k / 8, 2.2), u1 = Math.pow((k + 0.45) / 8, 2.2); s += `<path d="M${f(vx)} ${f(lerp(vy, y + h, u0))} L${f(vx)} ${f(lerp(vy, y + h, u1))}" stroke="#F2D04A" stroke-width="${f(2 + u1 * 14)}"/>`; }
+      for (let k = 1; k < 9; k++) { const u = Math.pow(k / 9, 1.8), yy = lerp(vy, y + h, u); s += `<path d="M${x} ${f(yy)} L${f(lerp(vx - 20, x + w * 0.05, u))} ${f(yy)} M${f(lerp(vx + 20, x + w * 0.95, u))} ${f(yy)} H${x + w}" stroke="#B5AEA0" stroke-width="${f(1 + u * 3)}"/>`; }
+      // muro alto da escola à esquerda (face em perspectiva) com pichação, tijolos e o portão ao fundo
+      const topoPerto = y + h * 0.18, topoLonge = vy - 70;
+      s += `<path d="M${x} ${f(topoPerto)} L${f(vx - 60)} ${f(topoLonge)} L${f(vx - 60)} ${f(vy)} L${x} ${f(y + h * 0.78)}Z" fill="#E6D8BC" stroke="${L}" stroke-width="5"/>`;
+      s += `<path d="M${x} ${f(topoPerto - 26)} L${f(vx - 60)} ${f(topoLonge - 6)} L${f(vx - 60)} ${f(topoLonge)} L${x} ${f(topoPerto)}Z" fill="#CFC2A6" stroke="${L}" stroke-width="4"/>`;
+      for (let k = 0; k < 7; k++) { const u = Math.pow(k / 7, 1.6), xx = lerp(x, vx - 60, u); s += `<path d="M${f(xx)} ${f(lerp(topoPerto, topoLonge, u))} V${f(lerp(y + h * 0.78, vy, u))}" stroke="${tom('#E6D8BC', -0.18)}" stroke-width="${f(5 - u * 4)}"/>`; }
+      s += `<text x="${f(x + 60)}" y="${f(y + h * 0.42)}" font-family="'DejaVu Sans', sans-serif" font-weight="800" font-size="70" fill="#3B7DD8" opacity=".55" transform="skewY(-18) rotate(-4 ${f(x + 60)} ${f(y + h * 0.42)})">GALERA 3ºB</text>`;
+      s += `<path d="M${x} ${f(y + h * 0.7)} L${f(vx - 60)} ${f(vy - 8)}" stroke="#6E8A5A" stroke-width="40" opacity=".25"/>`;
+      // casas à direita, cada vez menores (perspectiva), com portões e janelas
+      const casas = [[0.0, 0.18, '#E8C99A'], [0.18, 0.36, '#C9D9A8'], [0.36, 0.52, '#E2B0A0'], [0.52, 0.66, '#A8C8D8'], [0.66, 0.78, '#E8D8A8'], [0.78, 0.88, '#D9B8C8']];
+      casas.forEach(([u0, u1, c]) => { const xa = lerp(x + w, vx + 60, u0), xb = lerp(x + w, vx + 60, u1);
+        const ta = lerp(y + h * 0.3, vy - 50, u0), tb = lerp(y + h * 0.3, vy - 50, u1), ba = lerp(y + h * 0.72, vy, u0), bb = lerp(y + h * 0.72, vy, u1);
+        s += `<path d="M${f(xa)} ${f(ta)} L${f(xb)} ${f(tb)} L${f(xb)} ${f(bb)} L${f(xa)} ${f(ba)}Z" fill="${c}" stroke="${L}" stroke-width="${f(4 - u0 * 3)}"/>`;
+        s += `<path d="M${f(xa)} ${f(ta)} L${f(xb)} ${f(tb)} L${f((xa + xb) / 2)} ${f((ta + tb) / 2 - (ba - ta) * 0.25)}Z" fill="#B5543A" stroke="${L}" stroke-width="${f(3 - u0 * 2)}"/>`;
+        const jx = lerp(xa, xb, 0.3), jx2 = lerp(xa, xb, 0.62), jt = lerp(ta, tb, 0.3) + (ba - ta) * 0.25, jb = jt + (ba - ta) * 0.25;
+        s += `<path d="M${f(jx)} ${f(jt)} L${f(jx2)} ${f(jt + (tb - ta) * 0.3)} L${f(jx2)} ${f(jb + (bb - ba) * 0.3)} L${f(jx)} ${f(jb)}Z" fill="#FFE6A8" stroke="${L}" stroke-width="2"/>`; });
+      // postes na calçada da direita, em perspectiva, com fios
+      for (let k = 0; k < 4; k++) { const u = Math.pow(k / 4, 1.5) * 0.9, px = lerp(x + w * 0.9, vx + 40, u), pb = lerp(y + h * 0.86, vy, u), pt = lerp(y + h * 0.05, vy - 160, u);
+        s += `<path d="M${f(px)} ${f(pb)} V${f(pt)}" stroke="#9A9A92" stroke-width="${f(20 * (1 - u * 0.9))}"/><path d="M${f(px)} ${f(pt + 20)} q${f(-60 * (1 - u))} -6 ${f(-110 * (1 - u))} 10" stroke="#5A5A62" stroke-width="${f(8 * (1 - u * 0.8))}" fill="none"/>`; }
+      s += `<path d="M${f(x + w * 0.9)} ${f(y + h * 0.06)} Q${f(vx + 200)} ${f(vy - 220)} ${f(vx + 40)} ${f(vy - 156)}" stroke="#2A2A30" stroke-width="3" fill="none"/>`;
+      // folhas secas e a sombra comprida do fim de tarde
+      for (let i = 0; i < 14; i++) { const lx = rnd(x, x + w), ly = rnd(vy + 120, y + h); s += `<ellipse cx="${f(lx)}" cy="${f(ly)}" rx="${f(4 + (ly - vy) / 60)}" ry="${f(2 + (ly - vy) / 120)}" fill="${pick(['#C9963A', '#A86A2A', '#D9B04A'])}"/>`; }
+      if (tarde) s += `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#FF9A4A" opacity=".1" style="mix-blend-mode:multiply"/>`;
+      return clip(x, y, w, h, s + acabamento(0.2));
+    };
+
     // ---------- QUADRA coberta ao amanhecer: arquibancada, tabela de basquete, linhas, refletores, céu rosado ----------
     E.quadra = ({ x = 0, y = 0, w = 1080, h = 1920, chao = y + h * 0.6 } = {}) => {
       let s = defs() + ceuGrad(x, y, w, chao - y, ['#2E3A6E', '#C97A8A', '#FFC9A0']);

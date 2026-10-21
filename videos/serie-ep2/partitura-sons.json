@@ -25,7 +25,7 @@
   },
   {
    "som": "amb_natureza",
-   "de": 12.2,
+   "de": 13.2,
    "ate": 14.85,
    "db": -14,
    "fade": 0.25
@@ -53,6 +53,13 @@
    "ate": 39.44,
    "db": -18,
    "fade": 0.25
+  },
+  {
+   "som": "amb_escola_patio",
+   "de": 12.2,
+   "ate": 13.2,
+   "db": -17,
+   "fade": 0.2
   }
  ],
  "efeitos": [
@@ -117,14 +124,24 @@
    "db": -6
   },
   {
+   "som": "sfx_tenis_range",
+   "em": 12.3,
+   "db": -7
+  },
+  {
+   "som": "sfx_areia",
+   "em": 12.45,
+   "db": -10
+  },
+  {
    "som": "whoosh-short",
-   "em": 12.6,
+   "em": 12.95,
    "db": -6
   },
   {
    "som": "sfx_queda",
-   "em": 13.02,
-   "db": -8
+   "em": 13.18,
+   "db": -6
   },
   {
    "som": "sfx_risadas",
@@ -256,22 +273,15 @@
   },
   {
    "som": "sfx_passo_escola",
-   "de": 12.2,
-   "ate": 12.55,
-   "intervalo": 0.2,
-   "db": -9
-  },
-  {
-   "som": "sfx_passo_escola",
-   "de": 13.05,
-   "ate": 14.85,
+   "de": 14.85,
+   "ate": 16.3,
    "intervalo": 0.21,
    "db": -10
   },
   {
    "som": "sfx_passo_escola",
-   "de": 14.85,
-   "ate": 16.3,
+   "de": 13.36,
+   "ate": 14.85,
    "intervalo": 0.21,
    "db": -10
   }

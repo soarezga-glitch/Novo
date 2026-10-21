@@ -57,10 +57,11 @@ const S = {
   apelido: [0, 4.2],      // "No dia seguinte, ninguém me chamava de Léo, só de cenourinha."
   portao:  [4.2, 10.05],  // "Na saída, o Caio, o Duda e o Pedrão me esperavam no portão. Vem cá, cenourinha."
   corre:   [10.05, 12.2], // "Eu não pensei. Só corri."
-  mureta:  [12.2, 13.25], // "Pulei a mureta,"
-  campo:   [13.25, 14.85],// "atravessei o campinho,"
+  muroEsc: [12.2, 13.6],  // "Pulei a mureta," — câmera no campinho, de frente para o MURO ALTO da escola: ele escala, senta e pula
+  campo:   [13.6, 14.85], // "atravessei o campinho,"
   esquina: [14.85, 16.35],// "virei a esquina."
-  olha:    [16.35, 20.3], // "Quando olhei pra trás, eles tinham ficado lá longe, sem fôlego."
+  olhaA:   [16.35, 17.3], // "Quando olhei pra trás," — close: ele vira a cabeça
+  olhaB:   [17.3, 20.3],  // "eles tinham ficado lá longe, sem fôlego." — VISÃO DELE (câmera subjetiva)
   muro:    [20.3, 36.55], // "Encostei no muro, ofegante. Do lado, o zelador, seu Jorge... Ele sorriu." (mesma esquina)
 };
 const QUADRA = [36.55, 39.44];   // "Amanhã, cinco da manhã, na quadra." (mostra a quadra)
@@ -81,7 +82,21 @@ const bilhete = `<g transform="translate(120 1010) rotate(-8)"><rect x="-70" y="
 cena('c-apelido', Es(2).corredor({ chao: 1180 }) + bilhete + vin + `<g id="a-leo">${Marca.etiqueta(540, 330, 'LÉO', { fs: 64 })}<path id="a-x" d="M470 290 L610 370 M610 290 L470 370" stroke="#D7263D" stroke-width="16" stroke-linecap="round"/></g>` + imp('a-cen', 540, 470, 'CENOURINHA', 120, -5));
 cena('c-portao', Es(3, 'tarde').fachada({ chao: 1300, tarde: true }) + vin);
 cena('c-corre', `<g id="r-linhas">${[0, 1, 2, 3, 4].map(k => `<path d="M${560 + k * 30} ${700 + k * 120} H${1000 + k * 20}" stroke="#FFFFFF" stroke-width="10" stroke-linecap="round" opacity=".8"/>`).join('')}</g>`);
-cena('c-mureta', Es(4, 'tarde').campinho({ chao: 1150, mureta: false, tarde: true }) + vin);
+// muro alto da escola visto de FORA (do campinho): céu, prédio da escola atrás, muro de frente, chão de terra
+const WT = 700, WB = 1180, PM = 1440;
+{ const muro = `<rect x="0" y="${WT}" width="1080" height="${WB - WT}" fill="#E6D8BC" stroke="${L}" stroke-width="6"/><rect x="-10" y="${WT - 26}" width="1100" height="30" fill="#CFC2A6" stroke="${L}" stroke-width="5"/><rect x="0" y="${WT + 4}" width="1080" height="22" fill="#000" opacity=".12"/>` +
+    [...Array(6)].map((_, k) => `<path d="M${k * 200 + 100} ${WT} V${WB}" stroke="#CFC2A6" stroke-width="5"/>`).join('') +
+    `<path d="M60 ${WT + 120} q50 -40 140 -10 q30 50 -10 90 q-90 20 -130 -80Z" fill="#B5654A"/>` + [0, 1, 2].map(r => [0, 1, 2].map(k => `<rect x="${72 + k * 38 + (r % 2) * 18}" y="${WT + 100 + r * 24}" width="34" height="20" fill="#A8553A" stroke="#7A3A26" stroke-width="2"/>`).join('')).join('') +
+    `<text x="640" y="${WT + 260}" font-family="'DejaVu Sans', sans-serif" font-weight="800" font-size="74" fill="#3B7DD8" opacity=".55" transform="rotate(-6 640 ${WT + 260})">GALERA 3ºB</text><text x="120" y="${WB - 60}" font-family="'DejaVu Sans', sans-serif" font-weight="800" font-size="44" fill="#2E7D4A" opacity=".5">PAZ</text>` +
+    `<rect x="0" y="${WB - 80}" width="1080" height="80" fill="#6E8A5A" opacity=".25"/><path d="M780 ${WT + 40} l-20 70 l26 40 l-18 90" stroke="#B5A88C" stroke-width="3" fill="none"/>`;
+  const fundo = `<defs><linearGradient id="ceuMuro" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5A7BC0"/><stop offset=".75" stop-color="#E8A27A"/><stop offset="1" stop-color="#FFD3A0"/></linearGradient></defs><rect width="1080" height="${WT}" fill="url(#ceuMuro)"/>` +
+    `<rect x="120" y="260" width="840" height="460" fill="#F2E3C4" stroke="${L}" stroke-width="6"/><rect x="100" y="230" width="880" height="40" fill="#C9603A" stroke="${L}" stroke-width="5"/>` + [0, 1, 2, 3].map(k => `<rect x="${180 + k * 200}" y="320" width="120" height="110" fill="#9ED3F0" stroke="${L}" stroke-width="5"/><rect x="${180 + k * 200}" y="480" width="120" height="110" fill="#9ED3F0" stroke="${L}" stroke-width="5"/>`).join('') +
+    `<rect x="380" y="150" width="320" height="70" rx="10" fill="#2E5E9E" stroke="${L}" stroke-width="5"/><text x="540" y="198" font-family="'Anton', sans-serif" font-size="44" text-anchor="middle" fill="#fff">ESCOLA ESTADUAL</text>` +
+    [[60, 1.0], [1010, 0.9]].map(([tx, k]) => `<circle cx="${tx}" cy="${WT - 120 * k}" r="${120 * k}" fill="#4E8A4A" stroke="${L}" stroke-width="5"/><circle cx="${tx + 50}" cy="${WT - 180 * k}" r="${70 * k}" fill="#5FA25A" stroke="${L}" stroke-width="4"/>`).join('');
+  const chao = `<rect x="0" y="${WB}" width="1080" height="${1920 - WB}" fill="#C99A62"/>` + [...Array(26)].map((_, i) => `<ellipse cx="${(i * 97) % 1080}" cy="${WB + 40 + (i * 53) % 700}" rx="${30 + (i % 4) * 20}" ry="${8 + (i % 3) * 4}" fill="${['#B5884F', '#D9AE78', '#A97A44'][i % 3]}" opacity=".6"/>`).join('') +
+    [...Array(18)].map((_, i) => `<path d="M${(i * 61) % 1080} ${WB + 10 + (i * 37) % 600} l-7 -16 m7 16 l2 -18 m-2 18 l9 -13" stroke="#6E9A4A" stroke-width="3.5"/>`).join('');
+  cena('c-muroEsc', fundo + muro + chao + `<rect width="1080" height="1920" fill="#FF9A4A" opacity=".1" style="mix-blend-mode:multiply"/>` + vin);
+}
 cena('c-campo', Es(5, 'tarde').campinho({ chao: 1100, mureta: false, tarde: true }) + vin);
 cena('c-esquina', Es(6, 'tarde').esquina({ chao: 1270, tarde: true }) + vin);
 cena('c-muro', Es(7, 'tarde').esquina({ chao: 1270, tarde: true }) + vin);
@@ -89,6 +104,7 @@ $('#topo').innerHTML = balao('p-vem', 600, 300, 'VEM CÁ, CENOURINHA!', 60, [60,
   balao('j-pergunta', 560, 290, 'QUEM TE ENSINOU A CORRER ASSIM?', 42, [130, 150]) + balao('l-resposta', 520, 290, 'NINGUÉM. EU SÓ SEI FUGIR.', 50, [-80, 150]);
 cena('c-quadra', Es(8, 'amanhecer').quadra({ chao: 1150 }) + vin + `<g id="qd-1">${Marca.etiqueta(540, 330, 'AMANHÃ', { fs: 64 })}</g><g id="qd-2">${Marca.impacto(540, 500, '5 DA MANHÃ', { fs: 130, rot: -4 })}</g><g id="qd-3">${Marca.apoio(540, 680, 'NA QUADRA', { fs: 100, rot: 3 })}</g>`);
 scenes.push(Marca.final({ linhas: ['PARTE 2', 'CONTINUA...'], destaque: 'PARTE 3', chamada: 'SEGUE PRA PARTE 3 ↓' }));
+cena('c-pov', Es(9, 'tarde').ruaFuga({ tarde: true }) + `<rect width="1080" height="1920" fill="url(#vin)"/><rect width="1080" height="1920" fill="url(#vin)"/>`);
 $('#scenes').innerHTML = scenes.join('');
 
 // ===================== ELENCO =====================
@@ -123,25 +139,27 @@ l2.expressao(S.portao[0], 5.2, 'normal'); l2.expressao(5.2, S.portao[1], 'medo')
 const l3 = ator(KL, J('corre'), LEO);
 l3.base(S.corre[0], 11.3, 'parado', { x: 560, y: PE, vista: 'frente' }); l3.base(11.3, S.corre[1], 'correr', { de: [560, PE], ate: [-500, PE], transicao: 0.15 });
 l3.expressao(S.corre[0], 11.0, 'espanto'); l3.expressao(11.0, S.corre[1], 'determinado'); l3.braco('ambos', S.corre[0], 11.2, 'desespero');
-// ---- 4. mureta: corre, pula por cima do muro baixo (arco com preparação e aterrissagem), segue correndo ----
-const MX = 540, MH = 170, KM = 1.2, PM = 1430;
-const PULO = [12.55, 13.05], DX = 380;
-item(`<g transform="translate(${MX} ${PM})"><ellipse cx="0" cy="6" rx="190" ry="16" fill="#1A1424" opacity=".25"/><rect x="-90" y="${-MH}" width="180" height="${MH}" fill="#B9B2A4" stroke="${L}" stroke-width="6"/>${[0, 1, 2].map(r => [0, 1].map(k => `<rect x="${-90 + k * 90 + (r % 2) * 45 - (r % 2 && k ? 90 : 0)}" y="${-MH + r * 56}" width="88" height="54" fill="#C2BBAD" stroke="#8A8478" stroke-width="2"/>`).join('')).join('')}<rect x="-100" y="${-MH - 18}" width="200" height="22" fill="#CFC8BA" stroke="${L}" stroke-width="5"/></g>`, J('mureta'));
-const l4 = ator(KM, J('mureta'), LEO);
-l4.base(S.mureta[0], PULO[0], 'correr', { de: [60, PM], ate: [MX - 190, PM] });
-l4.base(PULO[0], PULO[1], 'pular', { x: MX - 190, y: PM, vista: 'perfil', dir: 1, altura: 40, transicao: 0.05 });
-l4.base(PULO[1], S.mureta[1], 'correr', { de: [MX - 190, PM], ate: [MX - 190 + 160, PM], transicao: 0.08 });
-l4.expressao(S.mureta[0], S.mureta[1], 'determinado');
-// ---- 5. campinho: atravessa correndo; o trio vem atrás, mais longe ----
+// ---- 4. muro: mãos agarram o topo → cabeça aparece → se puxa → senta no muro → pula para baixo → cai agachado → corre ----
+const KM = 1.1, SUBIDA = [12.2, 12.75], SENTA = [12.75, 12.98], DESCE = [12.98, 13.2];
+const l4 = ator(KM, J('muroEsc'), LEO);
+l4.base(SUBIDA[0], SUBIDA[1], 'parado', { x: 540, y: WB, vista: 'frente' }); const maoE = [470, WT], maoD = [610, WT];   // mãos apoiadas no topo do muro (o alvo acompanha a subida do corpo)
+l4.braco('e', SUBIDA[0], SUBIDA[1] - 0.05, 'alcancar', { alvo: maoE, mao: 'aberta', entrada: 0.01, saida: 0.1 }); l4.braco('d', SUBIDA[0], SUBIDA[1] - 0.05, 'alcancar', { alvo: maoD, mao: 'aberta', entrada: 0.01, saida: 0.1 });
+l4.base(SENTA[0], SENTA[1], 'sentar', { x: 560, y: WT - 6, chao: WT + 230, dir: 1, transicao: 0.1 }); l4.braco('ambos', SENTA[0], SENTA[1], 'pose', { o: -20, c: 10, mao: 'aberta', entrada: 0.05 });
+l4.base(DESCE[0], 13.35, 'agachar', { x: 640, y: PM, vista: 'perfil', dir: 1, quanto: 110, transicao: 0.05 });
+l4.base(13.35, S.muroEsc[1], 'correr', { de: [640, PM], ate: [1200, PM], transicao: 0.08 });
+l4.expressao(S.muroEsc[0], 12.75, 'determinado'); l4.expressao(12.75, S.muroEsc[1], 'determinado');
+document.querySelector('defs').insertAdjacentHTML('beforeend', `<clipPath id="atrasDoMuro"><rect x="-500" y="-500" width="2100" height="${WT - 4 + 500}"/></clipPath>`);
+// ---- 4b. campinho: atravessa correndo; o trio aparece lá atrás, ainda pulando o muro ----
 const l5 = ator(1.15, J('campo'), LEO); l5.base(S.campo[0], S.campo[1], 'correr', { de: [80, 1420], ate: [1250, 1420] }); l5.expressao(S.campo[0], S.campo[1], 'determinado');
-[[CAIO, -350, 1.12, 'bravo'], [PEDRAO, -560, 1.04, 'cansado'], [DUDA, -460, 0.97, 'bravo']].forEach(([fig, x0, m, ex], i) => { const a = ator(0.62 * m, J('campo'), fig); a.base(S.campo[0], S.campo[1], 'correr', { de: [x0 + 500, 1230 - i * 8], ate: [x0 + 1150, 1230 - i * 8] }); a.expressao(S.campo[0], S.campo[1], ex); });
-// ---- 6. esquina: dobra correndo e sai pela direita ----
+// ---- 5. esquina: dobra correndo e sai pela direita ----
 const l6 = ator(KL, J('esquina'), LEO); l6.base(S.esquina[0], S.esquina[1], 'correr', { de: [-150, PE], ate: [1400, PE] }); l6.expressao(S.esquina[0], S.esquina[1], 'determinado');
-// ---- 7. olha pra trás: o trio lá longe, curvado, sem fôlego ----
-[[CAIO, 820, 1.12], [DUDA, 900, 0.97], [PEDRAO, 990, 1.04]].forEach(([fig, x, m], i) => { const a = ator(0.42 * m, J('olha'), fig);
-  a.base(S.olha[0], S.olha[1], 'agachar', { x, y: 1300, vista: 'perfil', dir: -1, quanto: 30, inclina: 38, ofegante: 1 }); a.braco('ambos', S.olha[0], S.olha[1], 'pose', { o: 30, c: 10 }); a.expressao(S.olha[0], S.olha[1], 'cansado'); });
-const l7 = ator(KL, J('olha'), LEO);
-l7.base(S.olha[0], S.olha[1], 'parado', { x: 330, y: PE, vista: 'perfil', dir: 1, ofegante: 0.8 }); l7.cabeca(16.5, S.olha[1], { virar: 0.2 }); l7.expressao(S.olha[0], 18.6, 'cansado'); l7.expressao(18.6, S.olha[1], 'aliviado');
+// ---- 6a. close: ofegante, vira a cabeça para olhar pra trás (por cima do ombro) ----
+const l7 = ator(KL, J('olhaA'), LEO);
+l7.base(S.olhaA[0], S.olhaA[1], 'parado', { x: 540, y: PE, vista: 'frente', ofegante: 1 }); l7.cabeca(16.45, S.olhaA[1], { virar: -1.0, baixar: -4 });
+l7.expressao(S.olhaA[0], S.olhaA[1], 'cansado'); l7.braco('ambos', S.olhaA[0], S.olhaA[1], 'pose', { o: 18, c: 30 });
+// ---- 6b. VISÃO DELE: a rua lá atrás, o trio bem longe, curvado, mãos nos joelhos, sem fôlego ----
+[[CAIO, 470, 1.12], [DUDA, 530, 0.97], [PEDRAO, 595, 1.04]].forEach(([fig, x, m], i) => { const a = ator(0.3 * m, J('olhaB'), fig);
+  a.base(S.olhaB[0], S.olhaB[1], 'agachar', { x, y: 1010 + i * 4, vista: 'perfil', dir: i === 1 ? -1 : 1, quanto: 30, inclina: 38, ofegante: 1 }); a.braco('ambos', S.olhaB[0], S.olhaB[1], 'pose', { o: 30, c: 10 }); a.expressao(S.olhaB[0], S.olhaB[1], 'cansado'); });
 // ---- 8. encostado no muro; seu Jorge do lado com a vassoura ----
 const jg = ator(KL * 1.08, J('muro'), JORGE);
 jg.base(S.muro[0], S.muro[1], 'parado', { x: 820, y: PE - 10, vista: 'perfil', dir: -1 });
@@ -163,10 +181,10 @@ const PROPS = [
 ];
 // primeiro plano desfocado
 const folhas = (x, y, flip = 1) => `<g transform="translate(${x} ${y}) scale(${flip} 1)" filter="url(#desfoque)" opacity=".92">${[[-20, -260, -30], [40, -320, 5], [90, -240, 30], [10, -200, -55], [70, -380, 15]].map(([dx, dy, r]) => `<path d="M0 0 Q${dx * 0.4} ${dy / 2} ${dx} ${dy} Q${dx + 60} ${dy + 80} 10 0Z" fill="${r > 0 ? '#2E5A2E' : '#244A26'}" transform="rotate(${r} 0 0)"/>`).join('')}</g>`;
-[[J('portao'), folhas(1110, 1640, -1)], [J('campo'), `<g filter="url(#desfoque)" opacity=".85">${[...Array(9)].map((_, k) => `<path d="M${k * 140 - 40} 1920 l40 -160 l30 160Z" fill="#3E6A2E"/>`).join('')}</g>`], [J('muro'), folhas(-30, 1680)]].forEach(([jan, svg]) => { const g = document.createElementNS(NS, 'g'); g.innerHTML = svg; $('#primeiroPlano').appendChild(g); ITENS.push({ g, janelas: jan }); });
+[[J('portao'), folhas(1110, 1640, -1)], [J('campo'), `<g filter="url(#desfoque)" opacity=".85">${[...Array(16)].map((_, k) => `<path d="M${k * 140 - 40} 1920 l40 -160 l30 160Z" fill="#3E6A2E"/>`).join('')}</g>`], [J('muro'), folhas(-30, 1680)]].forEach(([jan, svg]) => { const g = document.createElementNS(NS, 'g'); g.innerHTML = svg; $('#primeiroPlano').appendChild(g); ITENS.push({ g, janelas: jan }); });
 
 // cor da emoção por plano
-const GRADES = [[S.apelido, 'tensao', 0.45], [S.portao, 'perigo', 0.55], [S.corre, 'perigo', 0.7], [S.mureta, 'esforco', 0.8], [S.campo, 'esforco', 0.8], [S.esquina, 'esforco', 0.6], [S.olha, 'alivio', 0.8], [[20.3, 35.1], 'alivio', 0.5], [[35.1, 36.55], 'descoberta', 0.8], [QUADRA, 'descoberta', 1]];
+const GRADES = [[S.apelido, 'tensao', 0.45], [S.portao, 'perigo', 0.55], [S.corre, 'perigo', 0.7], [S.muroEsc, 'esforco', 0.8], [S.campo, 'esforco', 0.8], [S.esquina, 'esforco', 0.6], [S.olhaA, 'esforco', 0.5], [S.olhaB, 'alivio', 0.8], [[20.3, 35.1], 'alivio', 0.5], [[35.1, 36.55], 'descoberta', 0.8], [QUADRA, 'descoberta', 1]];
 const gradeEls = GRADES.map(([[de, ate], nome, op]) => { const g = document.createElementNS(NS, 'g'); g.innerHTML = Paleta.grade(nome); g.setAttribute('opacity', op); $('#grades').appendChild(g); return { g, de, ate }; });
 
 // ===================== CÂMERA =====================
@@ -174,10 +192,11 @@ const CAM = [
   [0, 1.05, 540, 960], [4.2, 1.0, 540, 960],
   [4.2, 1, 540, 960], [8.5, 1.08, 600, 900], [8.75, 1.55, 690, 860], [10.0, 1.6, 690, 860],
   [10.05, 1.35, 560, 1060], [11.2, 1.45, 560, 1040], [11.5, 1.0, 540, 960], [12.2, 1.0, 540, 960],
-  [12.2, 1, 540, 960], [13.25, 1, 560, 960],
-  [13.25, 1, 400, 960], [14.85, 1, 760, 960],
+  [12.2, 1.12, 540, 900], [13.0, 1.05, 560, 940], [13.6, 1.0, 640, 960],
+  [13.6, 1, 400, 960], [14.85, 1, 760, 960],
   [14.85, 1, 540, 960], [16.35, 1, 600, 960],
-  [16.35, 1.0, 540, 960], [17.4, 1.0, 540, 960], [18.0, 1.9, 900, 1150], [19.4, 1.9, 900, 1150], [19.8, 1.0, 540, 960], [20.3, 1.0, 540, 960],
+  [16.35, 1.5, 540, 820], [17.3, 1.6, 540, 800],
+  [17.3, 1.0, 540, 960], [17.9, 1.0, 540, 960], [19.6, 1.45, 535, 960], [20.3, 1.5, 535, 960],
   [20.3, 1.25, 380, 1000], [22.6, 1.25, 380, 1000], [23.6, 1.0, 560, 960], [27.3, 1.0, 560, 960], [27.8, 1.12, 640, 940], [30.3, 1.12, 640, 940],
   [30.6, 1.4, 380, 960], [35.0, 1.45, 380, 960], [35.3, 1.5, 800, 900], [36.5, 1.55, 800, 900],
   [36.55, 1.0, 540, 960], [39.44, 1.1, 540, 900],
@@ -189,8 +208,9 @@ function camEm(t) {
   for (let i = 0; i < CAM.length - 1; i++) if (t >= CAM[i][0] && t < CAM[i + 1][0]) { a = CAM[i]; b = CAM[i + 1]; break; }
   const u = b[0] > a[0] ? sm((t - a[0]) / (b[0] - a[0])) : 0;
   const k = a[1] + (b[1] - a[1]) * u, cx = a[2] + (b[2] - a[2]) * u, cy = a[3] + (b[3] - a[3]) * u;
-  const corre = (t > 11.3 && t < 16.35) ? 2.2 : 1;   // câmera mais agitada na correria
-  const bx = (Math.sin(t * 1.3) * 4 + Math.sin(t * 3.1) * 1.5) * corre, by = (Math.cos(t * 1.1) * 3 + Math.sin(t * 2.7 * corre) * 1.2) * corre, rot = Math.sin(t * 0.9) * 0.35 * corre;
+  const corre = (t > 11.3 && t < 16.35) ? 2.2 : 1;
+  const pov = (t >= S.olhaB[0] && t < S.olhaB[1]) ? Math.sin(t * 2 * Math.PI * 1.9) * 9 : 0;   // visão dele: sobe e desce com a respiração ofegante   // câmera mais agitada na correria
+  const bx = (Math.sin(t * 1.3) * 4 + Math.sin(t * 3.1) * 1.5) * corre, by = (Math.cos(t * 1.1) * 3 + Math.sin(t * 2.7 * corre) * 1.2) * corre + pov, rot = Math.sin(t * 0.9) * 0.35 * corre;
   return `translate(${540 + bx} ${960 + by}) rotate(${rot.toFixed(3)}) scale(${k.toFixed(4)}) translate(${-cx} ${-cy})`;
 }
 
@@ -202,8 +222,8 @@ function show(sel, t0, t1) { tl.fromTo(sel, { autoAlpha: 0 }, { autoAlpha: 1, du
 function pop(sel, t, d = 0.4, ease = 'back.out(2.4)') { gsap.set(sel, { autoAlpha: 0, scale: 0.2, transformOrigin: '50% 50%' }); tl.fromTo(sel, { autoAlpha: 0, scale: 0.2 }, { autoAlpha: 1, scale: 1, duration: d, ease, immediateRender: false }, t); }
 function hide(sel, t, d = 0.2) { tl.to(sel, { autoAlpha: 0, duration: d, ease: 'power1.in' }, t); }
 function treme(sel, t, dur = 0.5, forca = 10) { tl.to(sel, { x: `+=${forca}`, duration: 0.05, repeat: Math.round(dur / 0.05), yoyo: true }, t).set(sel, { x: 0 }, t + dur + 0.06); }
-show('#c-apelido', ...S.apelido); show('#c-portao', S.portao[0], S.corre[1]); show('#c-corre', ...S.corre); show('#c-mureta', ...S.mureta); show('#c-campo', ...S.campo);
-show('#c-esquina', S.esquina[0], S.olha[1]); show('#c-muro', 20.3, QUADRA[0]); show('#c-quadra', ...QUADRA);
+show('#c-apelido', ...S.apelido); show('#c-portao', S.portao[0], S.corre[1]); show('#c-corre', ...S.corre); show('#c-muroEsc', ...S.muroEsc); show('#c-campo', ...S.campo);
+show('#c-esquina', S.esquina[0], S.olhaA[1]); show('#c-pov', ...S.olhaB); show('#c-muro', 20.3, QUADRA[0]); show('#c-quadra', ...QUADRA);
 pop('#a-leo', 2.5, 0.35); gsap.set('#a-x', { autoAlpha: 0 }); tl.to('#a-x', { autoAlpha: 1, duration: 0.15 }, 2.9); hide('#a-leo', 3.3); pop('#a-cen', 3.35, 0.35, 'back.out(3)'); treme('#a-cen', 3.7, 0.4, 8);
 pop('#p-vem', 8.75, 0.35, 'back.out(3)'); hide('#p-vem', 9.95, 0.1);
 gsap.set('#r-linhas', { autoAlpha: 0 }); tl.to('#r-linhas', { autoAlpha: 1, duration: 0.1 }, 11.35); hide('#r-linhas', 12.1, 0.1);
@@ -226,9 +246,12 @@ function desenhar(t) {
   for (const A of ATORES) { const o = dentro(t, A.janelas); A.g.style.display = o ? '' : 'none'; if (o) A.b.desenhar(t); }
   for (const I of ITENS) I.g.style.display = dentro(t, I.janelas) ? '' : 'none';
   // pulo da mureta: o corpo avança no ar (arco) enquanto as pernas fazem preparação → voo → aterrissagem
-  if (t >= PULO[0] && t < PULO[1]) { const u = (t - PULO[0]) / (PULO[1] - PULO[0]), v = Math.min(1, Math.max(0, (u - 0.22) / 0.6)), dx = DX * sm(v), arco = Math.sin(Math.PI * v) * (MH + 70);
-    l4.grupo.setAttribute('transform', `translate(${dx.toFixed(1)} ${(-arco).toFixed(1)})`); }
-  else l4.grupo.setAttribute('transform', t >= PULO[1] ? `translate(${DX} 0)` : '');
+  // escalada: atrás do muro (cortado no topo), sobe; depois senta no topo; depois cai com gravidade até o chão do campinho
+  if (t >= SUBIDA[0] && t < SUBIDA[1]) { const u = (t - SUBIDA[0]) / (SUBIDA[1] - SUBIDA[0]), dy = 150 - 420 * sm(Math.min(1, u * 1.15));
+    l4.grupo.setAttribute('transform', `translate(0 ${dy.toFixed(1)})`); l4.grupo.setAttribute('clip-path', 'url(#atrasDoMuro)');
+    $('#atrasDoMuro rect').setAttribute('height', (WT - 4 - dy + 500).toFixed(1)); maoE[1] = maoD[1] = WT - 8 - dy; l4.desenhar(t); }   // o recorte fica no topo do muro (compensa o deslocamento do grupo)
+  else if (t >= DESCE[0] && t < DESCE[1]) { const u = (t - DESCE[0]) / (DESCE[1] - DESCE[0]); l4.grupo.setAttribute('transform', `translate(0 ${(-(PM - WT - 120) * (1 - u * u)).toFixed(1)})`); l4.grupo.removeAttribute('clip-path'); }
+  else { l4.grupo.setAttribute('transform', ''); l4.grupo.removeAttribute('clip-path'); }
   for (const P of PROPS) {
     if (!dentro(t, P.janelas)) { P.el.style.display = 'none'; continue; }
     const m = P.mao === 'ambos' ? [(P.ator.mao('e')[0] + P.ator.mao('d')[0]) / 2, (P.ator.mao('e')[1] + P.ator.mao('d')[1]) / 2] : P.ator.mao(P.mao);
