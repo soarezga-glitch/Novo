@@ -16,6 +16,8 @@ Imagens de referência: `assets/trio.png` (Duda, Caio, Pedrão) e `assets/menina
 | **Duda** | `'duda'` | **cabelo cacheado** escuro, **camiseta verde** `#2E9E5A`, calça bege, tênis preto | 0,97 | sempre com o **celular na mão filmando** (braço `contar` + mão `punho`, celular preso à mão) |
 | **Pedrão** | `'pedrao'` | **boné azul virado para trás**, **moletom cinza largo** (`moletomLargo`), calça preta, tênis azul | 1,04 | grandão, ri alto, mãos na cintura |
 | **A menina do fundo** | `'menina'` | **cabelo longo castanho**, **tiara amarela**, **camiseta roxa** `#7A4AA8`, calça jeans clara, tênis branco | 0,95 | a única que não ri; séria, preocupada (nome ainda não revelado — quando a narração disser, registrar aqui) |
+| **Seu Jorge** (zelador) | `'jorge'` | **macacão azul** `#3E5E8A` (camisa de manga longa + calça), **boné azul-escuro**, **cabelo grisalho**, botas marrons; sempre com a **vassoura** | 1,08 (adulto) | espantado com a corrida do Léo; vira o treinador ("Amanhã, 5 da manhã, na quadra") |
+| Merendeira | `'merendeira'` | roupa branca, **touca branca**, avental | 1,2 ao fundo | serve atrás do balcão do refeitório |
 | Alunos de fundo | `{ preset: 'aluno', cor, cabelo, ... }` | cores variadas **sem laranja** (o laranja é só do Léo) | 0,85–1,05 | riem, comem, passam no corredor |
 
 ## Regras de cena da série
@@ -25,5 +27,10 @@ Imagens de referência: `assets/trio.png` (Duda, Caio, Pedrão) e `assets/menina
 - Lugares fixos da série (`cenario-ilustrado/assets/escola.js`): fachada da ESCOLA ESTADUAL, corredor de armários
   azuis, refeitório (azulejo verde-água, cardápio, balcão de inox), quarto do Léo à noite (parede azul, lua, abajur).
 - Física (skill `fisica-de-cena`): sentado sempre em banco/cama/chão; bandeja nas duas mãos; celular preso à mão.
+- Lugares novos da parte 2: `campinho` (terra, traves, alambrado, mureta), `esquina` (muro alto da escola pichado,
+  portão SÓ FUNCIONÁRIOS, poste, RUA DAS FLORES), `quadra` coberta ao amanhecer; `fachada({ tarde: true })` na saída.
+- Parte 2 (`videos/serie-ep2`): apelido "cenourinha", trio no portão, fuga (pula a mureta, campinho, esquina), encosta no
+  muro ofegante, seu Jorge: "quem te ensinou a correr assim?" — "Ninguém. Eu só sei fugir." — "Amanhã, 5 da manhã, na quadra."
+- Finais: "PARTE N — CONTINUA… — SEGUE PRA PARTE N+1" (nunca "episódio N de 5").
 - Episódio 1 (`videos/serie-ep1`): fila do refeitório, "OLHA O CENOURINHA!", Caio estica o pé, bandeja voa,
   suco na camisa, a menina não ri, à noite o vídeo do Duda (@duda.zuera) com 2 mil visualizações.
