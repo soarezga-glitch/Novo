@@ -37,16 +37,20 @@
 
   // ---------- espécies (unidades com escala 1; o leão tem ~1,2 m de altura na cernelha) ----------
   const ESPECIES = {
-    leao:     { cor: '#D9A048', longe: '#B4802E', barriga: '#EBC27A', comp: 300, ombro: 230, quadril: 235, frente: [118, 112], tras: [115, 92, 58], peito: [92, 86], anca: [84, 80], pescoco: [70, -38], cabeca: 56, focinho: [46, 30], orelha: 'redonda', cauda: { n: 9, seg: 25, w: 10, tufo: '#6E3418', sobe: 0.25 }, juba: '#8A4520', jubaLonge: '#6E3418', passo: 210, pata: 22 },
-    urso:     { cor: '#6E4A2E', longe: '#553822', barriga: '#8A6040', comp: 290, ombro: 215, quadril: 200, frente: [104, 102], tras: [100, 84, 52], peito: [100, 92], anca: [92, 88], pescoco: [60, -26], cabeca: 54, focinho: [46, 28], orelha: 'redonda', corcova: true, focinhoCor: '#C9A882', cauda: { n: 2, seg: 16, w: 14, sobe: 0.3 }, passo: 180, pata: 28, garras: true },
-    cachorro: { cor: '#C98A4A', longe: '#A86E36', barriga: '#E8C08A', comp: 220, ombro: 175, quadril: 175, frente: [88, 84], tras: [86, 70, 44], peito: [66, 62], anca: [58, 56], pescoco: [56, -46], cabeca: 44, focinho: [40, 22], orelha: 'caida', cauda: { n: 6, seg: 20, w: 8, sobe: 1.0 }, passo: 160, pata: 16, focinhoCor: '#E8C08A' },
-    gato:     { cor: '#8A8A92', longe: '#6E6E76', barriga: '#C9C9CF', comp: 170, ombro: 120, quadril: 125, frente: [62, 60], tras: [62, 50, 34], peito: [46, 44], anca: [42, 42], pescoco: [40, -36], cabeca: 34, focinho: [18, 13], orelha: 'pontuda', cauda: { n: 10, seg: 18, w: 6, sobe: 0.8 }, passo: 110, pata: 11, listras: true },
-    cavalo:   { cor: '#8A5A3A', longe: '#6E4428', barriga: '#A87850', comp: 330, ombro: 330, quadril: 325, frente: [165, 160], tras: [150, 130, 75], peito: [92, 84], anca: [90, 84], pescoco: [120, -110], cabeca: 44, focinho: [74, 30], orelha: 'pontuda', cauda: { n: 7, seg: 24, w: 12, crina: true, sobe: -0.6 }, crina: '#2A1A12', passo: 260, pata: 18, casco: '#2A2A30' }
+    leao:     { cor: '#D9A048', longe: '#B4802E', barriga: '#EBC27A', comp: 250, frente: [118, 112], tras: [115, 92, 58], peito: [92, 86], anca: [84, 80], pescoco: [70, -38], cabeca: 56, focinho: [46, 30], orelha: 'redonda', cauda: { n: 9, seg: 25, w: 10, tufo: '#6E3418', sobe: 0.25 }, juba: '#8A4520', jubaLonge: '#6E3418', passo: 210, pata: 22 },
+    urso:     { cor: '#6E4A2E', longe: '#553822', barriga: '#8A6040', comp: 230, frente: [104, 102], tras: [100, 84, 52], peito: [100, 92], anca: [92, 88], pescoco: [60, -26], cabeca: 54, focinho: [46, 28], orelha: 'redonda', corcova: true, focinhoCor: '#C9A882', cauda: { n: 2, seg: 16, w: 14, sobe: 0.3 }, passo: 180, pata: 28, garras: true },
+    cachorro: { cor: '#C98A4A', longe: '#A86E36', barriga: '#E8C08A', comp: 170, frente: [88, 84], tras: [86, 70, 44], peito: [66, 62], anca: [58, 56], pescoco: [56, -46], cabeca: 44, focinho: [40, 22], orelha: 'caida', cauda: { n: 6, seg: 20, w: 8, sobe: 1.0 }, passo: 160, pata: 16, focinhoCor: '#E8C08A' },
+    gato:     { cor: '#8A8A92', longe: '#6E6E76', barriga: '#C9C9CF', comp: 130, frente: [62, 60], tras: [62, 50, 34], peito: [46, 44], anca: [42, 42], pescoco: [40, -36], cabeca: 34, focinho: [18, 13], orelha: 'pontuda', cauda: { n: 10, seg: 18, w: 6, sobe: 0.8 }, passo: 110, pata: 11, listras: true },
+    cavalo:   { cor: '#8A5A3A', longe: '#6E4428', barriga: '#A87850', comp: 280, frente: [165, 160], tras: [150, 130, 75], peito: [92, 84], anca: [90, 84], pescoco: [120, -110], cabeca: 44, focinho: [74, 30], orelha: 'pontuda', cauda: { n: 7, seg: 24, w: 12, crina: true, sobe: -0.6 }, crina: '#2A1A12', passo: 260, pata: 18, casco: '#2A2A30' }
   };
 
   class Animal {
     constructor(parent, opts = {}) {
       this.E = { ...(ESPECIES[opts.especie] || ESPECIES.leao), ...(opts.cores || {}) };
+      // alturas de pé tiradas do comprimento das pernas (quase esticadas, como num animal parado)
+      const E = this.E;
+      E.quadril = E.quadril ?? ((E.tras[0] + E.tras[1]) * 0.84 + E.tras[2] * 0.94 + 16);
+      E.ombro = E.ombro ?? ((E.frente[0] + E.frente[1]) * 0.94 + E.pata * 1.3 + 22);
       this.especie = opts.especie || 'leao';
       this.s = opts.escala ?? 1;
       this.acoes = []; this.cabecas = [];
