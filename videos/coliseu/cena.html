@@ -23,6 +23,7 @@
 <script src="arena.js"></script>
 <script src="objetos.js"></script>
 <script src="detalhes.js"></script>
+<script src="animal.js"></script>
 <script src="marca.js"></script>
 </head>
 <body>
@@ -138,11 +139,13 @@ scenes.push(card('c2', 2, 'A ESPERA', DT.leao(-30, 130, 0.58, { rugindo: true })
 // S5 — túnel das jaulas: leão, urso e a multidão lá em cima (38.3–47.2)
 { const C = Cenario({ epoca: 'roma', seed: 14, luz: -1, hora: 'interior', prefixo: 'c5' }), A = Arena(C);
   let v = `<g id="s5" class="scene"><defs>${C.defs()}</defs>` + A.blocos({ x: 0, y: 0, w: 1080, h: 1760, cor: '#8A7C6A' });
+  v += Paleta.grade('tensao');   // clima tenso só no fundo: as feras ficam com a cor viva
   // jaulas: fundo escuro, bicho, sombra por cima, grade
-  v += `<rect x="20" y="760" width="440" height="980" fill="#3A2E2A"/><rect x="620" y="760" width="440" height="980" fill="#3A2E2A"/><rect x="20" y="1600" width="440" height="140" fill="#5A4A3A"/><rect x="620" y="1600" width="440" height="140" fill="#5A4A3A"/>`;
-  v += `<g id="s5-leao">${DT.leao(220, 1740, 0.6)}</g><g id="s5-leaoR">${DT.leao(220, 1740, 0.6, { rugindo: true })}</g>`;
-  v += `<g id="s5-urso">${DTr.urso(850, 1740, 0.6)}</g><g id="s5-ursoR">${DTr.urso(850, 1740, 0.6, { rugindo: true })}</g>`;
-  v += `<rect id="s5-escuro1" x="20" y="760" width="440" height="980" fill="#0A0608" opacity=".2"/><rect id="s5-escuro2" x="620" y="760" width="440" height="980" fill="#0A0608" opacity=".2"/>`;
+  v += `<rect x="20" y="760" width="440" height="980" fill="#4A3C34"/><rect x="620" y="760" width="440" height="980" fill="#4A3C34"/><rect x="20" y="1600" width="440" height="140" fill="#5A4A3A"/><rect x="620" y="1600" width="440" height="140" fill="#5A4A3A"/>`;
+  // feras animadas (skill animacao-animal), presas dentro das jaulas
+  v += `<clipPath id="jaulaE"><rect x="20" y="760" width="440" height="980"/></clipPath><clipPath id="jaulaD"><rect x="620" y="760" width="440" height="980"/></clipPath>`;
+  v += `<g clip-path="url(#jaulaE)"><g id="s5-leao"></g></g><g clip-path="url(#jaulaD)"><g id="s5-urso"></g></g>`;
+  v += `<rect id="s5-escuro1" x="20" y="760" width="440" height="980" fill="#0A0608" opacity=".05"/><rect id="s5-escuro2" x="620" y="760" width="440" height="980" fill="#0A0608" opacity=".05"/>`;
   v += `<g id="s5-jaula1">${A.grade({ x: 30, y: 760, w: 420, h: 980, barras: 6, travessas: 3 })}</g><g id="s5-jaula2">${A.grade({ x: 630, y: 760, w: 420, h: 980, barras: 6, travessas: 3 })}</g>`;
   v += `<rect x="0" y="1740" width="1080" height="180" fill="#6E6456"/>` + C.piso({ y: 1752, h: 168, cor: '#7E7464' });
   v += `<g id="s5-teto">` + A.tetoFrestas({ y: 0, h: 240, frestas: [270, 540, 820], id: 's5-raios', chao: 1752 }) + `</g>`;
@@ -150,7 +153,7 @@ scenes.push(card('c2', 2, 'A ESPERA', DT.leao(-30, 130, 0.58, { rugindo: true })
   v += `<path d="M470 1652 h140 v100 h-140z" fill="#9C8F7C" stroke="#1D1D2B" stroke-width="6"/><path d="M470 1652 h140 v14 h-140z" fill="#B9AC98"/>`;   // bloco onde ele senta
   v += `<g id="s5-g1" transform="translate(240 640)">${Marca.apoio(0, 0, 'GRRR!', { fs: 100, rot: -6 })}</g><g id="s5-g2" transform="translate(850 640)">${Marca.apoio(0, 0, 'GRRR!', { fs: 100, rot: 6 })}</g>`;
   v += `<g id="s5-uuh" transform="translate(540 420)">${Marca.apoio(0, 0, 'UUUUH!', { fs: 110, rot: 3 })}</g>`;
-  v += Paleta.grade('tensao') + C.atmosfera({ grao: 0.3 }) + `</g>`;
+  v += C.atmosfera({ grao: 0.3 }) + `</g>`;
   scenes.push(v); }
 
 // cartão 3 — o capacete
@@ -233,6 +236,22 @@ $('#fgs').innerHTML = `
   <g id="fg-s4"><rect x="140" y="1450" width="940" height="44" fill="#9A6A40" stroke="#1D1D2B" stroke-width="6"/><rect x="140" y="1450" width="940" height="12" fill="#B88A58"/><rect x="180" y="1494" width="30" height="230" fill="#7A5030" stroke="#1D1D2B" stroke-width="5"/><rect x="1000" y="1494" width="30" height="230" fill="#7A5030" stroke="#1D1D2B" stroke-width="5"/>
     <g id="s4-tigela">${DT.tigela(690, 1452, 0.62)}</g><g id="s4-copo">${DT.copo(900, 1452, 0.6)}</g></g>
   <g id="fg-s9"><rect x="300" y="1240" width="480" height="120" fill="#EDE3CF" stroke="#1D1D2B" stroke-width="6"/><rect x="300" y="1262" width="480" height="20" fill="#6B2A6B"/><path d="M300 1236 Q420 1280 540 1236 T780 1236" stroke="#3E7B3A" stroke-width="12" fill="none"/></g>`;
+
+// ===================== FERAS (animacao-animal) =====================
+const leao = new Animal($('#s5-leao'), { especie: 'leao', escala: 0.64, seed: 3 });
+leao.base(38.3, 40.0, 'andar', { de: [130, 1738], ate: [240, 1738] });
+leao.base(40.0, 40.9, 'andar', { de: [240, 1738], ate: [190, 1738], transicao: 0.15 });
+leao.base(40.9, 43.2, 'parado', { x: 190, y: 1738, dir: 1, transicao: 0.2 });
+leao.cabeca(41.15, 42.5, { rugir: true }); leao.cabeca(42.6, 43.2, { olhar: [6, 0] });
+leao.base(43.2, 45.4, 'andar', { de: [190, 1738], ate: [140, 1738], transicao: 0.2 });
+leao.base(45.4, 47.4, 'andar', { de: [140, 1738], ate: [230, 1738], transicao: 0.2 });
+const urso = new Animal($('#s5-urso'), { especie: 'urso', escala: 0.64, seed: 5 });
+urso.base(38.3, 40.6, 'andar', { de: [930, 1738], ate: [850, 1738] });
+urso.base(40.6, 41.4, 'parado', { x: 850, y: 1738, dir: -1 }); urso.cabeca(40.7, 41.4, { baixar: 14 });
+urso.base(41.4, 43.4, 'parado', { x: 850, y: 1738, dir: -1 }); urso.cabeca(41.65, 42.9, { rugir: true });
+urso.base(43.4, 45.6, 'andar', { de: [850, 1738], ate: [930, 1738], transicao: 0.25 });
+urso.base(45.6, 47.4, 'parado', { x: 930, y: 1738, dir: 1 }); urso.cabeca(45.8, 47.2, { baixar: 16 });
+const FERAS = [leao, urso];
 
 // ===================== ATORES (movimento-humano + figurino) =====================
 const LS = window.LIPSYNC;
@@ -447,11 +466,8 @@ tl.set('#s4-copo', { autoAlpha: 0 }, 34.2);
 show('#c2', 36.2, 38.3); pop('#c2-n', 36.3); pop('#c2-t', 36.8); pop('#c2-i', 37.1);
 // S5 — jaulas
 show('#s5', 38.3, 47.2);
-gsap.set(['#s5-leaoR', '#s5-ursoR'], { autoAlpha: 0 });
-tl.set('#s5-leao', { autoAlpha: 0 }, 41.3).set('#s5-leaoR', { autoAlpha: 1 }, 41.3).set('#s5-leaoR', { autoAlpha: 0 }, 42.6).set('#s5-leao', { autoAlpha: 1 }, 42.6);
-tl.set('#s5-urso', { autoAlpha: 0 }, 41.8).set('#s5-ursoR', { autoAlpha: 1 }, 41.8).set('#s5-ursoR', { autoAlpha: 0 }, 43.0).set('#s5-urso', { autoAlpha: 1 }, 43.0);
-tl.to('#s5-escuro1', { opacity: 0.1, duration: 0.15 }, 41.3).to('#s5-escuro1', { opacity: 0.2, duration: 0.6 }, 42.4);
-tl.to('#s5-escuro2', { opacity: 0.1, duration: 0.15 }, 41.8).to('#s5-escuro2', { opacity: 0.2, duration: 0.6 }, 42.8);
+tl.to('#s5-escuro1', { opacity: 0.1, duration: 0.15 }, 41.3).to('#s5-escuro1', { opacity: 0.05, duration: 0.6 }, 42.4);
+tl.to('#s5-escuro2', { opacity: 0.1, duration: 0.15 }, 41.8).to('#s5-escuro2', { opacity: 0.05, duration: 0.6 }, 42.8);
 pop('#s5-g1', 41.3, 0.3, 'back.out(3)'); hide('#s5-g1', 42.3); pop('#s5-g2', 41.8, 0.3, 'back.out(3)'); hide('#s5-g2', 42.8);
 tremer('#s5-jaula1', 41.3, 0.6, 1.2, '240 1740'); tremer('#s5-jaula2', 41.8, 0.6, 1.2, '840 1740');
 tremer('#s5-teto', 42.4, 4.0, 0.6);
@@ -544,10 +560,10 @@ function desenharAtores(t) {
 }
 window.__timeline = tl;
 window.__duration = tl.duration();
-window.__seek = t => { tl.seek(t, false); desenharAtores(t); };
+window.__seek = t => { tl.seek(t, false); desenharAtores(t); if (t > 38.0 && t < 47.6) FERAS.forEach(a => a.desenhar(t)); };
 window.__seek(0);
 if (!rendering) {
-  tl.eventCallback('onUpdate', () => desenharAtores(tl.time()));
+  tl.eventCallback('onUpdate', () => { const t = tl.time(); desenharAtores(t); if (t > 38.0 && t < 47.6) FERAS.forEach(a => a.desenhar(t)); });
   document.addEventListener('click', () => tl.paused() ? tl.play() : tl.pause());
 }
 </script>
