@@ -140,11 +140,14 @@ const l3 = ator(KL, J('corre'), LEO);
 l3.base(S.corre[0], 11.3, 'parado', { x: 560, y: PE, vista: 'frente' }); l3.base(11.3, S.corre[1], 'correr', { de: [560, PE], ate: [-500, PE], transicao: 0.15 });
 l3.expressao(S.corre[0], 11.0, 'espanto'); l3.expressao(11.0, S.corre[1], 'determinado'); l3.braco('ambos', S.corre[0], 11.2, 'desespero');
 // ---- 4. muro: mãos agarram o topo → cabeça aparece → se puxa → senta no muro → pula para baixo → cai agachado → corre ----
-const KM = 1.1, SUBIDA = [12.2, 12.75], SENTA = [12.75, 12.98], DESCE = [12.98, 13.2];
+// 1) apoia as duas mãos no topo · 2) puxa o corpo · 3) põe a perna em cima (joelho no muro) · 4) fica agachado no topo · 5) pula
+const KM = 1.1, SUBIDA = [12.2, 12.6], PERNA = [12.6, 12.76], TOPO = [12.76, 12.9], DESCE = [12.9, 13.14];
 const l4 = ator(KM, J('muroEsc'), LEO);
 l4.base(SUBIDA[0], SUBIDA[1], 'parado', { x: 540, y: WB, vista: 'frente' }); const maoE = [470, WT], maoD = [610, WT];   // mãos apoiadas no topo do muro (o alvo acompanha a subida do corpo)
 l4.braco('e', SUBIDA[0], SUBIDA[1] - 0.05, 'alcancar', { alvo: maoE, mao: 'aberta', entrada: 0.01, saida: 0.1 }); l4.braco('d', SUBIDA[0], SUBIDA[1] - 0.05, 'alcancar', { alvo: maoD, mao: 'aberta', entrada: 0.01, saida: 0.1 });
-l4.base(SENTA[0], SENTA[1], 'sentar', { x: 560, y: WT - 6, chao: WT + 230, dir: 1, transicao: 0.1 }); l4.braco('ambos', SENTA[0], SENTA[1], 'pose', { o: -20, c: 10, mao: 'aberta', entrada: 0.05 });
+l4.base(PERNA[0], PERNA[1], 'sentar', { x: 540, y: WT - 30, chao: WT, dir: 1, inclina: 24, transicao: 0.06 });          // joelho sobe: o pé apoia em cima do muro
+l4.braco('ambos', PERNA[0], TOPO[1], 'alcancar', { alvo: [620, WT - 4], mao: 'aberta', entrada: 0.04 });                   // as mãos continuam segurando o topo
+l4.base(TOPO[0], TOPO[1], 'agachar', { x: 560, y: WT - 2, vista: 'perfil', dir: 1, quanto: 105, inclina: 26, transicao: 0.08 });   // os dois pés no topo, agachado
 l4.base(DESCE[0], 13.35, 'agachar', { x: 640, y: PM, vista: 'perfil', dir: 1, quanto: 110, transicao: 0.05 });
 l4.base(13.35, S.muroEsc[1], 'correr', { de: [640, PM], ate: [1200, PM], transicao: 0.08 });
 l4.expressao(S.muroEsc[0], 12.75, 'determinado'); l4.expressao(12.75, S.muroEsc[1], 'determinado');
@@ -247,10 +250,10 @@ function desenhar(t) {
   for (const I of ITENS) I.g.style.display = dentro(t, I.janelas) ? '' : 'none';
   // pulo da mureta: o corpo avança no ar (arco) enquanto as pernas fazem preparação → voo → aterrissagem
   // escalada: atrás do muro (cortado no topo), sobe; depois senta no topo; depois cai com gravidade até o chão do campinho
-  if (t >= SUBIDA[0] && t < SUBIDA[1]) { const u = (t - SUBIDA[0]) / (SUBIDA[1] - SUBIDA[0]), dy = 150 - 420 * sm(Math.min(1, u * 1.15));
+  if (t >= SUBIDA[0] && t < SUBIDA[1]) { const u = (t - SUBIDA[0]) / (SUBIDA[1] - SUBIDA[0]), dy = 150 - 330 * sm(Math.min(1, u * 1.1));
     l4.grupo.setAttribute('transform', `translate(0 ${dy.toFixed(1)})`); l4.grupo.setAttribute('clip-path', 'url(#atrasDoMuro)');
     $('#atrasDoMuro rect').setAttribute('height', (WT - 4 - dy + 500).toFixed(1)); maoE[1] = maoD[1] = WT - 8 - dy; l4.desenhar(t); }   // o recorte fica no topo do muro (compensa o deslocamento do grupo)
-  else if (t >= DESCE[0] && t < DESCE[1]) { const u = (t - DESCE[0]) / (DESCE[1] - DESCE[0]); l4.grupo.setAttribute('transform', `translate(0 ${(-(PM - WT - 120) * (1 - u * u)).toFixed(1)})`); l4.grupo.removeAttribute('clip-path'); }
+  else if (t >= DESCE[0] && t < DESCE[1]) { const u = (t - DESCE[0]) / (DESCE[1] - DESCE[0]); l4.grupo.setAttribute('transform', `translate(0 ${(-(PM - WT) * (1 - u * u)).toFixed(1)})`); l4.grupo.removeAttribute('clip-path'); }
   else { l4.grupo.setAttribute('transform', ''); l4.grupo.removeAttribute('clip-path'); }
   for (const P of PROPS) {
     if (!dentro(t, P.janelas)) { P.el.style.display = 'none'; continue; }
