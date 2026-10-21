@@ -14,7 +14,7 @@
   Origem de todo objeto: centro da base, no chão (y = 0, desenho para cima com y negativo).
 */
 (function (global) {
-  function Detalhes({ luz = -1, seed = 7, prefixo = 'dt' } = {}) {
+  function Detalhes({ luz = -1, seed = 7, prefixo = 'dt', sombra = true } = {}) {   // sombra: false para objeto na mão (sem sombra no chão)
     const L = '#1D1D2B';
     let n = 0; const uid = () => `${prefixo}${seed}_${++n}`;
     const f = v => Math.round(v * 10) / 10;
@@ -32,7 +32,7 @@
     const rad = (s, cx = 0.5, cy = 0.5, r = 0.5, fx = cx, fy = cy) => { const i = uid(); return { id: `url(#${i})`, def: `<radialGradient id="${i}" cx="${cx}" cy="${cy}" r="${r}" fx="${fx}" fy="${fy}">${stops(s)}</radialGradient>` }; };
     const clip = d => { const i = uid(); return { id: `url(#${i})`, def: `<clipPath id="${i}"><path d="${d}"/></clipPath>` }; };
     // sombra de contato macia no chão
-    const contato = (w, h = 14, op = 0.35) => { const g = rad([[0, '#000', op], [0.6, '#000', op * 0.45], [1, '#000', 0]]); return `<defs>${g.def}</defs><ellipse cx="${f(w * 0.06)}" cy="2" rx="${f(w)}" ry="${h}" fill="${g.id}"/>`; };
+    const contato = (w, h = 14, op = 0.35) => { if (!sombra) return ''; const g = rad([[0, '#000', op], [0.6, '#000', op * 0.45], [1, '#000', 0]]); return `<defs>${g.def}</defs><ellipse cx="${f(w * 0.06)}" cy="2" rx="${f(w)}" ry="${h}" fill="${g.id}"/>`; };
     // texto que não espelha quando a luz vem da direita
     const T = (x, y, txt, { fs = 20, cor = L, peso = 700, fonte = "'DejaVu Sans', Arial, sans-serif", anc = 'middle', extra = '' } = {}) =>
       `<text x="${f(luz > 0 ? -x : x)}" y="${f(y)}" font-size="${fs}" font-family="${fonte}" font-weight="${peso}" fill="${cor}" text-anchor="${anc}" ${extra}>${txt}</text>`;

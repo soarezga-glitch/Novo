@@ -19,7 +19,7 @@ desenha máquinas técnicas em 3D isométrico; aqui o método vira o nosso estil
 <script src="detalhes.js"></script>
 ```
 ```js
-const D = Detalhes({ luz: -1, seed: 3 });               // luz: -1 vem da esquerda (padrão), 1 da direita
+const D = Detalhes({ luz: -1, seed: 3 });               // luz: -1 vem da esquerda (padrão), 1 da direita; sombra: false = objeto na mão
 s += D.paoFrances(540, 1100, 2.4, { mordida: true });   // (x, y da BASE, escala, opções)
 s += D.geladeira(300, 1500, 1.2, { imas: true });
 s += D.anfora(820, 1500, 1, { rotulo: 'MOLHO DE PEIXE' });   // etiqueta sempre em PORTUGUÊS
