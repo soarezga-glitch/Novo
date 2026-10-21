@@ -70,3 +70,9 @@ de zumbi (1–4), tiro, clique vazio, moto, toc-toc, tique/taque (contagem regre
 morte, goles, queda, passos na rua, fogo acendendo.
 **Quiz com contagem regressiva**: tique/taque em cada segundo, um "riser" no último, som de morte na
 palavra "morreu" e chime em "sobreviveu".
+
+## Conjunto "escola" (`sintetizar.py --conjunto escola --voz fala.mp3`)
+Série "O garoto do tênis laranja". Ambientes: pátio (crianças + pássaros), corredor, refeitório (falatório agudo +
+talheres), quarto à noite. Efeitos: risadas da turma, risada do Caio, bandeja de metal caindo, tropeço, rangido do
+tênis, celular vibrando, notificação, suco espirrando, passos no piso da escola. O falatório usa a própria narração
+picada, com tom mais agudo (vozes de criança), sem palavras entendíveis.

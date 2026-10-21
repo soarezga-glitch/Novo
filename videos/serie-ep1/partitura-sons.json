@@ -1,0 +1,292 @@
+{
+ "duracao": 43.6,
+ "voz": "fala_master.wav",
+ "biblioteca": [
+  "../../.claude/skills/sons-de-ambiente/biblioteca/escola",
+  "../../.claude/skills/sons-de-ambiente/biblioteca/ui",
+  "../../.claude/skills/sons-de-ambiente/biblioteca/hoje"
+ ],
+ "ambientes": [
+  {
+   "som": "amb_escola_patio",
+   "de": 0,
+   "ate": 3.65,
+   "db": -10,
+   "fade": 0.25
+  },
+  {
+   "som": "amb_corredor",
+   "de": 3.65,
+   "ate": 7.55,
+   "db": -12,
+   "fade": 0.25
+  },
+  {
+   "som": "amb_quarto_noite",
+   "de": 7.55,
+   "ate": 9.84,
+   "db": -18,
+   "fade": 0.25
+  },
+  {
+   "som": "amb_refeitorio",
+   "de": 9.84,
+   "ate": 30.6,
+   "db": -11,
+   "fade": 0.25,
+   "automacao": [
+    [
+     9.9,
+     -12
+    ],
+    [
+     26.5,
+     -15
+    ],
+    [
+     28.8,
+     -9
+    ],
+    [
+     30.5,
+     -12
+    ]
+   ]
+  },
+  {
+   "som": "amb_refeitorio",
+   "de": 30.6,
+   "ate": 32.96,
+   "db": -17,
+   "fade": 0.25
+  },
+  {
+   "som": "amb_quarto_noite",
+   "de": 32.96,
+   "ate": 40.75,
+   "db": -11,
+   "fade": 0.25,
+   "automacao": [
+    [
+     33.0,
+     -10
+    ],
+    [
+     35.6,
+     -15
+    ]
+   ]
+  }
+ ],
+ "efeitos": [
+  {
+   "som": "whoosh",
+   "em": 0.15,
+   "db": -10
+  },
+  {
+   "som": "pop",
+   "em": 0.3,
+   "db": -11
+  },
+  {
+   "som": "sfx_tenis_range",
+   "em": 6.45,
+   "db": -7
+  },
+  {
+   "som": "whoosh-short",
+   "em": 6.6,
+   "db": -9
+  },
+  {
+   "som": "sparkle",
+   "em": 8.2,
+   "db": -12
+  },
+  {
+   "som": "sfx_risada_caio",
+   "em": 14.0,
+   "db": -5
+  },
+  {
+   "som": "pop",
+   "em": 14.34,
+   "db": -10
+  },
+  {
+   "som": "pop",
+   "em": 16.17,
+   "db": -10
+  },
+  {
+   "som": "sfx_risada_caio",
+   "em": 16.2,
+   "db": -9
+  },
+  {
+   "som": "sfx_risadas",
+   "em": 16.95,
+   "db": -9
+  },
+  {
+   "som": "pop",
+   "em": 17.01,
+   "db": -10
+  },
+  {
+   "som": "pop",
+   "em": 17.82,
+   "db": -10
+  },
+  {
+   "som": "sfx_tenis_range",
+   "em": 24.3,
+   "db": -5
+  },
+  {
+   "som": "sfx_tropeco",
+   "em": 24.38,
+   "db": -2
+  },
+  {
+   "som": "whoosh",
+   "em": 24.5,
+   "db": -7
+  },
+  {
+   "som": "sfx_bandeja_cai",
+   "em": 25.55,
+   "db": -1
+  },
+  {
+   "som": "impact-bass-2",
+   "em": 25.6,
+   "db": -8
+  },
+  {
+   "som": "sfx_splash_suco",
+   "em": 25.7,
+   "db": -5
+  },
+  {
+   "som": "sfx_risadas",
+   "em": 28.85,
+   "db": -2
+  },
+  {
+   "som": "pop",
+   "em": 28.9,
+   "db": -12
+  },
+  {
+   "som": "sfx_risada_caio",
+   "em": 28.95,
+   "db": -5
+  },
+  {
+   "som": "pop",
+   "em": 29.15,
+   "db": -12
+  },
+  {
+   "som": "pop",
+   "em": 29.4,
+   "db": -12
+  },
+  {
+   "som": "sfx_risadas",
+   "em": 29.7,
+   "db": -6
+  },
+  {
+   "som": "sfx_risadas",
+   "em": 30.65,
+   "db": -15
+  },
+  {
+   "som": "sfx_vibra_celular",
+   "em": 33.9,
+   "db": -3
+  },
+  {
+   "som": "sfx_notificacao",
+   "em": 35.75,
+   "db": -6
+  },
+  {
+   "som": "riser",
+   "em": 37.6,
+   "db": -13
+  },
+  {
+   "som": "sfx_notificacao",
+   "em": 38.2,
+   "db": -11
+  },
+  {
+   "som": "sfx_notificacao",
+   "em": 38.7,
+   "db": -11
+  },
+  {
+   "som": "sfx_notificacao",
+   "em": 39.1,
+   "db": -11
+  },
+  {
+   "som": "impact-bass-1",
+   "em": 39.4,
+   "db": -10
+  },
+  {
+   "som": "whoosh",
+   "em": 40.75,
+   "db": -9
+  },
+  {
+   "som": "pop",
+   "em": 40.95,
+   "db": -9
+  },
+  {
+   "som": "chime",
+   "em": 41.75,
+   "db": -9
+  }
+ ],
+ "passos": [
+  {
+   "som": "sfx_passo_escola",
+   "de": 0.2,
+   "ate": 2.3,
+   "intervalo": 0.42,
+   "db": -12
+  },
+  {
+   "som": "sfx_passo_escola",
+   "de": 3.7,
+   "ate": 6.4,
+   "intervalo": 0.5,
+   "db": -13
+  },
+  {
+   "som": "sfx_passo_escola",
+   "de": 19.45,
+   "ate": 22.0,
+   "intervalo": 0.55,
+   "db": -15
+  },
+  {
+   "som": "sfx_passo_escola",
+   "de": 22.1,
+   "ate": 24.3,
+   "intervalo": 0.45,
+   "db": -13
+  }
+ ],
+ "ducking": {
+  "db": 6
+ },
+ "volume_final_lufs": -10
+}

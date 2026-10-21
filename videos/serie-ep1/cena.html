@@ -89,7 +89,7 @@ const tenisGrande = (x, y, k = 1, esp = 1) => `<g transform="translate(${x} ${y}
   <path d="M-130 -100 Q-140 -60 -132 -30" stroke="${PRETO}" stroke-width="6" fill="none"/></g>`;
 
 // 1. fachada da escola
-cena('c-fachada', Es(1).fachada({ chao: 1240 }) + vin + `<g id="t-ep">${Marca.faixa(540, 150, 'EPISÓDIO 1', { fs: 92 })}</g>`);
+cena('c-fachada', Es(1).fachada({ chao: 1240 }) + vin + `<g id="t-ep">${Marca.faixa(540, 150, 'PARTE 1', { fs: 92 })}</g>`);
 // 2. corredor
 cena('c-corredor', Es(2).corredor({ chao: 1160 }) + vin);
 // 3. lembrança: a caixa com o tênis, presente do pai (tom sépia)
@@ -121,7 +121,7 @@ cena('c-quarto', Es(10).quarto({ chao: 1180, noite: true }) + `<g id="q-cama">${
   cena('c-celular', `<rect width="1080" height="1920" fill="#14183A"/><rect width="1080" height="1920" fill="url(#vin)"/>` + E.telaCelular(x, y, w, h, { views: '0', usuario: '@duda.zuera', legenda: 'KKKKK O CENOURINHA', conteudo }) +
     `<g id="cel-rec"><circle cx="${x + w - 50}" cy="${y + 160}" r="14" fill="#FF3B3B"/></g>`); }
 // final
-scenes.push(Marca.final({ linhas: ['EPISÓDIO 1 DE 5', 'CONTINUA...'], destaque: 'PARTE 2', chamada: 'SEGUE O PERFIL ↓' }));
+scenes.push(Marca.final({ linhas: ['PARTE 1', 'CONTINUA...'], destaque: 'PARTE 2', chamada: 'SEGUE PRA PARTE 2 ↓' }));
 $('#scenes').innerHTML = scenes.join('');
 
 // ===================== ELENCO (aparência fixa em todos os episódios) =====================

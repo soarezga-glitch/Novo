@@ -602,12 +602,120 @@ def ambientes_hoje(r, voz=None):
     }
 
 
+# ---------------------------------------------------------------- escola (série "O garoto do tênis laranja")
+def risada(r, dur=1.6, agudo=1.0, voz_crianca=True):
+    """uma risada 'ha-ha-ha': pulsos de vogal (formantes) a ~5 por segundo, tom caindo"""
+    L = int(dur * SR); t = np.arange(L) / SR; out = np.zeros(L)
+    f0 = (300 if voz_crianca else 180) * agudo * r.uniform(0.9, 1.15)
+    n_ha = int(dur * r.uniform(4.2, 5.6)); dt = dur / (n_ha + 1)
+    for k in range(n_ha):
+        a = int((k * dt + r.uniform(0, 0.03)) * SR); M = int(dt * 0.7 * SR); tt = np.arange(M) / SR
+        f = f0 * (1.15 - 0.3 * k / n_ha) * (1 + 0.05 * np.sin(2 * np.pi * 7 * tt))
+        ph = 2 * np.pi * np.cumsum(f) / SR
+        voz = sum(np.sin(ph * h) / h for h in range(1, 12))
+        voz = filtro(voz, 'banda', (500, 1500)) * 1.4 + filtro(voz, 'banda', (1700, 3200)) * 0.7   # vogal "a"
+        sopro = filtro(r.standard_normal(M), 'banda', (900, 3500)) * 0.25 * np.exp(-tt * 30)        # "h" do ha
+        env = np.sin(np.pi * np.minimum(1, tt / (M / SR))) ** 0.6
+        if a + M < L: out[a:a + M] += (voz + sopro) * env * (1 - 0.4 * k / n_ha)
+    return normaliza(out, -3)
+
+
+def risadas_turma(r, dur=3.0, n=7):
+    """turma rindo: várias risadas sobrepostas, defasadas, com sala"""
+    L = int(dur * SR); out = np.zeros(L)
+    for i in range(n):
+        x = risada(r, r.uniform(1.0, 2.2), r.uniform(0.85, 1.25)); a = int(r.uniform(0, 0.6) * SR)
+        m = min(L, a + len(x)); out[a:m] += x[:m - a] * r.uniform(0.5, 1.0)
+    return normaliza(reverb(out, 0.6, 0.3), -2)
+
+
+def talheres(dur, r, n=30):
+    L = int(dur * SR); out = np.zeros(L)
+    for _ in range(n):
+        a = int(r.uniform(0, dur - 0.2) * SR); M = int(0.12 * SR); tt = np.arange(M) / SR
+        f = r.uniform(2500, 5200)
+        out[a:a + M] += (np.sin(2 * np.pi * f * tt) + 0.5 * np.sin(2 * np.pi * f * 1.7 * tt)) * np.exp(-tt * r.uniform(40, 70)) * r.uniform(0.2, 0.7)
+    return normaliza(reverb(out, 0.7, 0.35), -8)
+
+
+def bandeja_cai(r):
+    """bandeja de metal batendo no chão e chacoalhando, prato e talher"""
+    L = int(1.6 * SR); t = np.arange(L) / SR; out = np.zeros(L)
+    for k, (at, g) in enumerate([(0, 1), (0.12, 0.6), (0.21, 0.45), (0.28, 0.3), (0.33, 0.22), (0.37, 0.15)]):
+        a = int(at * SR); M = L - a; tt = np.arange(M) / SR
+        x = sum(np.sin(2 * np.pi * f * tt) * w for f, w in ((420, 1), (910, 0.7), (1630, 0.5), (2870, 0.35)))
+        out[a:] += (x * np.exp(-tt * 9) + filtro(r.standard_normal(M), 'banda', (800, 6000)) * np.exp(-tt * 40) * 0.8) * g
+    out += np.sin(2 * np.pi * 70 * t) * np.exp(-t * 14) * 0.6       # baque grave
+    return normaliza(reverb(out, 0.5, 0.25), -1)
+
+
+def tropeco(r):
+    """corpo caindo no piso: arrastar do tênis + baque surdo"""
+    L = int(0.9 * SR); t = np.arange(L) / SR
+    arrasta = filtro(r.standard_normal(L), 'banda', (1500, 5000)) * np.exp(-t * 18) * 0.4
+    baque = (np.sin(2 * np.pi * 60 * t) + 0.5 * np.sin(2 * np.pi * 110 * t)) * np.exp(-t * 11) * (t > 0.18)
+    x = arrasta + baque + filtro(r.standard_normal(L), 'baixa', 500) * np.exp(-np.maximum(0, t - 0.18) * 20) * (t > 0.18) * 0.8
+    return normaliza(x, -1)
+
+
+def tenis_range(r):
+    """rangido do tênis de borracha no piso (cuiii)"""
+    L = int(0.32 * SR); t = np.arange(L) / SR
+    f = 1800 + 900 * np.sin(np.pi * t / t[-1])
+    x = np.sin(2 * np.pi * np.cumsum(f) / SR) * np.sin(np.pi * t / t[-1]) ** 2 * (1 + 0.3 * np.sin(2 * np.pi * 60 * t))
+    return normaliza(filtro(x, 'banda', (900, 4000)), -4)
+
+
+def vibra_celular(r, dur=1.4):
+    """celular vibrando em cima da cama/mesa: zumbido de 2 pulsos"""
+    L = int(dur * SR); t = np.arange(L) / SR
+    pulsos = ((t % 0.7) < 0.42).astype(float); pulsos = filtro(pulsos, 'baixa', 40)
+    x = (np.sign(np.sin(2 * np.pi * 150 * t)) * 0.6 + np.sin(2 * np.pi * 300 * t) * 0.4) * pulsos
+    return normaliza(filtro(x, 'baixa', 1200), -3)
+
+
+def notificacao(r):
+    L = int(0.6 * SR); t = np.arange(L) / SR; out = np.zeros(L)
+    for at, f in ((0, 1568), (0.11, 2093)):
+        a = int(at * SR); tt = np.arange(L - a) / SR
+        out[a:] += np.sin(2 * np.pi * f * tt) * np.exp(-tt * 9)
+    return normaliza(reverb(out, 0.3, 0.2), -4)
+
+
+def splash_suco(r):
+    L = int(0.6 * SR); t = np.arange(L) / SR
+    x = filtro(r.standard_normal(L), 'banda', (500, 3500)) * np.exp(-t * 12) + filtro(r.standard_normal(L), 'banda', (200, 900)) * np.exp(-t * 25) * 0.6
+    return normaliza(x, -3)
+
+
+def ambientes_escola(r, voz=None):
+    D = 25
+    def mix(*partes):
+        n = int(D * SR); x = np.zeros(n)
+        for p, g in partes:
+            x += p[:n] * 10 ** (g / 20)
+        return loop_suave(normaliza(x, -4))
+    criancas = walla(D, r, voz, densidade=16, tom=(1.25, 1.6), abafar=3200, sala=0.5)   # vozes mais agudas = crianças
+    criancas_dentro = walla(D, r, voz, densidade=20, tom=(1.2, 1.55), abafar=2600, sala=0.8)
+    return {
+        'amb_escola_patio': mix((criancas, -8), (passaros(D, r, 10), -10), (vento(D, r, 0.4), -18)),
+        'amb_corredor':     mix((criancas_dentro, -10), (tom_sala(D, r), -8)),
+        'amb_refeitorio':   mix((criancas_dentro, -4), (talheres(D, r, 70), -8), (tom_sala(D, r), -10)),
+        'amb_quarto_noite': mix((tom_sala(D, r), -4), (grilos(D, r), -16)),
+    }, {
+        'sfx_risadas': [risadas_turma(r, 3.0, 8)], 'sfx_risada_caio': [risada(r, 1.8, 0.9)],
+        'sfx_bandeja_cai': [bandeja_cai(r)], 'sfx_tropeco': [tropeco(r)], 'sfx_tenis_range': [tenis_range(r)],
+        'sfx_vibra_celular': [vibra_celular(r)], 'sfx_notificacao': [notificacao(r)], 'sfx_splash_suco': [splash_suco(r)],
+        'sfx_passo_escola': [passo(r, 'pedra') for _ in range(4)],
+    }
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--saida', default='biblioteca')
     ap.add_argument('--voz', default=None, help='arquivo de voz para fazer a multidão (walla)')
     ap.add_argument('--seed', type=int, default=7)
-    ap.add_argument('--conjunto', default='roma', choices=['roma', 'coliseu', 'hoje'], help='roma = cidade; coliseu = arena, subsolo, feras, corneta')
+    ap.add_argument('--conjunto', default='roma', choices=['roma', 'coliseu', 'hoje', 'escola'], help='roma = cidade; coliseu = arena, subsolo, feras, corneta')
     a = ap.parse_args()
     os.makedirs(a.saida, exist_ok=True)
     r = rng_for(a.seed)
@@ -620,6 +728,8 @@ def main():
         amb, efeitos = ambientes_coliseu(r, voz)
     elif a.conjunto == 'hoje':
         amb, efeitos = ambientes_hoje(r, voz)
+    elif a.conjunto == 'escola':
+        amb, efeitos = ambientes_escola(r, voz)
     else:
         amb = ambientes(r, voz)
         efeitos = {
