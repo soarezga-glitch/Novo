@@ -525,6 +525,25 @@ def tique(r, agudo=True):
     return normaliza(x, -3)
 
 
+def relogio_contagem(r, seg=5):
+    """contagem regressiva de relógio: tic-tac mecânico 2x por segundo, pulso grave que cresce
+    a cada segundo e alarme de campainha no fim (o 'acabou o tempo!')"""
+    L = int((seg + 1.3) * SR); out = np.zeros(L)
+    for k in range(seg * 2):
+        at = int(k * 0.5 * SR); M = int(0.06 * SR); tt = np.arange(M) / SR
+        clique = filtro(r.standard_normal(M), 'banda', (2500, 7000) if k % 2 == 0 else (1500, 4500)) * np.exp(-tt * 260)
+        clique += np.sin(2 * np.pi * (3200 if k % 2 == 0 else 2300) * tt) * np.exp(-tt * 180) * 0.5
+        out[at:at + M] += clique * (0.7 + 0.3 * k / (seg * 2))
+    for k in range(seg):   # pulso grave (coração do relógio), mais forte a cada segundo
+        at = int(k * SR); M = int(0.35 * SR); tt = np.arange(M) / SR
+        out[at:at + M] += np.sin(2 * np.pi * 55 * tt) * np.exp(-tt * 9) * (0.35 + 0.15 * k)
+    at = int(seg * SR); M = int(1.3 * SR); tt = np.arange(M) / SR   # campainha do despertador
+    bate = (np.sin(2 * np.pi * 28 * tt) > 0).astype(float)
+    sino = sum(np.sin(2 * np.pi * f * tt) * a for f, a in ((1870, 1), (2830, .6), (4100, .35)))
+    out[at:at + M] += sino * (0.4 + 0.6 * bate) * np.minimum(1, (1.3 - tt) / 0.3) * 0.9
+    return normaliza(reverb(out, 0.4, 0.15), -1)
+
+
 def porta_range(r):
     """porta de madeira rangendo ao abrir"""
     L = int(1.3 * SR); t = np.arange(L) / SR
@@ -579,6 +598,7 @@ def ambientes_hoje(r, voz=None):
         'sfx_moto': [motor_moto(5.0, r)], 'sfx_toc_toc': [toc_toc(r)], 'sfx_tique': [tique(r, True)], 'sfx_taque': [tique(r, False)],
         'sfx_porta_range': [porta_range(r)], 'sfx_morte': [morte(r)], 'sfx_goles': [goles(r)], 'sfx_queda': [queda_areia(r)],
         'sfx_passo_rua': [passo(r, 'pedra') for _ in range(4)], 'sfx_fogo_acende': [rugido_fogo(r)],
+        'sfx_relogio_contagem': [relogio_contagem(r)],
     }
 
 

@@ -418,34 +418,9 @@
    "db": -10
   },
   {
-   "som": "sfx_tique",
+   "som": "sfx_relogio_contagem",
    "em": 22.99,
-   "db": -6
-  },
-  {
-   "som": "sfx_taque",
-   "em": 23.99,
-   "db": -6
-  },
-  {
-   "som": "sfx_tique",
-   "em": 24.99,
-   "db": -6
-  },
-  {
-   "som": "sfx_taque",
-   "em": 25.99,
-   "db": -6
-  },
-  {
-   "som": "riser",
-   "em": 26.19,
-   "db": -14
-  },
-  {
-   "som": "sfx_tique",
-   "em": 26.99,
-   "db": -6
+   "db": -4
   },
   {
    "som": "impact-bass-2",
@@ -528,34 +503,9 @@
    "db": -10
   },
   {
-   "som": "sfx_tique",
+   "som": "sfx_relogio_contagem",
    "em": 45.19,
-   "db": -6
-  },
-  {
-   "som": "sfx_taque",
-   "em": 46.19,
-   "db": -6
-  },
-  {
-   "som": "sfx_tique",
-   "em": 47.19,
-   "db": -6
-  },
-  {
-   "som": "sfx_taque",
-   "em": 48.19,
-   "db": -6
-  },
-  {
-   "som": "riser",
-   "em": 48.39,
-   "db": -14
-  },
-  {
-   "som": "sfx_tique",
-   "em": 49.19,
-   "db": -6
+   "db": -4
   },
   {
    "som": "impact-bass-2",
@@ -648,34 +598,9 @@
    "db": -10
   },
   {
-   "som": "sfx_tique",
+   "som": "sfx_relogio_contagem",
    "em": 76.23,
-   "db": -6
-  },
-  {
-   "som": "sfx_taque",
-   "em": 77.23,
-   "db": -6
-  },
-  {
-   "som": "sfx_tique",
-   "em": 78.23,
-   "db": -6
-  },
-  {
-   "som": "sfx_taque",
-   "em": 79.23,
-   "db": -6
-  },
-  {
-   "som": "riser",
-   "em": 79.43,
-   "db": -14
-  },
-  {
-   "som": "sfx_tique",
-   "em": 80.23,
-   "db": -6
+   "db": -4
   },
   {
    "som": "impact-bass-2",
@@ -748,34 +673,9 @@
    "db": -10
   },
   {
-   "som": "sfx_tique",
+   "som": "sfx_relogio_contagem",
    "em": 105.1,
-   "db": -6
-  },
-  {
-   "som": "sfx_taque",
-   "em": 106.1,
-   "db": -6
-  },
-  {
-   "som": "sfx_tique",
-   "em": 107.1,
-   "db": -6
-  },
-  {
-   "som": "sfx_taque",
-   "em": 108.1,
-   "db": -6
-  },
-  {
-   "som": "riser",
-   "em": 108.3,
-   "db": -14
-  },
-  {
-   "som": "sfx_tique",
-   "em": 109.1,
-   "db": -6
+   "db": -4
   },
   {
    "som": "impact-bass-2",
@@ -863,34 +763,9 @@
    "db": -10
   },
   {
-   "som": "sfx_tique",
+   "som": "sfx_relogio_contagem",
    "em": 129.26,
-   "db": -6
-  },
-  {
-   "som": "sfx_taque",
-   "em": 130.26,
-   "db": -6
-  },
-  {
-   "som": "sfx_tique",
-   "em": 131.26,
-   "db": -6
-  },
-  {
-   "som": "sfx_taque",
-   "em": 132.26,
-   "db": -6
-  },
-  {
-   "som": "riser",
-   "em": 132.46,
-   "db": -14
-  },
-  {
-   "som": "sfx_tique",
-   "em": 133.26,
-   "db": -6
+   "db": -4
   },
   {
    "som": "impact-bass-2",
@@ -988,34 +863,9 @@
    "db": -10
   },
   {
-   "som": "sfx_tique",
+   "som": "sfx_relogio_contagem",
    "em": 157.63,
-   "db": -6
-  },
-  {
-   "som": "sfx_taque",
-   "em": 158.63,
-   "db": -6
-  },
-  {
-   "som": "sfx_tique",
-   "em": 159.63,
-   "db": -6
-  },
-  {
-   "som": "sfx_taque",
-   "em": 160.63,
-   "db": -6
-  },
-  {
-   "som": "riser",
-   "em": 160.83,
-   "db": -14
-  },
-  {
-   "som": "sfx_tique",
-   "em": 161.63,
-   "db": -6
+   "db": -4
   },
   {
    "som": "impact-bass-2",
@@ -1093,34 +943,9 @@
    "db": -10
   },
   {
-   "som": "sfx_tique",
+   "som": "sfx_relogio_contagem",
    "em": 185.11,
-   "db": -6
-  },
-  {
-   "som": "sfx_taque",
-   "em": 186.11,
-   "db": -6
-  },
-  {
-   "som": "sfx_tique",
-   "em": 187.11,
-   "db": -6
-  },
-  {
-   "som": "sfx_taque",
-   "em": 188.11,
-   "db": -6
-  },
-  {
-   "som": "riser",
-   "em": 188.31,
-   "db": -14
-  },
-  {
-   "som": "sfx_tique",
-   "em": 189.11,
-   "db": -6
+   "db": -4
   },
   {
    "som": "impact-bass-2",
