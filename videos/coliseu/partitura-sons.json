@@ -339,12 +339,12 @@
   {
    "som": "sfx_rugido_leao",
    "em": 41.3,
-   "db": -7
+   "db": -11
   },
   {
    "som": "sfx_rugido_urso",
    "em": 41.8,
-   "db": -8
+   "db": -12
   },
   {
    "som": "sfx_grito_multidao",
@@ -379,12 +379,12 @@
   {
    "som": "sfx_respira_capacete",
    "em": 54.4,
-   "db": -8
+   "db": -12
   },
   {
    "som": "sfx_portao",
    "em": 60.0,
-   "db": -7
+   "db": -11
   },
   {
    "som": "whoosh-cinematic",
@@ -409,7 +409,7 @@
   {
    "som": "sfx_corneta",
    "em": 68.5,
-   "db": -6
+   "db": -10
   },
   {
    "som": "impact-bass-2",
@@ -434,7 +434,7 @@
   {
    "som": "sfx_clang",
    "em": 72.9,
-   "db": -6
+   "db": -10
   },
   {
    "som": "sfx_baque_madeira",
@@ -474,7 +474,7 @@
   {
    "som": "sfx_grito_multidao",
    "em": 84.0,
-   "db": -8
+   "db": -12
   },
   {
    "som": "pop",
