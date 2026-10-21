@@ -230,6 +230,35 @@
           pes: [{ tz: [fx + dir * sep, chao - M.tornozelo * s], inc: 0 }, { tz: [fx - dir * sep, chao - M.tornozelo * s], inc: 0 }],
           bracos: { e: { o: 18, c: 40 }, d: { o: 14, c: 40 } } };
       }
+      if (a.tipo === 'montar') {
+        // montado em moto / bicicleta / carro (skill fisica-de-cena): 3 pontos de contato com o veículo
+        //  p.assento [x,y] = quadril no banco · p.pe [x,y] = pedaleira (sola do pé) ou p.pedivela { c:[x,y], r, rpm, fase }
+        //  p.guidao [x,y] = onde as mãos seguram (guidão / volante) · p.inclina (se faltar, inclina só o necessário para alcançar)
+        const dirM = p.dir ?? 1;
+        const hx = p.assento[0], hy = p.assento[1] + respira * 0.15;
+        const tz = M.tornozelo * s;
+        let pes;
+        if (p.pedivela) {
+          const { c, r, rpm = 50, fase = 0 } = p.pedivela;
+          const th = (fase + (t - a.t0) * rpm / 60 * 360) * RAD;
+          pes = [0, Math.PI].map(o => { const ang = th + o; return { tz: [c[0] + dirM * Math.cos(ang) * r, c[1] + Math.sin(ang) * r - tz], inc: 0 }; });
+        } else {
+          const pe = p.pe ?? [hx + dirM * M.coxa * 0.6 * s, hy + 150 * s];
+          pes = [{ tz: [pe[0] + dirM * 4 * s, pe[1] - tz], inc: 4 }, { tz: [pe[0] - dirM * 4 * s, pe[1] - tz], inc: 4 }];
+        }
+        const ombroEm = inc => [hx + dirM * Math.sin(inc * RAD) * M.tronco * s, hy - Math.cos(inc * RAD) * M.tronco * s + 16 * s];
+        const alcance = (M.braco + M.antebraco) * s;
+        let inc = p.inclina;
+        if (inc == null) {
+          inc = 4;
+          if (p.guidao) while (inc < 50 && Math.hypot(p.guidao[0] - ombroEm(inc)[0], p.guidao[1] - ombroEm(inc)[1]) > alcance * 0.93) inc += 2;
+        }
+        const bracoAte = alvo => { const r = ik2(ombroEm(inc), alvo, M.braco * s, M.antebraco * s, dirM, -1); return { o: r.a1 - inc, c: norm(r.a2 - r.a1) }; };
+        const bracos = p.guidao
+          ? { e: bracoAte([p.guidao[0] - dirM * 6 * s, p.guidao[1]]), d: bracoAte(p.guidao) }
+          : { e: { o: 18, c: 40 }, d: { o: 14, c: 40 } };
+        return { vista: 'perfil', dir: dirM, R: [hx, p.chao ?? hy + 200 * s], giro: 0, inclina: inc, quadril: [hx, hy], respira: 0, pes, bracos };
+      }
       if (a.tipo === 'pular') {
         // pulo no lugar (frente ou perfil): agacha → sobe → cai → amortece
         const u = clamp((t - a.t0) / Math.max(0.01, a.t1 - a.t0), 0, 1);

@@ -97,3 +97,5 @@ s += D.carrinhoMercado(700, 1700, D.escala('carrinhoMercado', 0.62));
    vitrine e **olhe o PNG** de longe e de perto antes de usar no vídeo.
 
 Novos (hoje): `revolver`, `peDeCabra`, `bicicleta`, `moto`.
+Veículos têm **pontos de contato** (`DT.pontos`, `DT.ponto('moto', 'guidao', k)`): assento, pé/pedivela e guidão,
+para a pose `montar` do boneco; rodas com classe `roda` e pedal com classe `pedivela` para girar (skill `fisica-de-cena`).
