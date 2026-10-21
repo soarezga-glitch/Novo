@@ -26,6 +26,7 @@ leao.base(0, 3, 'parado', { x: 300, y: 1700, dir: 1 });                   // res
 leao.base(3, 6, 'andar',  { de: [300, 1700], ate: [700, 1700] });         // trotar | correr: mesmo formato
 leao.base(6, 7.5, 'pular', { de: [700, 1700], ate: [950, 1700], altura: 160 });
 leao.base(7.5, 9, 'sentar', { x: 950, y: 1700, dir: 1 });                 // 'deitado' também
+leao.base(9, 12, 'parado', { x: 950, y: 1700, vista: 'frente' });       // de frente para a câmera (parado ou sentado)
 leao.cabeca(1.0, 2.4, { rugir: true });                                   // boca abre + cabeça avança + juba balança
 leao.cabeca(4.0, 5.0, { baixar: 14, olhar: [6, 4] });                     // farejar o chão
 // a cada quadro (dentro do __seek do vídeo):
@@ -37,7 +38,7 @@ leao.boca()   // ponto da boca no mundo (para pôr "GRRR!", baba, fumaça…)
 - `dir`: 1 olha para a direita, -1 para a esquerda (em `andar/trotar/correr` sai do movimento).
 - Transição de 0,3 s entre ações (`transicao` para mudar). O passo encaixa na distância: o pé no
   chão **não escorrega** (avança exatamente o que o corpo anda).
-- `assets/demo.html` mostra tudo; `assets/demo.mp4` é o vídeo da demonstração.
+- `assets/demo.html` mostra tudo; `assets/retratos.html` (e `retratos.jpg`) mostra cada bicho de lado e de frente.
 
 | Espécie | Jeito |
 |---|---|
@@ -49,6 +50,9 @@ leao.boca()   // ponto da boca no mundo (para pôr "GRRR!", baba, fumaça…)
 Cores: `new Animal(g, { especie: 'cachorro', cores: { cor: '#3A3A3A', longe: '#2A2A2A', barriga: '#8A8A8A' } })`.
 
 ## Regras
+0. **Juba (e todo pelo grande) envolve a cabeça**: de lado, a juba aparece em volta do rosto (testa,
+   nuca, bochecha, queixo) e desce cobrindo o pescoço e o peito do lado que a gente vê — não só atrás
+   da cabeça; de frente, faz um círculo inteiro em volta da cara (pedido do usuário).
 1. **Nunca parado**: em cena, todo animal tem pelo menos respiração + rabo (o `parado` já faz).
    Ponha olhares e farejadas (`cabeca`) a cada 2–4 s.
 2. **Antecipação → ação → recuperação**: antes de rugir, a cabeça recua (o rugido já faz); antes

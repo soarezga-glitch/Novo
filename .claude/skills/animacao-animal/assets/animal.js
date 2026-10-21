@@ -37,11 +37,11 @@
 
   // ---------- espécies (unidades com escala 1; o leão tem ~1,2 m de altura na cernelha) ----------
   const ESPECIES = {
-    leao:     { perfil: { pts: [[-0.55, -0.55], [-0.05, -0.85], [0.5, -0.66], [0.9, -0.36], [1.18, -0.14], [1.22, 0.1], [1.06, 0.28], [0.74, 0.36], [0.8, 0.52], [0.55, 0.7], [0.1, 0.64], [-0.45, 0.36]], pivo: [0.05, 0.36], olho: [0.42, -0.3], nariz: [1.12, -0.1], orelha: 'redonda', orelhaP: [-0.25, -0.78], almofada: [0.88, 0.14, 0.3, 0.2], corNariz: '#4A2A22', ang: 4 }, claro: '#E8B862', cor: '#D9A048', longe: '#B4802E', barriga: '#EBC27A', comp: 250, frente: [118, 112], tras: [115, 92, 58], peito: [92, 86], anca: [84, 80], pescoco: [120, -62], cabeca: 82, focinho: [46, 30], orelha: 'redonda', cauda: { n: 9, seg: 25, w: 10, tufo: '#6E3418', sobe: 0.25 }, juba: '#8A4520', jubaLonge: '#6E3418', passo: 210, pata: 22 },
-    urso:     { perfil: { pts: [[-0.6, -0.5], [-0.1, -0.82], [0.45, -0.62], [0.85, -0.32], [1.3, -0.2], [1.42, 0.0], [1.3, 0.18], [0.9, 0.3], [0.92, 0.45], [0.5, 0.62], [-0.05, 0.6], [-0.55, 0.3]], pivo: [0.05, 0.32], olho: [0.48, -0.32], olhoTam: 0.11, nariz: [1.36, -0.1], orelha: 'redonda', orelhaP: [-0.18, -0.8], almofada: [1.05, 0.05, 0.38, 0.2], ang: 8, corOlho: '#3A2418' }, claro: '#86603E', cor: '#6E4A2E', longe: '#553822', barriga: '#8A6040', comp: 230, frente: [104, 102], tras: [100, 84, 52], peito: [100, 92], anca: [92, 88], pescoco: [110, -10], cabeca: 68, focinho: [46, 28], orelha: 'redonda', corcova: true, focinhoCor: '#C9A882', cauda: { n: 2, seg: 16, w: 14, sobe: 0.3 }, passo: 180, pata: 28, garras: true },
-    cachorro: { perfil: { pts: [[-0.6, -0.5], [-0.05, -0.8], [0.5, -0.56], [0.9, -0.24], [1.35, -0.16], [1.46, 0.04], [1.36, 0.22], [0.95, 0.3], [0.95, 0.45], [0.5, 0.56], [-0.05, 0.56], [-0.55, 0.3]], pivo: [0.05, 0.32], olho: [0.5, -0.3], olhoTam: 0.14, nariz: [1.42, -0.08], orelha: 'caida', orelhaP: [-0.15, -0.6], almofada: [1.12, 0.1, 0.32, 0.18], ang: 10, corOlho: '#5A3A1E' }, claro: '#D99A58', cor: '#C98A4A', longe: '#A86E36', barriga: '#E8C08A', comp: 170, frente: [88, 84], tras: [86, 70, 44], peito: [66, 62], anca: [58, 56], pescoco: [78, -66], cabeca: 54, focinho: [40, 22], orelha: 'caida', cauda: { n: 6, seg: 20, w: 8, sobe: 1.0 }, passo: 160, pata: 16, focinhoCor: '#E8C08A' },
-    gato:     { perfil: { pts: [[-0.75, -0.42], [-0.2, -0.84], [0.45, -0.7], [0.85, -0.32], [1.04, -0.04], [1.0, 0.14], [0.86, 0.25], [0.66, 0.32], [0.66, 0.45], [0.35, 0.58], [-0.2, 0.6], [-0.75, 0.26]], pivo: [0.05, 0.3], olho: [0.48, -0.24], olhoTam: 0.2, nariz: [0.98, -0.02], orelha: 'pontuda', orelhaP: [-0.05, -0.82], orelhaAlta: 0.6, almofada: [0.8, 0.12, 0.22, 0.15], corNariz: '#D98A9A', corOlho: '#9ACD4A' }, claro: '#A0A0A8', cor: '#8A8A92', longe: '#6E6E76', barriga: '#C9C9CF', comp: 130, frente: [62, 60], tras: [62, 50, 34], peito: [46, 44], anca: [42, 42], pescoco: [54, -46], cabeca: 40, focinho: [18, 13], orelha: 'pontuda', cauda: { n: 10, seg: 18, w: 6, sobe: 0.8 }, passo: 110, pata: 11, listras: true },
-    cavalo:   { perfil: { pts: [[-0.55, -0.6], [0.05, -0.76], [0.8, -0.5], [1.7, -0.22], [2.2, -0.08], [2.32, 0.14], [2.2, 0.32], [1.9, 0.38], [1.8, 0.55], [1.2, 0.5], [0.4, 0.6], [-0.45, 0.4]], pivo: [0.4, 0.42], olho: [0.45, -0.36], olhoTam: 0.13, nariz: [2.18, 0.04], orelha: 'pontuda', orelhaP: [-0.1, -0.78], orelhaAlta: 0.75, ang: 42, corOlho: '#2A1A12' }, claro: '#A06C46', cintura: 0.95, cor: '#8A5A3A', longe: '#6E4428', barriga: '#A87850', comp: 280, frente: [165, 160], tras: [150, 130, 75], peito: [92, 84], anca: [90, 84], pescoco: [140, -130], cabeca: 50, focinho: [74, 30], orelha: 'pontuda', cauda: { n: 7, seg: 24, w: 12, crina: true, sobe: -0.6 }, crina: '#2A1A12', passo: 260, pata: 18, casco: '#2A2A30' }
+    leao:     { perfil: { pts: [[-0.55, -0.55], [-0.05, -0.85], [0.5, -0.66], [0.9, -0.36], [1.18, -0.14], [1.22, 0.1], [1.06, 0.28], [0.74, 0.36], [0.8, 0.52], [0.55, 0.7], [0.1, 0.64], [-0.45, 0.36]], pivo: [0.05, 0.36], olho: [0.42, -0.3], nariz: [1.12, -0.1], orelha: 'redonda', orelhaP: [-0.25, -0.78], almofada: [0.88, 0.14, 0.3, 0.2], corNariz: '#4A2A22', ang: 4 }, claro: '#E8B862', cor: '#D9A048', longe: '#B4802E', barriga: '#EBC27A', comp: 250, frente: [106, 101], tras: [104, 83, 52], peito: [92, 86], anca: [84, 80], pescoco: [120, -62], cabeca: 82, focinho: [46, 30], orelha: 'redonda', cauda: { n: 9, seg: 25, w: 10, tufo: '#6E3418', sobe: 0.25 }, juba: '#8A4520', jubaLonge: '#6E3418', passo: 210, pata: 22 },
+    urso:     { perfil: { pts: [[-0.6, -0.5], [-0.1, -0.82], [0.45, -0.62], [0.85, -0.32], [1.3, -0.2], [1.42, 0.0], [1.3, 0.18], [0.9, 0.3], [0.92, 0.45], [0.5, 0.62], [-0.05, 0.6], [-0.55, 0.3]], pivo: [0.05, 0.32], olho: [0.48, -0.32], olhoTam: 0.11, nariz: [1.36, -0.1], orelha: 'redonda', orelhaP: [-0.18, -0.8], almofada: [1.05, 0.05, 0.38, 0.2], ang: 8, corOlho: '#3A2418' }, claro: '#86603E', cor: '#6E4A2E', longe: '#553822', barriga: '#8A6040', comp: 230, frente: [94, 92], tras: [90, 76, 47], peito: [100, 92], anca: [92, 88], pescoco: [110, -10], cabeca: 68, focinho: [46, 28], orelha: 'redonda', corcova: true, focinhoCor: '#C9A882', cauda: { n: 2, seg: 16, w: 14, sobe: 0.3 }, passo: 180, pata: 28, garras: true },
+    cachorro: { perfil: { pts: [[-0.6, -0.5], [-0.05, -0.8], [0.5, -0.56], [0.9, -0.24], [1.35, -0.16], [1.46, 0.04], [1.36, 0.22], [0.95, 0.3], [0.95, 0.45], [0.5, 0.56], [-0.05, 0.56], [-0.55, 0.3]], pivo: [0.05, 0.32], olho: [0.5, -0.3], olhoTam: 0.14, nariz: [1.42, -0.08], orelha: 'caida', orelhaP: [-0.15, -0.6], almofada: [1.12, 0.1, 0.32, 0.18], ang: 10, corOlho: '#5A3A1E' }, claro: '#D99A58', cor: '#C98A4A', longe: '#A86E36', barriga: '#E8C08A', comp: 170, frente: [79, 76], tras: [77, 63, 40], peito: [66, 62], anca: [58, 56], pescoco: [78, -66], cabeca: 54, focinho: [40, 22], orelha: 'caida', cauda: { n: 6, seg: 20, w: 8, sobe: 1.0 }, passo: 160, pata: 16, focinhoCor: '#E8C08A' },
+    gato:     { perfil: { pts: [[-0.75, -0.42], [-0.2, -0.84], [0.45, -0.7], [0.85, -0.32], [1.04, -0.04], [1.0, 0.14], [0.86, 0.25], [0.66, 0.32], [0.66, 0.45], [0.35, 0.58], [-0.2, 0.6], [-0.75, 0.26]], pivo: [0.05, 0.3], olho: [0.48, -0.24], olhoTam: 0.2, nariz: [0.98, -0.02], orelha: 'pontuda', orelhaP: [-0.05, -0.82], orelhaAlta: 0.6, almofada: [0.8, 0.12, 0.22, 0.15], corNariz: '#D98A9A', corOlho: '#9ACD4A' }, claro: '#A0A0A8', cor: '#8A8A92', longe: '#6E6E76', barriga: '#C9C9CF', comp: 130, frente: [56, 54], tras: [56, 45, 31], peito: [46, 44], anca: [42, 42], pescoco: [54, -46], cabeca: 40, focinho: [18, 13], orelha: 'pontuda', cauda: { n: 10, seg: 18, w: 6, sobe: 0.8 }, passo: 110, pata: 11, listras: true },
+    cavalo:   { perfil: { pts: [[-0.55, -0.6], [0.05, -0.76], [0.8, -0.5], [1.7, -0.22], [2.2, -0.08], [2.32, 0.14], [2.2, 0.32], [1.9, 0.38], [1.8, 0.55], [1.2, 0.5], [0.4, 0.6], [-0.45, 0.4]], pivo: [0.4, 0.42], olho: [0.45, -0.36], olhoTam: 0.13, nariz: [2.18, 0.04], orelha: 'pontuda', orelhaP: [-0.1, -0.78], orelhaAlta: 0.75, ang: 42, corOlho: '#2A1A12' }, claro: '#A06C46', cintura: 0.95, cor: '#8A5A3A', longe: '#6E4428', barriga: '#A87850', comp: 280, frente: [148, 144], tras: [135, 117, 68], peito: [92, 84], anca: [90, 84], pescoco: [140, -130], cabeca: 50, focinho: [74, 30], orelha: 'pontuda', cauda: { n: 7, seg: 24, w: 12, crina: true, sobe: -0.6 }, crina: '#2A1A12', passo: 260, pata: 18, casco: '#2A2A30' }
   };
 
   class Animal {
@@ -51,7 +51,7 @@
       const E = this.E;
       E.quadril = E.quadril ?? ((E.tras[0] + E.tras[1]) * 0.84 + E.tras[2] * 0.94 + 16);
       E.ombro = E.ombro ?? ((E.frente[0] + E.frente[1]) * 0.94 + E.pata * 1.3 + 22);
-      this.especie = opts.especie || 'leao';
+      this.especie = opts.especie || 'leao'; this.E.especie = this.especie;
       this.s = opts.escala ?? 1;
       this.acoes = []; this.cabecas = [];
       const rnd = mulberry32(opts.seed ?? 5);
@@ -59,7 +59,7 @@
       this.fase0 = rnd();
       this.g = document.createElementNS(NS, 'g'); parent.appendChild(this.g);
       const camada = () => { const c = document.createElementNS(NS, 'g'); c.setAttribute('filter', 'url(#outline)'); this.g.appendChild(c); return c; };
-      this.longeG = camada(); this.corpoG = camada(); this.pertoG = camada();   // cada camada com contorno próprio (dá profundidade)
+      this.longeG = camada(); this.corpoG = camada(); this.cabecaG = camada(); this.pertoG = camada();   // cada camada com contorno próprio (dá profundidade)
       this.uid = 'an' + (Animal._n = (Animal._n || 0) + 1);
       this.det = document.createElementNS(NS, 'g'); this.g.appendChild(this.det);
     }
@@ -77,7 +77,7 @@
       // pés (ordem: tras-perto, tras-longe, frente-perto, frente-longe) relativos ao centro do corpo
       const meio = E.comp / 2;
       const base = [[-meio + 6, 0], [-meio + 40, 0], [meio - 6, 0], [meio + 30, 0]].map(([fx, fy]) => [fx * s, fy]);
-      const pose = { x, y, dir, tipo, inclina: 0, sobe: 0, pes: base.map(b => [b[0], 0]), fase: 0, corre: 0, abaixa: 0, cauda: 0.3, respira: Math.sin(t * 2 * Math.PI / 3.2) };
+      const pose = { x, y, dir, tipo, vista: p.vista || 'perfil', inclina: 0, sobe: 0, pes: base.map(b => [b[0], 0]), fase: 0, corre: 0, abaixa: 0, cauda: 0.3, respira: Math.sin(t * 2 * Math.PI / 3.2) };
       if (G) {
         const passo = (p.passo ?? E.passo) * s * (tipo === 'correr' ? 1.9 : tipo === 'trotar' ? 1.25 : 1);
         const ciclo = passo / G.duty;
@@ -139,6 +139,7 @@
     // ---------- desenho ----------
     desenhar(t) {
       const Q = this.pose(t); if (!Q) return;
+      if (Q.vista === 'frente') return this.desenharFrente(t, Q, this.cabecaEm(t));
       const E = this.E, s = this.s, dir = Q.dir, X = v => Q.x + v * dir;   // coordenada local → mundo (local +x = para a frente)
       const C = this.cabecaEm(t);
       const chao = Q.y;
@@ -256,18 +257,26 @@
       corpo += `<path d="${curva(corpoPts)}" fill="url(#${id}c)"/>`;
       if (E.corcova) corpo += `<ellipse cx="${f(X(S[0] - 0.1 * pr))}" cy="${f(S[1] - 0.85 * pry)}" rx="${f(0.75 * pr)}" ry="${f(0.42 * pry)}" fill="${E.claro || E.cor}"/>`;
       if (E.crina) corpo += `<path d="${curva([hp([-0.55, -0.62]), W([(S[0] + Hc[0]) / 2 - 20 * s, (S[1] + Hc[1]) / 2 - 34 * s]), W([S[0] - 0.25 * pr, S[1] - 1.05 * pry]), W([S[0] - 0.1 * pr, S[1] - 0.8 * pry]), W([(S[0] + Hc[0]) / 2, (S[1] + Hc[1]) / 2 - 12 * s]), hp([-0.3, -0.45])])}" fill="${E.crina}"/>`;
+      let cab = '';
+      if (E.juba) {   // juba do lado de cá: envolve o rosto (testa, nuca, bochecha, queixo) e desce pelo pescoço até o peito
+        const ang = a => a * Math.PI / 180, cen = [0.12, 0.08];
+        const ext = [];
+        for (let a = -98, k = 0; a >= -262; a -= 12, k++) { const bal = Math.sin(t * 5 - k * 0.7) * (0.03 + 0.1 * C.rugir); const rr = (k % 2 ? 1.18 : 1.36) * (1 + bal); ext.push(hp([cen[0] + Math.cos(ang(a)) * rr, cen[1] + Math.sin(ang(a)) * rr])); if (a === -194) { ext.push(W([S[0] - 0.35 * pr, S[1] - 0.1 * pry])); ext.push(W([S[0] + 0.15 * pr, S[1] + 0.55 * pry])); ext.push(W([S[0] + 0.62 * pr, S[1] + 0.62 * pry])); } }
+        for (let a = 100; a >= -95; a -= 25) ext.push(hp([cen[0] + Math.cos(ang(a)) * 0.6, cen[1] + Math.sin(ang(a)) * 0.6]));
+        cab += `<path d="${curva(ext)}" fill="url(#${id}j)"/>`;
+      }
       // orelha de trás da cabeça (atrás do crânio)
       const ore = CB.orelha, oP = CB.orelhaP;
-      if (ore === 'redonda') corpo += `<circle cx="${f(hp(oP)[0])}" cy="${f(hp(oP)[1])}" r="${f(r * 0.3)}" fill="${E.cor}"/>`;
-      else if (ore === 'pontuda') corpo += `<path d="M${P(hp([oP[0] - 0.28, oP[1] + 0.3]))} L${P(hp([oP[0] + 0.02, oP[1] - (CB.orelhaAlta || 0.5)]))} L${P(hp([oP[0] + 0.3, oP[1] + 0.28]))}Z" fill="${E.cor}"/>`;
+      if (ore === 'redonda') cab += `<circle cx="${f(hp(oP)[0])}" cy="${f(hp(oP)[1])}" r="${f(r * 0.3)}" fill="${E.cor}"/>`;
+      else if (ore === 'pontuda') cab += `<path d="M${P(hp([oP[0] - 0.28, oP[1] + 0.3]))} L${P(hp([oP[0] + 0.02, oP[1] - (CB.orelhaAlta || 0.5)]))} L${P(hp([oP[0] + 0.3, oP[1] + 0.28]))}Z" fill="${E.cor}"/>`;
       // boca aberta: interior escuro + dentes, por baixo da cabeça
-      if (jaw > 0.02) corpo += `<path d="M${P(hp(prof[mc]))} L${P(hp([prof[4][0] - 0.05, prof[5][1]]))} L${P(jp([prof[6][0], prof[6][1] + 0.05]))} L${P(jp(prof[9]))} L${P(hp(piv))}Z" fill="#6E1414"/>`;
-      corpo += `<path d="${curva(inf.concat([hp(piv)]))}" fill="${E.focinhoCor || E.cor}"/>`;
-      corpo += `<path d="${curva(sup)}" fill="${E.cor}"/>`;
-      if (ore === 'caida') corpo += `<path d="${curva([hp([oP[0] - 0.1, oP[1]]), hp([oP[0] - 0.55, oP[1] + 0.45]), hp([oP[0] - 0.35, oP[1] + 1.15]), hp([oP[0] + 0.15, oP[1] + 0.5])])}" fill="${E.longe}"/>`;
+      if (jaw > 0.02) cab += `<path d="M${P(hp(prof[mc]))} L${P(hp([prof[4][0] - 0.05, prof[5][1]]))} L${P(jp([prof[6][0], prof[6][1] + 0.05]))} L${P(jp(prof[9]))} L${P(hp(piv))}Z" fill="#6E1414"/>`;
+      cab += `<path d="${curva(inf.concat([hp(piv)]))}" fill="${E.focinhoCor || E.cor}"/>`;
+      cab += `<path d="${curva(sup)}" fill="${E.cor}"/>`;
+      if (ore === 'caida') cab += `<path d="${curva([hp([oP[0] - 0.1, oP[1]]), hp([oP[0] - 0.55, oP[1] + 0.45]), hp([oP[0] - 0.35, oP[1] + 1.15]), hp([oP[0] + 0.15, oP[1] + 0.5])])}" fill="${E.longe}"/>`;
       // camada de perto: pernas deste lado (com contorno próprio, por cima do corpo)
       let perto = pernaSVG(L[0], 0, E.cor) + pernaSVG(L[2], 2, E.cor);
-      this.longeG.innerHTML = longe; this.corpoG.innerHTML = g + corpo; this.pertoG.innerHTML = perto;
+      this.longeG.innerHTML = longe; this.corpoG.innerHTML = g + corpo; this.cabecaG.innerHTML = cab; this.pertoG.innerHTML = perto;
       // ---------- detalhes sem contorno ----------
       let d = '';
       // músculo do ombro e da coxa, luz nas costas, barriga
@@ -290,9 +299,68 @@
       if (pisca || C.rugir > 0.6) d += `<path d="M${P([ol[0] - ow, ol[1]])} q${f(ow)} ${f(ow * 0.5)} ${f(ow * 2)} 0" stroke="${T}" stroke-width="${f(3.5 * s)}" fill="none" stroke-linecap="round"/>`;
       else d += `<path d="M${P([ol[0] - ow, ol[1]])} Q${P([ol[0], ol[1] - ow * 0.9])} ${P([ol[0] + ow, ol[1]])} Q${P([ol[0], ol[1] + ow * 0.8])} ${P([ol[0] - ow, ol[1]])}Z" fill="${CB.corOlho || '#F2D27A'}" stroke="${T}" stroke-width="${f(2.5 * s)}"/><circle cx="${f(ol[0] + dir * ow * 0.15)}" cy="${f(ol[1])}" r="${f(ow * 0.45)}" fill="${T}"/><circle cx="${f(ol[0])}" cy="${f(ol[1] - ow * 0.25)}" r="${f(ow * 0.18)}" fill="#FFF"/>`;
       d += `<path d="M${P([ol[0] - dir * ow * 1.2, ol[1] - ow * (1.1 - C.rugir * 0.2)])} Q${P([ol[0], ol[1] - ow * (1.5 - C.rugir)])} ${P([ol[0] + dir * ow * 1.3, ol[1] - ow * (0.9 - C.rugir * 0.6)])}" stroke="${T}" stroke-width="${f(3 * s)}" fill="none" stroke-linecap="round"/>`;
-      if (E.juba) d += [...Array(8)].map((_, k) => { const a = 2.2 + k * 0.32, c0 = hp([-0.35 + Math.cos(a) * 1.0, 0.18 + Math.sin(a) * 1.0]), c1 = hp([-0.35 + Math.cos(a) * 1.4, 0.18 + Math.sin(a) * 1.4]); return `<path d="M${P(c0)} L${P(c1)}" stroke="${E.jubaLonge}" stroke-width="${f(2.5 * s)}" opacity=".6" stroke-linecap="round"/>`; }).join('');
+      if (E.juba) d += [...Array(13)].map((_, k) => { const a = (-100 - k * 13) * Math.PI / 180, c0 = hp([0.12 + Math.cos(a) * 0.9, 0.08 + Math.sin(a) * 0.9]), c1 = hp([0.12 + Math.cos(a) * 1.22, 0.08 + Math.sin(a) * 1.22]); return `<path d="M${P(c0)} L${P(c1)}" stroke="${E.jubaLonge}" stroke-width="${f(2.5 * s)}" opacity=".6" stroke-linecap="round"/>`; }).join('');
       this.det.innerHTML = d;
       this._boca = hp(prof[5]);
+    }
+    // ---------- vista de frente (parado/sentado olhando para a câmera): juba redonda em volta do rosto ----------
+    desenharFrente(t, Q, C) {
+      const E = this.E, s = this.s, id = this.uid, T = '#1D1D2B', x = Q.x, chao = Q.y;
+      const f2 = v => f(v), pt = (a, b) => `${f(a)} ${f(b)}`;
+      const [pr, pry] = E.peito.map(v => v * s), [ar, ary] = E.anca.map(v => v * s), r = E.cabeca * s * (E.especie === 'cavalo' ? 1 : 1);
+      const resp = 1 + 0.02 * (Q.respira || 0), sh = E.ombro * s, hq = E.quadril * s;
+      const wF = (E.largura?.frente || [0.66, 0.4, 0.28, 0.3]).map(v => v * pr);
+      const seg = (a, b, wa, wb, cor) => { const dx = b[0] - a[0], dy = b[1] - a[1], d = Math.hypot(dx, dy) || 1, nx = -dy / d, ny = dx / d; return `<path d="M${pt(a[0] + nx * wa / 2, a[1] + ny * wa / 2)} L${pt(b[0] + nx * wb / 2, b[1] + ny * wb / 2)} L${pt(b[0] - nx * wb / 2, b[1] - ny * wb / 2)} L${pt(a[0] - nx * wa / 2, a[1] - ny * wa / 2)}Z" fill="${cor}"/><circle cx="${f(b[0])}" cy="${f(b[1])}" r="${f(wb / 2)}" fill="${cor}"/>`; };
+      const sent = Q.tipo === 'sentar';
+      let longe = '', corpo = '', cab = '', perto = '', d = '';
+      // ancas atrás, patas de trás aparecendo dos lados, rabo caindo para um lado
+      const hy = sent ? chao - ary * 0.9 : chao - hq;
+      longe += `<ellipse cx="${f(x)}" cy="${f(hy)}" rx="${f(ar * 1.05)}" ry="${f(ary * 0.9)}" fill="${E.longe}"/>`;
+      [-1, 1].forEach(sd => { longe += seg([x + sd * ar * 0.6, hy + ary * 0.3], [x + sd * ar * (sent ? 0.95 : 0.7), chao - E.pata * s * 0.4], ar * 0.55, ar * 0.26, E.longe) + `<ellipse cx="${f(x + sd * ar * (sent ? 1.0 : 0.72))}" cy="${f(chao - E.pata * s * 0.35)}" rx="${f(E.pata * s)}" ry="${f(E.pata * s * 0.55)}" fill="${E.longe}"/>`; });
+      { const bal = Math.sin(t * 2.2) * 10 * s; longe += `<path d="M${pt(x + ar * 0.7, hy)} Q${pt(x + ar * 1.6 + bal, chao - ary * 0.6)} ${pt(x + ar * 1.25 + bal, chao - 8 * s)}" stroke="${E.crina || E.cor}" stroke-width="${f(E.cauda.w * s * (E.cauda.crina ? 3 : 1.3))}" fill="none" stroke-linecap="round"/>` + (E.cauda.tufo ? `<ellipse cx="${f(x + ar * 1.25 + bal)}" cy="${f(chao - 12 * s)}" rx="${f(14 * s)}" ry="${f(11 * s)}" fill="${E.cauda.tufo}"/>` : ''); }
+      // peito
+      const cy = chao - sh + pry * 0.15;
+      corpo += `<defs><linearGradient id="${id}fc" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${E.claro || E.cor}"/><stop offset=".55" stop-color="${E.cor}"/><stop offset="1" stop-color="${E.barriga}"/></linearGradient><radialGradient id="${id}fj" cx=".5" cy=".45" r=".55"><stop offset=".5" stop-color="${E.juba || E.cor}"/><stop offset="1" stop-color="${E.jubaLonge || E.cor}"/></radialGradient></defs>`;
+      corpo += `<ellipse cx="${f(x)}" cy="${f(cy)}" rx="${f(pr * 0.95)}" ry="${f(pry * 1.12 * resp)}" fill="url(#${id}fc)"/>`;
+      // patas da frente (colunas que afinam)
+      [-1, 1].forEach(sd => { const top = [x + sd * pr * 0.52, cy + pry * 0.25], pe = [x + sd * pr * 0.46, chao - E.pata * s * 0.5]; perto += seg(top, [top[0] + sd * 2 * s, (top[1] + pe[1]) / 2], wF[0] * 0.68, wF[1] * 0.95, E.cor) + seg([top[0] + sd * 2 * s, (top[1] + pe[1]) / 2], pe, wF[1] * 0.95, wF[2] * 1.1, E.cor) + `<ellipse cx="${f(pe[0])}" cy="${f(chao - E.pata * s * 0.35)}" rx="${f(E.pata * s * 0.95)}" ry="${f(E.pata * s * 0.6)}" fill="${E.casco || E.cor}"/>`;
+        if (!E.casco) d += [-0.4, 0, 0.4].map(k => `<path d="M${pt(pe[0] + k * E.pata * s, chao - E.pata * s * 0.2)} v${f(E.pata * 0.4 * s)}" stroke="${T}" stroke-width="${f(2 * s)}" opacity=".6" stroke-linecap="round"/>`).join(''); });
+      // cabeça de frente
+      const baixa = (C.baixar || 0) * s, Hf = [x + (C.olhar[0] || 0) * 0.5 * s, cy - pry * 1.1 - r * 0.55 + baixa - C.rugir * 6 * s];
+      const cav = E.especie === 'cavalo', faceRy = cav ? r * 1.7 : r * 0.98;
+      if (E.juba) {   // juba: círculo inteiro em volta do rosto, com mechas, balançando
+        const nuv = (R, n, fase) => { let pts = []; for (let k = 0; k < n * 2; k++) { const a = k / (n * 2) * Math.PI * 2, bal = Math.sin(t * 5 + fase - k * 0.7) * (0.03 + 0.1 * C.rugir); const rr = R * (k % 2 ? 0.85 : 1.08) * (1 + bal); pts.push([Hf[0] + Math.cos(a) * rr, Hf[1] + 0.12 * r + Math.sin(a) * rr * 1.05]); } return pts; };
+        const c = nuv(r * 1.62, 11, 0);
+        let dd = `M${pt(...c[0])}`; c.forEach((q, k) => { const n = c[(k + 1) % c.length]; dd += ` Q${pt(q[0], q[1])} ${pt((q[0] + n[0]) / 2, (q[1] + n[1]) / 2)}`; });
+        cab += `<path d="${dd}Z" fill="url(#${id}fj)"/>`;
+        d += [...Array(22)].map((_, k) => { const a = k / 22 * Math.PI * 2; return `<path d="M${pt(Hf[0] + Math.cos(a) * r * 1.0, Hf[1] + 0.12 * r + Math.sin(a) * r * 1.05)} L${pt(Hf[0] + Math.cos(a) * r * 1.5, Hf[1] + 0.12 * r + Math.sin(a) * r * 1.55)}" stroke="${E.jubaLonge}" stroke-width="${f(2.5 * s)}" opacity=".55" stroke-linecap="round"/>`; }).join('');
+      }
+      if (E.crina) cab += `<path d="M${pt(Hf[0] - r * 0.35, Hf[1] - faceRy * 0.9)} Q${pt(Hf[0], Hf[1] - faceRy * 1.25)} ${pt(Hf[0] + r * 0.35, Hf[1] - faceRy * 0.9)} Z" fill="${E.crina}"/>`;
+      // orelhas
+      const ore = E.perfil.orelha;
+      [-1, 1].forEach(sd => {
+        const ox = Hf[0] + sd * r * 0.72, oy = Hf[1] - faceRy * 0.72;
+        if (ore === 'redonda') { cab += `<circle cx="${f(ox)}" cy="${f(oy)}" r="${f(r * 0.3)}" fill="${E.cor}"/>`; d += `<circle cx="${f(ox)}" cy="${f(oy)}" r="${f(r * 0.15)}" fill="${E.longe}"/>`; }
+        else if (ore === 'pontuda') { const h = (E.perfil.orelhaAlta || 0.5) * r; cab += `<path d="M${pt(ox - sd * r * 0.3, oy + r * 0.2)} L${pt(ox + sd * r * 0.05, oy - h)} L${pt(ox + sd * r * 0.3, oy + r * 0.25)}Z" fill="${E.cor}"/>`; d += `<path d="M${pt(ox - sd * r * 0.14, oy + r * 0.12)} L${pt(ox + sd * r * 0.04, oy - h * 0.6)} L${pt(ox + sd * r * 0.16, oy + r * 0.14)}Z" fill="#E8A0A0"/>`; }
+      });
+      // rosto
+      cab += `<ellipse cx="${f(Hf[0])}" cy="${f(Hf[1])}" rx="${f(r * (cav ? 0.7 : 0.95))}" ry="${f(faceRy)}" fill="${E.cor}"/>`;
+      if (ore === 'caida') [-1, 1].forEach(sd => { cab += `<path d="M${pt(Hf[0] + sd * r * 0.55, Hf[1] - r * 0.7)} Q${pt(Hf[0] + sd * r * 1.25, Hf[1] - r * 0.3)} ${pt(Hf[0] + sd * r * 0.95, Hf[1] + r * 0.5)} Q${pt(Hf[0] + sd * r * 0.7, Hf[1])} ${pt(Hf[0] + sd * r * 0.55, Hf[1] - r * 0.7)}Z" fill="${E.longe}"/>`; });
+      const fz = [Hf[0], Hf[1] + faceRy * (cav ? 0.55 : 0.38)];
+      if (C.rugir > 0.05) cab += `<ellipse cx="${f(fz[0])}" cy="${f(fz[1] + r * 0.3)}" rx="${f(r * 0.32)}" ry="${f(r * 0.38 * C.rugir)}" fill="#6E1414"/>`;
+      cab += `<ellipse cx="${f(fz[0])}" cy="${f(fz[1])}" rx="${f(r * (cav ? 0.55 : 0.5))}" ry="${f(r * 0.34)}" fill="${E.focinhoCor || E.barriga}"/>`;
+      // detalhes do rosto
+      d += `<path d="M${pt(fz[0] - r * 0.17, fz[1] - r * 0.2)} H${f(fz[0] + r * 0.17)} L${pt(fz[0], fz[1] - r * 0.02)}Z" fill="${E.perfil.corNariz || T}"/>`;
+      if (C.rugir < 0.05) d += `<path d="M${pt(fz[0], fz[1] - r * 0.02)} V${f(fz[1] + r * 0.12)} M${pt(fz[0] - r * 0.2, fz[1] + r * 0.18)} Q${pt(fz[0] - r * 0.1, fz[1] + r * 0.24)} ${pt(fz[0], fz[1] + r * 0.12)} Q${pt(fz[0] + r * 0.1, fz[1] + r * 0.24)} ${pt(fz[0] + r * 0.2, fz[1] + r * 0.18)}" stroke="${T}" stroke-width="${f(3 * s)}" fill="none" stroke-linecap="round"/>`;
+      else d += [-1, 1].map(sd => `<path d="M${pt(fz[0] + sd * r * 0.2, fz[1] + r * 0.06)} l${f(sd * -3 * s)} ${f(10 * s)} l${f(sd * -4 * s)} ${f(-10 * s)}Z" fill="#FFF" stroke="${T}" stroke-width="${f(1.4 * s)}"/>`).join('');
+      d += [-1, 1].map(sd => [0, 1, 2].map(k => `<circle cx="${f(fz[0] + sd * r * (0.22 + k * 0.07))}" cy="${f(fz[1] + r * (0.02 + (k % 2) * 0.07))}" r="${f(1.6 * s)}" fill="${T}" opacity=".7"/>`).join('')).join('');
+      const pisca = this.piscadas.some(p => t >= p && t < p + 0.13), ow = (E.perfil.olhoTam || 0.15) * r;
+      [-1, 1].forEach(sd => { const ex = Hf[0] + sd * r * (cav ? 0.42 : 0.36), ey = Hf[1] - faceRy * (cav ? 0.35 : 0.12);
+        if (pisca || C.rugir > 0.6) d += `<path d="M${pt(ex - ow, ey)} q${f(ow)} ${f(ow * 0.5)} ${f(ow * 2)} 0" stroke="${T}" stroke-width="${f(3.5 * s)}" fill="none" stroke-linecap="round"/>`;
+        else d += `<ellipse cx="${f(ex)}" cy="${f(ey)}" rx="${f(ow)}" ry="${f(ow * 0.8)}" fill="${E.perfil.corOlho || '#F2D27A'}" stroke="${T}" stroke-width="${f(2.5 * s)}"/><circle cx="${f(ex + (C.olhar[0] || 0) * 0.2 * s)}" cy="${f(ey)}" r="${f(ow * 0.45)}" fill="${T}"/><circle cx="${f(ex - ow * 0.2)}" cy="${f(ey - ow * 0.25)}" r="${f(ow * 0.18)}" fill="#FFF"/>`;
+        d += `<path d="M${pt(ex - sd * ow * 1.2, ey - ow * (1.4 - C.rugir * 0.5))} Q${pt(ex, ey - ow * (1.9 - C.rugir))} ${pt(ex + sd * ow * 1.3, ey - ow * (1.2 - C.rugir * 0.7))}" stroke="${T}" stroke-width="${f(3 * s)}" fill="none" stroke-linecap="round"/>`; });
+      this.longeG.innerHTML = longe; this.corpoG.innerHTML = corpo; this.cabecaG.innerHTML = cab; this.pertoG.innerHTML = perto; this.det.innerHTML = d;
+      this._boca = [fz[0], fz[1] + r * 0.2];
     }
     boca() { return this._boca || [0, 0]; }
   }
