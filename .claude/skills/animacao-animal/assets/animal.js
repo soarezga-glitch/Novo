@@ -248,22 +248,41 @@
       let longe = pernaSVG(L[1], 1, E.longe) + pernaSVG(L[3], 3, E.longe) + cauda;
       // camada do corpo + cabeça
       let corpo = '';
-      if (E.juba) {   // juba: nuvem de mechas atrás da cabeça e descendo pelo peito; balança com atraso
-        const jc = hp([-0.35, 0.18]);
-        const nuvem = (R, n, fase, esc = 1) => curva([...Array(n * 2)].map((_, k) => { const a = k / (n * 2) * Math.PI * 2, bal = Math.sin(t * 5 + fase - k * 0.8) * (0.03 + 0.12 * C.rugir); const rr = R * (k % 2 ? 0.86 : 1.08) * (1 + bal); return [jc[0] + Math.cos(a) * rr * dir * 0.95, jc[1] + Math.sin(a) * rr * esc]; }));
-        corpo += `<path d="${curva([hp([-0.6, 0.0]), hp([0.1, 1.4]), W([S[0] + 0.7 * pr, S[1] + 0.7 * pry]), W([S[0] - 0.1 * pr, S[1] - 0.4 * pry])])}" fill="${E.jubaLonge}"/>`;
-        corpo += `<path d="${nuvem(r * 1.62, 9, 0)}" fill="url(#${id}j)"/>`;
-      }
       corpo += `<path d="${curva(corpoPts)}" fill="url(#${id}c)"/>`;
       if (E.corcova) corpo += `<ellipse cx="${f(X(S[0] - 0.1 * pr))}" cy="${f(S[1] - 0.85 * pry)}" rx="${f(0.75 * pr)}" ry="${f(0.42 * pry)}" fill="${E.claro || E.cor}"/>`;
       if (E.crina) corpo += `<path d="${curva([hp([-0.55, -0.62]), W([(S[0] + Hc[0]) / 2 - 20 * s, (S[1] + Hc[1]) / 2 - 34 * s]), W([S[0] - 0.25 * pr, S[1] - 1.05 * pry]), W([S[0] - 0.1 * pr, S[1] - 0.8 * pry]), W([(S[0] + Hc[0]) / 2, (S[1] + Hc[1]) / 2 - 12 * s]), hp([-0.3, -0.45])])}" fill="${E.crina}"/>`;
       let cab = '';
-      if (E.juba) {   // juba do lado de cá: envolve o rosto (testa, nuca, bochecha, queixo) e desce pelo pescoço até o peito
-        const ang = a => a * Math.PI / 180, cen = [0.12, 0.08];
-        const ext = [];
-        for (let a = -98, k = 0; a >= -262; a -= 12, k++) { const bal = Math.sin(t * 5 - k * 0.7) * (0.03 + 0.1 * C.rugir); const rr = (k % 2 ? 1.18 : 1.36) * (1 + bal); ext.push(hp([cen[0] + Math.cos(ang(a)) * rr, cen[1] + Math.sin(ang(a)) * rr])); if (a === -194) { ext.push(W([S[0] - 0.35 * pr, S[1] - 0.1 * pry])); ext.push(W([S[0] + 0.15 * pr, S[1] + 0.55 * pry])); ext.push(W([S[0] + 0.62 * pr, S[1] + 0.62 * pry])); } }
-        for (let a = 100; a >= -95; a -= 25) ext.push(hp([cen[0] + Math.cos(ang(a)) * 0.6, cen[1] + Math.sin(ang(a)) * 0.6]));
-        cab += `<path d="${curva(ext)}" fill="url(#${id}j)"/>`;
+      if (E.juba) {   // juba de lado: UMA massa de pelo que sai da testa, cobre o alto da cabeça, a nuca, o pescoço, o ombro e o peito; o rosto fica para fora
+        const cres = 1 + 0.08 * C.rugir;
+        const chave = [   // contorno de fora (cabeça em unidades de r; corpo em pontos do mundo)
+          hp([0.5, -0.8]), hp([0.15, -1.22 * cres]), hp([-0.5, -1.38 * cres]), hp([-1.15, -1.12 * cres]), hp([-1.55, -0.45 * cres]),
+          W([S[0] - 0.62 * pr, S[1] - 0.92 * pry]), W([S[0] - 0.72 * pr, S[1] - 0.2 * pry]), W([S[0] - 0.4 * pr, S[1] + 0.6 * pry]),
+          W([S[0] + 0.25 * pr, S[1] + 1.02 * pry]), W([S[0] + 0.85 * pr, S[1] + 0.62 * pry]), hp([0.55, 1.15 * cres]), hp([0.7, 0.72])
+        ];
+        // borda ondulada e fofa: densifica o contorno e alterna pequenas saliências arredondadas (animadas)
+        const cen = hp([-0.5, 0.25]);
+        const ond = [];
+        for (let i = 0; i < chave.length - 1; i++) {
+          const A0 = chave[i], A1 = chave[i + 1];
+          for (let k = 0; k < 3; k++) {
+            const u = k / 3, q = [lerp(A0[0], A1[0], u), lerp(A0[1], A1[1], u)];
+            const dx = q[0] - cen[0], dy = q[1] - cen[1], dd = Math.hypot(dx, dy) || 1, n = ond.length;
+            const amp = (n % 2 ? -0.01 : 0.09) * r * (1 + 0.6 * Math.sin(t * 4 - n * 0.9) * (0.25 + C.rugir));
+            ond.push([q[0] + dx / dd * amp, q[1] + dy / dd * amp]);
+          }
+        }
+        ond.push(chave[chave.length - 1]);
+        // borda de dentro (fica escondida atrás do rosto)
+        [[0.25, 0.4], [-0.1, 0.0], [0.15, -0.5]].forEach(q => ond.push(hp(q)));
+        cab += `<defs><radialGradient id="${id}jm" gradientUnits="userSpaceOnUse" cx="${f(hp([0.2, 0])[0])}" cy="${f(hp([0.2, 0])[1])}" r="${f(r * 2.6)}"><stop offset="0" stop-color="${E.jubaClara || '#B8692E'}"/><stop offset=".55" stop-color="${E.juba}"/><stop offset="1" stop-color="${E.jubaLonge}"/></radialGradient></defs>`;
+        cab += `<path d="${curva(ond)}" fill="url(#${id}jm)"/>`;
+        this._jubaMechas = [];   // mechas: da borda do rosto para fora, seguindo o pelo (para trás e para baixo)
+        for (let k = 0; k < 16; k++) {
+          const a = (-80 - k * 13) * Math.PI / 180, bal = Math.sin(t * 4 - k * 0.6) * (0.04 + 0.12 * C.rugir);
+          const ini = hp([0.05 + Math.cos(a) * 0.95, 0.1 + Math.sin(a) * 0.95]), fim = hp([-0.15 + Math.cos(a + bal) * 1.45, 0.15 + Math.sin(a + bal) * 1.4]);
+          this._jubaMechas.push([ini, fim]);
+        }
+        for (let k = 0; k < 7; k++) { const u = k / 6, ini = W([lerp(S[0] + 0.5 * pr, S[0] - 0.4 * pr, u), lerp(S[1] - 0.3 * pry, S[1] + 0.2 * pry, u)]); this._jubaMechas.push([ini, [ini[0] - dir * 18 * s, ini[1] + 34 * s]]); }
       }
       // orelha de trás da cabeça (atrás do crânio)
       const ore = CB.orelha, oP = CB.orelhaP;
@@ -299,7 +318,7 @@
       if (pisca || C.rugir > 0.6) d += `<path d="M${P([ol[0] - ow, ol[1]])} q${f(ow)} ${f(ow * 0.5)} ${f(ow * 2)} 0" stroke="${T}" stroke-width="${f(3.5 * s)}" fill="none" stroke-linecap="round"/>`;
       else d += `<path d="M${P([ol[0] - ow, ol[1]])} Q${P([ol[0], ol[1] - ow * 0.9])} ${P([ol[0] + ow, ol[1]])} Q${P([ol[0], ol[1] + ow * 0.8])} ${P([ol[0] - ow, ol[1]])}Z" fill="${CB.corOlho || '#F2D27A'}" stroke="${T}" stroke-width="${f(2.5 * s)}"/><circle cx="${f(ol[0] + dir * ow * 0.15)}" cy="${f(ol[1])}" r="${f(ow * 0.45)}" fill="${T}"/><circle cx="${f(ol[0])}" cy="${f(ol[1] - ow * 0.25)}" r="${f(ow * 0.18)}" fill="#FFF"/>`;
       d += `<path d="M${P([ol[0] - dir * ow * 1.2, ol[1] - ow * (1.1 - C.rugir * 0.2)])} Q${P([ol[0], ol[1] - ow * (1.5 - C.rugir)])} ${P([ol[0] + dir * ow * 1.3, ol[1] - ow * (0.9 - C.rugir * 0.6)])}" stroke="${T}" stroke-width="${f(3 * s)}" fill="none" stroke-linecap="round"/>`;
-      if (E.juba) d += [...Array(13)].map((_, k) => { const a = (-100 - k * 13) * Math.PI / 180, c0 = hp([0.12 + Math.cos(a) * 0.9, 0.08 + Math.sin(a) * 0.9]), c1 = hp([0.12 + Math.cos(a) * 1.22, 0.08 + Math.sin(a) * 1.22]); return `<path d="M${P(c0)} L${P(c1)}" stroke="${E.jubaLonge}" stroke-width="${f(2.5 * s)}" opacity=".6" stroke-linecap="round"/>`; }).join('');
+      if (E.juba && this._jubaMechas) d += this._jubaMechas.map(([p0, p1], k) => `<path d="M${P(p0)} Q${P([(p0[0] + p1[0]) / 2 + dir * 4 * s, (p0[1] + p1[1]) / 2 + 6 * s])} ${P(p1)}" stroke="${k % 3 ? E.jubaLonge : '#C8783A'}" stroke-width="${f(3 * s)}" fill="none" opacity=".55" stroke-linecap="round"/>`).join('');
       this.det.innerHTML = d;
       this._boca = hp(prof[5]);
     }
