@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "skills": {
+    "short-video-scripter": {
+      "source": "aaron-he-zhu/aaron-marketing-skills",
+      "sourceType": "github",
+      "skillPath": "social/craft/short-video-scripter/SKILL.md",
+      "computedHash": "dc2d23b4d06fa81a11634e0d856f48594d65cb7a7f41244a8d2373d324404b57"
+    },
+    "viral-tiktok-hooks": {
+      "source": "gonzalochale/skills",
+      "sourceType": "github",
+      "skillPath": "viral-tiktok-hooks/SKILL.md",
+      "computedHash": "7f05001acf294118fb49d95f4b44d7491de7f14bb4ae30db6e33266116a00732"
+    }
+  }
+}
