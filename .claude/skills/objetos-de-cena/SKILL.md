@@ -25,6 +25,11 @@ escala menor e mais alto na tela.
 
 `assets/catalogo.html` (e `catalogo.jpg`) mostra todos os objetos ao lado do boneco.
 
+**Objeto em destaque (grande na tela, close, cartão de desafio, citado na narração)?** Use a skill
+**`objetos-detalhados`** (`detalhes.js`): pão, queijo, uvas, peixe, jarro, moeda, geladeira, carrinho
+de mercado, micro-ondas, fogão, TV, celular e liquidificador com muito mais detalhe. Esta skill aqui
+fica para objetos de fundo e de apoio.
+
 ## Regras de composição (set dressing)
 Adaptadas das skills `set-dressing` e `prop-artist` (arjun988/blender-skills, MIT):
 
