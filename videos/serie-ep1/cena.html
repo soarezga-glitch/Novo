@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Tênis Laranja: Episódio 1</title>
+<!--
+  Série "O garoto do tênis laranja" — EPISÓDIO 1 de 5 (narração em fala.mp3, 40,8 s).
+  Protagonista: Léo = o SOBREVIVENTE (skill personagem-sobrevivente). Elenco fixo: Caio, Duda, Pedrão, a menina (skill elenco-serie).
+  ENQUADRAMENTO GRANDE (como gravado no celular): personagens grandes, pés por volta de y = 1400, legenda embaixo (y = 1500),
+  câmera com leve balanço de "câmera na mão", aproximações nas reações.
+  Skills: edit, personagem-sobrevivente, elenco-serie, movimento-humano, figurino, fisica-de-cena, cenario-ilustrado (escola.js),
+  objetos-detalhados, identidade-visual, legenda-dinamica, sons-de-ambiente.
+-->
+<style>
+  html, body { margin: 0; background: #000; overflow: hidden; }
+  #stage { width: 1080px; height: 1920px; display: block; }
+  @font-face { font-family: 'Luckiest Guy'; src: url(fontes/luckiest-guy.woff2); }
+  @font-face { font-family: 'Anton'; src: url(fontes/anton.woff2); }
+  text:not([font-family]) { font-family: 'Luckiest Guy', 'DejaVu Sans', sans-serif; }
+</style>
+<script src="gsap.min.js"></script>
+<script src="boneco.js"></script>
+<script src="paletas.js"></script>
+<script src="cenario.js"></script>
+<script src="escola.js"></script>
+<script src="detalhes.js"></script>
+<script src="marca.js"></script>
+<script src="palco.js"></script>
+<script src="legenda.js"></script>
+<script src="legenda-dados.js"></script>
+</head>
+<body>
+<svg id="stage" viewBox="0 0 1080 1920" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="outline" x="-20%" y="-20%" width="140%" height="140%">
+      <feMorphology in="SourceAlpha" operator="dilate" radius="5" result="d"/>
+      <feFlood flood-color="#1D1D2B"/>
+      <feComposite in2="d" operator="in" result="o"/>
+      <feMerge><feMergeNode in="o"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <radialGradient id="vin" cx=".5" cy=".5" r=".75"><stop offset=".55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".42"/></radialGradient>
+    <radialGradient id="sepia" cx=".5" cy=".45" r=".7"><stop offset=".4" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#3A2410" stop-opacity=".7"/></radialGradient>
+  </defs>
+  <g id="cam"><g id="scenes"></g><g id="atores"></g><g id="props"></g></g>
+  <g id="faixaLeg"></g>
+  <g id="topo"></g>
+  <g id="legenda"></g>
+</svg>
+
+<script>
+const NS = 'http://www.w3.org/2000/svg';
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const LARANJA = '#FF7A00', PRETO = '#111111', L = '#1D1D2B';
+const DT = Detalhes({ seed: 4 }), DTm = Detalhes({ seed: 8, sombra: false });
+const Es = s => Escola(Cenario({ seed: s, luz: -1, hora: 'dia', prefixo: 'e' + s }));
+
+// ===================== TEMPOS (planos) =====================
+const S = {
+  fachada:  [0, 3.65],      // "Meu nome é Léo. Primeiro dia na escola nova."
+  corredor: [3.65, 7.55],   // "Eu só queria passar despercebido, mas estava com o tênis laranja."
+  presente: [7.55, 9.84],   // "O último presente do meu pai."
+  fila:     [9.84, 16.0],   // "Na fila do refeitório, um garoto alto olhou para os meus pés e riu. Olha o cenourinha!"
+  trio:     [16.0, 19.4],   // "Era o Caio. O Duda e o Pedrão riram junto."
+  canto:    [19.4, 22.08],  // "Eu abaixei a cabeça e fui para o canto."
+  queda:    [22.08, 26.5],  // "Quando passei, o Caio esticou o pé. A bandeja voou."
+  chao:     [26.5, 30.6],   // "Suco na camisa, arroz no chão, todo mundo rindo."
+  menina:   [30.6, 32.96],  // "Só uma menina no fundo não ria."
+  quarto:   [32.96, 35.62], // "À noite, meu celular vibrou."
+  celular:  [35.62, 40.75], // "O Duda tinha filmado tudo. E o vídeo já tinha 2 mil visualizações."
+};
+const FIM_FALA = 40.75, END = 43.6;
+const PE = 1400, PISO_LEG = 1500;          // pés de quem está na frente · altura da legenda (acima dos botões do app)
+const KL = 1.45;                           // escala do Léo em plano inteiro grande (~810 px de altura)
+
+// ===================== CENAS =====================
+const scenes = [];
+const cena = (id, corpo) => scenes.push(`<g id="${id}" class="scene">${corpo}</g>`);
+const vin = `<rect width="1080" height="1920" fill="url(#vin)"/>`;
+const etq = (id, x, y, t, fs = 48) => `<g id="${id}" transform="translate(${x} ${y})">${Marca.etiqueta(0, 0, t, { fs })}</g>`;
+const apoio = (id, x, y, t, fs = 90, rot = -5) => `<g id="${id}" transform="translate(${x} ${y})">${Marca.apoio(0, 0, t, { fs, rot })}</g>`;
+const imp = (id, x, y, t, fs = 150, rot = -4) => `<g id="${id}" transform="translate(${x} ${y})">${Marca.impacto(0, 0, t, { fs, rot })}</g>`;
+// tênis laranja grande (de lado) — o presente do pai
+const tenisGrande = (x, y, k = 1, esp = 1) => `<g transform="translate(${x} ${y}) scale(${k * esp} ${k})">
+  <path d="M-150 -10 L-150 -70 Q-150 -110 -110 -112 L-40 -116 Q-10 -150 40 -140 L80 -96 Q150 -84 170 -40 L176 -10Z" fill="${LARANJA}" stroke="${L}" stroke-width="8" stroke-linejoin="round"/>
+  <path d="M-160 -12 H184 Q190 10 170 14 H-150 Q-166 10 -160 -12Z" fill="#FFFFFF" stroke="${L}" stroke-width="7"/>
+  <path d="M-120 -40 Q-40 -20 60 -60 Q100 -76 150 -50" stroke="${PRETO}" stroke-width="14" fill="none" stroke-linecap="round"/>
+  <path d="M-30 -112 L10 -82 M-8 -126 L32 -96 M14 -136 L50 -104" stroke="#FFFFFF" stroke-width="9" stroke-linecap="round"/>
+  <path d="M-130 -100 Q-140 -60 -132 -30" stroke="${PRETO}" stroke-width="6" fill="none"/></g>`;
+
+// 1. fachada da escola
+cena('c-fachada', Es(1).fachada({ chao: 1240 }) + vin + `<g id="t-ep">${Marca.faixa(540, 150, 'EPISÓDIO 1', { fs: 92 })}</g>`);
+// 2. corredor
+cena('c-corredor', Es(2).corredor({ chao: 1160 }) + vin);
+// 3. lembrança: a caixa com o tênis, presente do pai (tom sépia)
+cena('c-presente', `<rect width="1080" height="1920" fill="#E8D2A8"/><rect y="1180" width="1080" height="740" fill="#A8743E"/>` + [0, 1, 2, 3, 4, 5].map(k => `<path d="M0 ${1210 + k * 120} H1080" stroke="#8A5A2E" stroke-width="5"/>`).join('') +
+  `<g id="pr-caixa"><path d="M150 1330 L190 1060 H890 L930 1330Z" fill="#F2EEE6" stroke="${L}" stroke-width="10"/><path d="M190 1060 L230 980 H850 L890 1060Z" fill="#D9D2C4" stroke="${L}" stroke-width="8"/><rect x="430" y="1170" width="220" height="40" fill="${LARANJA}" stroke="${L}" stroke-width="5"/></g>` +
+  `<g id="pr-tenis">${tenisGrande(380, 1080, 1.2)}${tenisGrande(720, 1110, 1.2)}</g>` +
+  `<g transform="translate(540 760) rotate(-4)"><g id="pr-bilhete"><rect x="-320" y="-110" width="640" height="220" rx="10" fill="#FFFDF5" stroke="${L}" stroke-width="6"/><text y="-20" font-size="56" text-anchor="middle" fill="#5A3A1A" font-family="'DejaVu Serif', serif" font-style="italic">Pro meu campeão.</text><text y="62" font-size="48" text-anchor="middle" fill="#5A3A1A" font-family="'DejaVu Serif', serif" font-style="italic">— Pai</text><path d="M120 70 l14 -18 q10 14 -14 34 q-24 -20 -14 -34Z" fill="#D7263D"/></g></g>` +
+  `<rect width="1080" height="1920" fill="#7A4A1A" opacity=".18"/><rect width="1080" height="1920" fill="url(#sepia)"/>`);
+// 4. fila do refeitório (balcão atrás)
+cena('c-fila', Es(4).refeitorio({ chao: 1150, balcao: true, mesasFundo: false }) + vin + `<g id="f-balao" transform="translate(720 330)">${Marca.balao(0, 0, 'OLHA O CENOURINHA!', { fs: 62, ponta: [40, 130] })}</g>`);
+// 5. o trio
+cena('c-trio', Es(5).refeitorio({ chao: 1100, balcao: false, mesasFundo: true }) + vin + etq('n-caio', 540, 420, 'CAIO', 56) + etq('n-duda', 240, 560, 'DUDA', 50) + etq('n-pedrao', 850, 500, 'PEDRÃO', 50));
+// 6. indo para o canto (mesas ao fundo com alunos)
+cena('c-canto', Es(6).refeitorio({ chao: 1100, balcao: false, mesasFundo: false }) + vin);
+// 7. a queda (plano mais aberto)
+cena('c-queda', Es(7).refeitorio({ chao: 1100, balcao: false, mesasFundo: false }) + vin + imp('q-crash', 600, 420, 'CRASH!', 160, 5));
+// 8. no chão: suco na camisa, arroz no chão, todo mundo rindo
+cena('c-chao', Es(8).refeitorio({ chao: 1100, balcao: false, mesasFundo: false }) + vin + `<g id="ch-arroz">${Es(8).arrozNoChao(760, 1440, 1.3)}</g>` +
+  `<g id="ch-bandeja" transform="translate(930 1452) rotate(180)">${Es(8).bandeja(0, 0, 1.1, { suco: false, prato: false })}</g>` +
+  ['KKKK', 'KKKKKK', 'HAHAHA'].map((t, i) => `<g id="ch-kk${i}" transform="translate(${[170, 540, 930][i]} ${[520, 470, 540][i]}) rotate(${[-8, 4, 9][i]})"><text font-size="64" text-anchor="middle" fill="#FFFFFF" stroke="${PRETO}" stroke-width="12" paint-order="stroke">${t}</text></g>`).join(''));
+// 9. a menina no fundo que não ria
+cena('c-menina', Es(9).refeitorio({ chao: 1100, balcao: false, mesasFundo: false }) + vin);
+// 10. quarto à noite
+cena('c-quarto', Es(10).quarto({ chao: 1180, noite: true }) + `<g id="q-cama">${Es(10).cama(430, PE, 1.25)}</g>` + vin +
+  `<g id="q-bzz"><path d="M-40 -10 l-20 -6 M-40 10 l-22 4 M40 -10 l20 -6 M40 10 l22 4" stroke="#FFE27A" stroke-width="8" stroke-linecap="round"/></g>` + apoio('q-bzzt', 760, 520, 'BZZZ!', 96, 6));
+// 11. a tela do celular com o vídeo do Duda
+{ const E = Es(11), x = 170, y = 220, w = 740, h = 1120;
+  const conteudo = `<clipPath id="telaClip"><rect x="${x}" y="${y}" width="${w}" height="${h}" rx="20"/></clipPath><g clip-path="url(#telaClip)">${E.refeitorio({ x, y, w, h, chao: y + h * 0.55, balcao: false, mesasFundo: false })}<g id="cel-arroz">${E.arrozNoChao(x + w * 0.66, y + h * 0.8, 0.8)}</g><rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#000" opacity=".08"/></g>`;
+  cena('c-celular', `<rect width="1080" height="1920" fill="#14183A"/><rect width="1080" height="1920" fill="url(#vin)"/>` + E.telaCelular(x, y, w, h, { views: '0', usuario: '@duda.zuera', legenda: 'KKKKK O CENOURINHA', conteudo }) +
+    `<g id="cel-rec"><circle cx="${x + w - 50}" cy="${y + 160}" r="14" fill="#FF3B3B"/></g>`); }
+// final
+scenes.push(Marca.final({ linhas: ['EPISÓDIO 1 DE 5', 'CONTINUA...'], destaque: 'PARTE 2', chamada: 'SEGUE O PERFIL ↓' }));
+$('#scenes').innerHTML = scenes.join('');
+
+// ===================== ELENCO (aparência fixa em todos os episódios) =====================
+const LEO = { figurino: 'sobrevivente' };
+const CAIO = { figurino: 'caio' }, DUDA = { figurino: 'duda' }, PEDRAO = { figurino: 'pedrao' }, MENINA = { figurino: 'menina' };
+const ALUNOS = ['#5A7A9A', '#C98A3A', '#8A5A8A', '#4A8A6A', '#9A4A4A', '#6A6A7A'];
+const aluno = (i, extra = {}) => ({ figurino: { preset: 'aluno', cor: ALUNOS[i % 6], corPernas: ['#2E3A4A', '#4A3A2A', '#3A3A3A'][i % 3], cabelo: ['curto', 'cacheado', 'longo', 'coque'][i % 4], corCabelo: ['#2A1E16', '#5A3A1A', '#1A1A1A', '#8A5A2A'][i % 4], ...extra }, seed: 20 + i });
+const ATORES = [], ITENS = [];
+function ator(escala, janelas, opts = {}, pai = '#atores') {
+  const g = document.createElementNS(NS, 'g'); if (pai) $(pai).appendChild(g);
+  const b = new Boneco(g, { escala, seed: 4, ...opts }); b.grupo = g;
+  ATORES.push({ b, g, janelas }); return b;
+}
+function item(svg, janelas, pai = '#atores') { const g = document.createElementNS(NS, 'g'); $(pai).appendChild(g); g.innerHTML = svg; ITENS.push({ g, janelas }); return g; }
+const J = n => [[S[n][0], S[n][1]]];
+const E0 = Es(30);
+
+// ---- 1. fachada: Léo chega andando e se vira para a câmera ----
+const l1 = ator(KL, J('fachada'), LEO);
+l1.base(0, 2.3, 'andar', { de: [-180, PE], ate: [520, PE] }); l1.base(2.3, S.fachada[1], 'parado', { x: 520, y: PE, vista: 'frente', transicao: 0.35 });
+l1.expressao(0, 2.3, 'preocupado'); l1.expressao(2.3, S.fachada[1], 'normal'); l1.braco('d', 2.5, 3.6, 'acenar');
+// ---- 2. corredor: cabeça baixa, alunos passando atrás ----
+ator(1.05, [[S.corredor[0], 6.3]], aluno(0)).base(S.corredor[0], 6.3, 'andar', { de: [1150, 1250], ate: [-200, 1250], passo: 140 });
+ator(1.0, [[S.corredor[0], 6.3]], aluno(3)).base(S.corredor[0], 6.3, 'andar', { de: [1400, 1240], ate: [-100, 1240], passo: 140 });
+const l2 = ator(KL, J('corredor'), LEO);
+l2.base(S.corredor[0], 6.4, 'andar', { de: [120, PE], ate: [600, PE], passo: 105 }); l2.base(6.4, S.corredor[1], 'parado', { x: 600, y: PE, vista: 'perfil', dir: 1 });
+l2.cabeca(S.corredor[0], 6.4, { baixar: 16 }); l2.cabeca(6.4, S.corredor[1], { baixar: 26 }); l2.expressao(S.corredor[0], S.corredor[1], 'preocupado');
+// ---- 4. fila: Léo com a bandeja; Caio (mais alto) na frente vira, olha os pés e ri ----
+const l4 = ator(KL, J('fila'), LEO);
+l4.base(S.fila[0], S.fila[1], 'parado', { x: 300, y: PE, vista: 'perfil', dir: 1 }); l4.braco('ambos', S.fila[0], S.fila[1], 'segurar');
+l4.expressao(S.fila[0], 12.4, 'normal'); l4.expressao(12.4, 14.4, 'preocupado'); l4.expressao(14.4, S.fila[1], 'envergonhado'); l4.cabeca(14.4, S.fila[1], { baixar: 18 });
+const c4 = ator(KL * 1.12, J('fila'), CAIO);
+c4.base(S.fila[0], 11.6, 'parado', { x: 760, y: PE + 10, vista: 'perfil', dir: 1 }); c4.base(11.6, S.fila[1], 'parado', { x: 760, y: PE + 10, vista: 'perfil', dir: -1 });
+c4.cabeca(12.4, 14.0, { baixar: 22 }); c4.expressao(S.fila[0], 13.9, 'serio'); c4.expressao(13.9, S.fila[1], 'alegre');
+c4.braco('d', 14.3, S.fila[1], 'pose', { o: 40, c: 8, mao: 'apontar' });
+// ---- 5. o trio rindo (de frente), com os nomes ----
+const d5 = ator(KL * 0.97, J('trio'), DUDA); d5.base(S.trio[0], S.trio[1], 'parado', { x: 240, y: PE, vista: 'frente' }); d5.braco('d', S.trio[0], S.trio[1], 'contar', { mao: 'punho' }); d5.expressao(S.trio[0], S.trio[1], 'alegre');
+const p5 = ator(KL * 1.04, J('trio'), PEDRAO); p5.base(S.trio[0], S.trio[1], 'parado', { x: 850, y: PE, vista: 'frente' }); p5.braco('ambos', 17.9, S.trio[1], 'cintura'); p5.expressao(S.trio[0], S.trio[1], 'alegre');
+const c5 = ator(KL * 1.12, J('trio'), CAIO); c5.base(S.trio[0], S.trio[1], 'parado', { x: 540, y: PE + 30, vista: 'frente' }); c5.braco('ambos', S.trio[0], S.trio[1], 'cruzar'); c5.expressao(S.trio[0], S.trio[1], 'alegre');
+// ---- 6. indo para o canto, cabeça baixa; mesa com alunos ao fundo ----
+item(E0.banco(820, 1215, 0.8), J('canto'));
+[[730, 0], [900, 1]].forEach(([x, i]) => { const a = ator(0.95, J('canto'), aluno(i + 1)); a.base(S.canto[0], S.canto[1], 'sentar', { x, y: 1215 - 102 * 0.8, chao: 1250, dir: -1 }); a.expressao(S.canto[0], S.canto[1], 'alegre'); a.cabeca(S.canto[0], S.canto[1], { virar: -0.3 }); });
+item(E0.mesa(760, 1240, 0.85), J('canto'));   // mesa na frente deles (depois na ordem de pintura)
+const l6 = ator(KL, J('canto'), LEO);
+l6.base(S.canto[0], S.canto[1], 'andar', { de: [80, PE], ate: [560, PE], passo: 95 }); l6.braco('ambos', S.canto[0], S.canto[1], 'segurar');
+l6.cabeca(S.canto[0], S.canto[1], { baixar: 24 }); l6.expressao(S.canto[0], S.canto[1], 'triste');
+// ---- 7. a queda: Caio sentado no banco estica o pé; Léo tropeça; a bandeja voa ----
+const KQ = 1.15, PQ = 1420;
+item(E0.mesa(900, PQ - 20, 1.05), J('queda'));
+const c7 = ator(KQ * 1.12, J('queda'), CAIO);
+c7.base(S.queda[0], 23.7, 'sentar', { x: 860, y: PQ - 102 * 1.0, chao: PQ, dir: -1 }); c7.base(23.7, S.queda[1], 'sentar', { x: 860, y: PQ - 102 * 1.0, chao: PQ, dir: -1, estica: 150, transicao: 0.25 });
+c7.cabeca(22.6, 23.7, { virar: -0.2 }); c7.expressao(S.queda[0], 23.6, 'desconfiado'); c7.expressao(23.6, S.queda[1], 'alegre');
+item(E0.banco(860, PQ, 1.0, { largura: 300 }), J('queda'));
+const l7 = ator(KQ, J('queda'), LEO);
+l7.base(S.queda[0], 24.35, 'andar', { de: [40, PQ], ate: [470, PQ], passo: 85 }); l7.braco('ambos', S.queda[0], 24.35, 'segurar');
+l7.base(24.35, S.queda[1], 'deitado', { x: 470, y: PQ, dir: 1, giro: 90, transicao: 0.55 }); l7.braco('ambos', 24.35, S.queda[1], 'desespero');
+l7.cabeca(S.queda[0], 24.3, { baixar: 20 }); l7.expressao(S.queda[0], 24.35, 'triste'); l7.expressao(24.35, S.queda[1], 'susto');
+const bandejaVoa = item(`<g id="bv">${E0.bandeja(0, 0, 0.95)}</g>`, [[24.35, 25.8]], '#props');
+// ---- 8. no chão: sentado no piso, camisa suja; os três rindo atrás, Duda filmando ----
+const l8 = ator(KL, J('chao'), LEO);
+l8.base(S.chao[0], S.chao[1], 'sentar', { x: 330, y: PE - 14, chao: PE + 6, dir: 1, inclina: -4 }); l8.braco('ambos', S.chao[0], S.chao[1], 'pose', { o: -30, c: 20, mao: 'aberta' });
+l8.manchar(S.chao[0], S.chao[1], '#FF8A2A'); l8.expressao(S.chao[0], 27.8, 'tonto'); l8.expressao(27.8, S.chao[1], 'envergonhado'); l8.cabeca(28.8, S.chao[1], { baixar: 20 });
+const KF = 1.0, PF = 1230;
+const c8 = ator(KF * 1.12, J('chao'), CAIO); c8.base(S.chao[0], S.chao[1], 'parado', { x: 600, y: PF, vista: 'frente' }); c8.braco('d', 28.6, S.chao[1], 'apontar'); c8.expressao(S.chao[0], S.chao[1], 'alegre');
+const p8 = ator(KF * 1.04, J('chao'), PEDRAO); p8.base(S.chao[0], S.chao[1], 'parado', { x: 860, y: PF, vista: 'frente' }); p8.braco('ambos', 28.8, S.chao[1], 'cima', { mao: 'aberta' }); p8.expressao(S.chao[0], S.chao[1], 'alegre');
+const d8 = ator(KF * 0.97, J('chao'), DUDA); d8.base(S.chao[0], S.chao[1], 'parado', { x: 380, y: PF - 10, vista: 'frente' }); d8.braco('d', S.chao[0], S.chao[1], 'contar', { mao: 'punho' }); d8.expressao(S.chao[0], S.chao[1], 'alegre');
+[[140, 4], [1000, 5]].forEach(([x, i]) => { const a = ator(0.85, J('chao'), aluno(i)); a.base(S.chao[0], S.chao[1], 'parado', { x, y: 1180, vista: 'frente' }); a.expressao(S.chao[0], S.chao[1], 'alegre'); a.braco('ambos', 28.9, S.chao[1], 'abanar'); });
+$('#atores').appendChild(l8.grupo);   // o Léo (mais perto) por cima dos que riem ao fundo
+// ---- 9. a menina sozinha no fundo, séria; os outros da mesa rindo ----
+item(E0.banco(540, 1330, 1.1, { largura: 640 }) + E0.mesa(540, 1300, 1.3), J('menina'));
+const m9 = ator(1.15, J('menina'), MENINA); m9.base(S.menina[0], S.menina[1], 'parado', { x: 540, y: 1330, vista: 'frente' }); m9.expressao(S.menina[0], S.menina[1], 'triste'); m9.cabeca(31.4, S.menina[1], { virar: 0.25 });
+[[230, 2], [850, 0]].forEach(([x, i]) => { const a = ator(1.05, J('menina'), aluno(i)); a.base(S.menina[0], S.menina[1], 'parado', { x, y: 1330, vista: 'frente' }); a.expressao(S.menina[0], S.menina[1], 'alegre'); a.braco('ambos', S.menina[0], S.menina[1], 'abanar'); });
+// ---- 10. quarto: sentado na cama olhando o celular que vibra ----
+const l10 = ator(KL, J('quarto'), LEO);
+l10.base(S.quarto[0], S.quarto[1], 'sentar', { x: 520, y: PE - 150 * 1.25 + 4, chao: PE, dir: 1 }); l10.braco('d', S.quarto[0], S.quarto[1], 'pose', { o: 35, c: 105, mao: 'punho' });
+l10.cabeca(S.quarto[0], S.quarto[1], { baixar: 18 }); l10.expressao(S.quarto[0], 34.6, 'triste'); l10.expressao(34.6, S.quarto[1], 'espanto');
+// ---- 11. no vídeo do celular: o Léo caído (pequeno), o Caio rindo ao fundo ----
+const lv = ator(0.55, J('celular'), LEO); lv.base(S.celular[0], S.celular[1], 'deitado', { x: 360, y: 1130, dir: 1, giro: 90 }); lv.expressao(S.celular[0], S.celular[1], 'susto');
+const cv = ator(0.6, J('celular'), CAIO); cv.base(S.celular[0], S.celular[1], 'parado', { x: 700, y: 1060, vista: 'frente' }); cv.expressao(S.celular[0], S.celular[1], 'alegre'); cv.braco('d', S.celular[0], S.celular[1], 'apontar');
+// ---- final ----
+const lf = ator(0.75, [[FIM_FALA, 999]], LEO); lf.base(FIM_FALA, 999, 'parado', { x: 540, y: 1640, vista: 'frente' }); lf.braco('d', FIM_FALA + 0.4, 999, 'joinha'); lf.expressao(FIM_FALA, 999, 'determinado');
+
+// objetos na mão (cada objeto tem dono e segue a mão)
+$('#props').insertAdjacentHTML('beforeend', `<g id="p-band4">${E0.bandeja(0, 0, 1.1)}</g><g id="p-band6">${E0.bandeja(0, 0, 1.1)}</g><g id="p-band7">${E0.bandeja(0, 0, 0.95)}</g><g id="p-cel5">${DTm.celular(0, 0, 0.3)}</g><g id="p-cel8">${DTm.celular(0, 0, 0.22)}</g><g id="p-cel10">${DTm.celular(0, 0, 0.3)}</g>`);
+const PROPS = [
+  { el: $('#p-band4'), ator: l4, mao: 'ambos', janelas: J('fila'), dy: 8 },
+  { el: $('#p-band6'), ator: l6, mao: 'ambos', janelas: J('canto'), dy: 8 },
+  { el: $('#p-band7'), ator: l7, mao: 'ambos', janelas: [[S.queda[0], 24.35]], dy: 6 },
+  { el: $('#p-cel5'), ator: d5, mao: 'd', janelas: J('trio'), dy: 30 },
+  { el: $('#p-cel8'), ator: d8, mao: 'd', janelas: J('chao'), dy: 22 },
+  { el: $('#p-cel10'), ator: l10, mao: 'd', janelas: J('quarto'), dy: 30, vibra: [33.9, 35.0] },
+];
+
+// ===================== CÂMERA (na mão: leve balanço; aproximações nas reações) =====================
+// chaves [t, escala, centroX, centroY]; entre chaves interpola suave; troca de plano = corte seco
+const CAM = [
+  [0, 1, 540, 960], [3.6, 1.04, 540, 960],
+  [3.65, 1, 540, 960], [6.55, 1, 560, 960], [6.95, 2.3, 640, 1330], [7.5, 2.4, 640, 1340],
+  [7.55, 1.0, 540, 960], [9.8, 1.08, 540, 1000],
+  [9.84, 1, 540, 960], [13.4, 1.0, 540, 960], [13.8, 1.25, 520, 1100], [14.3, 1.25, 520, 1100], [14.6, 1.0, 540, 960], [16.0, 1.02, 540, 960],
+  [16.0, 1, 540, 960], [19.4, 1.05, 540, 940],
+  [19.4, 1, 480, 960], [22.08, 1, 600, 960],
+  [22.08, 1, 540, 960], [26.5, 1, 540, 960],
+  [26.5, 1.55, 380, 1080], [27.6, 1.55, 380, 1080], [28.7, 1.0, 540, 960], [30.6, 1.0, 540, 960],
+  [30.6, 1.0, 540, 960], [32.9, 1.4, 540, 1000],
+  [32.96, 1, 540, 960], [35.62, 1.06, 560, 1000],
+  [35.62, 1, 540, 960], [40.75, 1.03, 540, 930],
+  [40.75, 1, 540, 960], [99, 1, 540, 960],
+];
+const sm = u => u * u * (3 - 2 * u);
+function camEm(t) {
+  let a = CAM[0], b = CAM[0];
+  for (let i = 0; i < CAM.length - 1; i++) if (t >= CAM[i][0] && t < CAM[i + 1][0]) { a = CAM[i]; b = CAM[i + 1]; break; }
+  const u = b[0] > a[0] ? sm((t - a[0]) / (b[0] - a[0])) : 0;
+  const k = a[1] + (b[1] - a[1]) * u, cx = a[2] + (b[2] - a[2]) * u, cy = a[3] + (b[3] - a[3]) * u;
+  const bx = Math.sin(t * 1.3) * 4 + Math.sin(t * 3.1) * 1.5, by = Math.cos(t * 1.1) * 3 + Math.sin(t * 2.7) * 1.2, rot = Math.sin(t * 0.9) * 0.35;   // câmera na mão
+  return `translate(${540 + bx} ${960 + by}) rotate(${rot.toFixed(3)}) scale(${k.toFixed(4)}) translate(${-cx} ${-cy})`;
+}
+
+// ===================== TIMELINE =====================
+const rendering = navigator.webdriver;
+const tl = gsap.timeline({ paused: true, defaults: { ease: 'power2.inOut' } });
+$$('.scene').forEach(s => gsap.set(s, { autoAlpha: 0 }));
+function show(sel, t0, t1) {
+  tl.fromTo(sel, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.01, ease: 'none', immediateRender: false }, t0);
+  if (t1 != null) tl.to(sel, { autoAlpha: 0, duration: 0.01, ease: 'none' }, t1);
+}
+function pop(sel, t, d = 0.4, ease = 'back.out(2.4)') {
+  gsap.set(sel, { autoAlpha: 0, scale: 0.2, transformOrigin: '50% 50%' });
+  tl.fromTo(sel, { autoAlpha: 0, scale: 0.2 }, { autoAlpha: 1, scale: 1, duration: d, ease, immediateRender: false }, t);
+}
+function hide(sel, t, d = 0.2) { tl.to(sel, { autoAlpha: 0, duration: d, ease: 'power1.in' }, t); }
+function treme(sel, t, dur = 0.5, forca = 10) { tl.to(sel, { x: `+=${forca}`, duration: 0.05, repeat: Math.round(dur / 0.05), yoyo: true }, t).set(sel, { x: 0 }, t + dur + 0.06); }
+const IDS = { fachada: 'c-fachada', corredor: 'c-corredor', presente: 'c-presente', fila: 'c-fila', trio: 'c-trio', canto: 'c-canto', queda: 'c-queda', chao: 'c-chao', menina: 'c-menina', quarto: 'c-quarto', celular: 'c-celular' };
+Object.entries(IDS).forEach(([k, id]) => show('#' + id, S[k][0], S[k][1]));
+pop('#t-ep', 0.15, 0.5); hide('#t-ep', 3.3);
+gsap.set('#pr-bilhete', { autoAlpha: 0 }); tl.fromTo('#pr-bilhete', { autoAlpha: 0, y: -30 }, { autoAlpha: 1, y: 0, duration: 0.6, immediateRender: false }, 8.2);
+pop('#f-balao', 14.34, 0.35, 'back.out(3)'); treme('#f-balao', 14.7, 0.4, 6);
+pop('#n-caio', 16.17, 0.35, 'back.out(3)'); pop('#n-duda', 17.01, 0.35, 'back.out(3)'); pop('#n-pedrao', 17.82, 0.35, 'back.out(3)');
+pop('#q-crash', 25.6, 0.25, 'back.out(4)'); treme('#c-queda', 25.6, 0.35, 14); hide('#q-crash', 26.4, 0.1);
+['#ch-kk0', '#ch-kk1', '#ch-kk2'].forEach((s, i) => pop(s, 28.9 + i * 0.25, 0.3, 'back.out(3)'));
+gsap.set('#ch-arroz', { autoAlpha: 0 }); tl.to('#ch-arroz', { autoAlpha: 1, duration: 0.3 }, 27.8);
+pop('#q-bzzt', 33.9, 0.25, 'back.out(3)'); treme('#q-bzzt', 34.1, 0.8, 8); hide('#q-bzzt', 35.3);
+show('#fim', FIM_FALA); pop('#fim-t', FIM_FALA + 0.2, 0.6); pop('#fim-c', FIM_FALA + 1.0);
+tl.to('#fim-c', { scale: 1.06, duration: 0.4, repeat: 5, yoyo: true, ease: 'sine.inOut' }, FIM_FALA + 1.6);
+tl.set({}, {}, END);
+
+// ===================== LEGENDA embaixo (sobre o chão, acima dos botões do app) =====================
+const leg = Legenda($('#legenda'), window.PALAVRAS || [], { y: PISO_LEG, enfase: ['LÉO', 'LARANJA', 'CENOURINHA!', 'CAIO', 'DUDA', 'PEDRÃO', 'MIL'] }).esconder([[FIM_FALA, 999]]);
+
+// ===================== RENDER =====================
+function opacidade(t, janelas) { for (const [a, b] of janelas) if (t >= a && t < b) return 1; return 0; }
+function desenhar(t) {
+  $('#cam').setAttribute('transform', camEm(t));
+  for (const A of ATORES) { const o = opacidade(t, A.janelas); A.g.style.display = o ? '' : 'none'; if (o) A.b.desenhar(t); }
+  for (const I of ITENS) I.g.style.display = opacidade(t, I.janelas) ? '' : 'none';
+  for (const P of PROPS) {
+    if (!opacidade(t, P.janelas)) { P.el.style.display = 'none'; continue; }
+    const m = P.mao === 'ambos' ? [(P.ator.mao('e')[0] + P.ator.mao('d')[0]) / 2, (P.ator.mao('e')[1] + P.ator.mao('d')[1]) / 2] : P.ator.mao(P.mao);
+    const v = P.vibra && t >= P.vibra[0] && t < P.vibra[1] ? Math.sin(t * 90) * 5 : 0;
+    P.el.style.display = ''; P.el.setAttribute('transform', `translate(${(m[0] + v).toFixed(1)} ${(m[1] + (P.dy || 0)).toFixed(1)})`);
+  }
+  // bandeja voando: sai das mãos e cai girando à frente (arco de parábola), contato no chão em 25,6 s
+  if (t >= 24.35 && t < 25.8) { const u = Math.min(1, (t - 24.35) / 1.25), x = 520 + 430 * u, y = 1180 - 260 * Math.sin(Math.PI * u * 0.85) + 300 * u * u;
+    bandejaVoa.setAttribute('transform', `translate(${x.toFixed(1)} ${Math.min(PQ, y).toFixed(1)}) rotate(${(u * 400).toFixed(1)})`); }
+  // contador de visualizações subindo
+  const vn = $('.views-num'); if (vn) { const u = Math.max(0, Math.min(1, (t - 37.9) / 1.4)), n = Math.round(2000 * u * u); vn.textContent = n >= 2000 ? '2 MIL VISUALIZAÇÕES' : `${n.toLocaleString('pt-BR')} VISUALIZAÇÕES`; }
+}
+window.__timeline = tl;
+window.__duration = tl.duration();
+window.__seek = t => { tl.seek(t, false); desenhar(t); leg.seek(t); };
+document.fonts.ready.then(() => Palco.caberTextos(document));
+window.__seek(0);
+if (!rendering) { tl.eventCallback('onUpdate', () => { const t = tl.time(); desenhar(t); leg.seek(t); }); document.addEventListener('click', () => tl.paused() ? tl.play() : tl.pause()); }
+</script>
+</body>
+</html>

@@ -1,0 +1,632 @@
+[
+ {
+  "text": "Meu",
+  "start": 0.37,
+  "end": 0.4,
+  "id": "w0"
+ },
+ {
+  "text": "nome",
+  "start": 0.4,
+  "end": 0.94,
+  "id": "w1"
+ },
+ {
+  "text": "é",
+  "start": 0.94,
+  "end": 1.07,
+  "id": "w2"
+ },
+ {
+  "text": "Léo.",
+  "start": 1.07,
+  "end": 1.72,
+  "id": "w3"
+ },
+ {
+  "text": "Primeiro",
+  "start": 1.72,
+  "end": 2.31,
+  "id": "w4"
+ },
+ {
+  "text": "dia",
+  "start": 2.31,
+  "end": 2.49,
+  "id": "w5"
+ },
+ {
+  "text": "na",
+  "start": 2.53,
+  "end": 2.67,
+  "id": "w6"
+ },
+ {
+  "text": "escola",
+  "start": 2.67,
+  "end": 3.11,
+  "id": "w7"
+ },
+ {
+  "text": "nova.",
+  "start": 3.11,
+  "end": 3.6,
+  "id": "w8"
+ },
+ {
+  "text": "Eu",
+  "start": 3.7,
+  "end": 3.71,
+  "id": "w9"
+ },
+ {
+  "text": "só",
+  "start": 3.71,
+  "end": 3.82,
+  "id": "w10"
+ },
+ {
+  "text": "queria",
+  "start": 3.82,
+  "end": 4.15,
+  "id": "w11"
+ },
+ {
+  "text": "passar",
+  "start": 4.15,
+  "end": 4.5,
+  "id": "w12"
+ },
+ {
+  "text": "despercebido,",
+  "start": 4.5,
+  "end": 5.76,
+  "id": "w13"
+ },
+ {
+  "text": "mas",
+  "start": 5.86,
+  "end": 6,
+  "id": "w14"
+ },
+ {
+  "text": "estava",
+  "start": 6,
+  "end": 6.38,
+  "id": "w15"
+ },
+ {
+  "text": "com",
+  "start": 6.38,
+  "end": 6.48,
+  "id": "w16"
+ },
+ {
+  "text": "o",
+  "start": 6.48,
+  "end": 6.62,
+  "id": "w17"
+ },
+ {
+  "text": "tênis",
+  "start": 6.62,
+  "end": 6.88,
+  "id": "w18"
+ },
+ {
+  "text": "laranja.",
+  "start": 6.88,
+  "end": 7.55,
+  "id": "w19"
+ },
+ {
+  "text": "O",
+  "start": 7.55,
+  "end": 8.09,
+  "id": "w20"
+ },
+ {
+  "text": "último",
+  "start": 8.09,
+  "end": 8.28,
+  "id": "w21"
+ },
+ {
+  "text": "presente",
+  "start": 8.28,
+  "end": 8.93,
+  "id": "w22"
+ },
+ {
+  "text": "do",
+  "start": 8.93,
+  "end": 8.95,
+  "id": "w23"
+ },
+ {
+  "text": "meu",
+  "start": 8.95,
+  "end": 9.39,
+  "id": "w24"
+ },
+ {
+  "text": "pai.",
+  "start": 9.39,
+  "end": 9.84,
+  "id": "w25"
+ },
+ {
+  "text": "Na",
+  "start": 9.84,
+  "end": 10,
+  "id": "w26"
+ },
+ {
+  "text": "fila",
+  "start": 10,
+  "end": 10.33,
+  "id": "w27"
+ },
+ {
+  "text": "do",
+  "start": 10.33,
+  "end": 10.49,
+  "id": "w28"
+ },
+ {
+  "text": "refeitório,",
+  "start": 10.49,
+  "end": 11.52,
+  "id": "w29"
+ },
+ {
+  "text": "um",
+  "start": 11.52,
+  "end": 11.68,
+  "id": "w30"
+ },
+ {
+  "text": "garoto",
+  "start": 11.68,
+  "end": 12.16,
+  "id": "w31"
+ },
+ {
+  "text": "alto",
+  "start": 12.16,
+  "end": 12.42,
+  "id": "w32"
+ },
+ {
+  "text": "olhou",
+  "start": 12.49,
+  "end": 12.88,
+  "id": "w33"
+ },
+ {
+  "text": "para",
+  "start": 12.88,
+  "end": 13.14,
+  "id": "w34"
+ },
+ {
+  "text": "os",
+  "start": 13.14,
+  "end": 13.58,
+  "id": "w35"
+ },
+ {
+  "text": "meus",
+  "start": 13.58,
+  "end": 13.68,
+  "id": "w36"
+ },
+ {
+  "text": "pés",
+  "start": 13.68,
+  "end": 13.84,
+  "id": "w37"
+ },
+ {
+  "text": "e",
+  "start": 13.92,
+  "end": 14,
+  "id": "w38"
+ },
+ {
+  "text": "riu.",
+  "start": 14,
+  "end": 14.34,
+  "id": "w39"
+ },
+ {
+  "text": "Olha",
+  "start": 14.34,
+  "end": 14.71,
+  "id": "w40"
+ },
+ {
+  "text": "o",
+  "start": 14.71,
+  "end": 14.72,
+  "id": "w41"
+ },
+ {
+  "text": "cenourinha!",
+  "start": 14.72,
+  "end": 15.57,
+  "id": "w42"
+ },
+ {
+  "text": "Era",
+  "start": 16.01,
+  "end": 16.07,
+  "id": "w43"
+ },
+ {
+  "text": "o",
+  "start": 16.07,
+  "end": 16.17,
+  "id": "w44"
+ },
+ {
+  "text": "Caio.",
+  "start": 16.17,
+  "end": 16.92,
+  "id": "w45"
+ },
+ {
+  "text": "O",
+  "start": 16.92,
+  "end": 17.01,
+  "id": "w46"
+ },
+ {
+  "text": "Duda",
+  "start": 17.01,
+  "end": 17.36,
+  "id": "w47"
+ },
+ {
+  "text": "e",
+  "start": 17.36,
+  "end": 17.46,
+  "id": "w48"
+ },
+ {
+  "text": "o",
+  "start": 17.46,
+  "end": 17.54,
+  "id": "w49"
+ },
+ {
+  "text": "Pedrão",
+  "start": 17.82,
+  "end": 18.09,
+  "id": "w50"
+ },
+ {
+  "text": "riram",
+  "start": 18.09,
+  "end": 18.49,
+  "id": "w51"
+ },
+ {
+  "text": "junto.",
+  "start": 18.57,
+  "end": 19.27,
+  "id": "w52"
+ },
+ {
+  "text": "Eu",
+  "start": 19.42,
+  "end": 19.45,
+  "id": "w53"
+ },
+ {
+  "text": "abaixei",
+  "start": 19.65,
+  "end": 20.02,
+  "id": "w54"
+ },
+ {
+  "text": "a",
+  "start": 20.02,
+  "end": 20.1,
+  "id": "w55"
+ },
+ {
+  "text": "cabeça",
+  "start": 20.1,
+  "end": 20.5,
+  "id": "w56"
+ },
+ {
+  "text": "e",
+  "start": 20.5,
+  "end": 20.725,
+  "id": "w57"
+ },
+ {
+  "text": "fui",
+  "start": 20.725,
+  "end": 20.95,
+  "id": "w58"
+ },
+ {
+  "text": "para",
+  "start": 20.95,
+  "end": 21.26,
+  "id": "w59"
+ },
+ {
+  "text": "o",
+  "start": 21.26,
+  "end": 21.34,
+  "id": "w60"
+ },
+ {
+  "text": "canto.",
+  "start": 21.34,
+  "end": 22.08,
+  "id": "w61"
+ },
+ {
+  "text": "Quando",
+  "start": 22.08,
+  "end": 22.47,
+  "id": "w62"
+ },
+ {
+  "text": "passei,",
+  "start": 22.97,
+  "end": 23.3,
+  "id": "w63"
+ },
+ {
+  "text": "o",
+  "start": 23.3,
+  "end": 23.38,
+  "id": "w64"
+ },
+ {
+  "text": "Caio",
+  "start": 23.38,
+  "end": 23.72,
+  "id": "w65"
+ },
+ {
+  "text": "esticou",
+  "start": 23.72,
+  "end": 24.32,
+  "id": "w66"
+ },
+ {
+  "text": "o",
+  "start": 24.32,
+  "end": 24.4,
+  "id": "w67"
+ },
+ {
+  "text": "pé.",
+  "start": 24.4,
+  "end": 24.7,
+  "id": "w68"
+ },
+ {
+  "text": "A",
+  "start": 24.7,
+  "end": 25.14,
+  "id": "w69"
+ },
+ {
+  "text": "bandeja",
+  "start": 25.14,
+  "end": 25.7,
+  "id": "w70"
+ },
+ {
+  "text": "voou.",
+  "start": 25.75,
+  "end": 26.42,
+  "id": "w71"
+ },
+ {
+  "text": "Suco",
+  "start": 26.56,
+  "end": 26.78,
+  "id": "w72"
+ },
+ {
+  "text": "na",
+  "start": 26.79,
+  "end": 26.96,
+  "id": "w73"
+ },
+ {
+  "text": "camisa,",
+  "start": 26.96,
+  "end": 27.65,
+  "id": "w74"
+ },
+ {
+  "text": "arroz",
+  "start": 27.88,
+  "end": 28.16,
+  "id": "w75"
+ },
+ {
+  "text": "no",
+  "start": 28.16,
+  "end": 28.34,
+  "id": "w76"
+ },
+ {
+  "text": "chão,",
+  "start": 28.34,
+  "end": 28.88,
+  "id": "w77"
+ },
+ {
+  "text": "todo",
+  "start": 28.88,
+  "end": 29.25,
+  "id": "w78"
+ },
+ {
+  "text": "mundo",
+  "start": 29.25,
+  "end": 29.61,
+  "id": "w79"
+ },
+ {
+  "text": "rindo.",
+  "start": 29.81,
+  "end": 30.57,
+  "id": "w80"
+ },
+ {
+  "text": "Só",
+  "start": 30.65,
+  "end": 30.75,
+  "id": "w81"
+ },
+ {
+  "text": "uma",
+  "start": 30.75,
+  "end": 31.01,
+  "id": "w82"
+ },
+ {
+  "text": "menina",
+  "start": 31.01,
+  "end": 31.53,
+  "id": "w83"
+ },
+ {
+  "text": "no",
+  "start": 31.53,
+  "end": 31.7,
+  "id": "w84"
+ },
+ {
+  "text": "fundo",
+  "start": 31.7,
+  "end": 31.84,
+  "id": "w85"
+ },
+ {
+  "text": "não",
+  "start": 32.28,
+  "end": 32.4,
+  "id": "w86"
+ },
+ {
+  "text": "ria.",
+  "start": 32.4,
+  "end": 32.96,
+  "id": "w87"
+ },
+ {
+  "text": "À",
+  "start": 32.96,
+  "end": 33.33,
+  "id": "w88"
+ },
+ {
+  "text": "noite,",
+  "start": 33.33,
+  "end": 33.76,
+  "id": "w89"
+ },
+ {
+  "text": "meu",
+  "start": 33.76,
+  "end": 34.06,
+  "id": "w90"
+ },
+ {
+  "text": "celular",
+  "start": 34.06,
+  "end": 34.76,
+  "id": "w91"
+ },
+ {
+  "text": "vibrou.",
+  "start": 34.76,
+  "end": 35.68,
+  "id": "w92"
+ },
+ {
+  "text": "O",
+  "start": 35.68,
+  "end": 35.77,
+  "id": "w93"
+ },
+ {
+  "text": "Duda",
+  "start": 35.77,
+  "end": 36.13,
+  "id": "w94"
+ },
+ {
+  "text": "tinha",
+  "start": 36.13,
+  "end": 36.16,
+  "id": "w95"
+ },
+ {
+  "text": "filmado",
+  "start": 36.66,
+  "end": 37.23,
+  "id": "w96"
+ },
+ {
+  "text": "tudo.",
+  "start": 37.23,
+  "end": 37.87,
+  "id": "w97"
+ },
+ {
+  "text": "E o",
+  "start": 37.88,
+  "end": 38.01,
+  "id": "w98"
+ },
+ {
+  "text": "vídeo",
+  "start": 38.01,
+  "end": 38.38,
+  "id": "w99"
+ },
+ {
+  "text": "já",
+  "start": 38.38,
+  "end": 38.82,
+  "id": "w100"
+ },
+ {
+  "text": "tinha",
+  "start": 38.82,
+  "end": 38.94,
+  "id": "w101"
+ },
+ {
+  "text": "2",
+  "start": 38.94,
+  "end": 39.08,
+  "id": "w102"
+ },
+ {
+  "text": "mil",
+  "start": 39.17,
+  "end": 39.38,
+  "id": "w103"
+ },
+ {
+  "text": "visualizações.",
+  "start": 39.43,
+  "end": 40.51,
+  "id": "w104"
+ }
+]
