@@ -146,6 +146,7 @@
       const F = this.fig;
       const tecido = (c, w) => ({ fill: 'none', stroke: c, 'stroke-width': w * this.s, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' });
       this.el.capa = mk('path', { fill: F.corCapa || '#7A3A2A', stroke: 'none' });
+      this.el.mochila = mk('g', {});        // mochila nas costas (sobrevivente): atrás do corpo
       this.el.bracoLonge = mk('path', linha(this.corLonge));
       this.el.mangaLonge = mk('path', tecido(F.corManga || F.cor || '#888', 30));
       this.el.manicaLonge = mk('g', {});   // gladiador: protetor de braço (manica) e de ombro (galero)
@@ -167,6 +168,9 @@
         this.el.avental = mk('path', { fill: '#E8DCC4', stroke: 'none' });
       }
       this.el.bolsa = mk('path', { fill: '#8A5A33', stroke: 'none' });
+      this.el.bolsoCargo = mk('path', { fill: 'none', stroke: '#111114', 'stroke-width': 4 * this.s, 'stroke-linejoin': 'round' });
+      this.el.alcas = mk('path', { fill: 'none', stroke: '#1A1A1E', 'stroke-width': 9 * this.s, 'stroke-linecap': 'round' });
+      this.el.cachecol = mk('g', {});       // cachecol laranja (marca registrada do Sobrevivente)
       // cabeça
       const h = this.el.cab = mk('g', {});
       this.el.cabeloTras = mk('path', { fill: F.corCabelo || '#3A2A20' }, h);
@@ -419,6 +423,54 @@
         el.bolsa.setAttribute('d', `M${f([bx - 26 * s, by])} h${52 * s} v${44 * s} h${-52 * s}Z M${f(top)} L${f([bx, by])}`);
         el.bolsa.setAttribute('stroke', '#5E3B1C'); el.bolsa.setAttribute('stroke-width', 6 * s);
       } else el.bolsa.setAttribute('d', '');
+      const T0 = '#1D1D2B', ex = F.extras || [], t = this._t || 0, rapido = this._rapido || 0;
+      // luvas pretas
+      if (F.luvas) { el.maoLonge.setAttribute('fill', '#2A2A30'); el.maoPerto.setAttribute('fill', '#1D1D2B'); }
+      // bolso lateral da calça cargo (na coxa da perna da frente)
+      if (F.cargo && F.pernas === 'calca') {
+        const L = pernas[perto.perna], a = P_(L.q, L.j, 0.42), b = P_(L.q, L.j, 0.78);
+        const v = [b[0] - a[0], b[1] - a[1]], n = Math.hypot(v[0], v[1]) || 1, w = [-v[1] / n * 11 * s, v[0] / n * 11 * s];
+        el.bolsoCargo.setAttribute('d', `M${f([a[0] + w[0], a[1] + w[1]])} L${f([b[0] + w[0], b[1] + w[1]])} L${f([b[0] - w[0], b[1] - w[1]])} L${f([a[0] - w[0], a[1] - w[1]])}Z M${f([a[0] + w[0], a[1] + w[1] + 7 * s])} L${f([a[0] - w[0], a[1] - w[1] + 7 * s])}`);
+      } else el.bolsoCargo.setAttribute('d', '');
+      // mochila preta pequena: de perfil inteira nas costas; de frente só as alças
+      if (ex.includes('mochila')) {
+        if (vista === 'perfil') {
+          const tras = -dir, c = P_(top, H, 0.42), bx = c[0] + tras * 30 * s, by = c[1];
+          const w = 44 * s, h = 112 * s, x0 = bx - w / 2 + tras * 6 * s;
+          el.mochila.innerHTML = `<g transform="rotate(${(dir * inc).toFixed(1)} ${f(c)})"><rect x="${x0}" y="${by - h / 2}" width="${w}" height="${h}" rx="${18 * s}" fill="#24242A" stroke="${T0}" stroke-width="${5 * s}"/>` +
+            `<rect x="${x0 + w * 0.075}" y="${by + h * 0.08}" width="${w * 0.85}" height="${h * 0.34}" rx="${8 * s}" fill="#1A1A1E" stroke="${T0}" stroke-width="${4 * s}" transform="translate(${tras * 6 * s} 0)"/>` +
+            `<rect x="${bx - 7 * s + tras * 6 * s}" y="${by + h * 0.18}" width="${14 * s}" height="${10 * s}" rx="${2 * s}" fill="#FF7A00" stroke="${T0}" stroke-width="${2.5 * s}"/>` +
+            `<path d="M${x0 + w * 0.15} ${by - h * 0.32} H${x0 + w * 0.85}" stroke="#FF7A00" stroke-width="${4 * s}" stroke-linecap="round"/></g>`;
+          el.alcas.setAttribute('d', `M${f(P_(top, H, 0.02))} Q${f([top[0] + dir * 14 * s, top[1] + 40 * s])} ${f(P_(top, H, 0.5))}`);
+        } else {
+          el.mochila.innerHTML = '';
+          const yA = top[1] + (H[1] - top[1]) * 0.42;   // alças só no peito (de frente a mochila fica escondida atrás)
+          el.alcas.setAttribute('d', `M${f([top[0] - 22 * s, top[1] + 10 * s])} Q${f([top[0] - 30 * s, yA - 20 * s])} ${f([top[0] - 34 * s, yA])} M${f([top[0] + 22 * s, top[1] + 10 * s])} Q${f([top[0] + 30 * s, yA - 20 * s])} ${f([top[0] + 34 * s, yA])}`);
+        }
+      } else { el.mochila.innerHTML = ''; el.alcas.setAttribute('d', ''); }
+      // cachecol laranja: volta grossa no pescoço + nó + 2 pontas largas que esvoaçam para trás (mais quando corre)
+      if (ex.includes('cachecol')) {
+        const pesc = [top[0], top[1] - M.pescoco * 0.3 * s], tras = vista === 'perfil' ? -dir : -1;
+        const vento = 0.55 + rapido * 0.45, amp = (5 + rapido * 10) * s;
+        const rx = (vista === 'perfil' ? 26 : 36) * s, ry = 15 * s;
+        let h = `<path d="M${pesc[0] - rx} ${pesc[1] - ry * 0.5} Q${pesc[0]} ${pesc[1] + ry * 1.6} ${pesc[0] + rx} ${pesc[1] - ry * 0.5} L${pesc[0] + rx * 0.9} ${pesc[1] + ry * 0.6} Q${pesc[0]} ${pesc[1] + ry * 2.6} ${pesc[0] - rx * 0.9} ${pesc[1] + ry * 0.6}Z" fill="#FF7A00" stroke="${T0}" stroke-width="${4.5 * s}" stroke-linejoin="round"/>`;
+        const no = [pesc[0] + tras * rx * 0.7, pesc[1] + ry * 0.7];
+        [1, 0].forEach(k => {
+          const len = (k ? 62 : 80) * s, ang = (35 + vento * 50 - k * 14) * RAD, ph = t * (5 + rapido * 7) + k * 1.9;
+          const dirv = [tras * Math.sin(ang), Math.cos(ang)];               // para trás e um pouco para baixo
+          const nrm = [-dirv[1], dirv[0]];
+          const e = [no[0] + dirv[0] * len, no[1] + dirv[1] * len + Math.sin(ph) * amp];
+          const m = [no[0] + dirv[0] * len * 0.5 + nrm[0] * Math.sin(ph + 1.2) * amp, no[1] + dirv[1] * len * 0.5 + nrm[1] * Math.sin(ph + 1.2) * amp];
+          const w0 = 7 * s, w1 = (k ? 16 : 20) * s;                        // estreita no nó, larga na ponta (como bandeira)
+          const A1 = [no[0] + nrm[0] * w0, no[1] + nrm[1] * w0], A2 = [no[0] - nrm[0] * w0, no[1] - nrm[1] * w0];
+          const E1 = [e[0] + nrm[0] * w1, e[1] + nrm[1] * w1], E2 = [e[0] - nrm[0] * w1, e[1] - nrm[1] * w1];
+          const M1 = [m[0] + nrm[0] * (w0 + w1) / 2, m[1] + nrm[1] * (w0 + w1) / 2], M2 = [m[0] - nrm[0] * (w0 + w1) / 2, m[1] - nrm[1] * (w0 + w1) / 2];
+          const corte = [e[0] - dirv[0] * 8 * s, e[1] - dirv[1] * 8 * s];      // ponta em "V" (franja cortada)
+          h += `<path d="M${f(A1)} Q${f(M1)} ${f(E1)} L${f(corte)} L${f(E2)} Q${f(M2)} ${f(A2)}Z" fill="${k ? '#E86A00' : '#FF7A00'}" stroke="${T0}" stroke-width="${4 * s}" stroke-linejoin="round"/>`;
+        });
+        h += `<ellipse cx="${f(no).split(' ')[0]}" cy="${f(no).split(' ')[1]}" rx="${11 * s}" ry="${9 * s}" fill="#FF7A00" stroke="${T0}" stroke-width="${4 * s}"/>`;
+        el.cachecol.innerHTML = h;
+      } else el.cachecol.innerHTML = '';
     }
 
     // Calçado desenhado sobre o pé (calcanhar → ponta), apontando para onde o pé aponta
@@ -486,6 +538,7 @@
     desenhar(t) {
       const s = this.s;
       const P = this.pose(t);
+      this._t = t; { const a = this.acaoEm(this.acoes, t).atual; this._rapido = a ? ({ correr: 1, pular: 0.8, andar: 0.35, montar: 0.7 }[a.tipo] || 0) : 0; }
       if (!P) { this.g.style.display = 'none'; this.el.extras.style.display = 'none'; return; }
       this.g.style.display = ''; this.el.extras.style.display = '';
       const { vista, dir } = P;
@@ -616,7 +669,7 @@
         // Linha do cabelo h(lon): latitude (rad) onde o cabelo começa; lon 0 = testa, ±π = nuca.
         // Parte visível = arco da silhueta (por cima da cabeça) + linha do cabelo no lado visível.
         const R = r * 1.05;
-        const H = { curto: [0.02, 0.5], cacheado: [0.12, 0.52], coque: [0.0, 0.52], longo: [-0.05, 0.5] }[est] || [0.02, 0.5];
+        const H = { curto: [0.02, 0.5], cacheado: [0.12, 0.52], coque: [0.0, 0.52], longo: [-0.05, 0.5], militar: [0.62, 0.3] }[est] || [0.02, 0.5];
         const h = lon => H[0] + H[1] * Math.cos(lon);
         const pt = (lon, lat) => [C[0] + R * Math.cos(lat) * Math.sin(lon + TH), C[1] - R * Math.sin(lat)];
         const lonD = Math.PI / 2 - TH, lonE = -Math.PI / 2 - TH;          // longitudes na borda direita/esquerda da tela
@@ -626,6 +679,18 @@
           pts.push([C[0] - R * Math.cos(lat), C[1] - R * Math.sin(lat)]); }
         for (let k = 0; k <= 24; k++) { const lon = lonD + (lonE - lonD) * (k / 24); pts.push(pt(lon, h(lon))); }
         d = 'M' + pts.map(p => p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join(' L') + 'Z';
+        if (est === 'militar') {             // militar curto e espetado: fios em ponta saindo do topo, inclinados para um lado
+          const nS = 11;
+          for (let k = 0; k < nS; k++) {
+            const lat = (h(lonE) + 0.08) + (Math.PI - h(lonD) - h(lonE) - 0.16) * (k / (nS - 1));
+            const bx = C[0] - R * Math.cos(lat), by = C[1] - R * Math.sin(lat);
+            const n = [-Math.cos(lat), -Math.sin(lat)], tg = [-n[1], n[0]];          // normal (para fora) e tangente
+            const comp = r * (0.24 + 0.08 * Math.sin(k * 2.3)), lar = r * 0.12, lado = 0.55;   // fios inclinados para um lado
+            const p1 = [bx + tg[0] * lar, by + tg[1] * lar], p2 = [bx - tg[0] * lar, by - tg[1] * lar];
+            const tip = [bx + n[0] * comp + tg[0] * comp * lado, by + n[1] * comp + tg[1] * comp * lado];
+            d += `M${p1[0].toFixed(1)} ${p1[1].toFixed(1)} L${tip[0].toFixed(1)} ${tip[1].toFixed(1)} L${p2[0].toFixed(1)} ${p2[1].toFixed(1)}Z`;
+          }
+        }
         if (est === 'cacheado') {            // cachos: bolinhas ao longo da borda do cabelo
           const bol = (x, y) => `M${(x - r * 0.19).toFixed(1)} ${y.toFixed(1)} a${r * 0.19} ${r * 0.19} 0 1 1 ${r * 0.38} 0 a${r * 0.19} ${r * 0.19} 0 1 1 ${-r * 0.38} 0Z`;
           pts.forEach((p, k) => { if (k % 3 === 0) d += bol(p[0], p[1]); });
@@ -803,7 +868,7 @@
         b.setAttribute('cx', bx); b.setAttribute('cy', C[1] + 12 * s);
         const verde = disc('verde');
         b.setAttribute('fill', verde ? '#6DBE45' : corada > 0.5 ? '#FF3B4E' : this.bochecha);
-        b.setAttribute('opacity', verde ? 0.85 : (0.45 + corada * 0.4).toFixed(2));
+        b.setAttribute('opacity', verde ? 0.85 : this.fig.semBochecha && corada < 0.9 ? 0 : (0.45 + corada * 0.4).toFixed(2));
         b.setAttribute('rx', (11 + corada * 5) * s);
       });
       // ---- boca
@@ -923,7 +988,9 @@
     'casual':        { tronco: 'camiseta', cor: '#3B7DD8', mangas: 'curta', pernas: 'calca', corPernas: '#2E4A7A', pes: 'tenis', corPes: '#FFFFFF', corPes2: '#3B7DD8', cabelo: 'curto', corCabelo: '#3A2A20' },
     'moletom':       { tronco: 'moletom', cor: '#6A6E78', mangas: 'longa', pernas: 'calca', corPernas: '#2A2C32', pes: 'tenis', corPes: '#FFFFFF', corPes2: '#2A2C32', cabelo: 'curto', corCabelo: '#2A1E16' },
     // --- marca do usuário (personagem principal) ---
-    'marca':         { tronco: 'camiseta', cor: '#111111', cor2: '#FF7A00', mangas: 'curta', pernas: 'calca', corPernas: '#24242A', pes: 'tenis', corPes: '#FF7A00', corPes2: '#111111' }
+    'marca':         { tronco: 'camiseta', cor: '#111111', cor2: '#FF7A00', mangas: 'curta', pernas: 'calca', corPernas: '#24242A', pes: 'tenis', corPes: '#FF7A00', corPes2: '#111111' },
+    // --- SOBREVIVENTE: personagem oficial (skill personagem-sobrevivente) ---
+    'sobrevivente':  { tronco: 'camiseta', cor: '#FFFFFF', mangas: 'curta', pernas: 'calca', corPernas: '#26262B', cargo: true, pes: 'tenis', corPes: '#FF7A00', corPes2: '#111111', cabelo: 'militar', corCabelo: '#111111', extras: ['cachecol', 'mochila'], luvas: true, semBochecha: true, cinto: 'none' }
   };
   // O personagem principal leva SEMPRE o tênis laranja e preto, qualquer que seja a época.
   Boneco.PROTAGONISTA = { pes: 'tenis', corPes: '#FF7A00', corPes2: '#111111' };
