@@ -1,11 +1,23 @@
 {
   "version": 1,
   "skills": {
+    "edge-tts": {
+      "source": "aahl/skills",
+      "sourceType": "github",
+      "skillPath": "skills/edge-tts/SKILL.md",
+      "computedHash": "ba6bb873a28d5e7337dd9e03fcc942b122f1e8ff1063963ef54ccb24fb49072f"
+    },
     "short-video-scripter": {
       "source": "aaron-he-zhu/aaron-marketing-skills",
       "sourceType": "github",
       "skillPath": "social/craft/short-video-scripter/SKILL.md",
       "computedHash": "dc2d23b4d06fa81a11634e0d856f48594d65cb7a7f41244a8d2373d324404b57"
+    },
+    "text-to-speech": {
+      "source": "elevenlabs/skills",
+      "sourceType": "github",
+      "skillPath": "text-to-speech/SKILL.md",
+      "computedHash": "451b0b1444cb9890107ec36ebc948868d12ae3bdcb42cc513c5461f8d15e3de0"
     },
     "viral-tiktok-hooks": {
       "source": "gonzalochale/skills",
