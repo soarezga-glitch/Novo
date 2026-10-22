@@ -1,0 +1,100 @@
+[
+ {
+  "id": "01",
+  "quem": "narr",
+  "texto": "Terceiro dia do apocalipse zumbi. E quem está trancado no quarto do Tião, é alguém que ele conhece desde criança.",
+  "de": 0.25,
+  "ate": 7.664
+ },
+ {
+  "id": "02",
+  "quem": "narr",
+  "texto": "Quem tomou o café na cozinha, era o seu Zé. E ele não chegou inteiro.",
+  "de": 8.014,
+  "ate": 12.271
+ },
+ {
+  "id": "03",
+  "quem": "ze",
+  "texto": "Tião, abre essa porta! Eu tô bem, homem!",
+  "de": 12.821,
+  "ate": 15.135
+ },
+ {
+  "id": "04",
+  "quem": "tiao",
+  "texto": "Então mostra o braço pela janela.",
+  "de": 15.685,
+  "ate": 18.056
+ },
+ {
+  "id": "05",
+  "quem": "ze",
+  "texto": "É só um corte. Foi no arame, fugindo.",
+  "de": 18.606,
+  "ate": 20.766
+ },
+ {
+  "id": "06",
+  "quem": "tiao",
+  "texto": "Regra número três: quem chega machucado, espera vinte e quatro horas.",
+  "de": 21.316,
+  "ate": 25.608
+ },
+ {
+  "id": "07",
+  "quem": "ze",
+  "texto": "E a minha neta? Ela ficou escondida na caixa d'água. Sozinha!",
+  "de": 26.158,
+  "ate": 29.281
+ },
+ {
+  "id": "08",
+  "quem": "tiao",
+  "texto": "Já faz dois dias, seu Zé.",
+  "de": 29.831,
+  "ate": 31.947
+ },
+ {
+  "id": "09",
+  "quem": "ze",
+  "texto": "Então vai buscar ela. Pelo amor de Deus.",
+  "de": 32.497,
+  "ate": 35.168
+ },
+ {
+  "id": "10",
+  "quem": "narr",
+  "texto": "Tião quer confiar. Mas o seu Zé está suando. E o dia nem esquentou.",
+  "de": 35.968,
+  "ate": 40.434
+ },
+ {
+  "id": "11",
+  "quem": "narr",
+  "texto": "Ele pega a mochila. E tranca o quarto por fora.",
+  "de": 40.784,
+  "ate": 43.822
+ },
+ {
+  "id": "12",
+  "quem": "tiao",
+  "texto": "Eu volto com ela.",
+  "de": 44.372,
+  "ate": 45.705
+ },
+ {
+  "id": "13",
+  "quem": "zerouco",
+  "texto": "Volta logo, Tião... volta logo.",
+  "de": 46.605,
+  "ate": 49.646
+ },
+ {
+  "id": "14",
+  "quem": "narr",
+  "texto": "Mas assim que o Tião passa da porteira, a maçaneta do quarto começa a girar.",
+  "de": 50.446,
+  "ate": 55.665
+ }
+]
