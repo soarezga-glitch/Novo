@@ -7,6 +7,18 @@
       "skillPath": "skills/edge-tts/SKILL.md",
       "computedHash": "ba6bb873a28d5e7337dd9e03fcc942b122f1e8ff1063963ef54ccb24fb49072f"
     },
+    "performance-direction": {
+      "source": "calesthio/generative-media-skills",
+      "sourceType": "github",
+      "skillPath": "skills/production/creative-direction/performance-direction/SKILL.md",
+      "computedHash": "921f0f3c617afd991d863399fc4f7a115053a5003b0506c956f72f4580218135"
+    },
+    "qwen3-tts": {
+      "source": "calesthio/generative-media-skills",
+      "sourceType": "github",
+      "skillPath": "skills/providers/text-to-speech/qwen3-tts/SKILL.md",
+      "computedHash": "6e2ae322bb623be7b012afc07c54c85d0269140b04f16e050374d2b04f87f171"
+    },
     "short-video-scripter": {
       "source": "aaron-he-zhu/aaron-marketing-skills",
       "sourceType": "github",
