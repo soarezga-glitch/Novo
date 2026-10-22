@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Apocalipse Zumbi: Vinheta</title>
+<!-- Série APOCALIPSE ZUMBI — DIA 3, PARTE 2 (história inteira, ~5 min): o pasto, a fita rosa, a casa vazia do seu Zé, a Aninha na caixa d'água, a fuga, o córrego, a volta ao sítio e o curral. Narrador gravado pelo usuário; Tião, Aninha e Seu Zé com Qwen3-TTS (vozes descritas, naturais). Os tempos de cada plano vêm das falas (segmentos), não de números fixos. -->
+<style>
+  html, body { margin: 0; background: #000; overflow: hidden; }
+  #stage { width: 1080px; height: 1920px; display: block; }
+  @font-face { font-family: 'Anton'; src: url(../fontes/anton.woff2); }
+  @font-face { font-family: 'Luckiest Guy'; src: url(../fontes/luckiest-guy.woff2); }
+  text:not([font-family]) { font-family: 'Anton', sans-serif; }
+</style>
+<script src="../gsap.min.js"></script>
+<script src="../boneco.js"></script>
+<script src="../paletas.js"></script>
+<script src="../cenario.js"></script>
+<script src="../sitio.js"></script>
+<script src="../palco.js"></script>
+<script src="../legenda.js"></script>
+</head>
+<body>
+<svg id="stage" viewBox="0 0 1080 1920" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="outline" x="-20%" y="-20%" width="140%" height="140%">
+      <feMorphology in="SourceAlpha" operator="dilate" radius="5" result="d"/>
+      <feFlood flood-color="#0A0A0E"/>
+      <feComposite in2="d" operator="in" result="o"/>
+      <feMerge><feMergeNode in="o"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="sombraTxt" x="-10%" y="-30%" width="120%" height="160%"><feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#000" flood-opacity=".8"/></filter>
+    <radialGradient id="vin" cx=".5" cy=".5" r=".72"><stop offset=".45" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".7"/></radialGradient>
+  </defs>
+  <g id="cam"><g id="scenes"></g><g id="atores"></g><g id="props"></g><g id="luzes"></g></g>
+  <rect width="1080" height="1920" fill="url(#vin)"/>
+  <g id="escuro"><rect width="1080" height="1920" fill="#05070E"/></g>
+  <g id="topo"></g>
+  <g id="legenda"></g>
+</svg>
+
+<script>window.MODO = { tipo: 'gancho', parte: '3' };</script>
+<script>
+const NS = 'http://www.w3.org/2000/svg', $ = s => document.querySelector(s);
+const AMBAR = '#E8B23A', BRANCO = '#F2EEE2', VERMELHO = '#C8342A';
+const MODO = window.MODO;   // { tipo: 'gancho' | 'cartao', parte: '2' | '3', segue: '3' | null }
+const Si = (n, hora = 'noite') => Sitio(Cenario({ seed: n, luz: -1, hora, prefixo: 's' + n }));
+const txt = (id, y, partes, fs = 110) => `<g id="${id}" filter="url(#sombraTxt)"><text x="540" y="${y}" font-size="${fs}" text-anchor="middle" stroke="#000" stroke-width="${fs * 0.08}" paint-order="stroke">${partes.map(([t, c]) => `<tspan fill="${c || BRANCO}">${t}</tspan>`).join('')}</text></g>`;
+$('#scenes').innerHTML = Si(60).estrada({});
+const tl = gsap.timeline({ paused: true }); const atores = [];
+if (MODO.tipo === 'gancho') {
+  [[300, 1300, 0.9], [760, 1320, 1.0], [540, 1400, 1.2], [140, 1520, 1.45], [920, 1560, 1.55], [520, 1900, 2.2]].forEach(([x, y, k], i) => { const g = document.createElementNS(NS, 'g'); $('#atores').appendChild(g);
+    const v = new Boneco(g, { escala: k, figurino: 'vulto', cor: '#17181E', corLonge: '#101116', bochecha: '#17181E', seed: 120 + i }); v.base(0, 9, 'parado', { x, y, vista: 'frente' }); v.braco('ambos', 0, 9, 'estender'); v.expressao(0, 9, 'zumbi'); v.cabeca(0, 9, { inclinar: (i % 2 ? 1 : -1) * 14, baixar: -6 }); atores.push(v); });
+  $('#topo').innerHTML = `<rect width="1080" height="1920" fill="#C8342A" opacity=".18" style="mix-blend-mode:multiply"/><rect width="1080" height="1920" fill="#000" opacity=".35"/>` + txt('g-dia', 880, [['DIA ', BRANCO], ['3', AMBAR]], 330) + txt('g-p', 1060, [['PARTE ' + MODO.parte, VERMELHO]], 110) + `<rect id="g-flash" width="1080" height="1920" fill="#FFF6E0"/>`;
+  gsap.set('#escuro', { autoAlpha: 1 }); tl.to('#escuro', { autoAlpha: 0.15, duration: 0.25 }, 0.18).to('#escuro', { autoAlpha: 0, duration: 0.5 }, 1.0);
+  gsap.set('#g-dia', { autoAlpha: 0, scale: 2.6, transformOrigin: '540px 790px' }); tl.to('#g-dia', { autoAlpha: 1, scale: 1, duration: 0.22, ease: 'power4.in' }, 0.2);
+  gsap.set('#g-flash', { opacity: 0 }); tl.to('#g-flash', { opacity: 0.85, duration: 0.03 }, 0.42).to('#g-flash', { opacity: 0, duration: 0.35 }, 0.45);
+  gsap.set('#g-p', { autoAlpha: 0, y: 30 }); tl.to('#g-p', { autoAlpha: 1, y: 0, duration: 0.25, ease: 'power3.out' }, 0.95); tl.to('#g-dia', { scale: 1.06, duration: 2.0, ease: 'none' }, 0.45);
+  tl.to('#escuro', { autoAlpha: 1, duration: 0.3 }, 2.7); tl.set({}, {}, 3.0);
+} else {
+  gsap.set('#escuro', { autoAlpha: 0 });
+  $('#topo').innerHTML = `<rect width="1080" height="1920" fill="#000" opacity=".6"/>` + `<g id="fim-t">${txt('fim-a', 780, [['DIA 3 · ', BRANCO], ['PARTE ' + MODO.parte, AMBAR]], 120)}${txt('fim-b', 920, [['CONTINUA...', BRANCO]], 96)}</g>` +
+    `<g id="fim-c" transform="translate(540 1100)"><rect x="-340" y="-56" width="680" height="112" rx="56" fill="${AMBAR}" stroke="#000" stroke-width="5"/><text y="22" font-size="54" text-anchor="middle" fill="#16120A">${MODO.segue ? 'SEGUE PRA PARTE ' + MODO.segue + ' ↓' : 'SEGUE PRA PRÓXIMA PARTE ↓'}</text></g>`;
+  gsap.set(['#fim-t', '#fim-c'], { autoAlpha: 0, scale: 0.6, transformOrigin: '50% 50%' });
+  tl.to('#fim-t', { autoAlpha: 1, scale: 1, duration: 0.6, ease: 'back.out(2)' }, 0.3).to('#fim-c', { autoAlpha: 1, scale: 1, duration: 0.35, ease: 'back.out(2)' }, 1.0);
+  tl.to('#fim-c', { scale: 1.05, duration: 0.45, repeat: 3, yoyo: true, ease: 'sine.inOut' }, 1.5); tl.set({}, {}, 3.4);
+}
+window.__timeline = tl; window.__duration = tl.duration();
+window.__seek = t => { tl.seek(t, false); atores.forEach(a => a.desenhar(t)); const sh = t > 0.42 && t < 0.9 ? 9 * (0.9 - t) / 0.48 : 0; $('#cam').setAttribute('transform', `translate(${(Math.sin(t * 40) * sh).toFixed(1)} ${(Math.cos(t * 33) * sh).toFixed(1)})`); };
+window.__seek(0);
+</script></body></html>
