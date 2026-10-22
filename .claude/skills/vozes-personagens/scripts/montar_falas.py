@@ -27,9 +27,9 @@ def gerar(c, texto, out):
         with open(out + '.mp3', 'wb') as fh: [fh.write(x) for x in au]
         subprocess.run(['ffmpeg', '-loglevel', 'error', '-y', '-i', out + '.mp3', out], check=True)
     elif m == 'piper':
-        subprocess.run([sys.executable, '-m', 'piper', '-m', f"/root/piper/{c['voz']}.onnx", '-f', out, '--length-scale', str(c.get('lento', 1.0))], input=texto.encode(), check=True)
+        subprocess.run([sys.executable, '-m', 'piper', '-m', f"/root/piper/{c['voz']}.onnx", '-f', out, '--length-scale', str(c.get('lento', 0.92)), '--noise-w-scale', str(c.get('ritmo', 0.9)), '--sentence-silence', '0.12'], input=texto.encode(), check=True)
     else:
-        subprocess.run(['npx', 'hyperframes', 'tts', texto, '--voice', c['voz'], '--speed', str(c.get('velocidade', 1.0)), '-o', out], check=True, env=env, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        subprocess.run(['npx', 'hyperframes', 'tts', texto, '--voice', c['voz'], '--speed', str(c.get('velocidade', 1.12)), '-o', out], check=True, env=env, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 dur = lambda f: float(subprocess.check_output(['ffprobe', '-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', f]))
 segs, t, prev = [], 0.25, None
 for linha in open(a.roteiro, encoding='utf-8'):

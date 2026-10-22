@@ -51,3 +51,9 @@ Rate/pitch leves (`--rate=-8% --pitch=-4Hz`) — nunca mais que isso.
 - **Local (piper):** baixar o tom 10–14% com `rubberband=pitch=0.86:formant=shifted` (soa maior/mais velho sem virar robô),
   falar mais pausado (`lento` 1,05–1,15), tremor de idade bem raso (`vibrato=f=5.5:d=0.03`), menos agudo (corte em 2,8 kHz).
 - **Sotaque no texto** (só para a pronúncia; a legenda mostra o roteiro original): "sô", "uai", "bão", "homi", "trem", "cê".
+
+## Fluidez (pedido do usuário: "está falando separado, in-por-tan-te, parece robô")
+- Fala inteira e corrida, sem pausa onde não tem: piper com `lento` 0,92 e `ritmo` (noise-w) 0,9; kokoro com `velocidade` 1,12.
+- Tirar do texto as vírgulas que não são pausa de verdade (ex.: "quem chega machucado espera vinte e quatro horas").
+- Pausa só entre falas (a montagem cuida) e onde o roteiro pede ("..." = hesitação).
+- Elenco da série Apocalipse Zumbi (escolha do usuário, "combinação B"): Tião = piper pt_BR-cadu-medium; Seu Zé = kokoro pm_santa. Sem efeito nenhum na voz.
