@@ -137,6 +137,9 @@
     // mancha na roupa (suco, lama, sangue de mentira...): cresce em 0,3 s a partir de t0
     manchar(t0, t1, cor = '#E8742A') { (this.manchas = this.manchas || []).push({ t0, t1, cor }); return this; }
     mao(lado) { return this._maos ? this._maos[lado] : [0, 0]; }
+    ombros() { return this._top || [0, 0]; }
+    cabecaPos() { return this._cab || [0, 0]; }
+    quadril() { return this._quadril || [0, 0]; }
     // forma da mão (luva): 'relaxada' | 'aberta' | 'punho' | 'apontar' | 'indicador' | 'joinha' | 'baixo' | 'paz' | 'ok' | 'palma' | 'n1'..'n5'
     formaMao(lado, t0, t1, forma) { (lado === 'ambos' ? ['e', 'd'] : [lado]).forEach(l => (this.formas = this.formas || { e: [], d: [] })[l].push({ t0, t1, forma })); return this; }
 
@@ -769,6 +772,7 @@
       }
       if (!this.fig.zumbi) { this.el.farrapos.innerHTML = ''; this.el.farraposPerto.innerHTML = ''; this.el.garras.setAttribute('d', ''); }
       this._maos = { e: rot(maos.e), d: rot(maos.d) };
+      this._top = rot(top); this._cab = rot(cab); this._quadril = rot(H);   // para prender coisas no corpo (criança nas costas, chapéu, mochila)
       // cabeça e rosto
       const C = rot(cab);
       this.el.cranio.setAttribute('cx', C[0]); this.el.cranio.setAttribute('cy', C[1]);

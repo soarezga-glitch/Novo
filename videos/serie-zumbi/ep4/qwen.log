@@ -1,0 +1,56 @@
+
+********
+Warning: flash-attn is not installed. Will only run the manual PyTorch version. Please install flash-attn for faster inference.
+********
+ 
+Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+P01 tiao 2.0 s
+Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+P02 tiao 3.28 s
+Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+P03 tiao 4.4 s
+Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+P04 aninha 6.88 s
+Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+P05 tiao 4.56 s
+Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+P06 aninha 3.44 s
+Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+P07 tiao 2.0 s
+Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+P08 aninha 8.24 s
+Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+P09 tiao 2.88 s
+Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+P10 aninha 1.28 s
+Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+P11 tiao 2.88 s
+Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+P12 tiao 2.08 s
+Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+P13 aninha 2.16 s
+Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+P14 tiao 2.4 s
+Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+P15 aninha 1.76 s
+Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+P16 tiao 2.88 s
+Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+P17 tiao 4.96 s
+Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+P18 aninha 5.36 s
+Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+P19 tiao 5.36 s
+Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+P20 tiao 4.0 s
+Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+P21 ze 5.52 s
+Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+P22 ze 5.92 s
+Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+P23 tiao 1.2 s
+Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+P24 aninha 4.4 s
+Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+P25 ze 4.72 s
+QFIM 0

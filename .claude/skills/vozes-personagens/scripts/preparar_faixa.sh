@@ -21,7 +21,7 @@ for s in segs:
     else:
         L=[len(re.sub(r'\W','',x))+1 for x in ws]; tot=sum(L); a=s['de']; tm=[]
         for l in L: d=(s['ate']-s['de'])*l/tot; tm.append((a,a+d)); a+=d
-    for t,(a,b) in zip(ws,tm): P.append(dict(text=t,start=round(a,2),end=round(b,2),id=f'w{len(P)}',quem=s['quem']))
+    for t,(a,b) in zip(ws,tm): P.append(dict(text=t,start=round(a,2),end=round(b,2),id=f'w{len(P)}',quem=s['quem'],seg=s['id']))
 open(f'{D}/legenda-dados.js','w').write('window.PALAVRAS = '+json.dumps(P,ensure_ascii=False)+';\nwindow.SEGMENTOS = '+json.dumps(segs,ensure_ascii=False)+';\n')
 d=subprocess.check_output(['ffmpeg','-loglevel','error','-i',f'{D}/fala_master.wav','-f','f32le','-ac','1','-ar','48000','-']); x=np.frombuffer(d,np.float32)
 n=int(len(x)/1600); r=np.array([np.sqrt((x[i*1600:(i+1)*1600]**2).mean()) for i in range(n)])
