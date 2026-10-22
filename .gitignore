@@ -7,3 +7,4 @@ video_amor/clips/
 video_amor/*.mp4
 video_amor/*.wav
 video_amor/*.mp3
+__pycache__/
