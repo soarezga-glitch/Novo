@@ -117,7 +117,7 @@ W = whoosh()
 for i, s in enumerate(SEGS):
     if i: add(sfx, W * (0.35 if s['kind'] != 'still' else 0.2), s['t0'] - 0.15)
     for ts, d in windows(i):
-        add(sfx, pencil(d) * 0.11, ts)
+        add(sfx, pencil(d) * 0.05, ts)
 
 # ---------------------------------------------------------------- mixagem
 voz = subprocess.run(['ffmpeg', '-loglevel', 'error', '-i', sys.argv[1], '-ac', '1', '-ar', str(SR), '-f', 'f32le', '-'],
