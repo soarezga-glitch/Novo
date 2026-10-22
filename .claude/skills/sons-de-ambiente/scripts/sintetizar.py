@@ -710,12 +710,175 @@ def ambientes_escola(r, voz=None):
     }
 
 
+# ---------------------------------------------------------------- APOCALIPSE (série Apocalipse Zumbi: roça à noite, terror)
+def impacto_cinema(r, dur=3.2):
+    """estrondo de trailer: subida rápida de ruído, pancada grave com 'sub drop' e cauda de reverb metálica"""
+    L = int(dur * SR); t = np.arange(L) / SR
+    sub = np.sin(2 * np.pi * (70 * np.exp(-t * 1.6) + 28) * t) * np.exp(-t * 1.4) * 1.3
+    pancada = filtro(r.standard_normal(L), 'baixa', 1800) * np.exp(-t * 9) * 0.9
+    metal = sum(np.sin(2 * np.pi * f * t) * np.exp(-t * d) for f, d in ((210, 2.2), (343, 2.8), (517, 3.4))) * 0.25
+    return normaliza(reverb(sub + pancada + metal, 0.95, 0.4), -0.5)
+
+
+def sopro_reverso(r, dur=1.2):
+    """'whoosh' ao contrário que cresce até a pancada"""
+    L = int(dur * SR); t = np.arange(L) / SR
+    x = filtro(r.standard_normal(L), 'banda', (300, 5000)) * (t / dur) ** 3
+    return normaliza(reverb(x, 0.8, 0.4)[::-1][::-1], -3)
+
+
+def estatica_radio(r, dur=2.0, voz=None):
+    """chiado de rádio AM: ruído em banda estreita, estalos, assobio de sintonia"""
+    L = int(dur * SR); t = np.arange(L) / SR
+    x = filtro(r.standard_normal(L), 'banda', (900, 3800)) * (0.6 + 0.4 * np.sin(2 * np.pi * 7 * t))
+    for _ in range(int(dur * 14)):
+        a = r.integers(0, L - 400); x[a:a + 300] += r.standard_normal(300) * 2.5 * np.exp(-np.arange(300) / 60)
+    x += np.sin(2 * np.pi * (2400 + 600 * np.sin(2 * np.pi * 0.6 * t)) * t) * 0.12
+    return normaliza(x, -3)
+
+
+def radio_corta(r):
+    """o rádio sai do ar: estalo + chiado que morre"""
+    L = int(1.4 * SR); t = np.arange(L) / SR
+    x = estatica_radio(r, 1.4) * np.exp(-t * 2.2)
+    x[:600] += r.standard_normal(600) * 2 * np.exp(-np.arange(600) / 120)
+    return normaliza(x, -2)
+
+
+def clique(r, grave=False):
+    L = int(0.12 * SR); t = np.arange(L) / SR
+    x = (np.sin(2 * np.pi * (900 if grave else 2600) * t) * np.exp(-t * 120) + filtro(r.standard_normal(L), 'alta', 2000) * np.exp(-t * 200) * 0.5)
+    return normaliza(x, -3)
+
+
+def pano(r, dur=1.0):
+    """pano/cobertor sendo esticado: ruído suave com 'sopros' irregulares"""
+    L = int(dur * SR); t = np.arange(L) / SR
+    env = np.abs(filtro(r.standard_normal(L), 'baixa', 6)); env /= env.max() + 1e-9
+    return normaliza(filtro(r.standard_normal(L), 'banda', (300, 3500)) * env * np.sin(np.pi * t / dur), -4)
+
+
+def martelada(r):
+    L = int(0.4 * SR); t = np.arange(L) / SR
+    x = (np.sin(2 * np.pi * 180 * t) * np.exp(-t * 30) + np.sin(2 * np.pi * 1300 * t) * np.exp(-t * 45) * 0.5 + filtro(r.standard_normal(L), 'banda', (800, 4000)) * np.exp(-t * 60) * 0.6)
+    return normaliza(reverb(x, 0.4, 0.2), -2)
+
+
+def sopro_apaga(r):
+    """sopro que apaga o lampião + chama morrendo (fsss)"""
+    L = int(0.9 * SR); t = np.arange(L) / SR
+    sopro = filtro(r.standard_normal(L), 'banda', (200, 1800)) * np.exp(-((t - 0.18) / 0.12) ** 2)
+    fss = filtro(r.standard_normal(L), 'alta', 3000) * np.exp(-((t - 0.45) / 0.18) ** 2) * 0.4
+    return normaliza(sopro + fss, -3)
+
+
+def coruja(r):
+    L = int(1.6 * SR); out = np.zeros(L)
+    for at, f0, d in ((0, 420, 0.35), (0.55, 400, 0.22), (0.85, 390, 0.5)):
+        a = int(at * SR); M = int(d * SR); tt = np.arange(M) / SR
+        f = f0 * (1 - 0.06 * tt / d); x = np.sin(2 * np.pi * np.cumsum(f) / SR) * np.sin(np.pi * tt / d) ** 1.5
+        out[a:a + M] += filtro(x + 0.15 * r.standard_normal(M) * np.sin(np.pi * tt / d), 'baixa', 900)
+    return normaliza(reverb(out, 0.95, 0.55), -6)
+
+
+def cachorro_longe(r):
+    L = int(1.8 * SR); out = np.zeros(L)
+    for at in (0, 0.42, 1.05):
+        a = int(at * SR); M = int(0.22 * SR); tt = np.arange(M) / SR
+        f = 520 * (1 + 0.5 * np.exp(-tt * 18)); x = np.sign(np.sin(2 * np.pi * np.cumsum(f) / SR)) * np.exp(-tt * 10) + r.standard_normal(M) * 0.3 * np.exp(-tt * 14)
+        out[a:a + M] += filtro(x, 'banda', (400, 1800))
+    return normaliza(reverb(filtro(out, 'baixa', 1400), 0.98, 0.65), -8)
+
+
+def passo_capim(r):
+    L = int(0.3 * SR); t = np.arange(L) / SR
+    return normaliza(filtro(r.standard_normal(L), 'banda', (1500, 7000)) * np.exp(-t * 18) * (1 + 0.5 * np.sin(2 * np.pi * 40 * t)), -6)
+
+
+def pes_arrastando(dur, r, n=10):
+    """muitos pés se arrastando na terra (a horda andando devagar)"""
+    L = int(dur * SR); out = np.zeros(L)
+    for _ in range(int(dur * n)):
+        a = r.integers(0, L - int(0.6 * SR)); M = int(r.uniform(0.3, 0.6) * SR); tt = np.arange(M) / SR
+        out[a:a + M] += filtro(r.standard_normal(M), 'banda', (200, 2500)) * np.sin(np.pi * tt / tt[-1]) ** 2 * r.uniform(0.3, 1)
+    return normaliza(reverb(out, 0.7, 0.3), -6)
+
+
+def horda(dur, r):
+    """gemidos de muitos zumbis sobrepostos + pés arrastando"""
+    L = int(dur * SR); out = np.zeros(L)
+    for _ in range(int(dur * 2.2)):
+        g = gemido_zumbi(r, r.uniform(1.0, 2.4)); a = r.integers(0, max(1, L - len(g))); out[a:a + len(g)] += g * r.uniform(0.3, 0.9)
+    return normaliza(reverb(out, 0.85, 0.45) + pes_arrastando(dur, r) * 0.5, -3)
+
+
+def musica_festa(dur, r, longe=True):
+    """'modão' de festa: bumbo e caixa em 2/4, baixo pulando, acordeão (acordes) — abafado quando está longe"""
+    L = int(dur * SR); t = np.arange(L) / SR; out = np.zeros(L); bpm = 116; beat = 60 / bpm
+    notas = [110, 146.8, 164.8, 146.8]
+    for k in range(int(dur / beat)):
+        a = int(k * beat * SR); M = int(0.25 * SR); tt = np.arange(M) / SR
+        if a + M >= L: break
+        if k % 2 == 0: out[a:a + M] += np.sin(2 * np.pi * (60 + 80 * np.exp(-tt * 30)) * tt) * np.exp(-tt * 14) * 1.2
+        else: out[a:a + M] += filtro(r.standard_normal(M), 'banda', (1200, 5000)) * np.exp(-tt * 22) * 0.6
+        f = notas[(k // 2) % 4]; out[a:a + M] += np.sin(2 * np.pi * f * tt) * np.exp(-tt * 6) * 0.6
+        if k % 2 == 1:   # acordeão
+          M2 = int(beat * 0.9 * SR); t2 = np.arange(M2) / SR
+          if a + M2 < L: out[a:a + M2] += sum(np.sign(np.sin(2 * np.pi * f * m * 2 * t2)) * 0.08 for m in (1, 1.26, 1.5)) * (1 + 0.2 * np.sin(2 * np.pi * 6 * t2))
+    if longe: out = reverb(filtro(out, 'baixa', 500), 0.9, 0.5)
+    return normaliza(out, -6 if longe else -3)
+
+
+def fita_para(r):
+    """a música para de repente (fita/caixa desligando): tom caindo e corte"""
+    L = int(0.7 * SR); t = np.arange(L) / SR
+    f = 146.8 * np.exp(-t * 3.5); x = np.sign(np.sin(2 * np.pi * np.cumsum(f) / SR)) * np.exp(-t * 4) * 0.4
+    return normaliza(filtro(x, 'baixa', 800), -4)
+
+
+def ferrao(r, dur=2.6):
+    """'ferrão' de suspense: cordas dissonantes agudas (cluster) com crescendo e um grave por baixo"""
+    L = int(dur * SR); t = np.arange(L) / SR
+    x = sum(np.sin(2 * np.pi * f * t + np.sin(2 * np.pi * 5.5 * t) * 0.6) for f in (880, 932, 988, 1046)) * (t / dur) ** 1.4 * 0.25
+    x += np.sin(2 * np.pi * 41 * t) * np.exp(-t * 0.8) * 0.8
+    return normaliza(reverb(x, 0.9, 0.4), -2)
+
+
+def drone_tensao(dur, r):
+    """fundo grave e frio que dá medo (sem notas)"""
+    L = int(dur * SR); t = np.arange(L) / SR
+    x = sum(np.sin(2 * np.pi * f * t + np.sin(2 * np.pi * 0.1 * t * (i + 1))) for i, f in enumerate((55, 58.3, 82.4))) * 0.3 + filtro(r.standard_normal(L), 'banda', (80, 400)) * 0.25
+    return loop_suave(normaliza(x, -6))
+
+
+def ambientes_apocalipse(r, voz=None):
+    D = 25
+    def mix(*partes):
+        n = int(D * SR); x = np.zeros(n)
+        for p, g in partes:
+            x += p[:n] * 10 ** (g / 20)
+        return loop_suave(normaliza(x, -4))
+    return {
+        'amb_sitio_noite': mix((grilos(D, r), -6), (vento(D, r, 0.6), -12), (tom_sala(D, r), -16)),
+        'amb_cozinha_noite': mix((tom_sala(D, r), -4), (grilos(D, r), -18), (fogo(D, r, 0.25), -16)),
+        'amb_festa_perto': mix((musica_festa(D, r, longe=False), -2), (walla(D, r, voz, densidade=12, tom=(0.9, 1.3), abafar=2600, sala=0.3), -8)),
+        'amb_festa_longe': mix((musica_festa(D, r, longe=True), -4), (grilos(D, r), -10)),
+        'amb_tensao_grave': drone_tensao(D, r),
+        'amb_horda': mix((horda(D, r), -3), (vento(D, r, 0.5), -14)),
+    }, {
+        'sfx_impacto_cinema': [impacto_cinema(r)], 'sfx_sopro_reverso': [sopro_reverso(r)], 'sfx_estatica': [estatica_radio(r, 2.0)], 'sfx_radio_corta': [radio_corta(r)],
+        'sfx_clique': [clique(r)], 'sfx_clique_grave': [clique(r, True)], 'sfx_pano': [pano(r)], 'sfx_martelada': [martelada(r)], 'sfx_sopro_apaga': [sopro_apaga(r)],
+        'sfx_coruja': [coruja(r)], 'sfx_cachorro_longe': [cachorro_longe(r)], 'sfx_passo_capim': [passo_capim(r) for _ in range(4)], 'sfx_fita_para': [fita_para(r)],
+        'sfx_ferrao': [ferrao(r)], 'sfx_coracao': [batida_coracao(4.0, r, 92)], 'sfx_gemido_perto': [gemido_zumbi(r, 1.8)],
+    }
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--saida', default='biblioteca')
     ap.add_argument('--voz', default=None, help='arquivo de voz para fazer a multidão (walla)')
     ap.add_argument('--seed', type=int, default=7)
-    ap.add_argument('--conjunto', default='roma', choices=['roma', 'coliseu', 'hoje', 'escola'], help='roma = cidade; coliseu = arena, subsolo, feras, corneta')
+    ap.add_argument('--conjunto', default='roma', choices=['roma', 'coliseu', 'hoje', 'escola', 'apocalipse'], help='roma = cidade; coliseu = arena, subsolo, feras, corneta')
     a = ap.parse_args()
     os.makedirs(a.saida, exist_ok=True)
     r = rng_for(a.seed)
@@ -730,6 +893,8 @@ def main():
         amb, efeitos = ambientes_hoje(r, voz)
     elif a.conjunto == 'escola':
         amb, efeitos = ambientes_escola(r, voz)
+    elif a.conjunto == 'apocalipse':
+        amb, efeitos = ambientes_apocalipse(r, voz)
     else:
         amb = ambientes(r, voz)
         efeitos = {
