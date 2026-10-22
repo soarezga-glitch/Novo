@@ -14,7 +14,8 @@ img | tempo | elementos (hora em que a mão desenha)
 12 | 3:07–3:22 | balança coração×moedas 3:11 · troca de presentes 3:14 · coração partido 3:21
 13 | 3:22–3:55 | livro de contas 3:29 · lembranças 3:40 · mão rasgando a lista 3:48
 14 | 3:55–4:10 | amigo aconselhando c/ verdade
-15 | 4:10–4:27 | roda em volta da fogueira (CTA — texto animado por cima)
+15 | 4:10–4:18 | roda em volta da fogueira
+29 | 4:18–4:27 | CTA: mão do like 4:19 · botão inscreva-se 4:21 · sino 4:23 · balão de comentário (texto escrito por cima)
 16 | 4:27–4:35 | carregando peso 4:30 · olhando o céu 4:32 · lamparina na janela 4:33 · coluna sustentando 4:34
 17 | 4:35–5:01 | mulher sozinha triste
 18 | 5:01–5:16 | carregando fardo juntos 5:04 · mãos protegendo chama 5:12
@@ -28,4 +29,6 @@ img | tempo | elementos (hora em que a mão desenha)
 26 | 7:49–8:10 | Jesus olha Pedro 7:54 · cura orelha do soldado 7:57 · cruz c/ lista rasgada 7:58
 27 | 8:10–8:21 | casal idoso ao pôr do sol
 -- | 8:21–8:34 | recapitulação reaproveitando 18, 13, 19, 22
-28 | 8:34–9:06 | pessoa lendo a Bíblia na janela + texto final "só o amor fica"
+28 | 8:34–8:58 | pessoa lendo a Bíblia na janela + texto final "só o amor fica"
+29 | 8:58–9:00 | CTA de novo (reaproveita a 29)
+28 | 9:00–9:06 | volta para a 28 + texto final
