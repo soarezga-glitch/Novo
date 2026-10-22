@@ -36,6 +36,21 @@
       for (let k = 0; k < 5; k++) { const yy = base - h * (0.55 + k * 0.1), w = h * (0.32 - k * 0.04); s += `<path d="M${f(x - w)} ${f(yy + 10)} Q${f(x)} ${f(yy - 22)} ${f(x + w)} ${f(yy + 10)} Q${f(x)} ${f(yy - 4)} ${f(x - w)} ${f(yy + 10)}Z" fill="${cor}"/>`; }
       return s; };
     const serra = (x, w, base, alt, cor, op = 1) => { let d = `M${x} ${base}`; for (let k = 0; k <= 10; k++) d += ` L${f(x + w * k / 10)} ${f(base - alt * (0.45 + 0.55 * Math.abs(Math.sin(k * 1.3 + rnd(0, 0.6)))))}`; return `<path d="${d} L${x + w} ${base}Z" fill="${cor}" opacity="${op}"/>`; };
+    // TOUCEIRA de capim em cartoon: 5–8 folhas cheias (largas na base, ponta fina e curvada), 2 tons (base escura → ponta clara),
+    // contorno fino escuro e sombrinha no pé; às vezes um pendão de semente. k = tamanho (1 ≈ 40 px de altura)
+    const touceira = (x, y, k = 1, cor = '#2E4A28') => {
+      const n = 5 + Math.floor(rnd(0, 4)), esc = tom(cor, -0.4), clr = tom(cor, 0.22);
+      let s = `<ellipse cx="${f(x)}" cy="${f(y + 1)}" rx="${f(16 * k)}" ry="${f(4 * k)}" fill="#000" opacity=".25"/>`;
+      const folhas = [...Array(n)].map((_, j) => ({ a: (j / (n - 1) - 0.5) * 100 + rnd(-10, 10), len: (26 + rnd(0, 22)) * k * (1 - Math.abs(j / (n - 1) - 0.5) * 0.5), o: (j / (n - 1) - 0.5) * 14 * k }));
+      folhas.sort((a, b) => Math.abs(b.a) - Math.abs(a.a));   // as de fora atrás, as do meio na frente
+      folhas.forEach(({ a, len, o }, j) => { const r = a * Math.PI / 180, bx = x + o, w = 4.2 * k;
+        const tx = bx + Math.sin(r) * len, ty = y - Math.cos(r) * len * 0.95, cx = bx + Math.sin(r) * len * 0.35, cy = y - len * 0.65;
+        const c = j % 2 ? cor : tom(cor, -0.12);
+        s += `<path d="M${f(bx - w)} ${f(y)} Q${f(cx - w * 0.6)} ${f(cy)} ${f(tx)} ${f(ty)} Q${f(cx + w * 0.9)} ${f(cy + 3 * k)} ${f(bx + w)} ${f(y)}Z" fill="${c}" stroke="${esc}" stroke-width="${f(1.4 * k)}" stroke-linejoin="round"/>`;
+        s += `<path d="M${f(bx)} ${f(y - 2 * k)} Q${f(cx)} ${f(cy + 2 * k)} ${f(lerp(cx, tx, 0.7))} ${f(lerp(cy, ty, 0.7))}" stroke="${clr}" stroke-width="${f(1.6 * k)}" fill="none" opacity=".7" stroke-linecap="round"/>`; });
+      if (rnd(0, 1) < 0.14) { const hx = x + rnd(-6, 6) * k, ht = (46 + rnd(0, 16)) * k, tx = hx + 8 * k, ty = y - ht;   // pendão fino de semente (capim-gordura)
+        s += `<path d="M${f(hx)} ${f(y)} q${f(3 * k)} ${f(-ht * 0.6)} ${f(8 * k)} ${f(-ht)}" stroke="${tom(cor, 0.1)}" stroke-width="${f(1.6 * k)}" fill="none"/>` + [0, 1, 2, 3].map(q => `<ellipse cx="${f(tx + (q % 2 ? 3 : -3) * k)}" cy="${f(ty + q * 5 * k)}" rx="${f(2.2 * k)}" ry="${f(4.5 * k)}" fill="${tom('#9A8A6A', -0.25)}" opacity=".85" transform="rotate(${q % 2 ? 25 : -25} ${f(tx + (q % 2 ? 3 : -3) * k)} ${f(ty + q * 5 * k)})"/>`).join(''); }
+      return s; };
 
     // ================= OBJETOS =================
     // rádio antigo de madeira (válvula): dial iluminado, alto-falante de tecido, botões, antena
@@ -136,7 +151,7 @@
           s += `<g transform="translate(${f(x + w * 0.05)} ${f(vy + 50 * k)}) scale(${f(k)})"><path d="M0 0 v24" stroke="#2A2A2A" stroke-width="2"/><path d="M-20 24 h40 l-6 30 h-28Z" fill="#7A4A2A" stroke="${L}" stroke-width="3"/>${[-40, -20, 0, 20, 40].map(a => `<path d="M0 30 q${a} 20 ${a * 1.4} 70" stroke="#3E6A3A" stroke-width="7" fill="none" stroke-linecap="round"/>`).join('')}</g>`;
           s += `<g transform="translate(${f(x + w * 0.24)} ${f(vb)}) scale(${f(k * 0.9)})"><path d="M-40 0 V-150 M30 0 V-80 M-40 -80 H30" stroke="#5A3E26" stroke-width="8"/><rect x="-44" y="-86" width="78" height="12" fill="#C9A86A" stroke="${L}" stroke-width="3"/></g>`; } }
       // mato e pedras no pé da casa
-      if (det) for (let i = 0; i < 10; i++) { const gx = x + rnd(-0.1, 1.1) * w, gy = base + rnd(2, 16) * k; s += `<path d="M${f(gx)} ${f(gy)} l${f(-6 * k)} ${f(-18 * k)} M${f(gx)} ${f(gy)} l${f(2 * k)} ${f(-22 * k)} M${f(gx)} ${f(gy)} l${f(9 * k)} ${f(-15 * k)}" stroke="#2E3E24" stroke-width="${f(3 * k)}"/>`; }
+      if (det) for (let i = 0; i < 10; i++) { const gx = x + rnd(-0.1, 1.1) * w, gy = base + rnd(2, 16) * k; s += touceira(gx, gy, 0.7 * k * 2.2, '#2E4224'); }
       return s; };
 
     const ceu = (x, y, w, h, horizonte, amanhecer, lua = [x + w * 0.8, y + 330]) => {
@@ -146,9 +161,11 @@
         `<path d="M${f(x + w * 0.1)} ${f(y + 420)} q90 -36 200 -6 q70 -30 150 4 q30 26 -30 30 h-290 q-50 -8 -30 -28Z" fill="#8A5A6A" opacity=".6"/><path d="M${f(x + w * 0.55)} ${f(y + 560)} q70 -30 160 -4 q60 -24 120 6 q20 20 -30 22 h-230 q-40 -6 -20 -24Z" fill="#C87A6A" opacity=".5"/>`;
     };
     // capim alto na frente dos personagens (esconde quem se joga no chão); segue o chão (função x → y)
+    S.touceira = touceira;
     S.capim = (x0, x1, chaoFn, alt = 90, cor = '#1E2C1A', passo = 14) => { let s = '';
-      for (let gx = x0; gx < x1; gx += passo * rnd(0.6, 1.2)) { const gy = chaoFn(gx) + rnd(4, 26), hh = alt * rnd(0.55, 1.15), cc = tom(cor, rnd(-0.12, 0.1));
-        s += `<path d="M${f(gx - 5)} ${f(gy)} Q${f(gx - 4)} ${f(gy - hh * 0.6)} ${f(gx + rnd(-26, 26))} ${f(gy - hh)} Q${f(gx + 2)} ${f(gy - hh * 0.5)} ${f(gx + 6)} ${f(gy)}Z" fill="${cc}"/>`; }
+      const k = alt / 40;
+      [[tom(cor, -0.15), 0.85, 2, 0.75], [cor, 1, 18, 1]].forEach(([c, esc, dy, dens]) => {
+        for (let gx = x0; gx < x1; gx += passo * 2.4 * rnd(0.7, 1.2) / dens) s += touceira(gx, chaoFn(gx) + dy + rnd(0, 10), k * esc * rnd(0.75, 1.15), tom(c, rnd(-0.08, 0.08))); });
       return s; };
 
     // ================= CENAS =================
@@ -169,7 +186,7 @@
       const cor = amanhecer ? '#3A4A2C' : '#18221A';
       let d = `M${x - 10} ${f(chaoEnc(x))}`; for (let gx = x; gx <= x + w + 20; gx += 20) d += ` L${f(gx)} ${f(chaoEnc(gx))}`;
       s += `<path d="${d} L${x + w + 20} ${y + h} H${x - 10}Z" fill="${cor}"/><path d="${d}" stroke="${tom(cor, 0.25)}" stroke-width="5" fill="none"/>`;
-      for (let i = 0; i < 70; i++) { const gx = rnd(x, x + w), gy = chaoEnc(gx) + rnd(10, 600); if (gy > y + h) continue; s += `<path d="M${f(gx)} ${f(gy)} l-6 -14 M${f(gx)} ${f(gy)} l2 -18 M${f(gx)} ${f(gy)} l8 -12" stroke="${tom(cor, rnd(0.05, 0.2))}" stroke-width="3"/>`; }
+      for (let i = 0; i < 46; i++) { const gx = rnd(x, x + w), gy = chaoEnc(gx) + rnd(10, 600); if (gy > y + h) continue; s += touceira(gx, gy, 0.6 + (gy - chaoEnc(gx)) / 600, tom(cor, rnd(0.05, 0.2))); }
       // araucária e cerca no topo, cupinzeiro e pedras na descida
       s += araucaria(x + 90, chaoEnc(x + 90) + 6, 420, amanhecer ? '#1A2418' : '#0A100C');
       for (let k = 0; k < 4; k++) { const px = x + 170 + k * 60; s += `<rect x="${f(px)}" y="${f(chaoEnc(px) - 110)}" width="12" height="116" fill="#2A2018" stroke="${L}" stroke-width="3"/>`; }
@@ -192,7 +209,7 @@
       // caminho de terra até a casa
       s += `<path d="M${f(x + 470)} ${f(hz + 170)} H${f(x + 590)} L${f(x + 760)} ${y + h} H${f(x + 240)}Z" fill="${amanhecer ? '#7A6A52' : '#3A3428'}"/>`;
       for (let i = 0; i < 30; i++) { const yy = rnd(hz + 200, y + h), u = (yy - hz) / (y + h - hz); s += `<ellipse cx="${f(lerp(x + 520, x + 500, u) + rnd(-1, 1) * lerp(50, 240, u))}" cy="${f(yy)}" rx="${f(3 + u * 12)}" ry="${f(2 + u * 4)}" fill="#5A4A3A"/>`; }
-      for (let i = 0; i < 50; i++) { const gx = rnd(x, x + w), gy = rnd(hz + 120, y + h); s += `<path d="M${f(gx)} ${f(gy)} l-6 -16 M${f(gx)} ${f(gy)} l2 -20 M${f(gx)} ${f(gy)} l8 -14" stroke="#4A5A3A" stroke-width="3"/>`; }
+      for (let i = 0; i < 40; i++) { const gy = rnd(hz + 120, y + h), gx = rnd(x, x + w); s += touceira(gx, gy, 0.4 + (gy - hz) / 700, '#4A5E36'); }
       // cerca: mourões e 3 travessas, com vão para a porteira entre x 360 e 640
       const cor = '#5A4430', topo = chao - 230;
       const mourao = px => `<rect x="${f(px - 14)}" y="${f(topo - 20)}" width="28" height="${f(chao - topo + 24)}" fill="${cor}" stroke="${L}" stroke-width="4"/><rect x="${f(px - 10)}" y="${f(topo - 16)}" width="8" height="${f(chao - topo + 16)}" fill="#7A6040"/>`;
@@ -238,7 +255,7 @@
       for (let i = 0; i < 9; i++) s += `<g transform="translate(${x + 40 + (i % 3) * 70} ${chao - 30 - Math.floor(i / 3) * 56})"><rect x="0" y="0" width="150" height="54" rx="26" fill="${tom('#6A4A2A', rnd(-0.12, 0.1))}" stroke="${L}" stroke-width="4"/><circle cx="18" cy="27" r="20" fill="#B8925A" stroke="${L}" stroke-width="3"/><circle cx="18" cy="27" r="8" fill="none" stroke="#7A5A32" stroke-width="2"/></g>`;
       s += `<path d="M${x + 980} ${chao + 6} L${x + 900} ${chao - 620}" stroke="#7A5A3A" stroke-width="16" stroke-linecap="round"/><path d="M${x + 880} ${chao - 640} l60 -20 l14 40 l-56 10Z" fill="#6A6A70" stroke="${L}" stroke-width="4"/>`;
       s += `<g transform="translate(${x + 420} ${chao + 10})"><path d="M-60 0 L-70 -120 H70 L60 0Z" fill="#8A9098" stroke="${L}" stroke-width="5"/><path d="M-70 -120 Q0 -200 70 -120" stroke="#5A5A60" stroke-width="5" fill="none"/><ellipse cx="0" cy="-120" rx="70" ry="12" fill="#5A6068" stroke="${L}" stroke-width="4"/></g>`;
-      for (let i = 0; i < 24; i++) { const gx = rnd(x, x + w), gy = chao + rnd(0, 20); s += `<path d="M${f(gx)} ${f(gy)} l-8 -26 M${f(gx)} ${f(gy)} l2 -32 M${f(gx)} ${f(gy)} l10 -22" stroke="#3E5A2E" stroke-width="4"/>`; }
+      for (let i = 0; i < 20; i++) { const gx = rnd(x, x + w), gy = chao + rnd(0, 20); s += touceira(gx, gy, 1.3, '#3E5A2E'); }
       if (amanhecer) s += `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#F6B07A" opacity=".08" style="mix-blend-mode:screen"/>`;
       return clip(x, y, w, h, s + acabamento(0.28));
     };
@@ -315,7 +332,7 @@
       for (let i = 0; i < 6; i++) s += araucaria(x + rnd(0, w), chao - 60 - rnd(0, 60), rnd(160, 280), '#0E1410');
       // pasto do morro
       s += `<path d="M${x} ${f(chao - 30)} Q${f(x + w * 0.5)} ${f(chao - 80)} ${x + w} ${f(chao - 20)} V${y + h} H${x}Z" fill="#1E2A1C"/>`;
-      for (let i = 0; i < 40; i++) { const gx = rnd(x, x + w), gy = rnd(chao, y + h); s += `<path d="M${f(gx)} ${f(gy)} l-6 -${f(10 + (gy - chao) / 40)} M${f(gx)} ${f(gy)} l3 -${f(12 + (gy - chao) / 30)} M${f(gx)} ${f(gy)} l8 -${f(9 + (gy - chao) / 40)}" stroke="#2E3E28" stroke-width="3"/>`; }
+      for (let i = 0; i < 34; i++) { const gx = rnd(x, x + w), gy = rnd(chao, y + h); s += touceira(gx, gy, 0.5 + (gy - chao) / 500, '#2E3E28'); }
       // casa do Tião com varanda (pilares de madeira), telhado de telha, chaminé
       const cb = chao - 10, cw = 520, ch = 300, cx0 = casaX - cw / 2;
       s += `<ellipse cx="${f(casaX)}" cy="${f(cb + 10)}" rx="${cw * 0.6}" ry="24" fill="#000" opacity=".4"/>` + casaRoca(cx0, cb, cw, ch, { acesa: janelaAcesa, cor: '#8A7E66', telha: '#6A3424', varanda: true });
@@ -397,7 +414,7 @@
       s += `<path d="M${f(fuga[0])} ${f(fuga[1])} L${f(fuga[0] - 40)} ${y + h}" stroke="#4A4234" stroke-width="30" opacity=".4"/>`;
       for (let k = 0; k < 9; k++) { const u = Math.pow(k / 9, 1.6); [-1, 1].forEach(sd => { const px = lerp(x + w / 2 + sd * w * 0.62, fuga[0] + sd * 50, u), pb = lerp(y + h * 0.98, fuga[1], u), hh = lerp(220, 14, u); s += `<path d="M${f(px)} ${f(pb)} v${f(-hh)}" stroke="#2A2218" stroke-width="${f(lerp(14, 2, u))}"/>`; }); }
       [-1, 1].forEach(sd => { [0.45, 0.75].forEach(v => { s += `<path d="M${f(x + w / 2 + sd * w * 0.62)} ${f(y + h * 0.98 - 220 * v)} L${f(fuga[0] + sd * 50)} ${f(fuga[1] - 14 * v)}" stroke="#5A5A5A" stroke-width="2" opacity=".7"/>`; }); });
-      for (let i = 0; i < 50; i++) { const gx = rnd(x, x + w), gy = rnd(fuga[1] + 40, y + h); if (Math.abs(gx - (x + w / 2)) < (gy - fuga[1]) * 0.5) continue; s += `<path d="M${f(gx)} ${f(gy)} q-4 -${f(20 + (gy - fuga[1]) / 20)} -10 -${f(30 + (gy - fuga[1]) / 14)} M${f(gx)} ${f(gy)} q4 -${f(20 + (gy - fuga[1]) / 20)} 8 -${f(26 + (gy - fuga[1]) / 14)}" stroke="#24321E" stroke-width="3" fill="none"/>`; }
+      for (let i = 0; i < 44; i++) { const gx = rnd(x, x + w), gy = rnd(fuga[1] + 40, y + h); if (Math.abs(gx - (x + w / 2)) < (gy - fuga[1]) * 0.5) continue; s += touceira(gx, gy, 0.4 + (gy - fuga[1]) / 500, '#24321E'); }
       s += neblina(x, fuga[1] + 20, w, 260, 0.2);
       return clip(x, y, w, h, s + acabamento(0.3));
     };
