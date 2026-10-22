@@ -123,6 +123,8 @@
       this.boca = opts.boca || null;            // fn(t) → '0'..'4' | 'smile'
       const rnd = mulberry32(opts.seed ?? 3);
       this.piscadas = []; for (let t = 0.8 + rnd() * 1.5; t < 3600; t += 2.2 + rnd() * 2.2) this.piscadas.push(t);
+      this.zr = mulberry32((opts.seed ?? 3) * 7 + 1);   // aleatório fixo do zumbi (rasgos, cabelo, inclinação)
+      this.zv = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map(() => this.zr());
       this.build(parent, opts.contorno !== false);
     }
 
@@ -174,6 +176,7 @@
         this.el.detalhe = mk('path', { fill: 'none', stroke: F.cor2 || 'none', 'stroke-width': 14 * this.s, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' });
         this.el.avental = mk('path', { fill: '#E8DCC4', stroke: 'none' });
       }
+      this.el.farrapos = mk('g', {});       // zumbi: barra rasgada da camisa, manga e calça em tiras
       this.el.bolsa = mk('path', { fill: '#8A5A33', stroke: 'none' });
       this.el.bolsoCargo = mk('path', { fill: 'none', stroke: '#111114', 'stroke-width': 4 * this.s, 'stroke-linejoin': 'round' });
       this.el.mancha = mk('path', { fill: '#E8742A', stroke: 'none', opacity: 0.85 });
@@ -210,6 +213,8 @@
       this.el.manicaPerto = mk('g', {});
       this.el.maoPerto = mk('circle', { r: 11 * this.s, fill: this.cor });
       this.el.maoFormaPerto = mk('g', {});
+      this.el.farraposPerto = mk('g', {});  // zumbi: manga rasgada do braço da frente
+      this.el.garras = mk('path', { fill: 'none', stroke: this.cor, 'stroke-width': 7 * this.s, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' });   // zumbi: dedos caídos
     }
 
     // ---------- poses base ----------
@@ -329,13 +334,14 @@
           pos = [lerp(xIni, xFim, e) - dir * Math.sin(w * Math.PI) * (G.chute || 0) * s * (1 - w),
                  lerp(yIni, yFim, e) - Math.sin(w * Math.PI) * (G.elevar * s + subida * 0.6)];
           inc = w < 0.3 ? lerp(-38, -8, w / 0.3) : lerp(-8, G.calcanhar ? 18 : 6, (w - 0.3) / 0.7);
+          if (this.fig.zumbi && i === 1) { pos[1] = lerp(yIni, yFim, e) - Math.sin(w * Math.PI) * G.elevar * s * 0.15; inc = -12; }   // zumbi: perna que arrasta
         }
         pes.push({ tz: pos, inc, chao: q < G.apoio ? gF : null });
       }
       const hx = p.de[0] + dir * D;
       const apoioY = pes.map((f, i) => qs[i] < G.apoio ? f.tz[1] + M.tornozelo * s : null).filter(v => v != null);
       const gy = apoioY.length ? apoioY.reduce((a2, b2) => a2 + b2) / apoioY.length : chaoF(hx);
-      const bal = Math.cos(2 * Math.PI * (2 * fase - 0.7)) * G.balanco * s;
+      const bal = Math.cos(2 * Math.PI * (2 * fase - 0.7)) * G.balanco * s * (this.fig.zumbi ? 2.4 : 1);
       const voo = a.tipo === 'correr' ? Math.max(0, Math.sin(2 * Math.PI * (2 * fase - 0.25))) * 18 * s : 0;
       const quadril = [hx, Math.min(gy, chaoF(hx) + 20 * s) - G.quadril * s - bal - voo];
       // braços em oposição às pernas: braço esquerdo acompanha a perna direita
@@ -360,7 +366,14 @@
         case 'encolher': return { o: 38, c: 72 };
         case 'abanar': return { o: 118, c: 52 + Math.sin(tt * 2 * Math.PI * 3) * 28 };
         case 'apontar': return vista === 'frente' ? { o: 120, c: -8 } : { o: 82, c: 2 };
-        case 'estender': return vista === 'frente' ? { o: 55, c: 8 } : { o: 68, c: 14 };
+        case 'estender': {
+          if (!this.fig.zumbi) return vista === 'frente' ? { o: 55, c: 8 } : { o: 68, c: 14 };
+          // zumbi: um braço mais alto e esticado, o outro mais baixo e mole, balançando devagar
+          const alto = (lado === 'e') === (this.zv[0] > 0.5), ph = this.zv[1] * 6.3 + (alto ? 0 : 2);
+          const bal = Math.sin(tt * 2 * Math.PI * 0.55 + ph) * 7;
+          if (vista === 'frente') return alto ? { o: 44 + bal, c: 62 + bal } : { o: 10 + bal * 0.4, c: 14 };   // de frente: um braço vem para a frente do peito, o outro pendurado
+          return alto ? { o: 76 + bal, c: 6 + bal * 0.5 } : { o: 34 + bal, c: 46 - bal };
+        }
         case 'segurar': return vista === 'frente' ? { o: 18, c: 80 } : { o: 12, c: 88 };
         case 'cintura': return vista === 'frente' ? { o: 38, c: -95 } : { o: -20, c: 100 };
         case 'pose': return { o: p.o, c: p.c };
@@ -581,15 +594,20 @@
       this.el.sombraPe.style.display = '';
       this.g.style.display = ''; this.el.extras.style.display = '';
       const { vista, dir } = P;
+      const ZB = this.fig.zumbi && !P.giro && P.vista !== undefined;
+      if (ZB) {   // zumbi: corcunda, joelhos dobrados, ombro caído
+        if (vista === 'perfil') P.inclina += 18;
+        P.quadril = [P.quadril[0], P.quadril[1] + 5 * s];
+      }
       // tronco
       const inc = P.inclina;
       const H = P.quadril;
       const top = add(H, [dir * Math.sin(inc * RAD) * M.tronco * s * (vista === 'perfil' ? 1 : 0), -Math.cos(inc * RAD) * M.tronco * s - (P.respira || 0)]);
       // cabeça (orientação própria)
       const cabeca = this.cabecaEm(t, P);
-      const inclCab = cabeca.inclinar + (vista === 'perfil' ? inc * 0.5 : 0);
+      const inclCab = cabeca.inclinar + (vista === 'perfil' ? inc * 0.5 : 0) + (ZB ? (vista === 'perfil' ? 10 : (this.zv[2] > 0.5 ? 1 : -1) * 16) : 0);
       const sxCab = vista === 'perfil' ? dir : 1;
-      const pescoco = add(top, [0, -M.pescoco * s]);
+      const pescoco = add(top, ZB ? (vista === 'perfil' ? [dir * 24 * s, -M.pescoco * s * 0.4] : [(this.zv[2] > 0.5 ? 1 : -1) * 12 * s, -M.pescoco * s * 0.6]) : [0, -M.pescoco * s]);
       const cab = add(pescoco, vec(180 + inclCab, M.cabeca * s, sxCab));
       // pernas via IK
       const quadris = vista === 'frente'
@@ -607,7 +625,7 @@
       });
       // braços: base + gestos (com entrada/saída suaves)
       const ombros = vista === 'frente'
-        ? { e: add(top, [-M.ombroFrente * s, 16 * s]), d: add(top, [M.ombroFrente * s, 16 * s]) }
+        ? { e: add(top, [-M.ombroFrente * s, (16 + (ZB && this.zv[2] <= 0.5 ? 12 : 0)) * s]), d: add(top, [M.ombroFrente * s, (16 + (ZB && this.zv[2] > 0.5 ? 12 : 0)) * s]) }
         : { e: add(top, [0, 16 * s]), d: add(top, [0, 16 * s]) };
       const ctx = { vista, dir, cabeca: cab, s };
       const maos = {}, bracos = {};
@@ -704,7 +722,36 @@
         if (this.fig.tronco === 'armadura') this.el.detalhe.setAttribute('stroke', '#5A5A62');
         const temAvental = (this.fig.extras || []).includes('avental');
         this.el.avental.setAttribute('d', temAvental ? `M${f(P_(c0, c1, 0.18))} L${f(P_(c0, c1, 0.82))} L${f(P_(b0, b1, 0.86))} L${f(P_(b0, b1, 0.14))}Z` : '');
+        // zumbi: roupa em farrapos — tiras penduradas na barra da camisa, na manga e na boca da calça
+        if (this.fig.zumbi) {
+          const zv = this.zv, tiras = (a, b, baixo, n, comp, cor, sem) => {
+            let d = ''; for (let k = 0; k < n; k++) {
+              const u0 = k / n, u1 = (k + 1) / n, m = P_(a, b, (u0 + u1) / 2), L = comp * (0.45 + zv[(k + sem) % 12] * 0.9);
+              if (zv[(k * 3 + sem) % 12] < 0.18) continue;   // falta um pedaço
+              d += `M${f(P_(a, b, u0))} L${f([m[0] + baixo[0] * L + (zv[(k + 5 + sem) % 12] - 0.5) * 8 * s, m[1] + baixo[1] * L])} L${f(P_(a, b, u1))}Z`;
+            }
+            return d ? `<path d="${d}" fill="${cor}" stroke="${cor}" stroke-width="${3 * s}" stroke-linejoin="round"/>` : '';
+          };
+          const un = (a, b) => { const v = [b[0] - a[0], b[1] - a[1]], n = Math.hypot(v[0], v[1]) || 1; return [v[0] / n, v[1] / n]; };
+          const corR = this.fig.cor || this.roupa, baixo = [-up[0], -up[1]];
+          let h = tiras(b0, b1, baixo, 6, 26 * s, corR, 0);
+          const manga = (B, sem) => { if (this.fig.mangas !== 'curta') return ''; const fim = P_(B.o, B.c, 0.48), v = un(B.o, B.c), w = [-v[1] * 15 * s, v[0] * 15 * s];
+            return tiras([fim[0] + w[0], fim[1] + w[1]], [fim[0] - w[0], fim[1] - w[1]], v, 3, 18 * s, this.fig.corManga || corR, sem); };
+          h += manga(bracos[longe.braco], 3);
+          if (this.fig.pernas === 'calca') [longe.perna, perto.perna].forEach((i, j) => { const Lg = pernas[i], fim = P_(Lg.j, Lg.tz, 0.9), v = un(Lg.j, Lg.tz), w = [-v[1] * 15 * s, v[0] * 15 * s];
+            h += tiras([fim[0] + w[0], fim[1] + w[1]], [fim[0] - w[0], fim[1] - w[1]], v, 3, 16 * s, this.fig.corPernas, 6 + j); });
+          this.el.farrapos.innerHTML = h;
+          this.el.farraposPerto.innerHTML = manga(bracos[perto.braco], 8);
+          // dedos moles caindo da mão (garras)
+          let g = '';
+          [bracos.e, bracos.d].forEach(B => { const v = un(B.c, B.m), dn = un([0, 0], [v[0] * 0.5, v[1] * 0.5 + 0.8]);
+            [-0.45, 0, 0.45].forEach(a => { const c = Math.cos(a), sn = Math.sin(a), d2 = [dn[0] * c - dn[1] * sn, dn[0] * sn + dn[1] * c], b = [B.m[0] + v[0] * 6 * s, B.m[1] + v[1] * 6 * s];
+              g += `M${f(b)} L${f([b[0] + d2[0] * 17 * s, b[1] + d2[1] * 22 * s])} `; }); });
+          this.el.garras.setAttribute('d', g);
+          this.el.garras.setAttribute('stroke', this.cor);
+        }
       }
+      if (!this.fig.zumbi) { this.el.farrapos.innerHTML = ''; this.el.farraposPerto.innerHTML = ''; this.el.garras.setAttribute('d', ''); }
       this._maos = { e: rot(maos.e), d: rot(maos.d) };
       // cabeça e rosto
       const C = rot(cab);
@@ -728,7 +775,7 @@
         // Linha do cabelo h(lon): latitude (rad) onde o cabelo começa; lon 0 = testa, ±π = nuca.
         // Parte visível = arco da silhueta (por cima da cabeça) + linha do cabelo no lado visível.
         const R = r * 1.05;
-        const H = { curto: [0.02, 0.5], cacheado: [0.12, 0.52], coque: [0.0, 0.52], longo: [-0.05, 0.5], militar: [0.62, 0.3] }[est] || [0.02, 0.5];
+        const H = { curto: [0.02, 0.5], cacheado: [0.12, 0.52], coque: [0.0, 0.52], longo: [-0.05, 0.5], militar: [0.62, 0.3], zumbi: [0.45, 0.35] }[est] || [0.02, 0.5];
         const h = lon => H[0] + H[1] * Math.cos(lon);
         const pt = (lon, lat) => [C[0] + R * Math.cos(lat) * Math.sin(lon + TH), C[1] - R * Math.sin(lat)];
         const lonD = Math.PI / 2 - TH, lonE = -Math.PI / 2 - TH;          // longitudes na borda direita/esquerda da tela
@@ -745,6 +792,19 @@
             const bx = C[0] - R * Math.cos(lat), by = C[1] - R * Math.sin(lat);
             const n = [-Math.cos(lat), -Math.sin(lat)], tg = [-n[1], n[0]];          // normal (para fora) e tangente
             const comp = r * (0.24 + 0.08 * Math.sin(k * 2.3)), lar = r * 0.12, lado = 0.55;   // fios inclinados para um lado
+            const p1 = [bx + tg[0] * lar, by + tg[1] * lar], p2 = [bx - tg[0] * lar, by - tg[1] * lar];
+            const tip = [bx + n[0] * comp + tg[0] * comp * lado, by + n[1] * comp + tg[1] * comp * lado];
+            d += `M${p1[0].toFixed(1)} ${p1[1].toFixed(1)} L${tip[0].toFixed(1)} ${tip[1].toFixed(1)} L${p2[0].toFixed(1)} ${p2[1].toFixed(1)}Z`;
+          }
+        }
+        if (est === 'zumbi') {               // zumbi: tufos ralos e arrepiados, de tamanhos diferentes, com falhas
+          const zv = this.zv, nS = 9;
+          for (let k = 0; k < nS; k++) {
+            if (zv[k % 12] < 0.25) continue;
+            const lat = (h(lonE) + 0.1) + (Math.PI - h(lonD) - h(lonE) - 0.2) * (k / (nS - 1));
+            const bx = C[0] - R * Math.cos(lat), by = C[1] - R * Math.sin(lat);
+            const n = [-Math.cos(lat), -Math.sin(lat)], tg = [-n[1], n[0]];
+            const comp = r * (0.18 + 0.32 * zv[(k + 4) % 12]), lar = r * 0.09, lado = (zv[(k + 7) % 12] - 0.5) * 1.6;
             const p1 = [bx + tg[0] * lar, by + tg[1] * lar], p2 = [bx - tg[0] * lar, by - tg[1] * lar];
             const tip = [bx + n[0] * comp + tg[0] * comp * lado, by + n[1] * comp + tg[1] * comp * lado];
             d += `M${p1[0].toFixed(1)} ${p1[1].toFixed(1)} L${tip[0].toFixed(1)} ${tip[1].toFixed(1)} L${p2[0].toFixed(1)} ${p2[1].toFixed(1)}Z`;
@@ -1056,7 +1116,7 @@
     'reciario':      { tronco: 'subligaculo', cor: '#3B5E8C', pes: 'descalco', manica: 'e', galero: 'e', cabelo: 'cacheado', corCabelo: '#2A1E16', cinto: '#C9A24A' },
     'lanista':       { tronco: 'tunicaLonga', cor: '#6B4A2E', mangas: 'curta', pes: 'sandalia', corPes: '#4A3420', cabelo: 'curto', corCabelo: '#7A7A7A', cinto: '#2A1E16' },
     'imperador':     { tronco: 'toga', cor: '#6B2A6B', cor2: '#C9A24A', mangas: 'curta', pes: 'sapato', corPes: '#C9A24A', cabelo: 'curto', corCabelo: '#4A3A2A', chapeu: 'louros', cinto: 'none' },
-    'zumbi':         { tronco: 'camiseta', cor: '#6E7A5A', cor2: '#4A5240', mangas: 'curta', pernas: 'calca', corPernas: '#3A4A5A', pes: 'tenis', corPes: '#8A8A80', corPes2: '#5A5A50', cabelo: 'curto', corCabelo: '#3A3A30' },
+    'zumbi':         { tronco: 'camiseta', cor: '#6E7A5A', cor2: '#4A5240', mangas: 'curta', pernas: 'calca', corPernas: '#3A4A5A', pes: 'tenis', corPes: '#8A8A80', corPes2: '#5A5A50', cabelo: 'zumbi', corCabelo: '#3A3A30', zumbi: true },
     'trabalhador':   { tronco: 'tunica', cor: '#A08A68', mangas: 'nenhuma', pes: 'descalco', cabelo: 'curto', corCabelo: '#2A1E16', cinto: '#5E3B1C' },
     // --- hoje ---
     'casual':        { tronco: 'camiseta', cor: '#3B7DD8', mangas: 'curta', pernas: 'calca', corPernas: '#2E4A7A', pes: 'tenis', corPes: '#FFFFFF', corPes2: '#3B7DD8', cabelo: 'curto', corCabelo: '#3A2A20' },
@@ -1074,7 +1134,7 @@
     'tiao':          { tronco: 'camiseta', cor: '#5E4A34', cor2: '#3A2C1E', mangas: 'longa', corManga: '#5E4A34', pernas: 'calca', corPernas: '#3A4250', pes: 'bota', corPes: '#3A2618', cabelo: 'curto', corCabelo: '#3A3A36', chapeu: 'palha', corChapeu: '#B89A5A', corFita: '#4A2A1A', cinto: '#2A1E14', semBochecha: true },
     'seuze':         { tronco: 'camiseta', cor: '#7A8A9A', mangas: 'curta', pernas: 'calca', corPernas: '#4A3A2A', pes: 'sapato', corPes: '#2A1E14', cabelo: 'curto', corCabelo: '#E8E8E2', cinto: '#2A1E14', semBochecha: true },
     'neta':          { tronco: 'vestido', cor: '#C97A9A', mangas: 'curta', pes: 'sapato', corPes: '#F2F2F2', cabelo: 'longo', corCabelo: '#3A2418', chapeu: 'tiara', corChapeu: '#F2E26A', semBochecha: true },
-    'vulto':         { tronco: 'camiseta', cor: '#15161C', mangas: 'curta', pernas: 'calca', corPernas: '#101116', pes: 'descalco', cabelo: 'curto', corCabelo: '#0C0C10', semBochecha: true },
+    'vulto':         { tronco: 'camiseta', cor: '#15161C', mangas: 'curta', pernas: 'calca', corPernas: '#101116', pes: 'descalco', cabelo: 'zumbi', corCabelo: '#0C0C10', semBochecha: true, zumbi: true },   // zumbi no escuro: silhueta curvada, farrapos, braços tortos
     'aluno':         { tronco: 'camiseta', cor: '#5A7A9A', mangas: 'curta', pernas: 'calca', corPernas: '#2E3A4A', pes: 'tenis', corPes: '#F2F2F2', corPes2: '#5A5A60', cabelo: 'curto', corCabelo: '#2A1E16', semBochecha: true },
     // --- SOBREVIVENTE: personagem oficial (skill personagem-sobrevivente) ---
     'sobrevivente':  { tronco: 'camiseta', cor: '#FFFFFF', mangas: 'curta', pernas: 'calca', corPernas: '#26262B', cargo: true, pes: 'tenis', corPes: '#FF7A00', corPes2: '#111111', cabelo: 'militar', corCabelo: '#111111', extras: ['cachecol', 'mochila'], luvas: true, semBochecha: true, cinto: 'none' }
