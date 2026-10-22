@@ -2,64 +2,64 @@
  {
   "id": "03",
   "quem": "ze",
-  "texto": "Tião, abre essa porta, sô! Eu tô bão, homi!",
+  "texto": "Tião, abre essa porta! Eu tô bem, homem!",
   "de": 0.25,
-  "ate": 3.836
+  "ate": 2.725
  },
  {
   "id": "04",
   "quem": "tiao",
   "texto": "Então mostra o braço pela janela.",
-  "de": 4.386,
-  "ate": 7.114
+  "de": 3.275,
+  "ate": 5.968
  },
  {
   "id": "05",
   "quem": "ze",
-  "texto": "É só um corte, uai. Foi no arame, fugindo.",
-  "de": 7.664,
-  "ate": 11.682
+  "texto": "É só um corte. Foi no arame, fugindo.",
+  "de": 6.518,
+  "ate": 8.822
  },
  {
   "id": "06",
   "quem": "tiao",
   "texto": "Regra número três: quem chega machucado, espera vinte e quatro horas.",
-  "de": 12.232,
-  "ate": 17.685
+  "de": 9.372,
+  "ate": 14.643
  },
  {
   "id": "07",
   "quem": "ze",
   "texto": "E a minha neta? Ela ficou escondida na caixa d'água. Sozinha!",
-  "de": 18.235,
-  "ate": 23.453
+  "de": 15.193,
+  "ate": 18.798
  },
  {
   "id": "08",
-  "quem": "tiaobaixo",
+  "quem": "tiao",
   "texto": "Já faz dois dias, seu Zé.",
-  "de": 24.003,
-  "ate": 26.993
+  "de": 19.348,
+  "ate": 21.798
  },
  {
   "id": "09",
-  "quem": "zechora",
+  "quem": "ze",
   "texto": "Então vai buscar ela. Pelo amor de Deus.",
-  "de": 27.543,
-  "ate": 31.04
+  "de": 22.348,
+  "ate": 25.036
  },
  {
   "id": "12",
   "quem": "tiao",
   "texto": "Eu volto com ela.",
-  "de": 31.59,
-  "ate": 33.575
+  "de": 25.586,
+  "ate": 27.386
  },
  {
   "id": "13",
-  "quem": "zerouco",
+  "quem": "ze",
   "texto": "Volta logo, Tião... volta logo.",
-  "de": 34.125,
-  "ate": 37.329
+  "de": 27.936,
+  "ate": 30.09
  }
 ]
