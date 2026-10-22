@@ -799,6 +799,13 @@
         const ab = [Math.max(ox - r * 1.06, fx - hw), Math.min(ox + r * 1.06, fx + hw)];   // bordas da abertura
         const topo = C[1] - r * 1.02, pe = C[1] + r * 0.9;
         h = `<path d="M${f(ox - r * 1.18)} ${f(pe)} Q${f(ox - r * 1.3)} ${f(C[1] - r * 1.35)} ${f(ox)} ${f(C[1] - r * 1.25)} Q${f(ox + r * 1.3)} ${f(C[1] - r * 1.35)} ${f(ox + r * 1.18)} ${f(pe)} L${f(ab[1])} ${f(pe)} Q${f(ab[1] + r * 0.1)} ${f(C[1] - r * 1.0)} ${f((ab[0] + ab[1]) / 2)} ${f(topo)} Q${f(ab[0] - r * 0.1)} ${f(C[1] - r * 1.0)} ${f(ab[0])} ${f(pe)}Z" fill="${c2}" stroke="${T}" stroke-width="${3 * s}"/>`;
+      } else if (ch === 'palha') {          // chapéu de palha (sitiante): aba larga + copa com fita, trançado
+        const cx = C[0] - giroX * r * 0.08, f = n => n.toFixed(1);
+        h = `<ellipse cx="${f(cx)}" cy="${f(C[1] - r * 0.62)}" rx="${f(r * 1.75)}" ry="${f(r * 0.3)}" fill="${cc}" stroke="${T}" stroke-width="${4 * s}"/>`;
+        h += `<path d="M${f(cx - r * 0.85)} ${f(C[1] - r * 0.62)} Q${f(cx - r * 0.9)} ${f(C[1] - r * 1.55)} ${f(cx)} ${f(C[1] - r * 1.55)} Q${f(cx + r * 0.9)} ${f(C[1] - r * 1.55)} ${f(cx + r * 0.85)} ${f(C[1] - r * 0.62)}Z" fill="${cc}" stroke="${T}" stroke-width="${4 * s}"/>`;
+        h += `<path d="M${f(cx - r * 0.86)} ${f(C[1] - r * 0.82)} Q${f(cx)} ${f(C[1] - r * 0.7)} ${f(cx + r * 0.86)} ${f(C[1] - r * 0.82)}" stroke="${F.corFita || '#5A2A1A'}" stroke-width="${9 * s}" fill="none"/>`;
+        for (let k = -3; k <= 3; k++) h += `<path d="M${f(cx + k * r * 0.24)} ${f(C[1] - r * 1.45)} l${f(r * 0.05)} ${f(r * 0.55)}" stroke="${Boneco.tomLonge(cc)}" stroke-width="${2 * s}"/>`;
+        for (let k = -6; k <= 6; k++) h += `<path d="M${f(cx + k * r * 0.26)} ${f(C[1] - r * 0.58)} l${f(k * r * 0.03)} ${f(r * 0.12)}" stroke="${Boneco.tomLonge(cc)}" stroke-width="${2 * s}"/>`;
       } else if (ch === 'touca') {          // touca de cozinha (merendeira): cobre o alto da cabeça
         h = `<path d="M${C[0] - r * 1.08} ${C[1] - r * 0.15} Q${C[0] - r * 1.2} ${C[1] - r * 1.25} ${C[0]} ${C[1] - r * 1.3} Q${C[0] + r * 1.2} ${C[1] - r * 1.25} ${C[0] + r * 1.08} ${C[1] - r * 0.15} Q${C[0]} ${C[1] - r * 0.4} ${C[0] - r * 1.08} ${C[1] - r * 0.15}Z" fill="${cc}" stroke="${T}" stroke-width="${4 * s}"/>`;
         for (let k = -2; k <= 2; k++) h += `<path d="M${C[0] + k * r * 0.35} ${C[1] - r * 1.1} q${r * 0.05} ${r * 0.3} 0 ${r * 0.6}" stroke="${Boneco.tomLonge(cc)}" stroke-width="${2.5 * s}" fill="none"/>`;
@@ -1063,6 +1070,11 @@
     'menina':        { tronco: 'camiseta', cor: '#7A4AA8', mangas: 'curta', pernas: 'calca', corPernas: '#6A8AB8', pes: 'tenis', corPes: '#F2F2F2', corPes2: '#7A4AA8', cabelo: 'longo', corCabelo: '#3A2418', chapeu: 'tiara', corChapeu: '#F2C230', semBochecha: true },
     'merendeira':    { tronco: 'camiseta', cor: '#F2F2EE', mangas: 'curta', pernas: 'calca', corPernas: '#F2F2EE', pes: 'tenis', corPes: '#F2F2F2', corPes2: '#8A8A8A', cabelo: 'curto', corCabelo: '#5A3A2A', chapeu: 'touca', corChapeu: '#FFFFFF', extras: ['avental'], semBochecha: true },
     'jorge':         { tronco: 'moletom', cor: '#3E5E8A', mangas: 'longa', pernas: 'calca', corPernas: '#3E5E8A', pes: 'bota', corPes: '#4A3420', cabelo: 'curto', corCabelo: '#BDBDBD', chapeu: 'bone', corChapeu: '#2A3A5A', cinto: '#2A2A30', semBochecha: true },   // seu Jorge, o zelador (macacão azul)
+    // --- SÉRIE APOCALIPSE ZUMBI (skill elenco-zumbi) — cores apagadas, de roça ---
+    'tiao':          { tronco: 'camiseta', cor: '#5E4A34', cor2: '#3A2C1E', mangas: 'longa', corManga: '#5E4A34', pernas: 'calca', corPernas: '#3A4250', pes: 'bota', corPes: '#3A2618', cabelo: 'curto', corCabelo: '#3A3A36', chapeu: 'palha', corChapeu: '#B89A5A', corFita: '#4A2A1A', cinto: '#2A1E14', semBochecha: true },
+    'seuze':         { tronco: 'camiseta', cor: '#7A8A9A', mangas: 'curta', pernas: 'calca', corPernas: '#4A3A2A', pes: 'sapato', corPes: '#2A1E14', cabelo: 'curto', corCabelo: '#E8E8E2', cinto: '#2A1E14', semBochecha: true },
+    'neta':          { tronco: 'vestido', cor: '#C97A9A', mangas: 'curta', pes: 'sapato', corPes: '#F2F2F2', cabelo: 'longo', corCabelo: '#3A2418', chapeu: 'tiara', corChapeu: '#F2E26A', semBochecha: true },
+    'vulto':         { tronco: 'camiseta', cor: '#15161C', mangas: 'curta', pernas: 'calca', corPernas: '#101116', pes: 'descalco', cabelo: 'curto', corCabelo: '#0C0C10', semBochecha: true },
     'aluno':         { tronco: 'camiseta', cor: '#5A7A9A', mangas: 'curta', pernas: 'calca', corPernas: '#2E3A4A', pes: 'tenis', corPes: '#F2F2F2', corPes2: '#5A5A60', cabelo: 'curto', corCabelo: '#2A1E16', semBochecha: true },
     // --- SOBREVIVENTE: personagem oficial (skill personagem-sobrevivente) ---
     'sobrevivente':  { tronco: 'camiseta', cor: '#FFFFFF', mangas: 'curta', pernas: 'calca', corPernas: '#26262B', cargo: true, pes: 'tenis', corPes: '#FF7A00', corPes2: '#111111', cabelo: 'militar', corCabelo: '#111111', extras: ['cachecol', 'mochila'], luvas: true, semBochecha: true, cinto: 'none' }

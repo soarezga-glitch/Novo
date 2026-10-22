@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Apocalipse Zumbi: Parte 1</title>
+<!--
+  Série APOCALIPSE ZUMBI — PARTE 1 (narração fala.mp3, 53 s): o Tião, o rádio ("não acendam…"), a festa do seu Zé,
+  os vultos na estrada e a lanterna — a única luz no morro.
+  Estilo da série (pedido do usuário): SOMBRIO, cores de noite e terra, personagens grandes, cenas cheias de objetos.
+  Referências em ../referencias. Textos: Anton branco com a palavra-chave em âmbar; selo de DIA · HORA no topo.
+-->
+<style>
+  html, body { margin: 0; background: #000; overflow: hidden; }
+  #stage { width: 1080px; height: 1920px; display: block; }
+  @font-face { font-family: 'Anton'; src: url(fontes/anton.woff2); }
+  @font-face { font-family: 'Luckiest Guy'; src: url(fontes/luckiest-guy.woff2); }
+  text:not([font-family]) { font-family: 'Anton', sans-serif; }
+</style>
+<script src="gsap.min.js"></script>
+<script src="boneco.js"></script>
+<script src="paletas.js"></script>
+<script src="cenario.js"></script>
+<script src="sitio.js"></script>
+<script src="palco.js"></script>
+<script src="legenda.js"></script>
+<script src="legenda-dados.js"></script>
+</head>
+<body>
+<svg id="stage" viewBox="0 0 1080 1920" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="outline" x="-20%" y="-20%" width="140%" height="140%">
+      <feMorphology in="SourceAlpha" operator="dilate" radius="5" result="d"/>
+      <feFlood flood-color="#0A0A0E"/>
+      <feComposite in2="d" operator="in" result="o"/>
+      <feMerge><feMergeNode in="o"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="sombraTxt" x="-10%" y="-30%" width="120%" height="160%"><feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#000" flood-opacity=".8"/></filter>
+    <radialGradient id="vin" cx=".5" cy=".5" r=".72"><stop offset=".45" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".7"/></radialGradient>
+  </defs>
+  <g id="cam"><g id="scenes"></g><g id="atores"></g><g id="props"></g><g id="luzes"></g></g>
+  <rect width="1080" height="1920" fill="url(#vin)"/>
+  <g id="escuro"><rect width="1080" height="1920" fill="#05070E"/></g>
+  <g id="topo"></g>
+  <g id="legenda"></g>
+</svg>
+
+<script>
+const NS = 'http://www.w3.org/2000/svg';
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const AMBAR = '#E8B23A', BRANCO = '#F2EEE2', VERMELHO = '#C8342A', L = '#0E0E14';
+const Si = (n) => Sitio(Cenario({ seed: n, luz: -1, hora: 'noite', prefixo: 's' + n }));
+
+// ===================== PLANOS =====================
+const S = {
+  abre:    [0, 2.3],     // "Primeiro dia do apocalipse zumbi,"
+  ficha:   [2.3, 6.6],   // "e o Tião tem uma regra que pode salvar a vida dele, ou acabar com ela."
+  radio:   [6.6, 10.15], // "Sete da noite. A rádio sai do ar no meio de uma notícia."
+  aviso:   [10.15, 13.4],// "A última coisa que ele ouve é: não acendam."
+  sitio:   [13.4, 17.0], // "Tião mora num sítio no sul de Minas, e entende na hora."
+  apaga:   [17.0, 21.0], // "Cobre as janelas, desliga tudo, apaga o lampião,"
+  vale:    [21.0, 23.9], // "mas lá embaixo, uma casa ainda brilha."
+  festa:   [23.9, 27.9], // "É o Seu Zé. Aniversário da neta. Som no último volume."
+  pega:    [27.9, 30.3], // "Tião pega a lanterna pra ir avisar."
+  regua:   [30.3, 33.1], // "São 800 metros de pasto no escuro."
+  passo:   [33.1, 35.5], // "Ele dá o primeiro passo e para."
+  vultos:  [35.5, 42.7], // "Na estrada, alguma coisa está se mexendo. Dezenas de vultos, andando devagar, indo direto pro som."
+  silencio:[42.7, 46.2], // "Às 11h30, a música para, silêncio total."
+  vira:    [46.2, 49.1], // "E uma das sombras vira a cabeça pro morro."
+  morro:   [49.1, 51.2], // "Pra única luz acesa ali em cima,"
+  tiao:    [51.2, 53.4], // "a lanterna na mão do Tião."
+};
+const FIM_FALA = 53.4, END = 56.6;
+const PE = 1460, PISO_LEG = 1560, KT = 1.45;
+
+// ===================== CENAS =====================
+const scenes = [];
+const cena = (id, corpo) => scenes.push(`<g id="${id}" class="scene">${corpo}</g>`);
+const zoom = (corpo, k, cx = 540, cy = 1300) => `<g transform="translate(${cx} ${cy}) scale(${k}) translate(${-cx} ${-cy})">${corpo}</g>`;
+// texto grande no estilo da série: Anton branco, palavra-chave em âmbar, sombra
+const txt = (id, y, partes, fs = 110) => `<g id="${id}" filter="url(#sombraTxt)"><text x="540" y="${y}" font-size="${fs}" text-anchor="middle" stroke="#000" stroke-width="${fs * 0.08}" paint-order="stroke">${partes.map(([t, c]) => `<tspan fill="${c || BRANCO}">${t}</tspan>`).join('')}</text></g>`;
+const selo = (id, linha1, linha2) => `<g id="${id}" transform="translate(540 150)"><rect x="-300" y="-62" width="600" height="136" rx="22" fill="#0B0D14" fill-opacity=".86" stroke="#2A2E3A" stroke-width="3"/><circle cx="-232" cy="-26" r="9" fill="${VERMELHO}"/><text x="14" y="-14" font-size="30" text-anchor="middle" fill="${VERMELHO}" letter-spacing="2">${linha1}</text><text y="52" font-size="68" text-anchor="middle" fill="${BRANCO}" letter-spacing="3">${linha2}</text></g>`;
+const pill = (id, x, y, t) => `<g id="${id}" transform="translate(${x} ${y})"><rect x="-260" y="-36" width="520" height="72" rx="14" fill="#0B0D14" fill-opacity=".85" stroke="#3A3E4A" stroke-width="2"/><path d="M-226 -16 a14 14 0 1 1 28 0 q0 12 -14 30 q-14 -18 -14 -30Z" fill="${BRANCO}"/><circle cx="-212" cy="-16" r="5" fill="#0B0D14"/><text x="20" y="14" font-size="38" text-anchor="middle" fill="${BRANCO}">${t}</text></g>`;
+const etiqueta = (id, x, y, t, cor = AMBAR, corTxt = '#16120A') => `<g id="${id}" transform="translate(${x} ${y})"><rect x="${-t.length * 13 - 30}" y="-34" width="${t.length * 26 + 60}" height="68" rx="34" fill="${cor}" stroke="#000" stroke-width="4"/><text y="14" font-size="40" text-anchor="middle" fill="${corTxt}">${t}</text></g>`;
+
+// 1. abertura: o sítio no fim do dia, o Tião olhando o céu
+cena('c-abre', Si(2).sitio({ chao: 1250 }));
+// 2. ficha do Tião (estilo "O ESTRANHO" da referência)
+cena('c-ficha', `<rect width="1080" height="1920" fill="#14161C"/><rect width="1080" height="1920" fill="url(#vin)"/>
+  <g transform="translate(60 380)"><rect width="960" height="760" rx="26" fill="#E8E2D0"/><rect width="960" height="760" rx="26" fill="none" stroke="#C9C0A8" stroke-width="6"/>
+  <text x="480" y="78" font-size="62" text-anchor="middle" fill="#3A3428" letter-spacing="3">O TIÃO</text>
+  ${['SITIANTE', 'SUL DE MINAS', 'MORA SOZINHO'].map((t, i) => `<g id="f-tag${i}"><rect x="470" y="${170 + i * 140}" width="430" height="100" rx="14" fill="#D9D2BE"/><text x="685" y="${238 + i * 140}" font-size="50" text-anchor="middle" fill="${i === 2 ? '#8A2A20' : '#22201A'}">${t}</text></g>`).join('')}
+  <g id="f-regra"><rect x="470" y="590" width="430" height="110" rx="14" fill="#2A241A"/><text x="685" y="664" font-size="56" text-anchor="middle" fill="${AMBAR}">1 REGRA</text></g></g>` +
+  txt('f-t1', 1300, [['PODE ', BRANCO], ['SALVAR', AMBAR]], 120) + txt('f-t2', 1440, [['OU ', BRANCO], ['ACABAR', VERMELHO], [' COM ELE', BRANCO]], 96));
+// 3. cozinha com rádio ligado e lampião aceso (aproximada para o enquadramento grande)
+const coz = (opts) => { const S3 = Si(3); return zoom(S3.cozinha({ chao: 1300, janelaY: 0.55, ...opts }), 1.35, 560, 1300); };
+cena('c-coz', coz({ lampiao: true }));
+cena('c-radioOv', `<g id="r-ondas">${[0, 1, 2].map(i => `<path d="M${880 + i * 34} ${960 - i * 10} q30 40 0 80" stroke="${AMBAR}" stroke-width="6" fill="none" opacity="${0.8 - i * 0.2}"/>`).join('')}</g>` + etiqueta('r-chiado', 760, 760, 'CHHHH...', '#3A3E4A', BRANCO));
+cena('c-aviso', zoom(Si(3).radio(540, 1300, 1, { ligado: true }), 2.6, 540, 1180) + `<rect width="1080" height="1920" fill="#000" opacity=".35"/>` + txt('a-t', 760, [['"NÃO ', BRANCO], ['ACENDAM', AMBAR], ['..."', BRANCO]], 130));
+// 5. sítio (localização)
+cena('c-sitio', Si(5).sitio({ chao: 1300, janelaAcesa: true }) + pill('s-pill', 540, 420, 'SÍTIO · SUL DE MINAS'));
+cena('c-sitEsc', Si(15).sitio({ chao: 1300, janelaAcesa: false }));
+// 6. a mesma cozinha: cobre a janela, desliga o rádio, apaga o lampião
+// 7. vale e festa
+cena('c-vale', Si(7).vale({ festa: true }));
+cena('c-festa', Si(8).festa({ chao: 1300 }));
+cena('c-festaOv', etiqueta('fe-ze', 540, 420, 'SEU ZÉ') + etiqueta('fe-neta', 540, 520, 'ANIVERSÁRIO DA NETA', '#2A241A', AMBAR) +
+  `<g id="fe-vol" transform="translate(540 640)"><rect x="-220" y="-40" width="440" height="80" rx="16" fill="#0B0D14" fill-opacity=".85"/>${[...Array(10)].map((_, i) => `<rect x="${-190 + i * 38}" y="${14 - i * 5}" width="26" height="${12 + i * 5}" fill="${i > 7 ? VERMELHO : AMBAR}"/>`).join('')}</g>`);
+// 8. pega a lanterna (cozinha escura)
+// 9. régua de 800 metros sobre o pasto (visão do morro)
+cena('c-regua', `<g id="rg-linha"><path d="M180 1360 L640 1070" stroke="${AMBAR}" stroke-width="12" stroke-linecap="round"/><path d="M164 1330 l34 56 M624 1040 l32 56" stroke="${AMBAR}" stroke-width="12" stroke-linecap="round"/></g>` +
+  `<g id="rg-tag" transform="translate(440 1260) rotate(-32)"><rect x="-120" y="-50" width="240" height="100" rx="14" fill="${AMBAR}" stroke="#000" stroke-width="5"/><text y="34" font-size="84" text-anchor="middle" fill="#16120A">800 M</text></g>`);
+// 10. o primeiro passo (varanda escura)
+// 11. estrada com os vultos
+cena('c-estr', Si(11).estrada({}));
+cena('c-vultos', txt('v-t', 520, [['DEZENAS DE ', BRANCO], ['VULTOS', AMBAR]], 104));
+// 12. 23h30: a festa cercada, silêncio
+cena('c-silencio', `<rect width="1080" height="1920" fill="#0A0E1E" opacity=".35"/>` + txt('si-t', 560, [['SILÊNCIO ', BRANCO], ['TOTAL', AMBAR]], 112));
+// 13. uma sombra vira a cabeça
+cena('c-vira', `<rect width="1080" height="1920" fill="#000" opacity=".35"/>`);
+// 14. o morro visto de baixo e 15. o Tião com a lanterna
+cena('c-morro', Si(14).morro({}));
+cena('c-tiao', `<rect width="1080" height="1920" fill="#000" opacity=".45"/>`);
+// final escuro
+scenes.push(`<g id="fim" class="scene"><rect width="1080" height="1920" fill="#08090E"/>${Si(20).estrada({})}<rect width="1080" height="1920" fill="#000" opacity=".6"/>
+  <g id="fim-t">${txt('fim-a', 800, [['PARTE ', BRANCO], ['1', AMBAR]], 150)}${txt('fim-b', 940, [['CONTINUA...', BRANCO]], 96)}</g>
+  <g id="fim-c" transform="translate(540 1120)"><rect x="-330" y="-56" width="660" height="112" rx="56" fill="${AMBAR}" stroke="#000" stroke-width="5"/><text y="22" font-size="58" text-anchor="middle" fill="#16120A">SEGUE PRA PARTE 2 ↓</text></g></g>`);
+$('#scenes').innerHTML = scenes.join('');
+$('#topo').innerHTML = selo('selo1', 'APOCALIPSE ZUMBI · PARTE 1', 'DIA 1 · 18:58') + selo('selo2', 'APOCALIPSE ZUMBI · PARTE 1', 'DIA 1 · 19:00') + selo('selo3', 'APOCALIPSE ZUMBI · PARTE 1', 'DIA 1 · 23:30');
+
+// ===================== ELENCO (aparência fixa na série) =====================
+const TIAO = { figurino: 'tiao', seed: 60 }, SEUZE = { figurino: 'seuze', seed: 61 }, NETA = { figurino: 'neta', seed: 62 };
+const VULTO = (i) => ({ figurino: 'vulto', cor: '#17181E', corLonge: '#101116', bochecha: '#17181E', seed: 70 + i });
+const CONVIDADOS = ['#6A5A7A', '#5A7A6A', '#8A6A4A', '#4A5A8A'];
+const convidado = i => ({ figurino: { preset: 'aluno', cor: CONVIDADOS[i % 4], corPernas: ['#2E3A4A', '#4A3A2A', '#3A3A3A'][i % 3], cabelo: ['curto', 'cacheado', 'longo', 'coque'][i % 4], corCabelo: ['#2A1E16', '#5A3A1A', '#1A1A1A', '#8A8A8A'][i % 4] }, seed: 80 + i });
+const ATORES = [], ITENS = [];
+function ator(escala, janelas, opts = {}, pai = '#atores') { const g = document.createElementNS(NS, 'g'); if (pai) $(pai).appendChild(g); const b = new Boneco(g, { escala, seed: 4, ...opts }); b.grupo = g; ATORES.push({ b, g, janelas }); return b; }
+function item(svg, janelas, pai = '#atores') { const g = document.createElementNS(NS, 'g'); $(pai).appendChild(g); g.innerHTML = svg; ITENS.push({ g, janelas }); return g; }
+const J = n => [[S[n][0], S[n][1]]];
+const SiObj = Si(30);
+
+// 1. abertura: Tião na frente da casa, de perfil, olhando o céu
+{ const t = ator(KT, J('abre'), TIAO); t.base(0, S.abre[1], 'parado', { x: 260, y: PE + 40, vista: 'perfil', dir: 1 }); t.cabeca(0, S.abre[1], { baixar: -14 }); t.expressao(0, S.abre[1], 'serio'); }
+// 2. figura do Tião na ficha
+{ const t = ator(0.98, J('ficha'), TIAO); t.base(S.ficha[0], S.ficha[1], 'parado', { x: 300, y: 1090, vista: 'frente' }); t.expressao(S.ficha[0], S.ficha[1], 'serio'); t.braco('ambos', S.ficha[0], S.ficha[1], 'cruzar'); }
+// 3. cozinha: sentado na cadeira junto da mesa, ouvindo o rádio
+item(zoom(SiObj.cadeira(300, 1300 + 40, 1.0), 1.35, 560, 1300), J('radio'));
+{ const t = ator(KT, J('radio'), TIAO); t.base(S.radio[0], S.radio[1], 'sentar', { x: 290, y: 1300 - 128 * 1.35 + 30, chao: PE + 40, dir: 1 }); t.cabeca(S.radio[0], 8.2, { virar: 0.2 }); t.cabeca(8.2, S.radio[1], { virar: 0.4, baixar: 6 }); t.expressao(S.radio[0], 8.2, 'serio'); t.expressao(8.2, S.radio[1], 'preocupado'); t.braco('d', S.radio[0], S.radio[1], 'pose', { o: 50, c: 70, mao: 'relaxada' }); }
+// 5. sítio: o Tião na janela (silhueta pequena na varanda)
+{ const t = ator(0.6, J('sitio'), TIAO); t.base(S.sitio[0], S.sitio[1], 'parado', { x: 650, y: 1290, vista: 'frente' }); t.expressao(S.sitio[0], S.sitio[1], 'serio'); t.cabeca(15.6, S.sitio[1], { virar: -0.6 }); }
+// 6. cobre a janela (braços no alto segurando o cobertor), vai ao rádio, apaga o lampião
+const t6 = ator(KT, J('apaga'), TIAO);
+t6.base(S.apaga[0], 18.2, 'parado', { x: 840, y: PE + 40, vista: 'frente' }); t6.braco('ambos', S.apaga[0] + 0.1, 18.0, 'cima', { mao: 'punho' });
+t6.base(18.2, 18.9, 'andar', { de: [840, PE + 40], ate: [600, PE + 40], passo: 110 }); t6.base(18.9, S.apaga[1], 'parado', { x: 600, y: PE + 40, vista: 'perfil', dir: -1 });
+t6.braco('e', 18.9, 19.5, 'alcancar', { alvo: [520, 1060] }); t6.cabeca(19.6, S.apaga[1], { baixar: 18 }); t6.expressao(S.apaga[0], S.apaga[1], 'determinado');
+// 7b. festa: seu Zé dançando, a neta com balão, convidados
+{ const z = ator(1.25, J('festa'), SEUZE); z.base(S.festa[0], S.festa[1], 'parado', { x: 560, y: 1440, vista: 'frente' }); z.braco('ambos', S.festa[0], S.festa[1], 'cima', { mao: 'aberta' }); z.expressao(S.festa[0], S.festa[1], 'alegre'); z.cabeca(S.festa[0], S.festa[1], { inclinar: 10 });
+  const n = ator(0.85, J('festa'), NETA); n.base(S.festa[0], S.festa[1], 'pular', { x: 380, y: 1450, vista: 'frente', altura: 30 }); n.base(25.0, S.festa[1], 'parado', { x: 380, y: 1450, vista: 'frente' }); n.braco('d', S.festa[0], S.festa[1], 'cima', { mao: 'punho' }); n.expressao(S.festa[0], S.festa[1], 'alegre');
+  [[160, 0], [900, 1], [760, 2]].forEach(([x, i]) => { const c = ator(1.05, J('festa'), convidado(i)); c.base(S.festa[0], S.festa[1], 'parado', { x, y: 1420, vista: 'frente' }); c.braco(i % 2 ? 'ambos' : 'd', S.festa[0] + i * 0.3, S.festa[1], 'abanar'); c.expressao(S.festa[0], S.festa[1], 'feliz'); }); }
+// 8. pega a lanterna na prateleira e acende
+const t8 = ator(KT, J('pega'), TIAO);
+t8.base(S.pega[0], S.pega[1], 'parado', { x: 420, y: PE + 40, vista: 'perfil', dir: -1 }); t8.braco('e', S.pega[0], 28.7, 'alcancar', { alvo: [250, 860] }); t8.braco('e', 28.7, S.pega[1], 'pose', { o: 80, c: 0, mao: 'punho' }); t8.expressao(S.pega[0], S.pega[1], 'determinado');
+// 10. o primeiro passo na varanda, com a lanterna — e para
+const t10 = ator(KT, J('passo'), TIAO);
+t10.base(S.passo[0], 34.9, 'andar', { de: [300, PE + 40], ate: [430, PE + 40], passo: 110 }); t10.base(34.9, S.passo[1], 'parado', { x: 430, y: PE + 40, vista: 'perfil', dir: 1 });
+t10.braco('d', S.passo[0], S.passo[1], 'pose', { o: 70, c: 0, mao: 'punho' }); t10.expressao(S.passo[0], 34.9, 'determinado'); t10.expressao(34.9, S.passo[1], 'medo');
+// 11. os vultos atravessando a estrada devagar (indo para a direita, onde está o som), em profundidade
+const palcoE = Palco({ horizonte: 960, yRef: 1700, kRef: 1.0 });
+for (let i = 0; i < 14; i++) { const y = 1000 + (i * 53) % 640, k = palcoE.k(y), x0 = -260 + (i * 137) % 760;
+  const v = ator(k, J('vultos'), VULTO(i)); v.base(S.vultos[0], S.vultos[1], 'andar', { de: [x0, y], ate: [x0 + 900 + (i % 3) * 120, y], passo: 55 * k }); v.braco('ambos', S.vultos[0], S.vultos[1], 'estender'); v.expressao(S.vultos[0], S.vultos[1], 'zumbi'); v.cabeca(S.vultos[0], S.vultos[1], { inclinar: (i % 2 ? 1 : -1) * 12, baixar: 8 });
+  palcoE.ator(v.grupo, { y }); }
+// 12. a festa cercada (silhuetas na frente da casa)
+for (let i = 0; i < 9; i++) { const y = 1380 + (i % 3) * 40, k = 0.9 + (i % 3) * 0.1; const v = ator(k, J('silencio'), VULTO(i + 20)); v.base(S.silencio[0], S.silencio[1], 'parado', { x: 80 + i * 115, y, vista: 'perfil', dir: i < 5 ? 1 : -1 }); v.braco('ambos', S.silencio[0], S.silencio[1], 'estender'); v.expressao(S.silencio[0], S.silencio[1], 'zumbi'); }
+// 13. close de uma sombra que vira a cabeça (de perfil → de frente, olhando pra cima)
+{ const v = ator(2.1, J('vira'), VULTO(40)); v.base(S.vira[0], S.vira[1], 'parado', { x: 560, y: 1960, vista: 'frente' }); v.cabeca(S.vira[0], 47.3, { virar: -1.1, inclinar: 8 }); v.cabeca(47.4, S.vira[1], { virar: 0, baixar: -16, entrada: 0.9 }); v.expressao(S.vira[0], S.vira[1], 'zumbi'); }
+// 15. o Tião com a lanterna, a luz batendo de baixo no rosto
+const t15 = ator(1.8, J('tiao'), TIAO); t15.base(S.tiao[0], S.tiao[1], 'parado', { x: 520, y: 1900, vista: 'frente' }); t15.braco('d', S.tiao[0], S.tiao[1], 'pose', { o: 40, c: 60, mao: 'punho' }); t15.expressao(S.tiao[0], S.tiao[1], 'espanto');
+
+// objetos na mão e luzes
+$('#props').innerHTML = `<g id="p-lant8">${SiObj.lanterna(0, 0, 0.9, { acesa: false })}</g><g id="p-lant10">${SiObj.lanterna(0, 0, 0.9, { acesa: true })}</g><g id="p-lant15">${SiObj.lanterna(0, 0, 1.1, { acesa: true, ang: -60 })}</g><g id="p-cob"></g>`;
+const PROPS = [
+  { el: $('#p-lant8'), ator: t8, mao: 'e', janelas: [[28.7, S.pega[1]]], rot: 180 },
+  { el: $('#p-lant10'), ator: t10, mao: 'd', janelas: J('passo'), rot: 20 },
+  { el: $('#p-lant15'), ator: t15, mao: 'd', janelas: J('tiao'), rot: 0 },
+];
+// lampião da mesa (aceso na cena do rádio; apaga às 20,2 s na cena "apaga")
+item(zoom(SiObj.lampiao(660, 1150, 0.85, { aceso: true }), 1.35, 560, 1300), [[S.radio[0], S.radio[1]], [S.apaga[0], 20.2]], '#luzes');
+item(zoom(SiObj.lampiao(660, 1150, 0.85, { aceso: false }), 1.35, 560, 1300), [[20.2, S.apaga[1]], [S.pega[0], S.pega[1]]], '#luzes');
+const fachos = {
+  pega: item('', [[28.9, S.pega[1]]], '#luzes'), passo: item('', J('passo'), '#luzes'), tiao: item('', J('tiao'), '#luzes'),
+};
+
+// ===================== CÂMERA =====================
+const CAM = [
+  [0, 1.0, 540, 960], [2.3, 1.06, 520, 960],
+  [2.3, 1, 540, 960], [6.6, 1.03, 540, 960],
+  [6.6, 1.0, 540, 960], [9.0, 1.08, 600, 980], [10.15, 1.12, 640, 980],
+  [10.15, 1.0, 540, 960], [13.4, 1.1, 540, 900],
+  [13.4, 1.0, 540, 960], [15.8, 1.0, 540, 960], [17.0, 1.5, 650, 1080],
+  [17.0, 1.0, 600, 960], [21.0, 1.0, 560, 960],
+  [21.0, 1.0, 540, 960], [22.3, 1.0, 540, 960], [23.9, 2.6, 670, 1030],
+  [23.9, 1.0, 540, 960], [27.9, 1.05, 540, 940],
+  [27.9, 1.0, 440, 960], [30.3, 1.0, 460, 960],
+  [30.3, 1.0, 540, 960], [33.1, 1.05, 520, 1000],
+  [33.1, 1.0, 540, 960], [35.5, 1.1, 520, 1000],
+  [35.5, 1.0, 540, 960], [42.7, 1.08, 600, 1000],
+  [42.7, 1.0, 540, 960], [46.2, 1.04, 540, 960],
+  [46.2, 1.0, 540, 1100], [49.1, 1.12, 540, 980],
+  [49.1, 1.0, 540, 960], [51.2, 3.2, 648, 690],
+  [51.2, 1.0, 540, 1000], [53.4, 1.12, 540, 940],
+  [53.4, 1, 540, 960], [99, 1, 540, 960],
+];
+const sm = u => u * u * (3 - 2 * u);
+function camEm(t) {
+  let a = CAM[0], b = CAM[0];
+  for (let i = 0; i < CAM.length - 1; i++) if (t >= CAM[i][0] && t < CAM[i + 1][0]) { a = CAM[i]; b = CAM[i + 1]; break; }
+  const u = b[0] > a[0] ? sm((t - a[0]) / (b[0] - a[0])) : 0;
+  const k = a[1] + (b[1] - a[1]) * u, cx = a[2] + (b[2] - a[2]) * u, cy = a[3] + (b[3] - a[3]) * u;
+  const medo = (t > 34.9 && t < 36) || (t > 51.2 && t < FIM_FALA) ? 2.4 : 1;
+  const bx = (Math.sin(t * 1.3) * 3 + Math.sin(t * 3.1) * 1.2) * medo, by = (Math.cos(t * 1.1) * 2.5 + Math.sin(t * 5.7) * (medo > 1 ? 2 : 0.6)) * medo, rot = Math.sin(t * 0.9) * 0.3;
+  return `translate(${540 + bx} ${960 + by}) rotate(${rot.toFixed(3)}) scale(${k.toFixed(4)}) translate(${-cx} ${-cy})`;
+}
+
+// ===================== TIMELINE =====================
+const rendering = navigator.webdriver;
+const tl = gsap.timeline({ paused: true, defaults: { ease: 'power2.inOut' } });
+$$('.scene').forEach(s => gsap.set(s, { autoAlpha: 0 }));
+const show = (sel, t0, t1) => { tl.fromTo(sel, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.01, ease: 'none', immediateRender: false }, t0); if (t1 != null) tl.to(sel, { autoAlpha: 0, duration: 0.01, ease: 'none' }, t1); };
+const fade = (sel, t0, t1, d = 0.35) => { gsap.set(sel, { autoAlpha: 0 }); tl.to(sel, { autoAlpha: 1, duration: d }, t0); if (t1 != null) tl.to(sel, { autoAlpha: 0, duration: d }, t1); };
+const pop = (sel, t, d = 0.35) => { gsap.set(sel, { autoAlpha: 0, scale: 0.6, transformOrigin: '50% 50%' }); tl.fromTo(sel, { autoAlpha: 0, scale: 0.6 }, { autoAlpha: 1, scale: 1, duration: d, ease: 'back.out(2)', immediateRender: false }, t); };
+const hide = (sel, t, d = 0.25) => tl.to(sel, { autoAlpha: 0, duration: d }, t);
+// cada cenário é desenhado UMA vez e reaproveitado nos planos dele (desenhar duas vezes duplica ids e apaga a cena)
+const USO = { 'c-abre': ['abre'], 'c-ficha': ['ficha'], 'c-coz': ['radio', 'apaga', 'pega'], 'c-radioOv': ['radio'], 'c-aviso': ['aviso'], 'c-sitio': ['sitio'], 'c-sitEsc': ['passo', 'tiao'],
+  'c-vale': ['vale', 'regua'], 'c-regua': ['regua'], 'c-festa': ['festa', 'silencio'], 'c-festaOv': ['festa'], 'c-estr': ['vultos', 'vira'], 'c-vultos': ['vultos'], 'c-silencio': ['silencio'], 'c-vira': ['vira'], 'c-morro': ['morro'], 'c-tiao': ['tiao'] };
+Object.entries(USO).forEach(([id, planos]) => planos.forEach(k => show('#' + id, S[k][0], S[k][1])));
+// abertura em fade do preto; o "escuro" fecha nos cortes dramáticos
+gsap.set('#escuro', { autoAlpha: 1 }); tl.to('#escuro', { autoAlpha: 0, duration: 0.8 }, 0.05);
+tl.to('#escuro', { autoAlpha: 0.72, duration: 0.25 }, 20.25).to('#escuro', { autoAlpha: 0, duration: 0.01 }, 21.0);   // apaga o lampião: escurece tudo
+tl.to('#escuro', { autoAlpha: 0.55, duration: 0.01 }, 27.9).to('#escuro', { autoAlpha: 0, duration: 0.01 }, 30.3);       // cozinha às escuras
+tl.to('#escuro', { autoAlpha: 1, duration: 0.6 }, FIM_FALA - 0.2).to('#escuro', { autoAlpha: 0, duration: 0.6 }, FIM_FALA + 0.4);
+// selos de dia e hora
+fade('#selo1', 0.4, 2.2); fade('#selo2', 6.75, 13.2); fade('#selo3', 42.8, 46.1);
+// ficha
+['#f-tag0', '#f-tag1', '#f-tag2'].forEach((s, i) => pop(s, 2.5 + i * 0.35)); pop('#f-regra', 3.05, 0.4); pop('#f-t1', 3.9, 0.35); pop('#f-t2', 5.25, 0.35);
+// rádio
+fade('#r-ondas', 6.8, 8.15, 0.2); pop('#r-chiado', 8.2); pop('#a-t', 12.15, 0.4);
+pop('#s-pill', 14.1);
+pop('#fe-ze', 24.15); pop('#fe-neta', 25.0); pop('#fe-vol', 26.7);
+gsap.set('#rg-linha', { autoAlpha: 0 }); tl.fromTo('#rg-linha', { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.5, immediateRender: false }, 30.5); pop('#rg-tag', 30.6, 0.4);
+pop('#v-t', 38.4, 0.4); pop('#si-t', 44.95, 0.4);
+show('#fim', FIM_FALA); pop('#fim-t', FIM_FALA + 0.5, 0.6); pop('#fim-c', FIM_FALA + 1.2);
+tl.to('#fim-c', { scale: 1.05, duration: 0.45, repeat: 4, yoyo: true, ease: 'sine.inOut' }, FIM_FALA + 1.8);
+tl.set({}, {}, END);
+
+// ===================== LEGENDA (Anton, palavra falada em âmbar) =====================
+const leg = Legenda($('#legenda'), window.PALAVRAS || [], { y: PISO_LEG, fs: 78, fonte: "'Anton', sans-serif", destaque: AMBAR, cor: BRANCO, contorno: '#000', enfase: ['TIÃO', 'REGRA', 'ACENDAM', 'LAMPIÃO', 'BRILHA', 'LANTERNA', 'VULTOS', 'SILÊNCIO', 'MORRO'] }).esconder([[FIM_FALA, 999]]);
+
+// ===================== RENDER =====================
+const dentro = (t, janelas) => janelas.some(([a, b]) => t >= a && t < b);
+function desenhar(t) {
+  $('#cam').setAttribute('transform', camEm(t));
+  for (const A of ATORES) { const o = dentro(t, A.janelas); A.g.style.display = o ? '' : 'none'; if (o) A.b.desenhar(t); }
+  for (const I of ITENS) I.g.style.display = dentro(t, I.janelas) ? '' : 'none';
+  palcoE.seek(t);
+  // cobertor na janela da cena "apaga" aparece quando ele cobre
+  $$('#c-coz .cobertor').forEach(c => c.style.display = t >= 17.7 ? '' : 'none');
+  // rádio: desliga às 18,5 s (o mostrador apaga)
+  $$('#c-coz .estatica').forEach(e => e.style.display = t < 19.4 ? '' : 'none');
+  $$('#c-coz #radioMesa').forEach(r => r.setAttribute('opacity', t >= 19.4 ? '0.55' : '1'));
+  for (const P of PROPS) { if (!dentro(t, P.janelas)) { P.el.style.display = 'none'; continue; } const m = P.ator.mao(P.mao); P.el.style.display = ''; P.el.setAttribute('transform', `translate(${m[0].toFixed(1)} ${m[1].toFixed(1)}) rotate(${P.rot})`); }
+  // fachos de luz da lanterna saem da mão
+  const facho = (g, ator, ang, comp, op) => { const m = ator.mao('d'); g.innerHTML = SiObj.facho(m[0], m[1], ang, comp, 20, op); };
+  if (t >= 28.9 && t < S.pega[1]) { const m = t8.mao('e'); fachos.pega.innerHTML = SiObj.facho(m[0] - 60, m[1], 200, 900, 20, 0.5); }
+  if (dentro(t, J('passo'))) facho(fachos.passo, t10, 18, 1100, 0.45);
+  if (dentro(t, J('tiao'))) facho(fachos.tiao, t15, -95, 900, 0.55);
+  // vida: chama tremendo, notas da música, neblina passando, luzinhas, estática do rádio, ponteiro, lanterna no morro pulsando
+  $$('.chama').forEach(c => c.setAttribute('transform', `translate(${c.dataset.cx} ${c.dataset.cy}) scale(${(1 + Math.sin(t * 17) * 0.06).toFixed(3)} ${(1 + Math.sin(t * 23) * 0.12).toFixed(3)}) translate(${-c.dataset.cx} ${-c.dataset.cy})`));
+  $$('.notas').forEach(n => { const tocando = t < 44.41; n.style.display = tocando ? '' : 'none'; n.setAttribute('transform', `translate(${(Math.sin(t * 2) * 8).toFixed(1)} ${(-((t * 30) % 40)).toFixed(1)})`); });
+  $$('.neblina').forEach((n, i) => n.setAttribute('transform', `translate(${((t * 12 + i * 70) % 200 - 100).toFixed(1)} 0)`));
+  $$('.vagalume').forEach(v => v.setAttribute('opacity', (0.6 + 0.4 * Math.sin(t * 3 + +v.dataset.fase)).toFixed(2)));
+  $$('.estatica').forEach(e => e.setAttribute('opacity', t > 8.15 ? (Math.abs(Math.sin(t * 91.7) * Math.cos(t * 37.3)) * 0.9).toFixed(2) : '0.5'));
+  $$('.ponteiro').forEach(p => p.setAttribute('transform', `rotate(${(t * 6).toFixed(1)} ${p.dataset.cx} ${p.dataset.cy})`));
+  $$('.luzLanterna').forEach(l => l.setAttribute('opacity', (0.75 + 0.25 * Math.sin(t * 9)).toFixed(2)));
+}
+window.__timeline = tl;
+window.__duration = tl.duration();
+window.__seek = t => { tl.seek(t, false); desenhar(t); leg.seek(t); };
+document.fonts.ready.then(() => Palco.caberTextos(document));
+window.__seek(0);
+if (!rendering) { tl.eventCallback('onUpdate', () => { const t = tl.time(); desenhar(t); leg.seek(t); }); document.addEventListener('click', () => tl.paused() ? tl.play() : tl.pause()); }
+</script>
+</body>
+</html>
