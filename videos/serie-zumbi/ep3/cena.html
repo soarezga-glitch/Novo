@@ -93,7 +93,7 @@ cena('c-corr', CORR.corredor({ chao: 1460, mochila: false }));
 cena('c-cafe', zoom(Si(52).cozinha({ chao: 1300, janelaY: 0.55, lampiao: false, amanhecer: true, radio: true }), 1.35, 560, 1300) +
   `<rect width="1080" height="1920" fill="#8A6A3A" opacity=".16" style="mix-blend-mode:multiply"/>`);
 // a janela do quarto por fora: o braço machucado
-cena('c-braco', Si(53).paredeJanela({ chao: 1440, quarto: true }) + `<g id="br-braco">${CORR.bracoFerido(470, 880, 1.25)}</g>` + etiqueta('br-tag', 760, 1260, 'SÓ UM CORTE?', VERMELHO, BRANCO, -4));
+cena('c-braco', Si(53).paredeJanela({ chao: 1440, quarto: true }) + etiqueta('br-tag', 760, 1260, 'SÓ UM CORTE?', VERMELHO, BRANCO, -4));
 // regra nº 3
 cena('c-regra', `<rect width="1080" height="1920" fill="#14161C"/><rect width="1080" height="1920" fill="url(#vin)"/>
   <g id="rg-card" transform="translate(80 470)"><rect width="920" height="800" rx="26" fill="#E8E2D0"/><rect width="920" height="800" rx="26" fill="none" stroke="#C9C0A8" stroke-width="6"/>
@@ -176,9 +176,16 @@ const gotas = item([0, 1, 2, 3].map(i => `<path class="gota" data-i="${i}" d="M0
 const zR = ator(1.45, J('rouco'), SEUZE_VIRANDO);
 zR.base(S.rouco[0], S.rouco[1], 'parado', { x: 420, y: 1480, vista: 'perfil', dir: 1 }); zR.expressao(S.rouco[0], S.rouco[1], 'zumbi'); zR.braco('ambos', S.rouco[0], S.rouco[1], 'estender');
 zR.cabeca(S.rouco[0], S.rouco[1], { inclinar: 18, baixar: 12 });
+// o seu Zé dentro do quarto, na janela, pálido, pondo o braço machucado para fora
+$('#stage defs').insertAdjacentHTML('beforeend', '<clipPath id="clipJanela"><rect x="500" y="560" width="400" height="420"/></clipPath>');
+const zW = ator(1.15, J('braco'), SEUZE_PALIDO); zW.grupo.setAttribute('clip-path', 'url(#clipJanela)');
+zW.base(S.braco[0], S.braco[1], 'parado', { x: 700, y: 1300, vista: 'frente' }); zW.expressao(S.braco[0], S.braco[1], 'preocupado'); zW.cabeca(S.braco[0], S.braco[1], { inclinar: -8, virar: -0.3 });
+zW.braco('e', S.braco[0], S.braco[1], 'alcancar', { alvo: [560, 900] });
+const bracoZe = item(`<g id="br-braco"><g transform="translate(672 822) scale(-1.15 1.15)">${CORR.bracoFerido(0, 0, 1)}</g></g>`, J('braco'), '#props');
 // o Tião passando a porteira com a mochila
-const tS = ator(1.2, J('sai'), TIAO);
-tS.base(S.sai[0], S.sai[1], 'andar', { de: [760, 1520], ate: [240, 1300], passo: 110, chao: x => 1520 - (760 - x) * 0.42 });
+// sai andando pelo vão da porteira aberta (entre os mourões x 360–640), do lado de dentro para fora, vindo para a frente
+const tS = ator(1.1, J('sai'), TIAO);
+tS.base(S.sai[0], S.sai[1], 'andar', { de: [585, 1330], ate: [390, 1640], passo: 95, chao: x => 1330 + (585 - x) * (310 / 195) });
 tS.expressao(S.sai[0], S.sai[1], 'determinado');
 const mochilaS = item(CORR.mochila(0, 0, 0.9), J('sai'), '#props');
 
@@ -234,7 +241,7 @@ tl.to('#g-dia', { scale: 1.06, duration: 1.6, ease: 'none' }, 0.45);
 fade('#selo1', 3.0, 7.0);
 pop('#co-t1', 5.6, 0.35); pop('#co-t2', 6.6, 0.4); tl.to(['#co-t1', '#co-t2'], { autoAlpha: 0, duration: 0.15 }, S.corr[1] - 0.1);
 pop('#ca-antes', 8.6, 0.3); tl.to('#ca-antes', { autoAlpha: 0, duration: 0.15 }, S.cafe[1] - 0.1); pop('#br-tag', 20.2, 0.35);
-gsap.set('#br-braco', { x: -260 }); tl.to('#br-braco', { x: 0, duration: 0.7, ease: 'power2.out' }, 19.4);
+gsap.set('#br-braco', { x: 160, autoAlpha: 0 }); tl.to('#br-braco', { x: 0, autoAlpha: 1, duration: 0.6, ease: 'power2.out' }, 19.45);
 pop('#rg-card', 22.0, 0.35); pop('#rg-l1', 23.6, 0.3); pop('#rg-l2', 24.9, 0.3); pop('#rg-rel', 25.3, 0.3);
 fade('#dd-tag', 31.3, 33.3, 0.25);
 pop('#qu-t1', 39.4, 0.35); pop('#qu-t2', 41.0, 0.4);
