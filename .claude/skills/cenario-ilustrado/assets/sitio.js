@@ -64,13 +64,78 @@
       for (let i = 1; i < n; i++) { const u = i / n, px = lerp(x0, x1, u), py = lerp(y0, y1, u) + flex * 4 * u * (1 - u); s += `<path d="M${f(px - 12)} ${f(py)} H${f(px + 12)} L${f(px)} ${f(py + 26)}Z" fill="${['#E84A5A', '#F2C23A', '#4AA0E8', '#5AC86A', '#E87A2A'][i % 5]}" opacity=".95"/>`; } return s; };
     const lampadas = (x0, y0, x1, y1, n = 12, flex = 30) => { let s = `<path d="M${f(x0)} ${f(y0)} Q${f((x0 + x1) / 2)} ${f((y0 + y1) / 2 + flex)} ${f(x1)} ${f(y1)}" stroke="#2A2A2A" stroke-width="2" fill="none"/>`;
       for (let i = 1; i < n; i++) { const u = i / n, px = lerp(x0, x1, u), py = lerp(y0, y1, u) + flex * 4 * u * (1 - u), c = ['#FFE08A', '#FF9AB0', '#9AE0FF'][i % 3]; s += `<g class="vagalume" data-fase="${(i * 0.6).toFixed(1)}"><circle cx="${f(px)}" cy="${f(py + 8)}" r="18" fill="${c}" opacity=".35"/><circle cx="${f(px)}" cy="${f(py + 8)}" r="6" fill="${c}"/></g>`; } return s; };
-    const casaRoca = (x, base, w, h, { acesa = false, festa = false, cor = '#6A5A44', telha = '#5A2E22' } = {}) => {   // casa de roça: alvenaria caiada, telhado de telha, varanda
-      let s = `<rect x="${f(x)}" y="${f(base - h)}" width="${f(w)}" height="${f(h)}" fill="${cor}" stroke="${L}" stroke-width="5"/>`;
-      s += `<path d="M${f(x - 30)} ${f(base - h)} L${f(x + w / 2)} ${f(base - h - h * 0.45)} L${f(x + w + 30)} ${f(base - h)}Z" fill="${telha}" stroke="${L}" stroke-width="5"/>`;
-      for (let k = 0; k < 6; k++) s += `<path d="M${f(x - 30 + k * (w + 60) / 6)} ${f(base - h + 2)} L${f(x + w / 2)} ${f(base - h - h * 0.45 + 4)}" stroke="${tom(telha, -0.3)}" stroke-width="2" opacity=".6"/>`;
-      const jl = acesa ? (festa ? '#FFE6A0' : '#FFC870') : '#141820';
-      [[0.12, 0.3], [0.62, 0.3]].forEach(([u, v]) => { s += `<rect x="${f(x + w * u)}" y="${f(base - h * (1 - v))}" width="${f(w * 0.24)}" height="${f(h * 0.32)}" fill="${jl}" stroke="${L}" stroke-width="4"/><path d="M${f(x + w * u + w * 0.12)} ${f(base - h * (1 - v))} v${f(h * 0.32)}" stroke="${L}" stroke-width="3"/>`; if (acesa) s += brilho(x + w * (u + 0.12), base - h * (1 - v) + h * 0.16, w * 0.5, jl, 0.5); });
-      s += `<rect x="${f(x + w * 0.42)}" y="${f(base - h * 0.62)}" width="${f(w * 0.16)}" height="${f(h * 0.62)}" fill="${acesa ? '#3A2A1A' : '#1A1410'}" stroke="${L}" stroke-width="4"/>`;
+    // casa de roça em CARTOON CAPRICHADO (volume, textura, luz): fachada + parede lateral em fuga, telhado de telha colonial
+    // com espessura e beiral, reboco caiado gasto com tijolo aparecendo, barra pintada, janelas de madeira com folhas abertas,
+    // porta de tábua, degrau, varanda com esteios, chaminé de tijolo; à noite: luar frio na borda do telhado e luz quente
+    // vazando das janelas para o chão. Detalhe diminui sozinho quando a casa é pequena (longe).
+    const casaRoca = (x, base, w, h, { acesa = false, festa = false, cor = '#7A6E5A', telha = '#5A2E22', barra = '#3E5A6E', varanda = false, chamine = true, lado = 0.22, fumaca = acesa } = {}) => {
+      const k = w / 500, det = w >= 220, sw = Math.max(1.5, 4 * k);
+      const lw = w * lado, topo = base - h, cume = topo - h * 0.42;
+      const jl = acesa ? (festa ? '#FFE6A0' : '#FFC870') : '#10141C';
+      let s = '';
+      // sombra de contato no chão (AO)
+      s += `<ellipse cx="${f(x + (w + lw) / 2)}" cy="${f(base + 6 * k)}" rx="${f((w + lw) * 0.62)}" ry="${f(26 * k)}" fill="#000" opacity=".45"/>`;
+      // parede lateral em perspectiva (mais escura), com empena
+      const sx0 = x + w, sx1 = x + w + lw, rec = h * 0.12;
+      s += `<path d="M${f(sx0)} ${f(topo)} L${f(sx1)} ${f(topo - rec)} L${f(sx1)} ${f(base - rec * 0.6)} L${f(sx0)} ${f(base)}Z" fill="${tom(cor, -0.42)}" stroke="${L}" stroke-width="${f(sw)}"/>`;
+      if (det) for (let i = 0; i < 4; i++) s += `<path d="M${f(sx0 + lw * (i + 1) / 5)} ${f(topo - rec * (i + 1) / 5 + 10 * k)} V${f(base - rec * 0.6 * (i + 1) / 5 - 6 * k)}" stroke="${tom(cor, -0.52)}" stroke-width="${f(2 * k)}" opacity=".5"/>`;
+      // fachada com reboco caiado: manchas, tijolo aparecendo, rachadura, sujeira subindo, barra pintada
+      s += `<rect x="${f(x)}" y="${f(topo)}" width="${f(w)}" height="${f(h)}" fill="${cor}" stroke="${L}" stroke-width="${f(sw)}"/>`;
+      s += `<rect x="${f(x)}" y="${f(topo)}" width="${f(w * 0.08)}" height="${f(h)}" fill="${tom(cor, 0.12)}" opacity=".6"/>`;   // canto que pega luz
+      if (det) {
+        for (let i = 0; i < 8; i++) s += `<ellipse cx="${f(x + rnd(0.05, 0.95) * w)}" cy="${f(topo + rnd(0.1, 0.8) * h)}" rx="${f(rnd(30, 70) * k)}" ry="${f(rnd(14, 34) * k)}" fill="${tom(cor, rnd(-0.14, 0.06))}" opacity=".55"/>`;
+        [[0.08, 0.22], [0.78, 0.6]].forEach(([u, v]) => { const bx = x + w * u, by = topo + h * v; s += `<path d="M${f(bx)} ${f(by)} q${f(40 * k)} ${f(-26 * k)} ${f(90 * k)} ${f(-6 * k)} q${f(20 * k)} ${f(34 * k)} ${f(-14 * k)} ${f(56 * k)} q${f(-60 * k)} ${f(10 * k)} ${f(-76 * k)} ${f(-50 * k)}Z" fill="#9A5A3E"/>`; for (let r = 0; r < 3; r++) for (let q = 0; q < 3; q++) s += `<rect x="${f(bx + (8 + q * 26 + (r % 2) * 12) * k)}" y="${f(by - 10 * k + r * 17 * k)}" width="${f(23 * k)}" height="${f(14 * k)}" fill="#8A4A32" stroke="#5A2E1E" stroke-width="${f(1.5 * k)}"/>`; });
+        s += `<path d="M${f(x + w * 0.3)} ${f(topo + 8 * k)} l${f(-10 * k)} ${f(40 * k)} l${f(14 * k)} ${f(30 * k)} l${f(-8 * k)} ${f(46 * k)}" stroke="${tom(cor, -0.4)}" stroke-width="${f(2 * k)}" fill="none"/>`;
+      }
+      s += `<rect x="${f(x)}" y="${f(base - h * 0.18)}" width="${f(w)}" height="${f(h * 0.18)}" fill="${barra}" stroke="${L}" stroke-width="${f(sw * 0.7)}"/><rect x="${f(x)}" y="${f(base - h * 0.18)}" width="${f(w)}" height="${f(4 * k)}" fill="${tom(barra, 0.3)}"/>`;
+      s += `<rect x="${f(sx0)}" y="${f(base - h * 0.18)}" width="${f(lw)}" height="${f(h * 0.18)}" fill="${tom(barra, -0.4)}" transform="skewY(${f(-Math.atan(rec * 0.6 / lw) * 57.3)})" transform-origin="${f(sx0)} ${f(base)}"/>`;
+      s += `<rect x="${f(x)}" y="${f(base - 30 * k)}" width="${f(w)}" height="${f(30 * k)}" fill="#2A2018" opacity=".35"/>`;   // sujeira subindo do chão
+      // sombra do beiral na parede
+      s += `<rect x="${f(x)}" y="${f(topo)}" width="${f(w)}" height="${f(h * 0.1)}" fill="#000" opacity=".35"/>`;
+      // janelas de madeira com folhas abertas, moldura funda, peitoril, cortina, luz vazando
+      const jan = (u) => { const jx = x + w * u, jy = topo + h * 0.28, jw = w * 0.2, jh = h * 0.36;
+        let j = `<rect x="${f(jx - 6 * k)}" y="${f(jy - 6 * k)}" width="${f(jw + 12 * k)}" height="${f(jh + 12 * k)}" fill="#3A2A1C" stroke="${L}" stroke-width="${f(sw * 0.8)}"/><rect x="${f(jx)}" y="${f(jy)}" width="${f(jw)}" height="${f(jh)}" fill="${jl}"/>`;
+        if (det) j += `<rect x="${f(jx)}" y="${f(jy)}" width="${f(jw)}" height="${f(jh * 0.12)}" fill="#000" opacity=".3"/>` + (acesa ? `<path d="M${f(jx)} ${f(jy)} q${f(jw * 0.18)} ${f(jh * 0.5)} ${f(jw * 0.06)} ${f(jh)} H${f(jx)}Z" fill="${festa ? '#E84A5A' : '#C9A26A'}" opacity=".85"/><path d="M${f(jx + jw)} ${f(jy)} q${f(-jw * 0.18)} ${f(jh * 0.5)} ${f(-jw * 0.06)} ${f(jh)} H${f(jx + jw)}Z" fill="${festa ? '#E84A5A' : '#C9A26A'}" opacity=".85"/>` : '');
+        j += `<path d="M${f(jx + jw / 2)} ${f(jy)} V${f(jy + jh)}" stroke="#3A2A1C" stroke-width="${f(3 * k)}"/>`;
+        // folhas de madeira abertas para fora (em perspectiva), com tábuas
+        [[-1, jx], [1, jx + jw]].forEach(([sd, ex]) => { const fw = jw * 0.48; j += `<path d="M${f(ex)} ${f(jy)} L${f(ex + sd * fw)} ${f(jy - 8 * k)} L${f(ex + sd * fw)} ${f(jy + jh + 8 * k)} L${f(ex)} ${f(jy + jh)}Z" fill="#4A6A5A" stroke="${L}" stroke-width="${f(sw * 0.7)}"/>`; if (det) for (let q = 1; q < 3; q++) j += `<path d="M${f(ex + sd * fw * q / 3)} ${f(jy - 4 * k)} V${f(jy + jh + 4 * k)}" stroke="#3A5A4A" stroke-width="${f(2 * k)}"/>`; });
+        j += `<rect x="${f(jx - 12 * k)}" y="${f(jy + jh + 6 * k)}" width="${f(jw + 24 * k)}" height="${f(10 * k)}" fill="#CFC6B0" stroke="${L}" stroke-width="${f(sw * 0.6)}"/><rect x="${f(jx - 8 * k)}" y="${f(jy + jh + 16 * k)}" width="${f(jw + 16 * k)}" height="${f(8 * k)}" fill="#000" opacity=".3"/>`;
+        if (acesa) j += brilho(jx + jw / 2, jy + jh / 2, jw * 1.6, jl, 0.45) + `<path d="M${f(jx)} ${f(jy + jh)} L${f(jx + jw)} ${f(jy + jh)} L${f(jx + jw * 1.6)} ${f(base + 40 * k)} L${f(jx - jw * 0.6)} ${f(base + 40 * k)}Z" fill="${jl}" opacity=".12" style="mix-blend-mode:screen"/>`;
+        return j; };
+      s += jan(0.1) + jan(0.7);
+      // porta de tábuas com moldura, maçaneta e degrau
+      const px = x + w * 0.41, pw = w * 0.18, ph = h * 0.66;
+      s += `<rect x="${f(px - 6 * k)}" y="${f(base - ph - 6 * k)}" width="${f(pw + 12 * k)}" height="${f(ph + 6 * k)}" fill="#2A1E14" stroke="${L}" stroke-width="${f(sw * 0.8)}"/><rect x="${f(px)}" y="${f(base - ph)}" width="${f(pw)}" height="${f(ph)}" fill="${acesa ? '#5A3E26' : '#2A1E16'}"/>`;
+      if (det) { for (let q = 1; q < 4; q++) s += `<path d="M${f(px + pw * q / 4)} ${f(base - ph)} V${f(base)}" stroke="#3A2A1A" stroke-width="${f(2.5 * k)}"/>`; s += `<path d="M${f(px)} ${f(base - ph * 0.7)} L${f(px + pw)} ${f(base - ph * 0.3)}" stroke="#3A2A1A" stroke-width="${f(5 * k)}"/><circle cx="${f(px + pw * 0.82)}" cy="${f(base - ph * 0.48)}" r="${f(5 * k)}" fill="#C9A24A"/>`; }
+      s += `<rect x="${f(px - 18 * k)}" y="${f(base)}" width="${f(pw + 36 * k)}" height="${f(16 * k)}" fill="#8A8478" stroke="${L}" stroke-width="${f(sw * 0.6)}"/>`;
+      // telhado: empena lateral, espessura do beiral, fileiras de telha capa-canal, cumeeira, luar frio na borda
+      const ov = 30 * k, esp = 14 * k;
+      s += `<path d="M${f(sx0 + ov * 0.2)} ${f(topo - 2)} L${f(x + w / 2)} ${f(cume)} L${f(x + w / 2 + lw)} ${f(cume - rec)} L${f(sx1 + ov)} ${f(topo - rec)}Z" fill="${tom(telha, -0.35)}" stroke="${L}" stroke-width="${f(sw)}"/>`;
+      s += `<path d="M${f(x - ov)} ${f(topo + esp)} L${f(x + w / 2)} ${f(cume + esp)} L${f(x + w + ov)} ${f(topo + esp)} L${f(x + w + ov)} ${f(topo)} L${f(x + w / 2)} ${f(cume)} L${f(x - ov)} ${f(topo)}Z" fill="${tom(telha, -0.5)}" stroke="${L}" stroke-width="${f(sw)}"/>`;
+      s += `<path d="M${f(x - ov)} ${f(topo)} L${f(x + w / 2)} ${f(cume)} L${f(x + w + ov)} ${f(topo)}Z" fill="${telha}" stroke="${L}" stroke-width="${f(sw)}"/>`;
+      const fil = det ? 7 : 4;
+      for (let r = 1; r < fil; r++) { const v = r / fil; s += `<path d="M${f(lerp(x + w / 2, x - ov, v))} ${f(lerp(cume, topo, v))} L${f(lerp(x + w / 2, x + w + ov, v))} ${f(lerp(cume, topo, v))}" stroke="${tom(telha, -0.3)}" stroke-width="${f(2.5 * k)}"/>`;
+        if (det) { const yy = lerp(cume, topo, v), xa = lerp(x + w / 2, x - ov, v), xb = lerp(x + w / 2, x + w + ov, v), tw = 26 * k, rh = (topo - cume) / fil;
+          // bocas das telhas (meia-lua escura) + canal entre telhas + brilho no lombo de cada uma
+          for (let xx = xa + 4 * k; xx + tw < xb - 2 * k; xx += tw) {
+            s += `<path d="M${f(xx)} ${f(yy)} a${f(tw / 2)} ${f(tw * 0.32)} 0 0 1 ${f(tw)} 0Z" fill="${tom(telha, -0.45)}" opacity=".75"/>`;
+            s += `<path d="M${f(xx + tw * 0.3)} ${f(yy - rh * 0.85)} V${f(yy - tw * 0.3)}" stroke="${tom(telha, 0.25)}" stroke-width="${f(3 * k)}" stroke-linecap="round" opacity=".45"/>`;
+            s += `<path d="M${f(xx + tw)} ${f(yy - rh * 0.9)} V${f(yy)}" stroke="${tom(telha, -0.35)}" stroke-width="${f(1.6 * k)}" opacity=".6"/>`;
+          } } }
+      s += `<path d="M${f(x - ov)} ${f(topo)} L${f(x + w / 2)} ${f(cume)} L${f(x + w + ov)} ${f(topo)}" stroke="#AFC0E0" stroke-width="${f(3 * k)}" fill="none" opacity=".45"/>`;   // luar na borda
+      // chaminé de tijolo com fumaça
+      if (chamine) { const cx = x + w * 0.72, cy = lerp(cume, topo, 0.45) + 6 * k; s += `<rect x="${f(cx)}" y="${f(cy - 110 * k)}" width="${f(42 * k)}" height="${f(110 * k)}" fill="#8A4A32" stroke="${L}" stroke-width="${f(sw)}"/><rect x="${f(cx - 6 * k)}" y="${f(cy - 120 * k)}" width="${f(54 * k)}" height="${f(14 * k)}" fill="#6A3A26" stroke="${L}" stroke-width="${f(sw * 0.8)}"/>`;
+        if (det) for (let r = 0; r < 5; r++) s += `<path d="M${f(cx)} ${f(cy - 100 * k + r * 20 * k)} h${f(42 * k)}" stroke="#5A2E1E" stroke-width="${f(1.5 * k)}"/>`;
+        if (fumaca) s += `<g class="fumaca">${[0, 1, 2].map(i => `<circle cx="${f(cx + 20 * k + i * 16 * k)}" cy="${f(cy - 150 * k - i * 46 * k)}" r="${f((16 + i * 10) * k)}" fill="#8A8A90" opacity="${(0.28 - i * 0.07).toFixed(2)}"/>`).join('')}</g>`; }
+      // varanda: telhadinho, esteios em 3 tons, cadeira, samambaia, filtro de barro
+      if (varanda) { const vy = topo + h * 0.3, vb = base;
+        s += `<path d="M${f(x - 50 * k)} ${f(vy)} H${f(x + w + 50 * k)} L${f(x + w + 80 * k)} ${f(vy + 50 * k)} H${f(x - 80 * k)}Z" fill="${tom(telha, -0.15)}" stroke="${L}" stroke-width="${f(sw)}"/><path d="M${f(x - 80 * k)} ${f(vy + 50 * k)} H${f(x + w + 80 * k)}" stroke="#2A1E14" stroke-width="${f(8 * k)}"/>`;
+        [0, 0.34, 0.66, 1].forEach(u => { const ex = x - 60 * k + u * (w + 120 * k); s += `<rect x="${f(ex)}" y="${f(vy + 50 * k)}" width="${f(18 * k)}" height="${f(vb - vy - 50 * k)}" fill="#5A3E26" stroke="${L}" stroke-width="${f(sw * 0.7)}"/><rect x="${f(ex + 2 * k)}" y="${f(vy + 52 * k)}" width="${f(5 * k)}" height="${f(vb - vy - 54 * k)}" fill="#7A5A3A"/>`; });
+        if (det) { s += `<g transform="translate(${f(x + w * 0.85)} ${f(vb)}) scale(${f(k)})"><rect x="-26" y="-60" width="52" height="60" rx="8" fill="#9A5A3A" stroke="${L}" stroke-width="3"/><ellipse cx="0" cy="-70" rx="22" ry="14" fill="#B86A42" stroke="${L}" stroke-width="3"/><circle cx="0" cy="-90" r="10" fill="#9A5A3A" stroke="${L}" stroke-width="3"/></g>`;
+          s += `<g transform="translate(${f(x + w * 0.05)} ${f(vy + 50 * k)}) scale(${f(k)})"><path d="M0 0 v24" stroke="#2A2A2A" stroke-width="2"/><path d="M-20 24 h40 l-6 30 h-28Z" fill="#7A4A2A" stroke="${L}" stroke-width="3"/>${[-40, -20, 0, 20, 40].map(a => `<path d="M0 30 q${a} 20 ${a * 1.4} 70" stroke="#3E6A3A" stroke-width="7" fill="none" stroke-linecap="round"/>`).join('')}</g>`;
+          s += `<g transform="translate(${f(x + w * 0.24)} ${f(vb)}) scale(${f(k * 0.9)})"><path d="M-40 0 V-150 M30 0 V-80 M-40 -80 H30" stroke="#5A3E26" stroke-width="8"/><rect x="-44" y="-86" width="78" height="12" fill="#C9A86A" stroke="${L}" stroke-width="3"/></g>`; } }
+      // mato e pedras no pé da casa
+      if (det) for (let i = 0; i < 10; i++) { const gx = x + rnd(-0.1, 1.1) * w, gy = base + rnd(2, 16) * k; s += `<path d="M${f(gx)} ${f(gy)} l${f(-6 * k)} ${f(-18 * k)} M${f(gx)} ${f(gy)} l${f(2 * k)} ${f(-22 * k)} M${f(gx)} ${f(gy)} l${f(9 * k)} ${f(-15 * k)}" stroke="#2E3E24" stroke-width="${f(3 * k)}"/>`; }
       return s; };
 
     // ================= CENAS =================
@@ -129,10 +194,7 @@
       for (let i = 0; i < 40; i++) { const gx = rnd(x, x + w), gy = rnd(chao, y + h); s += `<path d="M${f(gx)} ${f(gy)} l-6 -${f(10 + (gy - chao) / 40)} M${f(gx)} ${f(gy)} l3 -${f(12 + (gy - chao) / 30)} M${f(gx)} ${f(gy)} l8 -${f(9 + (gy - chao) / 40)}" stroke="#2E3E28" stroke-width="3"/>`; }
       // casa do Tião com varanda (pilares de madeira), telhado de telha, chaminé
       const cb = chao - 10, cw = 520, ch = 300, cx0 = casaX - cw / 2;
-      s += `<ellipse cx="${f(casaX)}" cy="${f(cb + 10)}" rx="${cw * 0.6}" ry="24" fill="#000" opacity=".4"/>` + casaRoca(cx0, cb, cw, ch, { acesa: janelaAcesa, cor: '#5A5244', telha: '#4A2A22' });
-      s += `<rect x="${f(cx0 + cw - 90)}" y="${f(cb - ch - 170)}" width="40" height="110" fill="#3A2A22" stroke="${L}" stroke-width="4"/>`;
-      s += `<path d="M${f(cx0 - 40)} ${f(cb - ch * 0.55)} H${f(cx0 + cw + 40)} L${f(cx0 + cw + 70)} ${f(cb - ch * 0.42)} H${f(cx0 - 70)}Z" fill="#3A2A1E" stroke="${L}" stroke-width="4"/>` + [0, 0.33, 0.66, 1].map(u => `<rect x="${f(cx0 - 50 + u * (cw + 100))}" y="${f(cb - ch * 0.42)}" width="16" height="${f(ch * 0.42)}" fill="#3A2A1E" stroke="${L}" stroke-width="3"/>`).join('');
-      s += `<rect x="${f(cx0 - 60)}" y="${f(cb)}" width="${cw + 120}" height="16" fill="#3A3430" stroke="${L}" stroke-width="3"/>`;
+      s += `<ellipse cx="${f(casaX)}" cy="${f(cb + 10)}" rx="${cw * 0.6}" ry="24" fill="#000" opacity=".4"/>` + casaRoca(cx0, cb, cw, ch, { acesa: janelaAcesa, cor: '#8A7E66', telha: '#6A3424', varanda: true });
       // cerca de madeira e porteira à esquerda, galinheiro à direita
       for (let k = 0; k < 8; k++) { const px = x + 20 + k * 70; s += `<rect x="${f(px)}" y="${f(chao + 20 - 120)}" width="14" height="140" fill="#2A2018" stroke="${L}" stroke-width="3"/>`; }
       s += `<path d="M${x} ${f(chao - 60)} H${f(x + 520)} M${x} ${f(chao - 20)} H${f(x + 520)}" stroke="#3A2E22" stroke-width="10"/>`;
@@ -158,7 +220,7 @@
       for (let i = 0; i < 9; i++) s += araucaria(x + rnd(0, w), horizonte + 120 + rnd(0, 80), rnd(60, 130), '#0C120E');
       // a casa do seu Zé (pequena, longe) com festa
       const [hx, hy] = casa;
-      s += casaRoca(hx - 70, hy, 140, 90, { acesa: true, festa, cor: '#7A6E5A', telha: '#5A2E22' });
+      s += casaRoca(hx - 70, hy, 140, 90, { acesa: true, festa, cor: '#9A8E74', telha: '#6A3424' });
       if (festa) s += brilho(hx, hy - 40, 260, '#FFD27A', 0.5) + lampadas(hx - 110, hy - 70, hx + 110, hy - 70, 9, 10) + `<g class="notas">${['♪', '♫', '♪'].map((n, i) => `<text x="${f(hx - 60 + i * 60)}" y="${f(hy - 140 - i * 16)}" font-size="${40 - i * 4}" fill="#FFE08A" font-family="'DejaVu Sans', sans-serif">${n}</text>`).join('')}</g>`;
       s += neblina(x, horizonte + 90, w, 140, 0.18);
       return clip(x, y, w, h, s + acabamento(0.3));
@@ -170,7 +232,7 @@
       const [gid, gdef] = grad(['#0A0E1E', '#1A2238', '#2A2E48']);
       let s = defs() + gdef + `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="url(#${gid})"/>` + estrelas(x, y, w, (chao - y) * 0.4, 50);
       s += serra(x, w, chao - 420, 160, '#141C24', 1);
-      s += casaRoca(x + 90, chao, w - 180, 560, { acesa: true, festa: true, cor: '#8A7E66', telha: '#5A2E22' });
+      s += casaRoca(x + 60, chao, w - 260, 560, { acesa: true, festa: true, cor: '#B8AE94', telha: '#7A3A26', barra: '#5A3A6A', varanda: false });
       s += brilho(x + w / 2, chao - 220, 700, '#FFD27A', 0.45);
       s += bandeirinhas(x + 40, chao - 600, x + w - 40, chao - 600, 16, 60) + lampadas(x + 60, chao - 520, x + w - 60, chao - 520, 14, 50);
       [[x + 120, chao - 380, '#E84A5A'], [x + 170, chao - 420, '#F2C23A'], [x + w - 150, chao - 400, '#4AA0E8'], [x + w - 200, chao - 360, '#C84AFF']].forEach(([bx, by, c]) => { s += `<path d="M${f(bx)} ${f(by + 50)} q-10 60 6 120" stroke="#E8E2D0" stroke-width="2" fill="none"/><ellipse cx="${f(bx)}" cy="${f(by)}" rx="34" ry="44" fill="${c}" stroke="${L}" stroke-width="3"/><ellipse cx="${f(bx - 10)}" cy="${f(by - 14)}" rx="8" ry="12" fill="#fff" opacity=".4"/>`; });
@@ -206,7 +268,7 @@
       const [gid, gdef] = grad(['#080B16', '#141A2E', '#1E2438']);
       let s = defs() + gdef + `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="url(#${gid})"/>` + estrelas(x, y, w, h * 0.3, 80);
       s += `<path d="M${x} ${f(y + h * 0.5)} Q${f(x + w * 0.3)} ${f(y + h * 0.36)} ${f(x + w * 0.62)} ${f(y + h * 0.34)} Q${f(x + w * 0.85)} ${f(y + h * 0.35)} ${x + w} ${f(y + h * 0.42)} V${y + h} H${x}Z" fill="#0E1410"/>`;
-      s += casaRoca(luz[0] - 120, y + h * 0.345, 110, 60, { acesa: false, cor: '#1A1A18', telha: '#120E0C' });
+      s += casaRoca(luz[0] - 120, y + h * 0.345, 110, 60, { acesa: false, cor: '#1A1A18', telha: '#120E0C', barra: '#101014', chamine: false });
       for (let i = 0; i < 6; i++) s += araucaria(x + rnd(0, w), y + h * rnd(0.36, 0.46), rnd(80, 150), '#080C0A');
       s += `<g class="luzLanterna">${brilho(luz[0], luz[1], 90, '#FFF2C0', 0.9)}<circle cx="${f(luz[0])}" cy="${f(luz[1])}" r="5" fill="#FFFBE6"/></g>`;
       s += neblina(x, y + h * 0.5, w, 300, 0.16);
