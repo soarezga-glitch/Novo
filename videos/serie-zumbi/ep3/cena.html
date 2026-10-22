@@ -177,13 +177,14 @@ const zR = ator(1.45, J('rouco'), SEUZE_VIRANDO);
 zR.base(S.rouco[0], S.rouco[1], 'parado', { x: 420, y: 1480, vista: 'perfil', dir: 1 }); zR.expressao(S.rouco[0], S.rouco[1], 'zumbi'); zR.braco('ambos', S.rouco[0], S.rouco[1], 'estender');
 zR.cabeca(S.rouco[0], S.rouco[1], { inclinar: 18, baixar: 12 });
 // o seu Zé dentro do quarto, na janela, pálido, pondo o braço machucado para fora
-$('#stage defs').insertAdjacentHTML('beforeend', '<clipPath id="clipJanela"><rect x="500" y="560" width="400" height="420"/></clipPath>');
+$('#stage defs').insertAdjacentHTML('beforeend', '<clipPath id="clipJanela"><rect x="500" y="560" width="400" height="420"/><rect x="0" y="760" width="520" height="200"/></clipPath>');
 const zW = ator(1.15, J('braco'), SEUZE_PALIDO); zW.grupo.setAttribute('clip-path', 'url(#clipJanela)');
-zW.base(S.braco[0], S.braco[1], 'parado', { x: 700, y: 1300, vista: 'frente' }); zW.expressao(S.braco[0], S.braco[1], 'preocupado'); zW.cabeca(S.braco[0], S.braco[1], { inclinar: -8, virar: -0.3 });
-zW.braco('e', S.braco[0], S.braco[1], 'alcancar', { alvo: [560, 900] });
+zW.base(S.braco[0], S.braco[1], 'parado', { x: 610, y: 1300, vista: 'frente' }); zW.expressao(S.braco[0], S.braco[1], 'preocupado'); zW.cabeca(S.braco[0], S.braco[1], { inclinar: -8, virar: -0.3 });
+// o PRÓPRIO braço do seu Zé sai pela janela (braço do boneco), com o curativo sujo e as veias escuras no antebraço
+zW.braco('e', S.braco[0] + 0.15, S.braco[1], 'alcancar', { alvo: [372, 872], entrada: 0.5 });
 const tB = ator(1.25, J('braco'), TIAO); tB.base(S.braco[0], S.braco[1], 'parado', { x: 170, y: 1760, vista: 'perfil', dir: 1 });
 tB.expressao(S.braco[0], S.braco[1], 'desconfiado'); tB.cabeca(S.braco[0], S.braco[1], { baixar: -14 }); tB.braco('d', S.braco[0], S.braco[1], 'queixo');
-const bracoZe = item(`<g id="br-braco"><g transform="translate(672 822) scale(-1.15 1.15)">${CORR.bracoFerido(0, 0, 1)}</g></g>`, J('braco'), '#props');
+const bracoZe = item(`<g><path d="M-30 -15 L30 -15 L30 15 L-30 15Z" fill="#E8E2D0" stroke="${L}" stroke-width="4"/><path d="M-20 -15 V15 M-4 -15 V15 M12 -15 V15" stroke="#B8B0A0" stroke-width="3"/><path d="M-12 -10 q16 -4 22 8 q-6 12 -20 6Z" fill="#8A2A20" opacity=".9"/><g class="veias" opacity="0"><path d="M30 -6 q16 -6 30 -2 M30 6 q18 4 34 0 M-30 -4 q-14 -8 -28 -4" stroke="#4A3A5A" stroke-width="3.5" fill="none"/></g></g>`, J('braco'), '#props');
 // o Tião passando a porteira com a mochila
 // sai andando pelo vão da porteira aberta (entre os mourões x 360–640), do lado de dentro para fora, vindo para a frente
 // vem DE FRENTE para a câmera pelo caminho de terra, saindo do sítio pelo vão da porteira aberta (fica maior ao chegar perto)
@@ -200,7 +201,7 @@ const CAM = [
   [8.4, 1.0, 540, 960], [11.6, 1.05, 520, 960], [13.4, 1.9, 420, 1060],
   [13.4, 1.05, 620, 1000], [16.3, 1.15, 640, 1000],
   [16.3, 1.75, 400, 880], [19.3, 1.85, 410, 880],
-  [19.3, 1.0, 540, 980], [21.9, 1.05, 520, 1000],
+  [19.3, 1.0, 540, 980], [21.9, 1.12, 480, 940],
   [21.9, 1.0, 540, 960], [26.85, 1.06, 540, 960],
   [26.85, 1.0, 540, 1000], [30.6, 1.35, 700, 820],
   [30.6, 1.9, 400, 860], [33.4, 2.05, 400, 880],
@@ -245,7 +246,7 @@ tl.to('#g-dia', { scale: 1.06, duration: 1.6, ease: 'none' }, 0.45);
 fade('#selo1', 3.0, 7.0);
 pop('#co-t1', 5.6, 0.35); pop('#co-t2', 6.6, 0.4); tl.to(['#co-t1', '#co-t2'], { autoAlpha: 0, duration: 0.15 }, S.corr[1] - 0.1);
 pop('#ca-antes', 8.6, 0.3); tl.to('#ca-antes', { autoAlpha: 0, duration: 0.15 }, S.cafe[1] - 0.1); pop('#br-tag', 20.2, 0.35);
-gsap.set('#br-braco', { x: 160, autoAlpha: 0 }); tl.to('#br-braco', { x: 0, autoAlpha: 1, duration: 0.6, ease: 'power2.out' }, 19.45);
+
 pop('#rg-card', 22.0, 0.35); pop('#rg-l1', 23.6, 0.3); pop('#rg-l2', 24.9, 0.3); pop('#rg-rel', 25.3, 0.3);
 fade('#dd-tag', 31.3, 33.3, 0.25);
 pop('#qu-t1', 39.4, 0.35); pop('#qu-t2', 41.0, 0.4);
@@ -278,6 +279,8 @@ function desenhar(t) {
   $$('#c-mac .macaneta').forEach(m => m.setAttribute('transform', `rotate(${(-mg * mg * 38 + Math.sin(t * 40) * mg * 0.8).toFixed(2)} 0 0)`));
   // veias escurecendo no braço; gotas de suor escorrendo
   $$('.veias').forEach(v => v.setAttribute('opacity', Math.min(1, Math.max(0, (t - 20.2) / 1.2)).toFixed(2)));
+  if (dentro(t, J('braco'))) { const m = zW.mao('e'), sh = [610 - 37 * 1.15, 1300 - (238 + 190 - 16) * 1.15], v = [sh[0] - m[0], sh[1] - m[1]], a = Math.atan2(v[1], v[0]) * 57.3;
+    const c = [m[0] + v[0] * 0.28, m[1] + v[1] * 0.28]; bracoZe.setAttribute('transform', `translate(${c[0].toFixed(1)} ${c[1].toFixed(1)}) rotate(${a.toFixed(1)}) scale(1.5)`); bracoZe.style.opacity = Math.min(1, Math.max(0, (t - 19.7) / 0.3)); }
   if (dentro(t, J('suando'))) { const c = zQ.mao ? zQ : null; $$('.gota').forEach((g, i) => { const u = ((t * 0.7 + i * 0.27) % 1), cab = [600 - 50 + i * 30, 760 + i * 8]; g.setAttribute('transform', `translate(${cab[0]} ${(cab[1] + u * 120).toFixed(1)})`); g.setAttribute('opacity', (Math.sin(u * Math.PI)).toFixed(2)); }); }
   // a mochila acompanha o ombro do Tião; o curativo acompanha o antebraço do seu Zé
   if (dentro(t, [[44.1, S.volto[1]]])) { const m = tK.mao(t < 44.3 ? 'd' : 'e'); mochila.setAttribute('transform', `translate(${m[0].toFixed(1)} ${(m[1] + 140).toFixed(1)})`); }
