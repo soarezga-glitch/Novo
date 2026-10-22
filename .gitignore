@@ -1,0 +1,5 @@
+
+# arquivos temporários do render
+videos/**/render.log
+videos/**/video_novo.mp4
+videos/**/fim.flag
