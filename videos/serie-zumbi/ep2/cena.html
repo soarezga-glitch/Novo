@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Apocalipse Zumbi: Parte 2</title>
+<!--
+  Série APOCALIPSE ZUMBI — PARTE 2 (narração fala.mp3, 53 s): o Tião deitado no capim enquanto as sombras sobem o morro,
+  uma passa a dois metros e fareja; amanhece; a casa do seu Zé sem sinal de vida; a porteira aberta; regra nº 2;
+  o cobertor arrancado, o rádio chiando e a xícara de café AINDA QUENTE.
+  Mesmo estilo da parte 1: sombrio, personagens grandes, cenas cheias; zumbis com silhueta de zumbi.
+-->
+<style>
+  html, body { margin: 0; background: #000; overflow: hidden; }
+  #stage { width: 1080px; height: 1920px; display: block; }
+  @font-face { font-family: 'Anton'; src: url(fontes/anton.woff2); }
+  @font-face { font-family: 'Luckiest Guy'; src: url(fontes/luckiest-guy.woff2); }
+  text:not([font-family]) { font-family: 'Anton', sans-serif; }
+</style>
+<script src="gsap.min.js"></script>
+<script src="boneco.js"></script>
+<script src="paletas.js"></script>
+<script src="cenario.js"></script>
+<script src="sitio.js"></script>
+<script src="palco.js"></script>
+<script src="legenda.js"></script>
+<script src="legenda-dados.js"></script>
+</head>
+<body>
+<svg id="stage" viewBox="0 0 1080 1920" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="outline" x="-20%" y="-20%" width="140%" height="140%">
+      <feMorphology in="SourceAlpha" operator="dilate" radius="5" result="d"/>
+      <feFlood flood-color="#0A0A0E"/>
+      <feComposite in2="d" operator="in" result="o"/>
+      <feMerge><feMergeNode in="o"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="sombraTxt" x="-10%" y="-30%" width="120%" height="160%"><feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#000" flood-opacity=".8"/></filter>
+    <radialGradient id="vin" cx=".5" cy=".5" r=".72"><stop offset=".45" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".7"/></radialGradient>
+  </defs>
+  <g id="cam"><g id="scenes"></g><g id="atores"></g><g id="props"></g><g id="luzes"></g></g>
+  <rect width="1080" height="1920" fill="url(#vin)"/>
+  <g id="escuro"><rect width="1080" height="1920" fill="#05070E"/></g>
+  <g id="topo"></g>
+  <g id="legenda"></g>
+</svg>
+
+<script>
+const NS = 'http://www.w3.org/2000/svg';
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const AMBAR = '#E8B23A', BRANCO = '#F2EEE2', VERMELHO = '#C8342A', L = '#0E0E14';
+const Si = (n, hora = 'noite') => Sitio(Cenario({ seed: n, luz: -1, hora, prefixo: 's' + n }));
+
+// ===================== PLANOS =====================
+const S = {
+  abre:     [0, 2.4],     // "Segundo dia do Apocalipse Zumbi,"
+  ficha:    [2.4, 6.1],   // "e o Tião vai descobrir que apagar a luz não foi suficiente."
+  desliga:  [6.1, 8.9],   // "Ele desliga a lanterna e se joga no capim."
+  sobem:    [8.9, 14.5],  // "Lá embaixo, as sombras começam a subir o morro. Devagar, sem fazer barulho."
+  prende:   [14.5, 16.6], // "Tião prende a respiração."
+  passa:    [16.6, 19.9], // "Uma delas passa a dois metros dele. E para."
+  fareja:   [19.9, 23.7], // "Fareja o ar, vira a cabeça e segue em frente."
+  clarear:  [23.7, 27.0], // "Ele fica ali, imóvel, até o dia clarear."
+  pasto:    [27.0, 29.9], // "Cinco e meia da manhã, o pasto está vazio."
+  seuze:    [29.9, 32.9], // "Da casa do seu Zé, nenhum sinal de vida."
+  porteira: [32.9, 38.0], // "Tião volta para o sítio, mas a porteira está aberta. E ele tem certeza que fechou."
+  regra:    [38.0, 41.9], // "Regra número dois. Nunca entre em casa sem olhar primeiro."
+  janela:   [41.9, 45.9], // "Ele dá a volta até a janela da cozinha. O cobertor foi arrancado."
+  radio:    [45.9, 48.9], // "O rádio está ligado, chiando baixinho."
+  xicara:   [48.9, 53.3], // "E em cima da mesa, tem uma xícara de café. Ainda quente."
+};
+const FIM_FALA = 53.3, END = 56.5;
+const PISO_LEG = 1560;
+
+// ===================== CENAS =====================
+const scenes = [];
+const cena = (id, corpo) => scenes.push(`<g id="${id}" class="scene">${corpo}</g>`);
+const zoom = (corpo, k, cx = 540, cy = 1300) => `<g transform="translate(${cx} ${cy}) scale(${k}) translate(${-cx} ${-cy})">${corpo}</g>`;
+const txt = (id, y, partes, fs = 110) => `<g id="${id}" filter="url(#sombraTxt)"><text x="540" y="${y}" font-size="${fs}" text-anchor="middle" stroke="#000" stroke-width="${fs * 0.08}" paint-order="stroke">${partes.map(([t, c]) => `<tspan fill="${c || BRANCO}">${t}</tspan>`).join('')}</text></g>`;
+const selo = (id, linha1, linha2) => `<g id="${id}" transform="translate(540 150)"><rect x="-300" y="-62" width="600" height="136" rx="22" fill="#0B0D14" fill-opacity=".86" stroke="#2A2E3A" stroke-width="3"/><circle cx="-232" cy="-26" r="9" fill="${VERMELHO}"/><text x="14" y="-14" font-size="30" text-anchor="middle" fill="${VERMELHO}" letter-spacing="2">${linha1}</text><text y="52" font-size="68" text-anchor="middle" fill="${BRANCO}" letter-spacing="3">${linha2}</text></g>`;
+const etiqueta = (id, x, y, t, cor = AMBAR, corTxt = '#16120A', rot = 0) => `<g id="${id}" transform="translate(${x} ${y}) rotate(${rot})"><rect x="${-t.length * 13 - 30}" y="-34" width="${t.length * 26 + 60}" height="68" rx="34" fill="${cor}" stroke="#000" stroke-width="4"/><text y="14" font-size="40" text-anchor="middle" fill="${corTxt}">${t}</text></g>`;
+const balao = (id, x, y, corpo, w = 300, h = 170, lado = -1) => `<g id="${id}" transform="translate(${x} ${y})"><circle cx="${lado * w * 0.42}" cy="${h * 0.62}" r="12" fill="#F2EEE2" stroke="#000" stroke-width="4"/><circle cx="${lado * w * 0.5}" cy="${h * 0.82}" r="7" fill="#F2EEE2" stroke="#000" stroke-width="3"/><rect x="${-w / 2}" y="${-h / 2}" width="${w}" height="${h}" rx="${h / 2}" fill="#F2EEE2" stroke="#000" stroke-width="5"/>${corpo}</g>`;
+
+// 1. GANCHO: muralha de zumbis com olhos acesos, "DIA 2" cai com estrondo + clarão, "DO APOCALIPSE ZUMBI"
+const GANCHO = (`<g id="c-gancho"><rect width="1080" height="1920" fill="#C8342A" opacity=".18" style="mix-blend-mode:multiply"/><rect width="1080" height="1920" fill="#000" opacity=".35"/>` +
+  txt('g-dia', 880, [['DIA ', BRANCO], ['2', AMBAR]], 330) + txt('g-apoc', 1060, [['DO APOCALIPSE ', BRANCO], ['ZUMBI', VERMELHO]], 96) + `<rect id="g-flash" width="1080" height="1920" fill="#FFF6E0"/></g>`);
+// encosta do morro: noite (o Tião se esconde) e amanhecer (ele ainda está lá)
+const ENC = Si(41);
+const chaoEnc = ENC.encosta.chao;
+cena('c-estr', Si(40).estrada({}));
+cena('c-enc', ENC.encosta({}));
+cena('c-encDia', Si(42, 'amanhecer').encosta({ amanhecer: true }));
+cena('c-fichaOv', txt('fi-t1', 420, [['APAGAR A ', BRANCO], ['LUZ', AMBAR]], 120) + txt('fi-t2', 550, [['NÃO FOI ', BRANCO], ['SUFICIENTE', VERMELHO]], 100));
+cena('c-sobemOv', txt('so-t', 520, [['SEM FAZER ', BRANCO], ['BARULHO', AMBAR]], 104));
+const PASSA_OV = (`<g id="pa-regua"><path d="M455 1238 H690" stroke="${AMBAR}" stroke-width="7" stroke-linecap="round"/><path d="M455 1222 v32 M690 1222 v32" stroke="${AMBAR}" stroke-width="7" stroke-linecap="round"/></g>` + etiqueta('pa-tag', 572, 1300, '2 METROS'));
+cena('c-farejaOv', `<g id="fa-ar">${[0, 1, 2].map(i => `<path d="M${560 + i * 26} ${880 - i * 8} q-30 -16 -54 2" stroke="#C8D0DA" stroke-width="5" fill="none" stroke-linecap="round" opacity="${0.7 - i * 0.18}"/>`).join('')}</g>`);
+// 9. pasto vazio às 5h30 e a casa do seu Zé sem sinal de vida
+cena('c-pasto', Si(43, 'amanhecer').vale({ festa: false, amanhecer: true }) + txt('pa-vazio', 520, [['PASTO ', BRANCO], ['VAZIO', AMBAR]], 104));
+cena('c-seuze', Si(44, 'amanhecer').festa({ chao: 1300, abandonada: true }) + txt('sz-t', 420, [['NENHUM SINAL ', BRANCO], ['DE VIDA', VERMELHO]], 92));
+// 11. a porteira aberta
+cena('c-porteira', Si(45, 'amanhecer').porteira({ chao: 1440, aberta: true }) + etiqueta('po-aberta', 250, 1080, 'ABERTA', VERMELHO, BRANCO, -6));
+// 12. regra número dois (cartão no estilo da ficha)
+cena('c-regra', `<rect width="1080" height="1920" fill="#14161C"/><rect width="1080" height="1920" fill="url(#vin)"/>
+  <g id="rg-card" transform="translate(80 520)"><rect width="920" height="700" rx="26" fill="#E8E2D0"/><rect width="920" height="700" rx="26" fill="none" stroke="#C9C0A8" stroke-width="6"/>
+  <rect x="40" y="40" width="840" height="150" rx="16" fill="#2A241A"/><text x="460" y="145" font-size="96" text-anchor="middle" fill="${AMBAR}" letter-spacing="3">REGRA Nº 2</text>
+  <g id="rg-l1"><text x="460" y="330" font-size="92" text-anchor="middle" fill="#22201A">NUNCA ENTRE EM CASA</text></g>
+  <g id="rg-l2"><text x="460" y="470" font-size="92" text-anchor="middle" fill="#8A2A20">SEM OLHAR PRIMEIRO</text></g>
+  <g id="rg-olho" transform="translate(460 590)"><path d="M-90 0 Q0 -70 90 0 Q0 70 -90 0Z" fill="#F2EEE2" stroke="#22201A" stroke-width="8"/><circle r="30" fill="#22201A"/><circle cx="-10" cy="-10" r="9" fill="#F2EEE2"/></g></g>`);
+// 13. a parede da cozinha por fora: o cobertor arrancado
+cena('c-janela', Si(46, 'amanhecer').paredeJanela({ chao: 1440 }) + etiqueta('ja-tag', 760, 1120, 'ARRANCADO', VERMELHO, BRANCO, 4));
+// 14. lá dentro: rádio ligado chiando, cobertor no chão
+cena('c-coz', zoom(Si(47, 'amanhecer').cozinha({ chao: 1300, janelaY: 0.55, lampiao: false, amanhecer: true, cobertorChao: true }), 1.35, 560, 1300) + etiqueta('ra-chh', 760, 760, 'CHHHH...', '#3A3E4A', BRANCO));
+// 15. a xícara de café na mesa, ainda soltando vapor
+cena('c-xicara', Si(48, 'amanhecer').mesaClose({}));
+// final escuro
+scenes.push(`<g id="fim" class="scene"><rect width="1080" height="1920" fill="#08090E"/>${Si(20).estrada({})}<rect width="1080" height="1920" fill="#000" opacity=".6"/>
+  <g id="fim-t">${txt('fim-a', 800, [['PARTE ', BRANCO], ['2', AMBAR]], 150)}${txt('fim-b', 940, [['CONTINUA...', BRANCO]], 96)}</g>
+  <g id="fim-c" transform="translate(540 1120)"><rect x="-330" y="-56" width="660" height="112" rx="56" fill="${AMBAR}" stroke="#000" stroke-width="5"/><text y="22" font-size="58" text-anchor="middle" fill="#16120A">SEGUE PRA PARTE 3 ↓</text></g></g>`);
+$('#scenes').innerHTML = scenes.join('');
+$('#topo').innerHTML = GANCHO + selo('selo1', 'APOCALIPSE ZUMBI · PARTE 2', 'DIA 1 · 23:40') + selo('selo2', 'APOCALIPSE ZUMBI · PARTE 2', 'DIA 2 · 05:30') +
+  balao('po-bal', 470, 620, `<text y="22" font-size="64" text-anchor="middle" fill="#16120A">EU FECHEI...</text>`, 380, 150, 1) + txt('xi-t', 520, [['AINDA ', BRANCO], ['QUENTE', VERMELHO]], 150);
+
+// ===================== ELENCO (aparência fixa na série) =====================
+const TIAO = { figurino: 'tiao', seed: 60 };
+const VULTO = (i) => ({ figurino: 'vulto', cor: '#17181E', corLonge: '#101116', bochecha: '#17181E', seed: 70 + i });
+const ATORES = [], ITENS = [];
+function ator(escala, janelas, opts = {}, pai = '#atores') { const g = document.createElementNS(NS, 'g'); if (pai) $(pai).appendChild(g); const b = new Boneco(g, { escala, seed: 4, ...opts }); b.grupo = g; ATORES.push({ b, g, janelas }); return b; }
+function item(svg, janelas, pai = '#atores') { const g = document.createElementNS(NS, 'g'); $(pai).appendChild(g); g.innerHTML = svg; ITENS.push({ g, janelas }); return g; }
+const J = n => [[S[n][0], S[n][1]]];
+const JJ = (...ns) => ns.map(n => [S[n][0], S[n][1]]);
+const SiObj = Si(30);
+
+// 1. gancho: zumbis de frente, balançando, olhos acesos (o da frente bem grande)
+[[300, 1300, 0.9], [760, 1320, 1.0], [540, 1400, 1.2], [140, 1520, 1.45], [920, 1560, 1.55], [520, 1900, 2.2]].forEach(([x, y, k], i) => { const v = ator(k, J('abre'), VULTO(50 + i));
+  v.base(0, S.abre[1], 'parado', { x, y, vista: 'frente' }); v.braco('ambos', 0, S.abre[1], 'estender'); v.expressao(0, S.abre[1], 'zumbi'); v.cabeca(0, S.abre[1], { inclinar: (i % 2 ? 1 : -1) * 14, baixar: -6 }); });
+
+// 3–8. as sombras sobem o morro (de lado, pisando na encosta), cada uma numa profundidade
+const subidas = [];
+for (let i = 0; i < 7; i++) { const dy = -30 + (i % 3) * 22, k = 0.6 + (i % 3) * 0.07, x0 = 1150 + i * 110, x1 = x0 - 520 - (i % 2) * 80;
+  const v = ator(k, [[S.sobem[0], S.prende[1]]], VULTO(i)); v.base(S.sobem[0], S.prende[1], 'andar', { de: [x0, chaoEnc(x0) + dy], ate: [x1, chaoEnc(x1) + dy], passo: 42 * k, chao: gx => chaoEnc(gx) + dy });
+  v.braco('ambos', S.sobem[0], S.prende[1], 'estender'); v.expressao(S.sobem[0], S.prende[1], 'zumbi'); subidas.push(v); }
+// a sombra que passa a dois metros: sobe, para, fareja, vira a cabeça e segue
+const zP = ator(0.78, [[S.passa[0], S.fareja[1]]], VULTO(30));
+zP.base(S.passa[0], 19.0, 'andar', { de: [1000, chaoEnc(1000) - 34], ate: [700, chaoEnc(700) - 34], passo: 44 * 0.78, chao: gx => chaoEnc(gx) - 34 });
+zP.base(19.0, 22.5, 'parado', { x: 700, y: chaoEnc(700) - 34, vista: 'perfil', dir: -1 });
+zP.base(22.5, S.fareja[1], 'andar', { de: [700, chaoEnc(700) - 34], ate: [380, chaoEnc(380) - 34], passo: 44 * 0.78, chao: gx => chaoEnc(gx) - 34 });
+zP.braco('ambos', S.passa[0], 19.6, 'estender'); zP.braco('ambos', 19.6, 22.6, 'pose', { o: 18, c: 20 }); zP.braco('ambos', 22.6, S.fareja[1], 'estender');
+zP.expressao(S.passa[0], S.fareja[1], 'zumbi');
+zP.cabeca(20.0, 21.0, { baixar: -18, gesto: 'balancar' });          // fareja o ar (cabeça para cima, balançando)
+zP.cabeca(21.1, 22.3, { virar: 0.15, baixar: 10 });                 // vira a cabeça na direção do capim
+// o Tião: de pé com a lanterna → desliga → se joga no capim → fica imóvel até clarear
+const tT = ator(0.9, [[S.ficha[0], S.clarear[1]]], TIAO);
+tT.base(S.ficha[0], 7.6, 'parado', { x: 230, y: 1180, vista: 'perfil', dir: 1 });
+tT.base(7.6, 7.9, 'agachar', { x: 230, y: 1180, vista: 'perfil', dir: 1, quanto: 110 });
+tT.base(7.9, S.clarear[1], 'deitado', { x: 0, y: 1186, vista: 'perfil', dir: 1, giro: 90 });
+tT.braco('d', S.ficha[0], 7.6, 'pose', { o: 62, c: 6, mao: 'punho' });
+tT.expressao(S.ficha[0], 6.1, 'preocupado'); tT.expressao(6.1, 14.5, 'medo'); tT.expressao(14.5, 19.0, 'espanto'); tT.expressao(19.0, 23.7, 'medo'); tT.expressao(23.7, S.clarear[1], 'cansado');
+tT.cabeca(7.9, S.clarear[1], { baixar: -8 });
+// 9. o Tião olhando o pasto vazio
+{ const t = ator(1.3, J('pasto'), TIAO); t.base(S.pasto[0], S.pasto[1], 'parado', { x: 230, y: 1600, vista: 'perfil', dir: 1 }); t.expressao(S.pasto[0], S.pasto[1], 'preocupado'); t.cabeca(28.4, S.pasto[1], { virar: 0.6 }); }
+// 11. volta para o sítio, chega na porteira e para
+const tP = ator(1.25, J('porteira'), TIAO);
+tP.base(S.porteira[0], 35.2, 'andar', { de: [1180, 1520], ate: [760, 1520], passo: 120 }); tP.base(35.2, S.porteira[1], 'parado', { x: 760, y: 1520, vista: 'perfil', dir: -1 });
+tP.expressao(S.porteira[0], 35.4, 'cansado'); tP.expressao(35.4, 36.2, 'surpreso'); tP.expressao(36.2, S.porteira[1], 'desconfiado'); tP.cabeca(36.2, S.porteira[1], { inclinar: 10 });
+tP.braco('d', 36.4, S.porteira[1], 'queixo');
+// 13. dá a volta até a janela e espia
+const tJ = ator(1.3, J('janela'), TIAO);
+tJ.base(S.janela[0], 43.4, 'andar', { de: [-160, 1470], ate: [330, 1470], passo: 100 }); tJ.base(43.4, S.janela[1], 'parado', { x: 330, y: 1470, vista: 'perfil', dir: 1, inclina: 12 });
+tJ.expressao(S.janela[0], 44.0, 'desconfiado'); tJ.expressao(44.0, S.janela[1], 'medo'); tJ.braco('d', 43.5, S.janela[1], 'alcancar', { alvo: [470, 1000] });
+
+// objetos na mão e capim por cima de quem está deitado
+$('#props').innerHTML = `<g id="p-lantOn">${SiObj.lanterna(0, 0, 0.75, { acesa: true })}</g><g id="p-lantOff">${SiObj.lanterna(0, 0, 0.75, { acesa: false })}</g>`;
+const PROPS = [
+  { el: $('#p-lantOn'), ator: tT, mao: 'd', janelas: [[S.ficha[0], 6.45]], rot: 20 },
+  { el: $('#p-lantOff'), ator: tT, mao: 'd', janelas: [[6.45, 7.6]], rot: 20 },
+];
+item(ENC.capim(-20, 1100, chaoEnc, 110, '#1A2618'), [[S.ficha[0], S.fareja[1]]], '#props');
+item(Si(49).capim(-20, 1100, chaoEnc, 110, '#3A4A2A'), J('clarear'), '#props');
+const facho = item('', [[S.ficha[0], 6.45]], '#luzes');
+item(PASSA_OV, J('passa'), '#luzes');
+
+// ===================== CÂMERA =====================
+const CAM = [
+  [0, 1.0, 540, 1000], [2.4, 1.12, 540, 1040],
+  [2.4, 1.0, 540, 960], [6.1, 1.15, 420, 1000],
+  [6.1, 1.3, 380, 1020], [8.9, 1.4, 340, 1060],
+  [8.9, 1.0, 540, 960], [14.5, 1.08, 600, 1000],
+  [14.5, 2.4, 380, 1160], [16.6, 2.7, 400, 1160],
+  [16.6, 1.6, 560, 1080], [19.9, 1.75, 540, 1080],
+  [19.9, 1.75, 540, 1060], [21.1, 1.9, 520, 1060], [23.7, 1.7, 480, 1080],
+  [23.7, 1.0, 540, 960], [27.0, 1.06, 500, 980],
+  [27.0, 1.0, 540, 960], [29.9, 1.06, 560, 940],
+  [29.9, 1.0, 540, 960], [32.9, 1.1, 540, 900],
+  [32.9, 1.0, 540, 960], [35.2, 1.0, 540, 960], [38.0, 1.12, 500, 1020],
+  [38.0, 1.0, 540, 960], [41.9, 1.04, 540, 960],
+  [41.9, 1.0, 540, 960], [43.6, 1.0, 540, 960], [45.9, 1.45, 680, 880],
+  [45.9, 1.0, 600, 960], [48.9, 1.35, 700, 900],
+  [48.9, 1.0, 540, 1000], [52.0, 1.2, 540, 1120], [53.3, 1.28, 540, 1170],
+  [53.3, 1, 540, 960], [99, 1, 540, 960],
+];
+const sm = u => u * u * (3 - 2 * u);
+function camEm(t) {
+  let a = CAM[0], b = CAM[0];
+  for (let i = 0; i < CAM.length - 1; i++) if (t >= CAM[i][0] && t < CAM[i + 1][0]) { a = CAM[i]; b = CAM[i + 1]; break; }
+  const u = b[0] > a[0] ? sm((t - a[0]) / (b[0] - a[0])) : 0;
+  const k = a[1] + (b[1] - a[1]) * u, cx = a[2] + (b[2] - a[2]) * u, cy = a[3] + (b[3] - a[3]) * u;
+  const medo = (t > 16.6 && t < 23.7) || (t > 52.0 && t < FIM_FALA) ? 2.0 : (t > 0.42 && t < 0.9) ? 9 * (0.9 - t) / 0.48 + 1 : 1;
+  const bx = (Math.sin(t * 1.3) * 3 + Math.sin(t * 3.1) * 1.2) * medo, by = (Math.cos(t * 1.1) * 2.5 + Math.sin(t * 5.7) * (medo > 1 ? 2 : 0.6)) * medo, rot = Math.sin(t * 0.9) * 0.3;
+  return `translate(${540 + bx} ${960 + by}) rotate(${rot.toFixed(3)}) scale(${k.toFixed(4)}) translate(${-cx} ${-cy})`;
+}
+
+// ===================== TIMELINE =====================
+const rendering = navigator.webdriver;
+const tl = gsap.timeline({ paused: true, defaults: { ease: 'power2.inOut' } });
+$$('.scene').forEach(s => gsap.set(s, { autoAlpha: 0 }));
+const show = (sel, t0, t1) => { tl.fromTo(sel, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.01, ease: 'none', immediateRender: false }, t0); if (t1 != null) tl.to(sel, { autoAlpha: 0, duration: 0.01, ease: 'none' }, t1); };
+const fade = (sel, t0, t1, d = 0.35) => { gsap.set(sel, { autoAlpha: 0 }); tl.to(sel, { autoAlpha: 1, duration: d }, t0); if (t1 != null) tl.to(sel, { autoAlpha: 0, duration: d }, t1); };
+const pop = (sel, t, d = 0.35) => { gsap.set(sel, { autoAlpha: 0, scale: 0.6, transformOrigin: '50% 50%' }); tl.fromTo(sel, { autoAlpha: 0, scale: 0.6 }, { autoAlpha: 1, scale: 1, duration: d, ease: 'back.out(2)', immediateRender: false }, t); };
+// cada cenário é desenhado UMA vez e reaproveitado nos planos dele (desenhar duas vezes duplica ids e apaga a cena)
+gsap.set('#c-gancho', { autoAlpha: 0 }); show('#c-gancho', S.abre[0], S.abre[1]);
+const USO = { 'c-estr': ['abre'], 'c-enc': ['ficha', 'desliga', 'sobem', 'prende', 'passa', 'fareja', 'clarear'], 'c-fichaOv': ['ficha'], 'c-sobemOv': ['sobem'], 'c-farejaOv': ['fareja'],
+  'c-pasto': ['pasto'], 'c-seuze': ['seuze'], 'c-porteira': ['porteira'], 'c-regra': ['regra'], 'c-janela': ['janela'], 'c-coz': ['radio'], 'c-xicara': ['xicara'] };
+Object.entries(USO).forEach(([id, planos]) => planos.forEach(k => show('#' + id, S[k][0], S[k][1])));
+// o dia clareando: a encosta de manhã aparece por cima da noturna
+gsap.set('#c-encDia', { autoAlpha: 0 }); tl.to('#c-encDia', { autoAlpha: 1, duration: 2.4, ease: 'sine.inOut' }, 24.3); tl.to('#c-encDia', { autoAlpha: 0, duration: 0.01 }, S.clarear[1]);
+// abertura em fade do preto; lanterna desligada escurece; fim
+gsap.set('#escuro', { autoAlpha: 1 }); tl.to('#escuro', { autoAlpha: 0.15, duration: 0.25 }, 0.18).to('#escuro', { autoAlpha: 0, duration: 0.5 }, 1.0);
+tl.to('#escuro', { autoAlpha: 0.4, duration: 0.08 }, 6.45).to('#escuro', { autoAlpha: 0, duration: 1.5 }, 7.2);
+tl.to('#escuro', { autoAlpha: 1, duration: 0.6 }, FIM_FALA - 0.2).to('#escuro', { autoAlpha: 0, duration: 0.6 }, FIM_FALA + 0.4);
+// gancho: o DIA 2 cai do alto com clarão branco e a câmera tremendo
+gsap.set('#g-dia', { autoAlpha: 0, scale: 2.6, transformOrigin: '540px 790px' }); tl.to('#g-dia', { autoAlpha: 1, scale: 1, duration: 0.22, ease: 'power4.in' }, 0.2);
+gsap.set('#g-flash', { opacity: 0 }); tl.to('#g-flash', { opacity: 0.85, duration: 0.03 }, 0.42).to('#g-flash', { opacity: 0, duration: 0.35 }, 0.45);
+gsap.set('#g-apoc', { autoAlpha: 0, y: 30 }); tl.to('#g-apoc', { autoAlpha: 1, y: 0, duration: 0.25, ease: 'power3.out' }, 0.95);
+tl.to('#g-dia', { scale: 1.06, duration: 1.3, ease: 'none' }, 0.45);
+fade('#selo1', 2.6, 6.0); fade('#selo2', 27.1, 29.8);
+pop('#fi-t1', 3.95, 0.35); pop('#fi-t2', 4.55, 0.4);
+pop('#so-t', 12.5, 0.4);
+gsap.set('#pa-regua', { autoAlpha: 0 }); tl.fromTo('#pa-regua', { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.3, immediateRender: false }, 17.6); pop('#pa-tag', 17.7, 0.35);
+fade('#fa-ar', 20.0, 21.0, 0.2);
+pop('#pa-vazio', 29.0, 0.35); pop('#sz-t', 31.2, 0.4);
+pop('#po-aberta', 35.4, 0.35); fade('#po-bal', 36.4, S.porteira[1] - 0.05, 0.2);
+pop('#rg-card', 38.1, 0.35); pop('#rg-l1', 40.0, 0.3); pop('#rg-l2', 40.8, 0.3); pop('#rg-olho', 41.2, 0.3);
+pop('#ja-tag', 44.85, 0.35); pop('#ra-chh', 47.5, 0.35); pop('#xi-t', 52.05, 0.35); tl.to('#xi-t', { autoAlpha: 0, duration: 0.2 }, FIM_FALA - 0.1);
+show('#fim', FIM_FALA); pop('#fim-t', FIM_FALA + 0.5, 0.6); pop('#fim-c', FIM_FALA + 1.2);
+tl.to('#fim-c', { scale: 1.05, duration: 0.45, repeat: 4, yoyo: true, ease: 'sine.inOut' }, FIM_FALA + 1.8);
+tl.set({}, {}, END);
+
+// ===================== LEGENDA (Anton, palavra falada em âmbar) =====================
+const leg = Legenda($('#legenda'), window.PALAVRAS || [], { y: PISO_LEG, fs: 78, fonte: "'Anton', sans-serif", destaque: AMBAR, cor: BRANCO, contorno: '#000', enfase: ['TIÃO', 'REGRA', 'LANTERNA', 'CAPIM', 'SOMBRAS', 'MORRO', 'METROS', 'FAREJA', 'VAZIO', 'PORTEIRA', 'ABERTA', 'COBERTOR', 'RÁDIO', 'CAFÉ', 'QUENTE.'] }).esconder([[0, S.abre[1]], [FIM_FALA, 999]]);
+
+// ===================== RENDER =====================
+const dentro = (t, janelas) => janelas.some(([a, b]) => t >= a && t < b);
+function desenhar(t) {
+  $('#cam').setAttribute('transform', camEm(t));
+  for (const A of ATORES) { const o = dentro(t, A.janelas); A.g.style.display = o ? '' : 'none'; if (o) A.b.desenhar(t); }
+  for (const I of ITENS) I.g.style.display = dentro(t, I.janelas) ? '' : 'none';
+  for (const P of PROPS) { if (!dentro(t, P.janelas)) { P.el.style.display = 'none'; continue; } const m = P.ator.mao(P.mao); P.el.style.display = ''; P.el.setAttribute('transform', `translate(${m[0].toFixed(1)} ${m[1].toFixed(1)}) rotate(${P.rot})`); }
+  if (t < 6.45) { const m = tT.mao('d'); facho.innerHTML = SiObj.facho(m[0] + 50, m[1] + 18, 22, 900, 20, 0.5); }
+  // vida: neblina passando, estática do rádio, vapor do café subindo e ondulando, fumaça
+  $$('.neblina').forEach((n, i) => n.setAttribute('transform', `translate(${((t * 12 + i * 70) % 200 - 100).toFixed(1)} 0)`));
+  $$('.estatica').forEach(e => e.setAttribute('opacity', (Math.abs(Math.sin(t * 91.7) * Math.cos(t * 37.3)) * 0.9).toFixed(2)));
+  $$('.vapor path').forEach(v => { const ph = +v.dataset.ph, u = ((t * 0.5 + ph * 0.3) % 1); v.setAttribute('transform', `translate(${(Math.sin(t * 2 + ph) * 8).toFixed(1)} ${(-u * 30).toFixed(1)})`); v.setAttribute('opacity', (0.42 * Math.sin(u * Math.PI)).toFixed(2)); });
+  $$('.ponteiro').forEach(p => p.setAttribute('transform', `rotate(${(t * 6).toFixed(1)} ${p.dataset.cx} ${p.dataset.cy})`));
+  $$('.cobertorPend').forEach(c => c.setAttribute('transform', `rotate(${(Math.sin(t * 1.6) * 1.2).toFixed(2)} 904 552)`));
+}
+window.__timeline = tl;
+window.__duration = tl.duration();
+window.__seek = t => { tl.seek(t, false); desenhar(t); leg.seek(t); };
+document.fonts.ready.then(() => Palco.caberTextos(document));
+window.__seek(0);
+if (!rendering) { tl.eventCallback('onUpdate', () => { const t = tl.time(); desenhar(t); leg.seek(t); }); document.addEventListener('click', () => tl.paused() ? tl.play() : tl.pause()); }
+</script>
+</body>
+</html>
