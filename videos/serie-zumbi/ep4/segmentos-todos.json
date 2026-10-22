@@ -1,0 +1,450 @@
+[
+ {
+  "id": "N01",
+  "quem": "narrador",
+  "texto": "Terceiro dia do apocalipse zumbi. Parte dois. E o Tião acabou de deixar um homem ferido trancado dentro da casa dele.",
+  "de": 0.3,
+  "ate": 8.965,
+  "arq": "falas-final/N01.wav"
+ },
+ {
+  "id": "N02",
+  "quem": "narrador",
+  "texto": "A maçaneta gira uma vez. Duas. Mas o Tião não escuta. Ele já está no meio do pasto.",
+  "de": 9.115,
+  "ate": 15.875,
+  "arq": "falas-final/N02.wav"
+ },
+ {
+  "id": "N03",
+  "quem": "narrador",
+  "texto": "Oitocentos metros. De dia, parecem seguros. Até ele ver as marcas no capim.",
+  "de": 16.025,
+  "ate": 22.045,
+  "arq": "falas-final/N03.wav"
+ },
+ {
+  "id": "P01",
+  "quem": "tiao",
+  "texto": "Isso aqui não é pegada de bicho.",
+  "de": 22.495,
+  "ate": 24.701,
+  "arq": "falas-final/P01.wav"
+ },
+ {
+  "id": "N04",
+  "quem": "narrador",
+  "texto": "São dezenas. Capim amassado, arrastado. Todas indo pro mesmo lugar. A casa do Seu Zé.",
+  "de": 25.151,
+  "ate": 32.651,
+  "arq": "falas-final/N04.wav"
+ },
+ {
+  "id": "N05",
+  "quem": "narrador",
+  "texto": "No meio do caminho, a cerca de arame está arrebentada. E presa no arame, tem uma fita de cabelo. Cor-de-rosa.",
+  "de": 32.801,
+  "ate": 40.386,
+  "arq": "falas-final/N05.wav"
+ },
+ {
+  "id": "P02",
+  "quem": "tiao",
+  "texto": "Aguenta firme, menina. Eu tô chegando.",
+  "de": 40.836,
+  "ate": 44.961,
+  "arq": "falas-final/P02.wav"
+ },
+ {
+  "id": "N06",
+  "quem": "narrador",
+  "texto": "O portão do Seu Zé está aberto. A caixa de som, caída. E o bolo da festa ainda está na mesa, coberto de moscas.",
+  "de": 45.411,
+  "ate": 53.826,
+  "arq": "falas-final/N06.wav"
+ },
+ {
+  "id": "N07",
+  "quem": "narrador",
+  "texto": "Tem cadeira virada, prato quebrado, sapato de criança no chão. Mas nenhuma pessoa. Nenhuma.",
+  "de": 53.976,
+  "ate": 61.351,
+  "arq": "falas-final/N07.wav"
+ },
+ {
+  "id": "P03",
+  "quem": "tiao",
+  "texto": "Aninha? É o Tião. Amigo do seu avô.",
+  "de": 61.801,
+  "ate": 66.43,
+  "arq": "falas-final/P03.wav"
+ },
+ {
+  "id": "N08",
+  "quem": "narrador",
+  "texto": "Nada. Só o vento batendo a janela. Até que lá em cima, na caixa d'água, alguma coisa se mexe.",
+  "de": 66.88,
+  "ate": 74.505,
+  "arq": "falas-final/N08.wav"
+ },
+ {
+  "id": "P04",
+  "quem": "aninha",
+  "texto": "Vai embora! Você é um deles?",
+  "de": 74.955,
+  "ate": 76.534,
+  "arq": "falas-final/P04.wav"
+ },
+ {
+  "id": "P05",
+  "quem": "tiao",
+  "texto": "Não, filha. Eu vim te buscar. Seu avô tá lá em casa.",
+  "de": 76.984,
+  "ate": 82.611,
+  "arq": "falas-final/P05.wav"
+ },
+ {
+  "id": "P06",
+  "quem": "aninha",
+  "texto": "Mentira. Eu vi o vovô ser mordido.",
+  "de": 83.061,
+  "ate": 85.173,
+  "arq": "falas-final/P06.wav"
+ },
+ {
+  "id": "N09",
+  "quem": "narrador",
+  "texto": "Tião congela. O Seu Zé jurou que foi no arame.",
+  "de": 85.623,
+  "ate": 89.893,
+  "arq": "falas-final/N09.wav"
+ },
+ {
+  "id": "P07",
+  "quem": "tiao",
+  "texto": "Mordido onde, Aninha?",
+  "de": 90.343,
+  "ate": 92.491,
+  "arq": "falas-final/P07.wav"
+ },
+ {
+  "id": "P08",
+  "quem": "aninha",
+  "texto": "No braço. Ele enrolou um pano e saiu correndo. Disse que ia buscar ajuda. E não voltou.",
+  "de": 92.941,
+  "ate": 97.677,
+  "arq": "falas-final/P08.wav"
+ },
+ {
+  "id": "N10",
+  "quem": "narrador",
+  "texto": "Ele não voltou porque foi direto pra casa do Tião. E deixou a neta pra trás.",
+  "de": 98.127,
+  "ate": 103.612,
+  "arq": "falas-final/N10.wav"
+ },
+ {
+  "id": "P09",
+  "quem": "tiao",
+  "texto": "Escuta. Você confia em mim?",
+  "de": 104.062,
+  "ate": 107.258,
+  "arq": "falas-final/P09.wav"
+ },
+ {
+  "id": "P10",
+  "quem": "aninha",
+  "texto": "Você tem água?",
+  "de": 107.708,
+  "ate": 108.86,
+  "arq": "falas-final/P10.wav"
+ },
+ {
+  "id": "N11",
+  "quem": "narrador",
+  "texto": "Tião levanta a garrafa. A menina demora. Olha pros lados. E finalmente abre a tampa da caixa d'água.",
+  "de": 109.31,
+  "ate": 116.815,
+  "arq": "falas-final/N11.wav"
+ },
+ {
+  "id": "N12",
+  "quem": "narrador",
+  "texto": "Mas não dá tempo de comemorar. Dentro da casa, uma panela cai no chão.",
+  "de": 116.965,
+  "ate": 122.185,
+  "arq": "falas-final/N12.wav"
+ },
+ {
+  "id": "P11",
+  "quem": "tiao",
+  "texto": "Não faz barulho. Desce devagar.",
+  "de": 122.635,
+  "ate": 126.168,
+  "arq": "falas-final/P11.wav"
+ },
+ {
+  "id": "N13",
+  "quem": "narrador",
+  "texto": "A menina desce a escada. Um degrau. Outro. E no terceiro, a madeira estala.",
+  "de": 126.618,
+  "ate": 132.863,
+  "arq": "falas-final/N13.wav"
+ },
+ {
+  "id": "N14",
+  "quem": "narrador",
+  "texto": "Pela janela da cozinha, três rostos viram ao mesmo tempo.",
+  "de": 133.013,
+  "ate": 137.168,
+  "arq": "falas-final/N14.wav"
+ },
+ {
+  "id": "N15",
+  "quem": "narrador",
+  "texto": "Um deles ainda está com o chapéu de festa na cabeça.",
+  "de": 137.318,
+  "ate": 141.438,
+  "arq": "falas-final/N15.wav"
+ },
+ {
+  "id": "P12",
+  "quem": "tiao",
+  "texto": "Corre! Não olha pra trás!",
+  "de": 141.888,
+  "ate": 145.085,
+  "arq": "falas-final/P12.wav"
+ },
+ {
+  "id": "N16",
+  "quem": "narrador",
+  "texto": "A porta da cozinha explode pra fora. E não são três. São muitos mais.",
+  "de": 145.535,
+  "ate": 151.22,
+  "arq": "falas-final/N16.wav"
+ },
+ {
+  "id": "N17",
+  "quem": "narrador",
+  "texto": "Eles atravessam o pasto. Tião carregando a Aninha nas costas. Os vultos tropeçando atrás.",
+  "de": 151.37,
+  "ate": 158.045,
+  "arq": "falas-final/N17.wav"
+ },
+ {
+  "id": "P13",
+  "quem": "aninha",
+  "texto": "Tião, meu sapato!",
+  "de": 158.495,
+  "ate": 159.69,
+  "arq": "falas-final/P13.wav"
+ },
+ {
+  "id": "P14",
+  "quem": "tiao",
+  "texto": "Deixa! Segura no meu pescoço!",
+  "de": 160.14,
+  "ate": 163.534,
+  "arq": "falas-final/P14.wav"
+ },
+ {
+  "id": "N18",
+  "quem": "narrador",
+  "texto": "Na cerca arrebentada, o arame prende a calça do Tião. Ele puxa. Não solta. E os vultos estão a vinte metros.",
+  "de": 163.984,
+  "ate": 172.999,
+  "arq": "falas-final/N18.wav"
+ },
+ {
+  "id": "N19",
+  "quem": "narrador",
+  "texto": "Ele rasga a calça, a perna sangra. E ele corre mesmo assim. Porque sangue chama eles.",
+  "de": 173.149,
+  "ate": 179.974,
+  "arq": "falas-final/N19.wav"
+ },
+ {
+  "id": "N20",
+  "quem": "narrador",
+  "texto": "Tião não vai pela estrada. Ele desce pelo córrego. Água até o joelho. Porque a água apaga o cheiro.",
+  "de": 180.124,
+  "ate": 187.604,
+  "arq": "falas-final/N20.wav"
+ },
+ {
+  "id": "P15",
+  "quem": "aninha",
+  "texto": "Eles pararam.",
+  "de": 188.054,
+  "ate": 188.992,
+  "arq": "falas-final/P15.wav"
+ },
+ {
+  "id": "P16",
+  "quem": "tiao",
+  "texto": "Não. Eles tão escutando.",
+  "de": 189.442,
+  "ate": 192.593,
+  "arq": "falas-final/P16.wav"
+ },
+ {
+  "id": "N21",
+  "quem": "narrador",
+  "texto": "Os dois ficam parados dentro da água gelada. Um minuto. Dois. Até os vultos se espalharem pelo mato.",
+  "de": 193.043,
+  "ate": 201.258,
+  "arq": "falas-final/N21.wav"
+ },
+ {
+  "id": "N22",
+  "quem": "narrador",
+  "texto": "Quando o sol começa a cair, eles finalmente chegam no sítio. Mas a porteira está aberta de novo.",
+  "de": 201.408,
+  "ate": 208.153,
+  "arq": "falas-final/N22.wav"
+ },
+ {
+  "id": "P17",
+  "quem": "tiao",
+  "texto": "Eu tranquei essa porteira. Eu tenho certeza.",
+  "de": 208.603,
+  "ate": 212.6,
+  "arq": "falas-final/P17.wav"
+ },
+ {
+  "id": "N23",
+  "quem": "narrador",
+  "texto": "A porta da casa está escancarada. O rádio continua chiando na cozinha.",
+  "de": 213.05,
+  "ate": 218.21,
+  "arq": "falas-final/N23.wav"
+ },
+ {
+  "id": "N24",
+  "quem": "narrador",
+  "texto": "E a porta do quarto está arrombada. Por dentro. A madeira lascada pra fora.",
+  "de": 218.36,
+  "ate": 224.08,
+  "arq": "falas-final/N24.wav"
+ },
+ {
+  "id": "N25",
+  "quem": "narrador",
+  "texto": "No chão, o pano que enrolava o braço do Seu Zé. Encharcado. E um rastro escuro que vai até o curral.",
+  "de": 224.23,
+  "ate": 231.855,
+  "arq": "falas-final/N25.wav"
+ },
+ {
+  "id": "P18",
+  "quem": "aninha",
+  "texto": "Vovô? Vovô, cadê você?",
+  "de": 232.305,
+  "ate": 233.713,
+  "arq": "falas-final/P18.wav"
+ },
+ {
+  "id": "P19",
+  "quem": "tiao",
+  "texto": "Aninha, fica aqui. Tranca a porta e não abre pra ninguém. Nem pra mim.",
+  "de": 234.163,
+  "ate": 240.394,
+  "arq": "falas-final/P19.wav"
+ },
+ {
+  "id": "N26",
+  "quem": "narrador",
+  "texto": "Tião pega a enxada. E vai sozinho até o curral.",
+  "de": 240.844,
+  "ate": 244.349,
+  "arq": "falas-final/N26.wav"
+ },
+ {
+  "id": "N27",
+  "quem": "narrador",
+  "texto": "As vacas estão espremidas num canto. Mugindo desesperadas. Olhando todas pro mesmo lugar.",
+  "de": 244.499,
+  "ate": 251.454,
+  "arq": "falas-final/N27.wav"
+ },
+ {
+  "id": "N28",
+  "quem": "narrador",
+  "texto": "Lá no fundo, sentado no feno, está o Seu Zé. De costas. Respirando pesado.",
+  "de": 251.604,
+  "ate": 258.179,
+  "arq": "falas-final/N28.wav"
+ },
+ {
+  "id": "P20",
+  "quem": "tiao",
+  "texto": "Seu Zé... o senhor mentiu pra mim.",
+  "de": 258.629,
+  "ate": 260.789,
+  "arq": "falas-final/P20.wav"
+ },
+ {
+  "id": "P21",
+  "quem": "ze",
+  "texto": "Eu só queria tempo, Tião. Só mais um pouco de tempo.",
+  "de": 261.239,
+  "ate": 264.332,
+  "arq": "falas-final/P21.wav"
+ },
+ {
+  "id": "P22",
+  "quem": "ze",
+  "texto": "Cuida dela. Promete que cuida dela.",
+  "de": 264.782,
+  "ate": 266.723,
+  "arq": "falas-final/P22.wav"
+ },
+ {
+  "id": "P23",
+  "quem": "tiao",
+  "texto": "Eu prometo.",
+  "de": 267.173,
+  "ate": 268.717,
+  "arq": "falas-final/P23.wav"
+ },
+ {
+  "id": "N29",
+  "quem": "narrador",
+  "texto": "O Seu Zé para de respirar. O curral fica em silêncio. E o Tião abaixa a enxada.",
+  "de": 269.167,
+  "ate": 275.427,
+  "arq": "falas-final/N29.wav"
+ },
+ {
+  "id": "N30",
+  "quem": "narrador",
+  "texto": "Foi o erro dele. Porque o corpo do Seu Zé começa a se mexer.",
+  "de": 275.577,
+  "ate": 279.662,
+  "arq": "falas-final/N30.wav"
+ },
+ {
+  "id": "N31",
+  "quem": "narrador",
+  "texto": "E lá da casa, a porta que a Aninha devia ter trancado… range.",
+  "de": 279.812,
+  "ate": 284.297,
+  "arq": "falas-final/N31.wav"
+ },
+ {
+  "id": "P24",
+  "quem": "aninha",
+  "texto": "Tião? Eu ouvi o vovô me chamar.",
+  "de": 284.747,
+  "ate": 286.518,
+  "arq": "falas-final/P24.wav"
+ },
+ {
+  "id": "P25",
+  "quem": "ze",
+  "texto": "Aninha... vem cá... vem com o vovô.",
+  "de": 286.968,
+  "ate": 288.909,
+  "arq": "falas-final/P25.wav"
+ }
+]

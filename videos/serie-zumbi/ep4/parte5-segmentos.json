@@ -1,0 +1,138 @@
+[
+ {
+  "id": "P04",
+  "quem": "aninha",
+  "texto": "Vai embora! Você é um deles?",
+  "de": 0.3,
+  "ate": 1.879,
+  "arq": "falas-final/P04.wav"
+ },
+ {
+  "id": "P05",
+  "quem": "tiao",
+  "texto": "Não, filha. Eu vim te buscar. Seu avô tá lá em casa.",
+  "de": 2.329,
+  "ate": 7.956,
+  "arq": "falas-final/P05.wav"
+ },
+ {
+  "id": "P06",
+  "quem": "aninha",
+  "texto": "Mentira. Eu vi o vovô ser mordido.",
+  "de": 8.406,
+  "ate": 10.518,
+  "arq": "falas-final/P06.wav"
+ },
+ {
+  "id": "N09",
+  "quem": "narrador",
+  "texto": "Tião congela. O Seu Zé jurou que foi no arame.",
+  "de": 10.968,
+  "ate": 15.238,
+  "arq": "falas-final/N09.wav"
+ },
+ {
+  "id": "P07",
+  "quem": "tiao",
+  "texto": "Mordido onde, Aninha?",
+  "de": 15.688,
+  "ate": 17.836,
+  "arq": "falas-final/P07.wav"
+ },
+ {
+  "id": "P08",
+  "quem": "aninha",
+  "texto": "No braço. Ele enrolou um pano e saiu correndo. Disse que ia buscar ajuda. E não voltou.",
+  "de": 18.286,
+  "ate": 23.022,
+  "arq": "falas-final/P08.wav"
+ },
+ {
+  "id": "N10",
+  "quem": "narrador",
+  "texto": "Ele não voltou porque foi direto pra casa do Tião. E deixou a neta pra trás.",
+  "de": 23.472,
+  "ate": 28.957,
+  "arq": "falas-final/N10.wav"
+ },
+ {
+  "id": "P09",
+  "quem": "tiao",
+  "texto": "Escuta. Você confia em mim?",
+  "de": 29.407,
+  "ate": 32.603,
+  "arq": "falas-final/P09.wav"
+ },
+ {
+  "id": "P10",
+  "quem": "aninha",
+  "texto": "Você tem água?",
+  "de": 33.053,
+  "ate": 34.205,
+  "arq": "falas-final/P10.wav"
+ },
+ {
+  "id": "N11",
+  "quem": "narrador",
+  "texto": "Tião levanta a garrafa. A menina demora. Olha pros lados. E finalmente abre a tampa da caixa d'água.",
+  "de": 34.655,
+  "ate": 42.16,
+  "arq": "falas-final/N11.wav"
+ },
+ {
+  "id": "N12",
+  "quem": "narrador",
+  "texto": "Mas não dá tempo de comemorar. Dentro da casa, uma panela cai no chão.",
+  "de": 42.31,
+  "ate": 47.53,
+  "arq": "falas-final/N12.wav"
+ },
+ {
+  "id": "P11",
+  "quem": "tiao",
+  "texto": "Não faz barulho. Desce devagar.",
+  "de": 47.98,
+  "ate": 51.513,
+  "arq": "falas-final/P11.wav"
+ },
+ {
+  "id": "N13",
+  "quem": "narrador",
+  "texto": "A menina desce a escada. Um degrau. Outro. E no terceiro, a madeira estala.",
+  "de": 51.963,
+  "ate": 58.208,
+  "arq": "falas-final/N13.wav"
+ },
+ {
+  "id": "N14",
+  "quem": "narrador",
+  "texto": "Pela janela da cozinha, três rostos viram ao mesmo tempo.",
+  "de": 58.358,
+  "ate": 62.513,
+  "arq": "falas-final/N14.wav"
+ },
+ {
+  "id": "N15",
+  "quem": "narrador",
+  "texto": "Um deles ainda está com o chapéu de festa na cabeça.",
+  "de": 62.663,
+  "ate": 66.783,
+  "arq": "falas-final/N15.wav"
+ },
+ {
+  "id": "P12",
+  "quem": "tiao",
+  "texto": "Corre! Não olha pra trás!",
+  "de": 67.233,
+  "ate": 70.43,
+  "arq": "falas-final/P12.wav"
+ },
+ {
+  "id": "N16",
+  "quem": "narrador",
+  "texto": "A porta da cozinha explode pra fora. E não são três. São muitos mais.",
+  "de": 70.88,
+  "ate": 76.565,
+  "arq": "falas-final/N16.wav"
+ }
+]

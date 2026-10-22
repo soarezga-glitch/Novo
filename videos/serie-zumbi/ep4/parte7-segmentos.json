@@ -1,0 +1,114 @@
+[
+ {
+  "id": "P18",
+  "quem": "aninha",
+  "texto": "Vovô? Vovô, cadê você?",
+  "de": 0.3,
+  "ate": 1.708,
+  "arq": "falas-final/P18.wav"
+ },
+ {
+  "id": "P19",
+  "quem": "tiao",
+  "texto": "Aninha, fica aqui. Tranca a porta e não abre pra ninguém. Nem pra mim.",
+  "de": 2.158,
+  "ate": 8.389,
+  "arq": "falas-final/P19.wav"
+ },
+ {
+  "id": "N26",
+  "quem": "narrador",
+  "texto": "Tião pega a enxada. E vai sozinho até o curral.",
+  "de": 8.839,
+  "ate": 12.344,
+  "arq": "falas-final/N26.wav"
+ },
+ {
+  "id": "N27",
+  "quem": "narrador",
+  "texto": "As vacas estão espremidas num canto. Mugindo desesperadas. Olhando todas pro mesmo lugar.",
+  "de": 12.494,
+  "ate": 19.449,
+  "arq": "falas-final/N27.wav"
+ },
+ {
+  "id": "N28",
+  "quem": "narrador",
+  "texto": "Lá no fundo, sentado no feno, está o Seu Zé. De costas. Respirando pesado.",
+  "de": 19.599,
+  "ate": 26.174,
+  "arq": "falas-final/N28.wav"
+ },
+ {
+  "id": "P20",
+  "quem": "tiao",
+  "texto": "Seu Zé... o senhor mentiu pra mim.",
+  "de": 26.624,
+  "ate": 28.784,
+  "arq": "falas-final/P20.wav"
+ },
+ {
+  "id": "P21",
+  "quem": "ze",
+  "texto": "Eu só queria tempo, Tião. Só mais um pouco de tempo.",
+  "de": 29.234,
+  "ate": 32.327,
+  "arq": "falas-final/P21.wav"
+ },
+ {
+  "id": "P22",
+  "quem": "ze",
+  "texto": "Cuida dela. Promete que cuida dela.",
+  "de": 32.777,
+  "ate": 34.718,
+  "arq": "falas-final/P22.wav"
+ },
+ {
+  "id": "P23",
+  "quem": "tiao",
+  "texto": "Eu prometo.",
+  "de": 35.168,
+  "ate": 36.712,
+  "arq": "falas-final/P23.wav"
+ },
+ {
+  "id": "N29",
+  "quem": "narrador",
+  "texto": "O Seu Zé para de respirar. O curral fica em silêncio. E o Tião abaixa a enxada.",
+  "de": 37.162,
+  "ate": 43.422,
+  "arq": "falas-final/N29.wav"
+ },
+ {
+  "id": "N30",
+  "quem": "narrador",
+  "texto": "Foi o erro dele. Porque o corpo do Seu Zé começa a se mexer.",
+  "de": 43.572,
+  "ate": 47.657,
+  "arq": "falas-final/N30.wav"
+ },
+ {
+  "id": "N31",
+  "quem": "narrador",
+  "texto": "E lá da casa, a porta que a Aninha devia ter trancado… range.",
+  "de": 47.807,
+  "ate": 52.292,
+  "arq": "falas-final/N31.wav"
+ },
+ {
+  "id": "P24",
+  "quem": "aninha",
+  "texto": "Tião? Eu ouvi o vovô me chamar.",
+  "de": 52.742,
+  "ate": 54.513,
+  "arq": "falas-final/P24.wav"
+ },
+ {
+  "id": "P25",
+  "quem": "ze",
+  "texto": "Aninha... vem cá... vem com o vovô.",
+  "de": 54.963,
+  "ate": 56.904,
+  "arq": "falas-final/P25.wav"
+ }
+]

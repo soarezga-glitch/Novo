@@ -1,0 +1,114 @@
+[
+ {
+  "id": "N17",
+  "quem": "narrador",
+  "texto": "Eles atravessam o pasto. Tião carregando a Aninha nas costas. Os vultos tropeçando atrás.",
+  "de": 0.3,
+  "ate": 6.975,
+  "arq": "falas-final/N17.wav"
+ },
+ {
+  "id": "P13",
+  "quem": "aninha",
+  "texto": "Tião, meu sapato!",
+  "de": 7.425,
+  "ate": 8.62,
+  "arq": "falas-final/P13.wav"
+ },
+ {
+  "id": "P14",
+  "quem": "tiao",
+  "texto": "Deixa! Segura no meu pescoço!",
+  "de": 9.07,
+  "ate": 12.464,
+  "arq": "falas-final/P14.wav"
+ },
+ {
+  "id": "N18",
+  "quem": "narrador",
+  "texto": "Na cerca arrebentada, o arame prende a calça do Tião. Ele puxa. Não solta. E os vultos estão a vinte metros.",
+  "de": 12.914,
+  "ate": 21.929,
+  "arq": "falas-final/N18.wav"
+ },
+ {
+  "id": "N19",
+  "quem": "narrador",
+  "texto": "Ele rasga a calça, a perna sangra. E ele corre mesmo assim. Porque sangue chama eles.",
+  "de": 22.079,
+  "ate": 28.904,
+  "arq": "falas-final/N19.wav"
+ },
+ {
+  "id": "N20",
+  "quem": "narrador",
+  "texto": "Tião não vai pela estrada. Ele desce pelo córrego. Água até o joelho. Porque a água apaga o cheiro.",
+  "de": 29.054,
+  "ate": 36.534,
+  "arq": "falas-final/N20.wav"
+ },
+ {
+  "id": "P15",
+  "quem": "aninha",
+  "texto": "Eles pararam.",
+  "de": 36.984,
+  "ate": 37.922,
+  "arq": "falas-final/P15.wav"
+ },
+ {
+  "id": "P16",
+  "quem": "tiao",
+  "texto": "Não. Eles tão escutando.",
+  "de": 38.372,
+  "ate": 41.523,
+  "arq": "falas-final/P16.wav"
+ },
+ {
+  "id": "N21",
+  "quem": "narrador",
+  "texto": "Os dois ficam parados dentro da água gelada. Um minuto. Dois. Até os vultos se espalharem pelo mato.",
+  "de": 41.973,
+  "ate": 50.188,
+  "arq": "falas-final/N21.wav"
+ },
+ {
+  "id": "N22",
+  "quem": "narrador",
+  "texto": "Quando o sol começa a cair, eles finalmente chegam no sítio. Mas a porteira está aberta de novo.",
+  "de": 50.338,
+  "ate": 57.083,
+  "arq": "falas-final/N22.wav"
+ },
+ {
+  "id": "P17",
+  "quem": "tiao",
+  "texto": "Eu tranquei essa porteira. Eu tenho certeza.",
+  "de": 57.533,
+  "ate": 61.53,
+  "arq": "falas-final/P17.wav"
+ },
+ {
+  "id": "N23",
+  "quem": "narrador",
+  "texto": "A porta da casa está escancarada. O rádio continua chiando na cozinha.",
+  "de": 61.98,
+  "ate": 67.14,
+  "arq": "falas-final/N23.wav"
+ },
+ {
+  "id": "N24",
+  "quem": "narrador",
+  "texto": "E a porta do quarto está arrombada. Por dentro. A madeira lascada pra fora.",
+  "de": 67.29,
+  "ate": 73.01,
+  "arq": "falas-final/N24.wav"
+ },
+ {
+  "id": "N25",
+  "quem": "narrador",
+  "texto": "No chão, o pano que enrolava o braço do Seu Zé. Encharcado. E um rastro escuro que vai até o curral.",
+  "de": 73.16,
+  "ate": 80.785,
+  "arq": "falas-final/N25.wav"
+ }
+]

@@ -1,0 +1,177 @@
+[
+ {
+  "id": "P01",
+  "quem": "tiao",
+  "texto": "Isso aqui não é pegada de bicho.",
+  "de": 0.25,
+  "ate": 2.456
+ },
+ {
+  "id": "P02",
+  "quem": "tiao",
+  "texto": "Aguenta firme, menina. Eu tô chegando.",
+  "de": 2.806,
+  "ate": 6.931
+ },
+ {
+  "id": "P03",
+  "quem": "tiao",
+  "texto": "Aninha? É o Tião. Amigo do seu avô.",
+  "de": 7.281,
+  "ate": 11.91
+ },
+ {
+  "id": "P04",
+  "quem": "aninha",
+  "texto": "Vai embora! Você é um deles?",
+  "de": 12.46,
+  "ate": 14.039
+ },
+ {
+  "id": "P05",
+  "quem": "tiao",
+  "texto": "Não, filha. Eu vim te buscar. Seu avô tá lá em casa.",
+  "de": 14.589,
+  "ate": 20.216
+ },
+ {
+  "id": "P06",
+  "quem": "aninha",
+  "texto": "Mentira. Eu vi o vovô ser mordido.",
+  "de": 20.766,
+  "ate": 22.878
+ },
+ {
+  "id": "P07",
+  "quem": "tiao",
+  "texto": "Mordido onde, Aninha?",
+  "de": 23.428,
+  "ate": 25.575
+ },
+ {
+  "id": "P08",
+  "quem": "aninha",
+  "texto": "No braço. Ele enrolou um pano e saiu correndo. Disse que ia buscar ajuda. E não voltou.",
+  "de": 26.125,
+  "ate": 30.861
+ },
+ {
+  "id": "P09",
+  "quem": "tiao",
+  "texto": "Escuta. Você confia em mim?",
+  "de": 31.412,
+  "ate": 34.608
+ },
+ {
+  "id": "P10",
+  "quem": "aninha",
+  "texto": "Você tem água?",
+  "de": 35.158,
+  "ate": 36.31
+ },
+ {
+  "id": "P11",
+  "quem": "tiao",
+  "texto": "Não faz barulho. Desce devagar.",
+  "de": 36.86,
+  "ate": 40.393
+ },
+ {
+  "id": "P12",
+  "quem": "tiao",
+  "texto": "Corre! Não olha pra trás!",
+  "de": 40.743,
+  "ate": 43.94
+ },
+ {
+  "id": "P13",
+  "quem": "aninha",
+  "texto": "Tião, meu sapato!",
+  "de": 44.49,
+  "ate": 45.685
+ },
+ {
+  "id": "P14",
+  "quem": "tiao",
+  "texto": "Deixa! Segura no meu pescoço!",
+  "de": 46.235,
+  "ate": 49.629
+ },
+ {
+  "id": "P15",
+  "quem": "aninha",
+  "texto": "Eles pararam.",
+  "de": 50.179,
+  "ate": 51.117
+ },
+ {
+  "id": "P16",
+  "quem": "tiao",
+  "texto": "Não. Eles tão escutando.",
+  "de": 51.667,
+  "ate": 54.818
+ },
+ {
+  "id": "P17",
+  "quem": "tiao",
+  "texto": "Eu tranquei essa porteira. Eu tenho certeza.",
+  "de": 55.168,
+  "ate": 59.165
+ },
+ {
+  "id": "P18",
+  "quem": "aninha",
+  "texto": "Vovô? Vovô, cadê você?",
+  "de": 59.715,
+  "ate": 61.123
+ },
+ {
+  "id": "P19",
+  "quem": "tiao",
+  "texto": "Aninha, fica aqui. Tranca a porta e não abre pra ninguém. Nem pra mim.",
+  "de": 61.673,
+  "ate": 67.904
+ },
+ {
+  "id": "P20",
+  "quem": "tiao",
+  "texto": "Seu Zé... o senhor mentiu pra mim.",
+  "de": 68.254,
+  "ate": 70.414
+ },
+ {
+  "id": "P21",
+  "quem": "ze",
+  "texto": "Eu só queria tempo, Tião. Só mais um pouco de tempo.",
+  "de": 70.964,
+  "ate": 74.057
+ },
+ {
+  "id": "P22",
+  "quem": "ze",
+  "texto": "Cuida dela. Promete que cuida dela.",
+  "de": 74.407,
+  "ate": 76.348
+ },
+ {
+  "id": "P23",
+  "quem": "tiao",
+  "texto": "Eu prometo.",
+  "de": 76.898,
+  "ate": 78.442
+ },
+ {
+  "id": "P24",
+  "quem": "aninha",
+  "texto": "Tião? Eu ouvi o vovô me chamar.",
+  "de": 78.992,
+  "ate": 80.763
+ },
+ {
+  "id": "P25",
+  "quem": "ze",
+  "texto": "Aninha... vem cá... vem com o vovô.",
+  "de": 81.313,
+  "ate": 83.254
+ }
+]
