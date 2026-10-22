@@ -24,6 +24,12 @@
       "sourceType": "github",
       "skillPath": "viral-tiktok-hooks/SKILL.md",
       "computedHash": "7f05001acf294118fb49d95f4b44d7491de7f14bb4ae30db6e33266116a00732"
+    },
+    "voice-changer": {
+      "source": "elevenlabs/skills",
+      "sourceType": "github",
+      "skillPath": "voice-changer/SKILL.md",
+      "computedHash": "06b15aa9d95574dc280151e936bdcd505c9c6d8b46de064bb209e7d301fd01aa"
     }
   }
 }

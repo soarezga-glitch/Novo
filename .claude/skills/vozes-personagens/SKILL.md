@@ -43,3 +43,11 @@ Rate/pitch leves (`--rate=-8% --pitch=-4Hz`) — nunca mais que isso.
 - nervoso/tremendo: `vibrato=f=6:d=0.08`
 - rouco/virando zumbi: `acrusher=bits=10:mix=0.2:mode=log,lowpass=f=2600,vibrato=f=4:d=0.15`
 - narrador com presença: `equalizer=f=120:t=q:w=1:g=3,equalizer=f=3000:t=q:w=1.2:g=2,aecho=0.8:0.4:40:0.08`
+
+## Voz de gente do interior e mais velha (pedido do usuário: "não pode soar adolescente")
+- **Melhor caminho:** ElevenLabs. Ou gera direto com uma voz madura da biblioteca (busque "old man", "Brazilian",
+  "raspy", "deep"), ou o usuário/um amigo grava a fala com sotaque e jeito do interior e a skill **voice-changer**
+  (elevenlabs/skills@voice-changer, instalada) troca só o timbre, mantendo o sotaque, a emoção e o ritmo dele.
+- **Local (piper):** baixar o tom 10–14% com `rubberband=pitch=0.86:formant=shifted` (soa maior/mais velho sem virar robô),
+  falar mais pausado (`lento` 1,05–1,15), tremor de idade bem raso (`vibrato=f=5.5:d=0.03`), menos agudo (corte em 2,8 kHz).
+- **Sotaque no texto** (só para a pronúncia; a legenda mostra o roteiro original): "sô", "uai", "bão", "homi", "trem", "cê".
