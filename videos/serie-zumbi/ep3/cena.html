@@ -181,12 +181,16 @@ $('#stage defs').insertAdjacentHTML('beforeend', '<clipPath id="clipJanela"><rec
 const zW = ator(1.15, J('braco'), SEUZE_PALIDO); zW.grupo.setAttribute('clip-path', 'url(#clipJanela)');
 zW.base(S.braco[0], S.braco[1], 'parado', { x: 700, y: 1300, vista: 'frente' }); zW.expressao(S.braco[0], S.braco[1], 'preocupado'); zW.cabeca(S.braco[0], S.braco[1], { inclinar: -8, virar: -0.3 });
 zW.braco('e', S.braco[0], S.braco[1], 'alcancar', { alvo: [560, 900] });
+const tB = ator(1.25, J('braco'), TIAO); tB.base(S.braco[0], S.braco[1], 'parado', { x: 170, y: 1760, vista: 'perfil', dir: 1 });
+tB.expressao(S.braco[0], S.braco[1], 'desconfiado'); tB.cabeca(S.braco[0], S.braco[1], { baixar: -14 }); tB.braco('d', S.braco[0], S.braco[1], 'queixo');
 const bracoZe = item(`<g id="br-braco"><g transform="translate(672 822) scale(-1.15 1.15)">${CORR.bracoFerido(0, 0, 1)}</g></g>`, J('braco'), '#props');
 // o Tião passando a porteira com a mochila
 // sai andando pelo vão da porteira aberta (entre os mourões x 360–640), do lado de dentro para fora, vindo para a frente
-const tS = ator(1.1, J('sai'), TIAO);
-tS.base(S.sai[0], S.sai[1], 'andar', { de: [585, 1330], ate: [390, 1640], passo: 95, chao: x => 1330 + (585 - x) * (310 / 195) });
-tS.expressao(S.sai[0], S.sai[1], 'determinado');
+// vem DE FRENTE para a câmera pelo caminho de terra, saindo do sítio pelo vão da porteira aberta (fica maior ao chegar perto)
+const tS = ator(1.0, J('sai'), TIAO);
+tS.base(S.sai[0], S.sai[1], 'andarFrente', { de: [505, 1200], ate: [505, 1700], passo: 70 });
+const kSai = y => 0.42 + (y - 1200) / 500 * 0.83;   // perspectiva: 0,42 lá perto da casa → 1,25 perto da câmera
+tS.expressao(S.sai[0], S.sai[1], 'determinado'); tS.cabeca(S.sai[0], S.sai[1], { baixar: 4 });
 const mochilaS = item(CORR.mochila(0, 0, 0.9), J('sai'), '#props');
 
 // ===================== CÂMERA =====================
@@ -196,7 +200,7 @@ const CAM = [
   [8.4, 1.0, 540, 960], [11.6, 1.05, 520, 960], [13.4, 1.9, 420, 1060],
   [13.4, 1.05, 620, 1000], [16.3, 1.15, 640, 1000],
   [16.3, 1.75, 400, 880], [19.3, 1.85, 410, 880],
-  [19.3, 1.0, 540, 960], [21.9, 1.12, 640, 1040],
+  [19.3, 1.0, 540, 980], [21.9, 1.05, 520, 1000],
   [21.9, 1.0, 540, 960], [26.85, 1.06, 540, 960],
   [26.85, 1.0, 540, 1000], [30.6, 1.35, 700, 820],
   [30.6, 1.9, 400, 860], [33.4, 2.05, 400, 880],
@@ -277,7 +281,9 @@ function desenhar(t) {
   if (dentro(t, J('suando'))) { const c = zQ.mao ? zQ : null; $$('.gota').forEach((g, i) => { const u = ((t * 0.7 + i * 0.27) % 1), cab = [600 - 50 + i * 30, 760 + i * 8]; g.setAttribute('transform', `translate(${cab[0]} ${(cab[1] + u * 120).toFixed(1)})`); g.setAttribute('opacity', (Math.sin(u * Math.PI)).toFixed(2)); }); }
   // a mochila acompanha o ombro do Tião; o curativo acompanha o antebraço do seu Zé
   if (dentro(t, [[44.1, S.volto[1]]])) { const m = tK.mao(t < 44.3 ? 'd' : 'e'); mochila.setAttribute('transform', `translate(${m[0].toFixed(1)} ${(m[1] + 140).toFixed(1)})`); }
-  if (dentro(t, J('sai'))) { const m = tS.mao('e'); mochilaS.setAttribute('transform', `translate(${m[0].toFixed(1)} ${(m[1] + 126).toFixed(1)})`); }
+  if (dentro(t, J('sai'))) { const u = Math.min(1, Math.max(0, (t - S.sai[0]) / (S.sai[1] - S.sai[0]))), fy = 1200 + 500 * u, k = kSai(fy), F = [505, fy];
+    tS.grupo.setAttribute('transform', `translate(${F[0]} ${fy.toFixed(1)}) scale(${k.toFixed(3)}) translate(${-F[0]} ${(-fy).toFixed(1)})`);
+    const m = tS.mao('e'), w = [F[0] + (m[0] - F[0]) * k, fy + (m[1] - fy) * k]; mochilaS.setAttribute('transform', `translate(${w[0].toFixed(1)} ${(w[1] + 126 * k * 0.9).toFixed(1)}) scale(${k.toFixed(3)})`); }
   if (dentro(t, J('cafe'))) { const m = zC.mao('d'); curativo.setAttribute('transform', `translate(${(m[0] - 50).toFixed(1)} ${(m[1] + 20).toFixed(1)})`); }
   // vida: neblina, estática, vapor, ponteiro do relógio da regra correndo
   $$('.neblina').forEach((n, i) => n.setAttribute('transform', `translate(${((t * 12 + i * 70) % 200 - 100).toFixed(1)} 0)`));

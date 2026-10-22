@@ -295,6 +295,22 @@
         if (vista === 'frente') { pose.bracos.e = { o: 20 + dy / s * 1.6, c: 20 }; pose.bracos.d = { o: 20 + dy / s * 1.6, c: 20 }; }
         return pose;
       }
+      if (a.tipo === 'andarFrente') {
+        // andando DE FRENTE para a câmera (ou de costas, indo embora): o quadril vai de p.de até p.ate, os pés alternam
+        // (um apoia, o outro sobe e passa), o quadril sobe e desce a cada passo e os braços balançam opostos às pernas.
+        // A perspectiva (ficar maior chegando perto) é feita fora, escalando o grupo em volta do pé (skill fisica-de-cena).
+        const u = clamp((t - a.t0) / Math.max(0.01, a.t1 - a.t0), 0, 1);
+        const x = lerp(p.de[0], p.ate[0], u), y = lerp(p.de[1], p.ate[1], u);
+        const dist = Math.hypot(p.ate[0] - p.de[0], p.ate[1] - p.de[1]), passo = p.passo ?? 90 * s;
+        const fase = u * dist / (2 * passo), abre = (p.abertura ?? 20) * s, tz = M.tornozelo * s;
+        const pes = [0, 1].map(i => { const q = frac(fase + i * 0.5), voo = q >= 0.5 ? Math.sin((q - 0.5) / 0.5 * Math.PI) : 0;
+          return { tz: [x + (i ? abre : -abre), y - tz - voo * (p.elevar ?? 36) * s], inc: 0 }; });
+        const bob = Math.abs(Math.sin(2 * Math.PI * fase)) * 6 * s;
+        const hq = M.alturaQuadril * s - 6 * s;
+        const bal = Math.sin(2 * Math.PI * fase) * 14;
+        return { vista: 'frente', dir: 1, R: [x, y], giro: 0, inclina: 0, quadril: [x, y - hq + bob], respira, pes,
+          bracos: { e: { o: 12 + bal, c: 14 + Math.max(0, bal) }, d: { o: 12 - bal, c: 14 + Math.max(0, -bal) } } };
+      }
       // locomoção: andar / correr / subir (escada) — pés plantados via IK
       const G = { ...GAIT[a.tipo], ...(p.gait || {}) };
       const chaoF = p.chao || (() => p.de[1]);
@@ -589,7 +605,7 @@
     desenhar(t) {
       const s = this.s;
       const P = this.pose(t);
-      this._t = t; { const a = this.acaoEm(this.acoes, t).atual; this._rapido = a ? ({ correr: 1, pular: 0.8, andar: 0.35, montar: 0.7 }[a.tipo] || 0) : 0; }
+      this._t = t; { const a = this.acaoEm(this.acoes, t).atual; this._rapido = a ? ({ correr: 1, pular: 0.8, andar: 0.35, andarFrente: 0.35, montar: 0.7 }[a.tipo] || 0) : 0; }
       if (!P) { this.g.style.display = 'none'; this.el.extras.style.display = 'none'; this.el.sombraPe.style.display = 'none'; return; }
       this.el.sombraPe.style.display = '';
       this.g.style.display = ''; this.el.extras.style.display = '';
