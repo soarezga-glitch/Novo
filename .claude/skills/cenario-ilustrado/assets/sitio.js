@@ -229,7 +229,7 @@
 
     // ---------- PAREDE DA COZINHA por fora (de perto): reboco gasto, janela de madeira, o cobertor ARRANCADO (pendurado
     // num prego só, rasgado), lá dentro escuro com a luzinha do rádio; lenha, enxada, balde, mato no pé da parede ----------
-    S.paredeJanela = ({ x = 0, y = 0, w = 1080, h = 1920, chao = 1440, amanhecer = true } = {}) => {
+    S.paredeJanela = ({ x = 0, y = 0, w = 1080, h = 1920, chao = 1440, amanhecer = true, quarto = false } = {}) => {
       const cor = '#8A7E66';
       let s = defs() + `<rect x="${x}" y="${y}" width="${w}" height="${chao}" fill="${cor}"/>`;
       for (let i = 0; i < 26; i++) s += `<ellipse cx="${f(x + rnd(0, w))}" cy="${f(y + rnd(0, chao))}" rx="${f(rnd(40, 120))}" ry="${f(rnd(20, 60))}" fill="${tom(cor, rnd(-0.16, 0.08))}" opacity=".55"/>`;
@@ -240,15 +240,16 @@
       // janela: moldura funda, lá dentro escuro, o mostrador do rádio aceso; folhas de madeira abertas
       const jx = x + 500, jy = y + 560, jw = 400, jh = 420;
       s += `<rect x="${jx - 24}" y="${jy - 24}" width="${jw + 48}" height="${jh + 48}" fill="#3A2A1C" stroke="${L}" stroke-width="6"/><rect x="${jx}" y="${jy}" width="${jw}" height="${jh}" fill="#0A0C10"/>`;
-      s += `<rect x="${jx + 40}" y="${jy + 300}" width="320" height="18" fill="#1A1410"/><rect x="${jx + 200}" y="${jy + 240}" width="110" height="62" rx="8" fill="#16120E"/><rect x="${jx + 214}" y="${jy + 254}" width="44" height="20" fill="#E8B23A" opacity=".8"/>` + brilho(jx + 236, jy + 264, 90, '#E8B23A', 0.4);
+      if (!quarto) s += `<rect x="${jx + 40}" y="${jy + 300}" width="320" height="18" fill="#1A1410"/><rect x="${jx + 200}" y="${jy + 240}" width="110" height="62" rx="8" fill="#16120E"/><rect x="${jx + 214}" y="${jy + 254}" width="44" height="20" fill="#E8B23A" opacity=".8"/>` + brilho(jx + 236, jy + 264, 90, '#E8B23A', 0.4);
       if (amanhecer) s += `<path d="M${jx} ${jy} L${jx + jw * 0.45} ${jy} L${jx + jw * 0.2} ${jy + jh} H${jx}Z" fill="#F6C48A" opacity=".08"/>`;
       s += `<path d="M${jx + jw / 2} ${jy} V${jy + jh}" stroke="#3A2A1C" stroke-width="12"/>`;
+      if (quarto) s += `<path d="M${jx} ${jy} Q${jx + 60} ${jy + 200} ${jx + 30} ${jy + jh} H${jx}Z M${jx + jw} ${jy} Q${jx + jw - 60} ${jy + 200} ${jx + jw - 30} ${jy + jh} H${jx + jw}Z" fill="#7A3A4A" opacity=".9"/>${[...Array(10)].map((_, q) => `<circle cx="${q % 2 ? jx + 14 : jx + jw - 18}" cy="${jy + 30 + q * 38}" r="7" fill="#E8C24A" opacity=".8"/>`).join('')}`;   // cortina de chita do quarto
       [[-1, jx - 24], [1, jx + jw + 24]].forEach(([sd, ex]) => { s += `<path d="M${ex} ${jy - 24} L${ex + sd * 150} ${jy - 44} L${ex + sd * 150} ${jy + jh + 44} L${ex} ${jy + jh + 24}Z" fill="#4A6A5A" stroke="${L}" stroke-width="5"/>`; for (let q = 1; q < 4; q++) s += `<path d="M${ex + sd * 150 * q / 4} ${jy - 28 - q * 4} V${jy + jh + 28 + q * 4}" stroke="#3A5A4A" stroke-width="4"/>`; });
       s += `<rect x="${jx - 40}" y="${jy + jh + 24}" width="${jw + 80}" height="22" fill="#CFC6B0" stroke="${L}" stroke-width="4"/>`;
       // cobertor arrancado: preso só no prego da direita, caído e rasgado; um pedaço ficou no prego da esquerda
-      s += `<circle cx="${jx - 4}" cy="${jy - 8}" r="8" fill="#9AA0A8"/><path d="M${jx - 4} ${jy - 8} l-14 30 l12 -6 l6 26 l10 -40Z" fill="#5A2E2A" stroke="${L}" stroke-width="3"/>`;
-      s += `<g class="cobertorPend"><path d="M${jx + jw + 4} ${jy - 8} Q${jx + jw - 60} ${jy + 160} ${jx + jw - 30} ${jy + 380} L${jx + jw - 70} ${jy + 430} L${jx + jw - 40} ${jy + 470} L${jx + jw + 10} ${jy + 450} L${jx + jw + 40} ${jy + 500} L${jx + jw + 60} ${jy + 360} Q${jx + jw + 50} ${jy + 120} ${jx + jw + 4} ${jy - 8}Z" fill="#5A2E2A" stroke="${L}" stroke-width="5"/>${[0, 1, 2].map(i => `<path d="M${jx + jw - 30 + i * 30} ${jy + 40 + i * 10} Q${jx + jw - 40 + i * 30} ${jy + 260} ${jx + jw - 30 + i * 32} ${jy + 440}" stroke="#3E1E1A" stroke-width="9" fill="none" opacity=".7"/>`).join('')}${[0, 1, 2, 3].map(i => `<path d="M${jx + jw - 40 + i * 4} ${jy + 80 + i * 100} H${jx + jw + 50 - i * 2}" stroke="#7A4A3A" stroke-width="7" opacity=".55"/>`).join('')}<circle cx="${jx + jw + 4}" cy="${jy - 8}" r="8" fill="#9AA0A8"/></g>`;
-      s += `<path d="M${jx + 60} ${jy + jh + 28} l30 -6 l-10 12 l26 -4" stroke="#2A1810" stroke-width="5" fill="none"/>`;   // arranhões no peitoril
+      if (!quarto) s += `<circle cx="${jx - 4}" cy="${jy - 8}" r="8" fill="#9AA0A8"/><path d="M${jx - 4} ${jy - 8} l-14 30 l12 -6 l6 26 l10 -40Z" fill="#5A2E2A" stroke="${L}" stroke-width="3"/>`;
+      if (!quarto) s += `<g class="cobertorPend"><path d="M${jx + jw + 4} ${jy - 8} Q${jx + jw - 60} ${jy + 160} ${jx + jw - 30} ${jy + 380} L${jx + jw - 70} ${jy + 430} L${jx + jw - 40} ${jy + 470} L${jx + jw + 10} ${jy + 450} L${jx + jw + 40} ${jy + 500} L${jx + jw + 60} ${jy + 360} Q${jx + jw + 50} ${jy + 120} ${jx + jw + 4} ${jy - 8}Z" fill="#5A2E2A" stroke="${L}" stroke-width="5"/>${[0, 1, 2].map(i => `<path d="M${jx + jw - 30 + i * 30} ${jy + 40 + i * 10} Q${jx + jw - 40 + i * 30} ${jy + 260} ${jx + jw - 30 + i * 32} ${jy + 440}" stroke="#3E1E1A" stroke-width="9" fill="none" opacity=".7"/>`).join('')}${[0, 1, 2, 3].map(i => `<path d="M${jx + jw - 40 + i * 4} ${jy + 80 + i * 100} H${jx + jw + 50 - i * 2}" stroke="#7A4A3A" stroke-width="7" opacity=".55"/>`).join('')}<circle cx="${jx + jw + 4}" cy="${jy - 8}" r="8" fill="#9AA0A8"/></g>`;
+      if (!quarto) s += `<path d="M${jx + 60} ${jy + jh + 28} l30 -6 l-10 12 l26 -4" stroke="#2A1810" stroke-width="5" fill="none"/>`;   // arranhões no peitoril
       // chão de terra, lenha empilhada, enxada encostada, balde
       s += `<rect x="${x}" y="${chao}" width="${w}" height="${y + h - chao}" fill="${amanhecer ? '#5A4A38' : '#2A2018'}"/>`;
       for (let i = 0; i < 40; i++) s += `<ellipse cx="${f(x + rnd(0, w))}" cy="${f(chao + rnd(10, h - chao))}" rx="${f(rnd(4, 14))}" ry="${f(rnd(2, 5))}" fill="#3A2E22"/>`;
@@ -260,7 +261,98 @@
       return clip(x, y, w, h, s + acabamento(0.28));
     };
 
+    // ---------- CORREDOR da casa do Tião (de dia, frio): parede de tábua, a PORTA DO QUARTO trancada (grupo .portaQuarto
+    // para tremer; .macaneta gira; .fresta = sombra dos pés por baixo da porta), porta-retrato antigo (Tião menino e o
+    // seu Zé), calendário, cabideiro com chapéu, cadeira com a mochila, janelinha com luz fria, tapete de retalho ----------
+    S.corredor = ({ x = 0, y = 0, w = 1080, h = 1920, chao = 1460, mochila = true, retrato = [x + 330, y + 420] } = {}) => {
+      let s = defs() + tabuas(x, y, w, chao - y, '#5A4632', true, 100) + `<rect x="${x}" y="${y}" width="${w}" height="${chao - y}" fill="#0A0C14" opacity=".25"/>`;
+      s += `<rect x="${x}" y="${y}" width="${w}" height="60" fill="#2A2018"/><rect x="${x}" y="${chao - 70}" width="${w}" height="70" fill="#3A2A1C" stroke="${L}" stroke-width="4"/>`;
+      // janelinha com luz fria da manhã e o facho no chão
+      s += `<rect x="${x + 50}" y="${y + 640}" width="220" height="300" fill="#3A2A1C" stroke="${L}" stroke-width="5"/><rect x="${x + 68}" y="${y + 658}" width="184" height="264" fill="#B8C4D0"/><path d="M${x + 160} ${y + 658} V${y + 922} M${x + 68} ${y + 790} H${x + 252}" stroke="#3A2A1C" stroke-width="10"/>` +
+        `<path d="M${x + 68} ${y + 922} L${x + 252} ${y + 922} L${x + 520} ${chao + 300} L${x + 160} ${chao + 300}Z" fill="#C8D8E8" opacity=".12" style="mix-blend-mode:screen"/>`;
+      // porta-retrato antigo: o Tião menino ao lado do seu Zé (sépia)
+      s += `<g id="retrato" transform="translate(${retrato[0]} ${retrato[1]}) rotate(-3)"><rect x="-80" y="-100" width="160" height="200" fill="#6A4A2A" stroke="${L}" stroke-width="5"/><rect x="-62" y="-82" width="124" height="164" fill="#D8C49A"/>
+        <circle cx="-24" cy="-20" r="16" fill="#E8DCC0" stroke="#5A4630" stroke-width="3"/><path d="M-24 -4 V40 M-24 40 l-10 30 M-24 40 l10 30 M-24 10 l-14 16 M-24 10 l14 14" stroke="#5A4630" stroke-width="5" fill="none" stroke-linecap="round"/>
+        <circle cx="26" cy="6" r="11" fill="#E8DCC0" stroke="#5A4630" stroke-width="3"/><path d="M26 17 V46 M26 46 l-7 22 M26 46 l7 22 M26 24 l-14 -8" stroke="#5A4630" stroke-width="4" fill="none" stroke-linecap="round"/><ellipse cx="-24" cy="-36" rx="26" ry="5" fill="#8A6A3A"/>
+        <rect x="-62" y="-82" width="124" height="164" fill="#7A5A2A" opacity=".18"/></g><path d="M${retrato[0] - 30} ${retrato[1] - 98} L${retrato[0]} ${retrato[1] - 130} L${retrato[0] + 30} ${retrato[1] - 98}" stroke="#2A2018" stroke-width="3" fill="none"/>`;
+      // calendário e termômetro de parede
+      s += `<g transform="translate(${x + 930} ${y + 520})"><rect x="-70" y="-90" width="140" height="180" fill="#E8DCC0" stroke="${L}" stroke-width="4"/><rect x="-70" y="-90" width="140" height="56" fill="#8A3A2A"/>${texto('OUTUBRO', 0, -62, 110, 28)}${[...Array(15)].map((_, i) => `<rect x="${-58 + (i % 5) * 24}" y="${-24 + Math.floor(i / 5) * 26}" width="18" height="18" fill="${i < 12 ? '#9A8A70' : '#C9BCA0'}"/>${i < 12 ? `<path d="M${-58 + (i % 5) * 24} ${-24 + Math.floor(i / 5) * 26} l18 18" stroke="#8A2A20" stroke-width="2"/>` : ''}`).join('')}</g>`;
+      // porta do quarto (fechada, trancada) — grupo que treme
+      const px = x + 560, pw = 320, pt = chao - 720;
+      s += `<rect x="${px - 24}" y="${pt - 24}" width="${pw + 48}" height="${chao - pt + 24}" fill="#3A2A1C" stroke="${L}" stroke-width="6"/>`;
+      s += `<rect class="fresta" x="${px}" y="${chao - 10}" width="${pw}" height="10" fill="#000"/>`;
+      s += `<g class="portaQuarto" data-cx="${px + pw / 2}" data-cy="${chao}">${tabuas(px, pt, pw, chao - pt - 10, '#6A4A2E', true, 80)}<rect x="${px}" y="${pt}" width="${pw}" height="${chao - pt - 10}" fill="none" stroke="${L}" stroke-width="5"/>`;
+      s += `<rect x="${px + 30}" y="${pt + 40}" width="${pw - 60}" height="260" fill="none" stroke="#4A3220" stroke-width="8"/><rect x="${px + 30}" y="${pt + 360}" width="${pw - 60}" height="280" fill="none" stroke="#4A3220" stroke-width="8"/>`;
+      s += `<g transform="translate(${px + pw - 50} ${pt + 380})"><rect x="-20" y="-50" width="40" height="120" rx="8" fill="#8A7A5A" stroke="${L}" stroke-width="4"/><g class="macaneta" data-cx="0" data-cy="0"><path d="M0 0 H-70" stroke="${L}" stroke-width="20" stroke-linecap="round"/><path d="M0 0 H-70" stroke="#B8A070" stroke-width="12" stroke-linecap="round"/></g><circle r="12" fill="#B8A070" stroke="${L}" stroke-width="4"/><path d="M0 34 v20" stroke="${L}" stroke-width="9" stroke-linecap="round"/><circle cy="32" r="7" fill="${L}"/>` +
+        `<g class="chave" data-cx="0" data-cy="38"><rect x="-4" y="38" width="8" height="34" fill="#9AA0A8" stroke="${L}" stroke-width="3"/><circle cy="84" r="13" fill="none" stroke="#9AA0A8" stroke-width="7"/></g></g></g>`;
+      // cabideiro com chapéu e casaco, cadeira com a mochila, tapete de retalho
+      s += `<g transform="translate(${x + 120} ${chao})"><path d="M0 0 V-600 M-60 0 H60 M-40 -560 l40 -20 l40 20" stroke="#4A3220" stroke-width="14" stroke-linecap="round"/><path d="M-36 -560 q-30 60 -24 260 h60 q8 -200 -36 -260Z" fill="#5A4A3A" stroke="${L}" stroke-width="4"/></g>`;
+      s += `<g transform="translate(${x + 960} ${chao})">${S.cadeira(0, 0, 0.9)}<g transform="translate(-10 -150)" style="display:${mochila ? '' : 'none'}"><path d="M-46 0 Q-50 -110 0 -116 Q50 -110 46 0Z" fill="#4A5A3A" stroke="${L}" stroke-width="5"/><rect x="-34" y="-50" width="68" height="40" rx="8" fill="#3A4A2E" stroke="${L}" stroke-width="4"/><path d="M-30 -96 q30 -40 60 0" stroke="#2A3220" stroke-width="8" fill="none"/></g></g>`;
+      s += `<rect x="${x}" y="${chao}" width="${w}" height="${h - chao}" fill="#3A2A1E"/>`;
+      for (let k = 1; k < 8; k++) { const u = Math.pow(k / 8, 1.6), yy = chao + (h - chao) * u; s += `<path d="M${x} ${f(yy)} H${x + w}" stroke="#2A1E14" stroke-width="${f(2 + u * 3)}"/>`; }
+      s += `<ellipse cx="${x + 520}" cy="${chao + 120}" rx="340" ry="70" fill="#7A3A4A"/><ellipse cx="${x + 520}" cy="${chao + 120}" rx="280" ry="52" fill="#3A5A7A"/><ellipse cx="${x + 520}" cy="${chao + 120}" rx="200" ry="36" fill="#C9A24A"/><ellipse cx="${x + 520}" cy="${chao + 120}" rx="110" ry="20" fill="#7A3A4A"/>`;
+      return clip(x, y, w, h, s + acabamento(0.26));
+    };
+    S.corredor.porta = { x: 560, w: 320, macaneta: [830, 1120], chave: [830, 1158] };
+
+    // ---------- QUARTO do Tião por dentro (onde o seu Zé está trancado): parede caiada, cama de madeira com colcha de chita,
+    // guarda-roupa, crucifixo, oratório, janela com cortina e luz fria, termômetro marcando frio, a porta por dentro ----------
+    S.quartoRoca = ({ x = 0, y = 0, w = 1080, h = 1920, chao = 1420, escuro = false } = {}) => {
+      const cor = '#B8B0A0';
+      let s = defs() + `<rect x="${x}" y="${y}" width="${w}" height="${chao}" fill="${cor}"/>`;
+      for (let i = 0; i < 20; i++) s += `<ellipse cx="${f(x + rnd(0, w))}" cy="${f(y + rnd(0, chao))}" rx="${f(rnd(40, 110))}" ry="${f(rnd(20, 50))}" fill="${tom(cor, rnd(-0.14, 0.04))}" opacity=".5"/>`;
+      s += `<rect x="${x}" y="${chao - 200}" width="${w}" height="200" fill="#5A7A6A"/><rect x="${x}" y="${chao - 200}" width="${w}" height="8" fill="#7A9A8A"/>`;
+      // janela com cortina de chita e luz fria
+      s += `<rect x="${x + 80}" y="${y + 520}" width="300" height="340" fill="#3A2A1C" stroke="${L}" stroke-width="5"/><rect x="${x + 96}" y="${y + 536}" width="268" height="308" fill="#B8C8D8"/><path d="M${x + 96} ${y + 536} Q${x + 150} ${y + 700} ${x + 120} ${y + 844} H${x + 96}Z M${x + 364} ${y + 536} Q${x + 300} ${y + 700} ${x + 340} ${y + 844} H${x + 364}Z" fill="#7A3A4A"/>` +
+        `<path d="M${x + 96} ${y + 844} L${x + 364} ${y + 844} L${x + 640} ${chao + 200} L${x + 200} ${chao + 200}Z" fill="#D0E0F0" opacity=".12" style="mix-blend-mode:screen"/>`;
+      // termômetro de parede: 12 °C
+      s += `<g transform="translate(${x + 450} ${y + 640})"><rect x="-26" y="-110" width="52" height="220" rx="20" fill="#E8E2D0" stroke="${L}" stroke-width="4"/><rect x="-5" y="-90" width="10" height="160" rx="5" fill="#C8C8C8"/><rect x="-5" y="20" width="10" height="50" fill="#C8342A"/><circle cy="80" r="14" fill="#C8342A" stroke="${L}" stroke-width="3"/>${[0, 1, 2, 3, 4, 5].map(i => `<path d="M8 ${-80 + i * 26} h10" stroke="${L}" stroke-width="2"/>`).join('')}${texto('12°', 0, -134, 70, 40, '#22201A')}</g>`;
+      // crucifixo e oratório
+      s += `<path d="M${x + 760} ${y + 400} V${y + 560} M${x + 715} ${y + 450} H${x + 805}" stroke="#4A3220" stroke-width="14" stroke-linecap="round"/>`;
+      // guarda-roupa
+      s += `<g transform="translate(${x + 860} ${chao})"><rect x="-150" y="-760" width="300" height="760" fill="#5A3E26" stroke="${L}" stroke-width="5"/><path d="M0 -740 V-20" stroke="${L}" stroke-width="4"/><rect x="-130" y="-720" width="110" height="300" fill="none" stroke="#4A3220" stroke-width="6"/><rect x="20" y="-720" width="110" height="300" fill="none" stroke="#4A3220" stroke-width="6"/><circle cx="-14" cy="-380" r="7" fill="#B8A070"/><circle cx="14" cy="-380" r="7" fill="#B8A070"/></g>`;
+      // cama de madeira com colcha de chita e travesseiro amassado
+      const bx = x + 140, bt = chao - 220;
+      s += `<rect x="${bx}" y="${bt - 200}" width="40" height="420" fill="#5A3E26" stroke="${L}" stroke-width="5"/><rect x="${bx + 40}" y="${bt}" width="520" height="70" fill="#E8E2D0" stroke="${L}" stroke-width="4"/>` +
+        `<path d="M${bx + 140} ${bt - 6} H${bx + 570} L${bx + 580} ${bt + 150} H${bx + 130}Z" fill="#7A2E3A" stroke="${L}" stroke-width="4"/>${[...Array(18)].map(() => `<circle cx="${f(bx + rnd(150, 560))}" cy="${f(bt + rnd(4, 140))}" r="${f(rnd(8, 15))}" fill="${pick(['#E8C24A', '#4A9A6A', '#E8E2D0'])}" opacity=".8"/>`).join('')}` +
+        `<ellipse cx="${bx + 100}" cy="${bt - 10}" rx="66" ry="30" fill="#F2EEE2" stroke="${L}" stroke-width="4"/><rect x="${bx + 560}" y="${bt - 60}" width="30" height="280" fill="#5A3E26" stroke="${L}" stroke-width="5"/><rect x="${bx + 40}" y="${bt + 70}" width="550" height="26" fill="#4A3220" stroke="${L}" stroke-width="4"/>`;
+      s += `<rect x="${x}" y="${chao}" width="${w}" height="${h - chao}" fill="#4A3624"/>`;
+      for (let k = 1; k < 8; k++) { const u = Math.pow(k / 8, 1.6), yy = chao + (h - chao) * u; s += `<path d="M${x} ${f(yy)} H${x + w}" stroke="#2A1E14" stroke-width="${f(2 + u * 3)}"/>`; }
+      if (escuro) s += `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#0A0610" opacity=".55"/>`;
+      return clip(x, y, w, h, s + acabamento(0.26));
+    };
+
+    // ---------- MAÇANETA de perto (do lado de dentro): madeira da porta, espelho de ferro, a alavanca (.macaneta gira) ----------
+    S.macanetaClose = ({ x = 0, y = 0, w = 1080, h = 1920 } = {}) => {
+      let s = defs() + tabuas(x, y, w, h, '#5A3E26', true, 150) + `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#05030A" opacity=".45"/>`;
+      s += `<rect x="${x + 80}" y="${y + 200}" width="${w - 160}" height="${h - 400}" fill="none" stroke="#3A2614" stroke-width="20"/>`;
+      s += `<g transform="translate(${x + 620} ${y + 900})"><rect x="-70" y="-180" width="140" height="420" rx="26" fill="#6A6050" stroke="${L}" stroke-width="8"/><rect x="-54" y="-164" width="108" height="388" rx="18" fill="none" stroke="#8A8070" stroke-width="4"/>` +
+        `<path d="M0 120 v50" stroke="${L}" stroke-width="22" stroke-linecap="round"/><circle cy="114" r="16" fill="${L}"/>` +
+        `<g class="macaneta" data-cx="0" data-cy="0"><path d="M0 0 H-300" stroke="${L}" stroke-width="56" stroke-linecap="round"/><path d="M0 0 H-300" stroke="#9A8A60" stroke-width="40" stroke-linecap="round"/><path d="M-20 -10 H-280" stroke="#D8C890" stroke-width="10" stroke-linecap="round" opacity=".7"/></g>` +
+        `<circle r="44" fill="#9A8A60" stroke="${L}" stroke-width="8"/><circle r="16" fill="#6A5A3A"/></g>`;
+      s += `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#C8342A" opacity=".06"/>`;
+      return clip(x, y, w, h, s + acabamento(0.3));
+    };
+
+    // ---------- BRAÇO MACHUCADO saindo da janela: manga, curativo de pano sujo com mancha, veias escurecendo (.veias) ----------
+    S.bracoFerido = (x, y, k = 1, { manga = '#7A8A9A', pele = '#E8DCC8' } = {}) => `<g transform="translate(${f(x)} ${f(y)}) scale(${k})">
+      <path d="M0 0 L60 -10 L80 70 L10 90Z" fill="${manga}" stroke="${L}" stroke-width="6"/>
+      <path d="M30 60 Q140 120 300 150" stroke="${L}" stroke-width="64" stroke-linecap="round" fill="none"/><path d="M30 60 Q140 120 300 150" stroke="${pele}" stroke-width="52" stroke-linecap="round" fill="none"/>
+      <g class="veias" opacity="0">${[[120, 96, 40, -14], [150, 112, 50, 8], [200, 128, 44, -6]].map(([vx, vy, l, d]) => `<path d="M${vx} ${vy} q${l / 2} ${d} ${l} ${d / 2} q10 4 20 -6" stroke="#5A4A6A" stroke-width="4" fill="none" opacity=".8"/>`).join('')}</g>
+      <path d="M150 92 L230 116 L218 168 L132 140Z" fill="#E8E2D0" stroke="${L}" stroke-width="5"/><path d="M160 104 L222 122 M154 122 L218 140 M146 136 L210 156" stroke="#B8B0A0" stroke-width="4"/><path d="M172 116 q22 6 34 20 q-8 18 -30 10 q-14 -12 -4 -30Z" fill="#8A2A20" opacity=".85"/>
+      <g transform="translate(316 152) rotate(18)"><ellipse rx="34" ry="28" fill="${pele}" stroke="${L}" stroke-width="5"/>${[-18, -6, 6, 18].map(d => `<path d="M24 ${d} h26" stroke="${L}" stroke-width="18" stroke-linecap="round"/><path d="M24 ${d} h26" stroke="${pele}" stroke-width="10" stroke-linecap="round"/>`).join('')}</g></g>`;
+
+    // ---------- CAIXA D'ÁGUA em torre de madeira (casa do seu Zé): 4 esteios, escada, tanque azul com tampa ----------
+    S.caixaDagua = (x, base, k = 1) => `<g transform="translate(${f(x)} ${f(base)}) scale(${k})"><ellipse cx="0" cy="4" rx="180" ry="20" fill="#000" opacity=".3"/>
+      ${[-120, -60, 60, 120].map((dx, i) => `<rect x="${dx - 12}" y="-520" width="24" height="520" fill="${i % 3 ? '#5A4430' : '#6A5038'}" stroke="${L}" stroke-width="5"/>`).join('')}
+      <path d="M-120 -120 L120 -360 M120 -120 L-120 -360 M-130 -360 H130 M-130 -120 H130" stroke="#5A4430" stroke-width="14"/>
+      <rect x="-160" y="-560" width="320" height="44" fill="#6A5038" stroke="${L}" stroke-width="5"/>
+      <path d="M-150 -560 L-140 -800 Q0 -830 140 -800 L150 -560Z" fill="#3A7AB8" stroke="${L}" stroke-width="6"/><path d="M-120 -580 L-112 -790" stroke="#6AA8E0" stroke-width="14" opacity=".6"/>
+      <ellipse cx="0" cy="-806" rx="146" ry="26" fill="#2E6AA8" stroke="${L}" stroke-width="6"/><path d="M-60 -812 Q0 -880 60 -812" fill="#2E6AA8" stroke="${L}" stroke-width="6"/>
+      <path d="M200 0 L170 -560 M260 0 L230 -560" stroke="#5A4430" stroke-width="10"/>${[...Array(9)].map((_, i) => `<path d="M${198 - i * 3.3} ${-40 - i * 58} H${258 - i * 3.3}" stroke="#5A4430" stroke-width="8"/>`).join('')}</g>`;
+
     // ---------- XÍCARA DE ÁGATA de perto (café ainda quente): pires, borda azul lascada, café, vapor subindo (.vapor) ----------
+    S.mochila = (x, y, k = 1) => `<g transform="translate(${f(x)} ${f(y)}) scale(${k})"><path d="M-14 -128 q14 -24 28 0" stroke="#2A3220" stroke-width="8" fill="none"/><path d="M-46 0 Q-50 -110 0 -116 Q50 -110 46 0Z" fill="#4A5A3A" stroke="${L}" stroke-width="5"/><rect x="-34" y="-50" width="68" height="40" rx="8" fill="#3A4A2E" stroke="${L}" stroke-width="4"/><path d="M-40 -80 H40" stroke="#3A4A2E" stroke-width="5"/></g>`;   // mochila de lona (origem = base)
     S.xicara = (x, y, k = 1) => `<g transform="translate(${f(x)} ${f(y)}) scale(${k})"><ellipse cx="0" cy="6" rx="150" ry="26" fill="#000" opacity=".35"/>
       <ellipse cx="0" cy="0" rx="140" ry="26" fill="#E8E4DA" stroke="${L}" stroke-width="5"/><ellipse cx="0" cy="-4" rx="100" ry="16" fill="#D2CCBE"/><path d="M-140 0 q140 40 280 0" stroke="#2E5A9A" stroke-width="6" fill="none"/>
       <path d="M78 -110 q66 -6 62 44 q-4 44 -66 46" stroke="${L}" stroke-width="30" fill="none"/><path d="M78 -110 q66 -6 62 44 q-4 44 -66 46" stroke="#F2EEE4" stroke-width="20" fill="none"/>

@@ -1,65 +1,114 @@
 [
  {
+  "id": "N1",
+  "quem": "narrador",
+  "texto": "Terceiro dia do apocalipse zumbi. E quem está trancado no quarto do Tião é alguém que ele conhece desde criança.",
+  "de": 0.3,
+  "ate": 8.24,
+  "arq": "falas-final/N1.wav"
+ },
+ {
+  "id": "N2",
+  "quem": "narrador",
+  "texto": "Quem tomou o café na cozinha era o Seu Zé. E ele não chegou inteiro.",
+  "de": 8.54,
+  "ate": 13.14,
+  "arq": "falas-final/N2.wav"
+ },
+ {
   "id": "03",
   "quem": "ze",
   "texto": "Tião, abre essa porta! Eu tô bem, homem!",
-  "de": 0.25,
-  "ate": 2.597
+  "de": 13.64,
+  "ate": 15.987,
+  "arq": "falas-final/03.wav"
  },
  {
   "id": "04",
   "quem": "tiao",
   "texto": "Então mostra o braço pela janela.",
-  "de": 3.147,
-  "ate": 5.712
+  "de": 16.487,
+  "ate": 19.052,
+  "arq": "falas-final/04.wav"
  },
  {
   "id": "05",
   "quem": "ze",
   "texto": "É só um corte. Foi no arame fugindo.",
-  "de": 6.262,
-  "ate": 8.246
+  "de": 19.552,
+  "ate": 21.536,
+  "arq": "falas-final/05.wav"
  },
  {
   "id": "06",
   "quem": "tiao",
   "texto": "Regra número três: quem chega machucado espera vinte e quatro horas.",
-  "de": 8.796,
-  "ate": 13.359
+  "de": 22.036,
+  "ate": 26.599,
+  "arq": "falas-final/06.wav"
  },
  {
   "id": "07",
   "quem": "ze",
   "texto": "E a minha neta? Ela ficou escondida na caixa d'água. Sozinha!",
-  "de": 13.909,
-  "ate": 17.173
+  "de": 27.099,
+  "ate": 30.363,
+  "arq": "falas-final/07.wav"
  },
  {
   "id": "08",
   "quem": "tiao",
   "texto": "Já faz dois dias, seu Zé.",
-  "de": 17.723,
-  "ate": 20.034
+  "de": 30.863,
+  "ate": 33.174,
+  "arq": "falas-final/08.wav"
  },
  {
   "id": "09",
   "quem": "ze",
   "texto": "Então vai buscar ela. Pelo amor de Deus.",
-  "de": 20.584,
-  "ate": 23.037
+  "de": 33.674,
+  "ate": 36.127,
+  "arq": "falas-final/09.wav"
+ },
+ {
+  "id": "N3",
+  "quem": "narrador",
+  "texto": "Tião quer confiar. Mas o Seu Zé está suando. E o dia nem esquentou.",
+  "de": 37.027,
+  "ate": 42.847,
+  "arq": "falas-final/N3.wav"
+ },
+ {
+  "id": "N4",
+  "quem": "narrador",
+  "texto": "Ele pega a mochila. E tranca o quarto por fora.",
+  "de": 43.147,
+  "ate": 46.307,
+  "arq": "falas-final/N4.wav"
  },
  {
   "id": "12",
   "quem": "tiao",
   "texto": "Eu volto com ela.",
-  "de": 23.587,
-  "ate": 25.387
+  "de": 46.807,
+  "ate": 48.607,
+  "arq": "falas-final/12.wav"
  },
  {
   "id": "13",
   "quem": "ze",
   "texto": "Volta logo, Tião... volta logo.",
-  "de": 25.937,
-  "ate": 27.899
+  "de": 49.107,
+  "ate": 51.069,
+  "arq": "falas-final/13.wav"
+ },
+ {
+  "id": "N5",
+  "quem": "narrador",
+  "texto": "Mas assim que o Tião passa da porteira, a maçaneta do quarto começa a girar.",
+  "de": 52.069,
+  "ate": 56.729,
+  "arq": "falas-final/N5.wav"
  }
 ]

@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Apocalipse Zumbi: Parte 3</title>
+<!--
+  Série APOCALIPSE ZUMBI — PARTE 3 (narrador gravado pelo usuário + vozes do Tião e do Seu Zé — skill vozes-personagens).
+  O seu Zé está trancado no quarto do Tião, machucado; regra nº 3; a neta na caixa d'água; ele está suando no frio;
+  o Tião tranca o quarto e sai — e a maçaneta começa a girar. Corte seco para o preto.
+-->
+<style>
+  html, body { margin: 0; background: #000; overflow: hidden; }
+  #stage { width: 1080px; height: 1920px; display: block; }
+  @font-face { font-family: 'Anton'; src: url(fontes/anton.woff2); }
+  @font-face { font-family: 'Luckiest Guy'; src: url(fontes/luckiest-guy.woff2); }
+  text:not([font-family]) { font-family: 'Anton', sans-serif; }
+</style>
+<script src="gsap.min.js"></script>
+<script src="boneco.js"></script>
+<script src="paletas.js"></script>
+<script src="cenario.js"></script>
+<script src="sitio.js"></script>
+<script src="palco.js"></script>
+<script src="legenda.js"></script>
+<script src="legenda-dados.js"></script>
+<script src="bocas.js"></script>
+</head>
+<body>
+<svg id="stage" viewBox="0 0 1080 1920" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="outline" x="-20%" y="-20%" width="140%" height="140%">
+      <feMorphology in="SourceAlpha" operator="dilate" radius="5" result="d"/>
+      <feFlood flood-color="#0A0A0E"/>
+      <feComposite in2="d" operator="in" result="o"/>
+      <feMerge><feMergeNode in="o"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="sombraTxt" x="-10%" y="-30%" width="120%" height="160%"><feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#000" flood-opacity=".8"/></filter>
+    <radialGradient id="vin" cx=".5" cy=".5" r=".72"><stop offset=".45" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".7"/></radialGradient>
+  </defs>
+  <g id="cam"><g id="scenes"></g><g id="atores"></g><g id="props"></g><g id="luzes"></g></g>
+  <rect width="1080" height="1920" fill="url(#vin)"/>
+  <g id="escuro"><rect width="1080" height="1920" fill="#05070E"/></g>
+  <g id="topo"></g>
+  <g id="legenda"></g>
+</svg>
+
+<script>
+const NS = 'http://www.w3.org/2000/svg';
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const AMBAR = '#E8B23A', BRANCO = '#F2EEE2', VERMELHO = '#C8342A', L = '#0E0E14';
+const Si = (n, hora = 'amanhecer') => Sitio(Cenario({ seed: n, luz: -1, hora, prefixo: 's' + n }));
+const SEG = Object.fromEntries((window.SEGMENTOS || []).map(s => [s.id, s]));
+
+// ===================== PLANOS =====================
+const S = {
+  abre:     [0, 2.8],     // N1 "Terceiro dia do apocalipse zumbi."
+  corr:     [2.8, 8.4],   // N1 "E quem está trancado no quarto do Tião é alguém que ele conhece desde criança."
+  cafe:     [8.4, 13.4],  // N2 "Quem tomou o café na cozinha era o Seu Zé. E ele não chegou inteiro."
+  bate:     [13.4, 16.3], // ZÉ "Tião, abre essa porta! Eu tô bem, homem!"
+  mostra:   [16.3, 19.3], // TIÃO "Então mostra o braço pela janela."
+  braco:    [19.3, 21.9], // ZÉ "É só um corte. Foi no arame fugindo."
+  regra:    [21.9, 26.85],// TIÃO "Regra número três: quem chega machucado espera vinte e quatro horas."
+  neta:     [26.85, 30.6],// ZÉ "E a minha neta? Ela ficou escondida na caixa d'água. Sozinha!"
+  doisdias: [30.6, 33.4], // TIÃO "Já faz dois dias, seu Zé."
+  chora:    [33.4, 36.6], // ZÉ "Então vai buscar ela. Pelo amor de Deus."
+  suando:   [36.6, 42.95],// N3 "Tião quer confiar. Mas o Seu Zé está suando. E o dia nem esquentou."
+  tranca:   [42.95, 46.5],// N4 "Ele pega a mochila. E tranca o quarto por fora."
+  volto:    [46.5, 48.85],// TIÃO "Eu volto com ela."
+  rouco:    [48.85, 51.6],// ZÉ "Volta logo, Tião... volta logo."
+  sai:      [51.6, 54.6], // N5 "Mas assim que o Tião passa da porteira,"
+  macaneta: [54.6, 56.8], // N5 "a maçaneta do quarto começa a girar." → corte seco para o preto
+};
+const FIM_FALA = 56.8, CARTAO = 57.6, END = 60.8;
+const PISO_LEG = 1560;
+
+// ===================== CENAS =====================
+const scenes = [];
+const cena = (id, corpo) => scenes.push(`<g id="${id}" class="scene">${corpo}</g>`);
+const zoom = (corpo, k, cx = 540, cy = 1300) => `<g transform="translate(${cx} ${cy}) scale(${k}) translate(${-cx} ${-cy})">${corpo}</g>`;
+const txt = (id, y, partes, fs = 110) => `<g id="${id}" filter="url(#sombraTxt)"><text x="540" y="${y}" font-size="${fs}" text-anchor="middle" stroke="#000" stroke-width="${fs * 0.08}" paint-order="stroke">${partes.map(([t, c]) => `<tspan fill="${c || BRANCO}">${t}</tspan>`).join('')}</text></g>`;
+const selo = (id, linha1, linha2) => `<g id="${id}" transform="translate(540 150)"><rect x="-300" y="-62" width="600" height="136" rx="22" fill="#0B0D14" fill-opacity=".86" stroke="#2A2E3A" stroke-width="3"/><circle cx="-232" cy="-26" r="9" fill="${VERMELHO}"/><text x="14" y="-14" font-size="30" text-anchor="middle" fill="${VERMELHO}" letter-spacing="2">${linha1}</text><text y="52" font-size="68" text-anchor="middle" fill="${BRANCO}" letter-spacing="3">${linha2}</text></g>`;
+const etiqueta = (id, x, y, t, cor = AMBAR, corTxt = '#16120A', rot = 0) => `<g id="${id}" transform="translate(${x} ${y}) rotate(${rot})"><rect x="${-t.length * 13 - 30}" y="-34" width="${t.length * 26 + 60}" height="68" rx="34" fill="${cor}" stroke="#000" stroke-width="4"/><text y="14" font-size="40" text-anchor="middle" fill="${corTxt}">${t}</text></g>`;
+
+// gancho: muralha de zumbis + "DIA 3"
+const GANCHO = (`<g id="c-gancho"><rect width="1080" height="1920" fill="#C8342A" opacity=".18" style="mix-blend-mode:multiply"/><rect width="1080" height="1920" fill="#000" opacity=".35"/>` +
+  txt('g-dia', 880, [['DIA ', BRANCO], ['3', AMBAR]], 330) + txt('g-apoc', 1060, [['DO APOCALIPSE ', BRANCO], ['ZUMBI', VERMELHO]], 96) + `<rect id="g-flash" width="1080" height="1920" fill="#FFF6E0"/></g>`);
+cena('c-estr', Si(50, 'noite').estrada({}));
+// corredor com a porta do quarto trancada (usado em vários planos)
+const CORR = Si(51);
+cena('c-corr', CORR.corredor({ chao: 1460, mochila: false }));
+// a cozinha: o seu Zé tomando o café (o que aconteceu antes)
+cena('c-cafe', zoom(Si(52).cozinha({ chao: 1300, janelaY: 0.55, lampiao: false, amanhecer: true, radio: true }), 1.35, 560, 1300) +
+  `<rect width="1080" height="1920" fill="#8A6A3A" opacity=".16" style="mix-blend-mode:multiply"/>`);
+// a janela do quarto por fora: o braço machucado
+cena('c-braco', Si(53).paredeJanela({ chao: 1440, quarto: true }) + `<g id="br-braco">${CORR.bracoFerido(470, 880, 1.25)}</g>` + etiqueta('br-tag', 760, 1260, 'SÓ UM CORTE?', VERMELHO, BRANCO, -4));
+// regra nº 3
+cena('c-regra', `<rect width="1080" height="1920" fill="#14161C"/><rect width="1080" height="1920" fill="url(#vin)"/>
+  <g id="rg-card" transform="translate(80 470)"><rect width="920" height="800" rx="26" fill="#E8E2D0"/><rect width="920" height="800" rx="26" fill="none" stroke="#C9C0A8" stroke-width="6"/>
+  <rect x="40" y="40" width="840" height="150" rx="16" fill="#2A241A"/><text x="460" y="145" font-size="96" text-anchor="middle" fill="${AMBAR}" letter-spacing="3">REGRA Nº 3</text>
+  <g id="rg-l1"><text x="460" y="330" font-size="92" text-anchor="middle" fill="#22201A">QUEM CHEGA MACHUCADO</text></g>
+  <g id="rg-l2"><text x="460" y="470" font-size="92" text-anchor="middle" fill="#8A2A20">ESPERA 24 HORAS</text></g>
+  <g id="rg-rel" transform="translate(460 640)"><circle r="96" fill="#F2EEE2" stroke="#22201A" stroke-width="10"/>${[...Array(12)].map((_, i) => { const a = i / 12 * Math.PI * 2; return `<path d="M${Math.cos(a) * 74} ${Math.sin(a) * 74} L${Math.cos(a) * 86} ${Math.sin(a) * 86}" stroke="#22201A" stroke-width="6"/>`; }).join('')}<g class="ponteiro" data-cx="0" data-cy="0"><path d="M0 0 V-70" stroke="#8A2A20" stroke-width="10" stroke-linecap="round"/></g><path d="M0 0 L40 20" stroke="#22201A" stroke-width="10" stroke-linecap="round"/><circle r="10" fill="#22201A"/></g></g>`);
+// a neta escondida na caixa d'água (casa do seu Zé)
+const NETA_SI = Si(54);
+cena('c-neta', NETA_SI.festa({ chao: 1300, abandonada: true }) + `<rect width="1080" height="1920" fill="#3A4A6A" opacity=".12"/>`);
+// o quarto por dentro: o seu Zé suando no frio
+cena('c-quarto', Si(55).quartoRoca({ chao: 1420 }) + txt('qu-t1', 330, [['SUANDO', VERMELHO]], 130) + txt('qu-t2', 460, [['E O DIA NEM ', BRANCO], ['ESQUENTOU', AMBAR]], 88));
+cena('c-quartoEsc', Si(56).quartoRoca({ chao: 1420, escuro: true }) + `<rect width="1080" height="1920" fill="#8A0A10" opacity=".14"/>`);
+// a porteira: o Tião sai
+cena('c-porteira', Si(57).porteira({ chao: 1440, aberta: true }));
+// a maçaneta girando por dentro
+cena('c-mac', Si(58).macanetaClose({}));
+// cartão final
+scenes.push(`<g id="fim" class="scene"><rect width="1080" height="1920" fill="#08090E"/>${Si(20, 'noite').estrada({})}<rect width="1080" height="1920" fill="#000" opacity=".6"/>
+  <g id="fim-t">${txt('fim-a', 800, [['PARTE ', BRANCO], ['3', AMBAR]], 150)}${txt('fim-b', 940, [['CONTINUA...', BRANCO]], 96)}</g>
+  <g id="fim-c" transform="translate(540 1120)"><rect x="-330" y="-56" width="660" height="112" rx="56" fill="${AMBAR}" stroke="#000" stroke-width="5"/><text y="22" font-size="58" text-anchor="middle" fill="#16120A">SEGUE PRA PARTE 4 ↓</text></g></g>`);
+$('#scenes').innerHTML = scenes.join('');
+// quem está falando (etiqueta em cima da legenda) + selos
+$('#topo').innerHTML = GANCHO + selo('selo1', 'APOCALIPSE ZUMBI · PARTE 3', 'DIA 3 · 06:10') + txt('co-t1', 1250, [['ALGUÉM QUE ELE CONHECE', BRANCO]], 80) + txt('co-t2', 1360, [['DESDE ', BRANCO], ['CRIANÇA', AMBAR]], 100) + etiqueta('ca-antes', 540, 330, 'HORAS ANTES', '#2A241A', AMBAR) +
+  `<g id="quem" transform="translate(540 1452)"><rect id="quem-r" x="-120" y="-30" width="240" height="60" rx="30" fill="#0B0D14" fill-opacity=".85" stroke="${AMBAR}" stroke-width="3"/><text id="quem-t" y="14" font-size="40" text-anchor="middle" fill="${AMBAR}" letter-spacing="2"></text></g>` +
+  etiqueta('dd-tag', 540, 420, '2 DIAS SOZINHA', VERMELHO, BRANCO) + `<rect id="preto" width="1080" height="1920" fill="#000"/>`;
+
+// ===================== ELENCO (aparência fixa na série) =====================
+const BOCA = q => t => { const c = (window.BOCAS || {})[q] ? window.BOCAS[q][Math.floor(t * 30)] : '-'; return c && c !== '-' ? c : 'smile'; };
+const TIAO = { figurino: 'tiao', seed: 60, boca: BOCA('tiao') };
+const SEUZE = { figurino: 'seuze', seed: 61 }, SEUZE_PALIDO = { figurino: 'seuze', seed: 61, cor: '#DCE2CE', corLonge: '#C2CAB4' };
+const SEUZE_VIRANDO = { figurino: { preset: 'seuze', zumbi: true, cabelo: 'curto' }, seed: 61, cor: '#C8D0B8', corLonge: '#AEB89E' };
+const NETA = { figurino: 'neta', seed: 62 };
+const VULTO = (i) => ({ figurino: 'vulto', cor: '#17181E', corLonge: '#101116', bochecha: '#17181E', seed: 70 + i });
+const ATORES = [], ITENS = [];
+function ator(escala, janelas, opts = {}, pai = '#atores') { const g = document.createElementNS(NS, 'g'); if (pai) $(pai).appendChild(g); const b = new Boneco(g, { escala, seed: 4, ...opts }); b.grupo = g; ATORES.push({ b, g, janelas }); return b; }
+function item(svg, janelas, pai = '#atores') { const g = document.createElementNS(NS, 'g'); $(pai).appendChild(g); g.innerHTML = svg; ITENS.push({ g, janelas }); return g; }
+const J = n => [[S[n][0], S[n][1]]];
+const JJ = (...ns) => ns.map(n => [S[n][0], S[n][1]]);
+const KT = 1.35, PE = 1470;
+
+// gancho: zumbis de frente, balançando, olhos acesos
+[[300, 1300, 0.9], [760, 1320, 1.0], [540, 1400, 1.2], [140, 1520, 1.45], [920, 1560, 1.55], [520, 1900, 2.2]].forEach(([x, y, k], i) => { const v = ator(k, J('abre'), VULTO(50 + i));
+  v.base(0, S.abre[1], 'parado', { x, y, vista: 'frente' }); v.braco('ambos', 0, S.abre[1], 'estender'); v.expressao(0, S.abre[1], 'zumbi'); v.cabeca(0, S.abre[1], { inclinar: (i % 2 ? 1 : -1) * 14, baixar: -6 }); });
+
+// o Tião no corredor, de frente para a porta do quarto (vários planos)
+const tC = ator(KT, JJ('corr', 'bate', 'mostra', 'doisdias', 'chora'), TIAO);
+tC.base(S.corr[0], S.chora[1], 'parado', { x: 400, y: PE, vista: 'perfil', dir: 1 });
+tC.expressao(S.corr[0], S.bate[0], 'serio'); tC.expressao(S.bate[0], 15.2, 'susto'); tC.expressao(15.2, S.mostra[1], 'determinado');
+tC.expressao(S.doisdias[0], S.doisdias[1], 'triste'); tC.cabeca(S.doisdias[0], S.doisdias[1], { baixar: 16 }); tC.expressao(S.chora[0], S.chora[1], 'preocupado');
+tC.braco('d', S.corr[0], S.bate[0], 'cruzar'); tC.braco('e', S.corr[0], S.bate[0], 'cruzar');
+tC.braco('d', S.chora[0] + 0.3, S.chora[1], 'alcancar', { alvo: [600, 1000] });
+// pega a mochila na cadeira, vai até a porta e gira a chave; depois fala "eu volto com ela"
+const tK = ator(KT, JJ('tranca', 'volto'), TIAO);
+tK.base(S.tranca[0], 43.9, 'andar', { de: [560, PE], ate: [860, PE], passo: 120 }); tK.base(43.9, 44.3, 'parado', { x: 860, y: PE, vista: 'perfil', dir: 1 });
+tK.base(44.3, 45.0, 'andar', { de: [860, PE], ate: [700, PE], passo: 120 }); tK.base(45.0, S.volto[1], 'parado', { x: 700, y: PE, vista: 'perfil', dir: 1 });
+tK.braco('d', 43.7, 44.3, 'alcancar', { alvo: [950, 1250] }); tK.braco('d', 45.1, 46.3, 'alcancar', { alvo: [826, 1166] });
+tK.expressao(S.tranca[0], S.volto[1], 'determinado');
+// a mochila: na cadeira até ele pegar (44.1), depois pendurada na mão esquerda pela alça
+item(CORR.mochila(950, 1310, 1.0), [[S.tranca[0], 44.1]], '#props');
+const mochila = item(CORR.mochila(0, 0, 1.0), [[44.1, S.volto[1]]], '#props');
+// a cozinha: o seu Zé sentado tomando o café, com o curativo no braço
+item(zoom(Si(59).cadeira(300, 1340, 1.0), 1.35, 560, 1300), J('cafe'));
+const zC = ator(KT, J('cafe'), SEUZE);
+zC.base(S.cafe[0], S.cafe[1], 'sentar', { x: 290, y: 1300 - 128 * 1.35 + 30, chao: PE + 40, dir: 1 });
+zC.braco('d', S.cafe[0], S.cafe[1], 'alcancar', { alvo: [455, 1000] }); zC.expressao(S.cafe[0], 11.2, 'cansado'); zC.expressao(11.2, S.cafe[1], 'preocupado'); zC.cabeca(S.cafe[0], S.cafe[1], { baixar: 6 });
+const curativo = item(`<g><path d="M-26 -14 L22 -22 L28 14 L-20 22Z" fill="#E8E2D0" stroke="${L}" stroke-width="4"/><path d="M-12 -8 q14 -4 22 6 q-4 12 -18 8Z" fill="#8A2A20"/></g>`, J('cafe'), '#props');
+// a neta na caixa d'água (só a cabeça aparece, com medo)
+const nN = ator(0.75, J('neta'), NETA); nN.base(S.neta[0], S.neta[1], 'parado', { x: 760, y: 800, vista: 'frente' });
+nN.braco('e', S.neta[0], S.neta[1], 'alcancar', { alvo: [700, 548] }); nN.braco('d', S.neta[0], S.neta[1], 'alcancar', { alvo: [822, 548] });
+// só a cabeça e as mãos aparecem acima da borda da caixa (o resto fica escondido lá dentro)
+$('#stage defs').insertAdjacentHTML('beforeend', '<clipPath id="clipCaixa"><rect x="0" y="0" width="1080" height="556"/></clipPath>'); nN.grupo.setAttribute('clip-path', 'url(#clipCaixa)'); nN.expressao(S.neta[0], S.neta[1], 'medo'); nN.cabeca(S.neta[0], S.neta[1], { gesto: 'balancar' });
+item(NETA_SI.caixaDagua(760, 1360, 1.0), J('neta'), '#props');
+// o seu Zé no quarto: sentado na beira da cama, pálido, suando
+const zQ = ator(1.3, J('suando'), SEUZE_PALIDO);
+zQ.base(S.suando[0], S.suando[1], 'sentar', { x: 560, y: 1200, chao: 1440, dir: -1 }); zQ.expressao(S.suando[0], S.suando[1], 'cansado'); zQ.cabeca(S.suando[0], S.suando[1], { baixar: 10, gesto: 'balancar' });
+zQ.braco('ambos', S.suando[0], S.suando[1], 'pose', { o: 30, c: 60 });
+const gotas = item([0, 1, 2, 3].map(i => `<path class="gota" data-i="${i}" d="M0 -14 Q8 0 0 8 Q-8 0 0 -14Z" fill="#9AD4F0" stroke="${L}" stroke-width="2.5"/>`).join(''), J('suando'), '#props');
+// a voz rouca: o seu Zé em pé de frente para a porta, curvado, começando a virar
+const zR = ator(1.45, J('rouco'), SEUZE_VIRANDO);
+zR.base(S.rouco[0], S.rouco[1], 'parado', { x: 420, y: 1480, vista: 'perfil', dir: 1 }); zR.expressao(S.rouco[0], S.rouco[1], 'zumbi'); zR.braco('ambos', S.rouco[0], S.rouco[1], 'estender');
+zR.cabeca(S.rouco[0], S.rouco[1], { inclinar: 18, baixar: 12 });
+// o Tião passando a porteira com a mochila
+const tS = ator(1.2, J('sai'), TIAO);
+tS.base(S.sai[0], S.sai[1], 'andar', { de: [760, 1520], ate: [240, 1300], passo: 110, chao: x => 1520 - (760 - x) * 0.42 });
+tS.expressao(S.sai[0], S.sai[1], 'determinado');
+const mochilaS = item(CORR.mochila(0, 0, 0.9), J('sai'), '#props');
+
+// ===================== CÂMERA =====================
+const CAM = [
+  [0, 1.0, 540, 1000], [2.8, 1.12, 540, 1040],
+  [2.8, 1.0, 540, 960], [6.6, 1.0, 540, 960], [7.6, 2.0, 340, 520], [8.4, 2.1, 335, 500],
+  [8.4, 1.0, 540, 960], [11.6, 1.05, 520, 960], [13.4, 1.9, 420, 1060],
+  [13.4, 1.05, 620, 1000], [16.3, 1.15, 640, 1000],
+  [16.3, 1.75, 400, 880], [19.3, 1.85, 410, 880],
+  [19.3, 1.0, 540, 960], [21.9, 1.12, 640, 1040],
+  [21.9, 1.0, 540, 960], [26.85, 1.06, 540, 960],
+  [26.85, 1.0, 540, 1000], [30.6, 1.35, 700, 820],
+  [30.6, 1.9, 400, 860], [33.4, 2.05, 400, 880],
+  [33.4, 1.1, 560, 980], [36.6, 1.2, 600, 1000],
+  [36.6, 1.0, 540, 960], [42.95, 1.12, 560, 1000],
+  [42.95, 1.0, 600, 960], [44.6, 1.0, 640, 960], [45.4, 2.4, 820, 1150], [46.5, 2.5, 826, 1160],
+  [46.5, 1.6, 640, 900], [48.85, 1.7, 640, 900],
+  [48.85, 1.1, 520, 980], [51.6, 1.3, 520, 920],
+  [51.6, 1.0, 540, 960], [54.6, 1.05, 480, 980],
+  [54.6, 1.0, 540, 960], [56.8, 1.25, 500, 900],
+  [56.8, 1, 540, 960], [99, 1, 540, 960],
+];
+const sm = u => u * u * (3 - 2 * u);
+function camEm(t) {
+  let a = CAM[0], b = CAM[0];
+  for (let i = 0; i < CAM.length - 1; i++) if (t >= CAM[i][0] && t < CAM[i + 1][0]) { a = CAM[i]; b = CAM[i + 1]; break; }
+  const u = b[0] > a[0] ? sm((t - a[0]) / (b[0] - a[0])) : 0;
+  const k = a[1] + (b[1] - a[1]) * u, cx = a[2] + (b[2] - a[2]) * u, cy = a[3] + (b[3] - a[3]) * u;
+  const medo = (t > 13.6 && t < 16.0) || (t > 48.85 && t < 51.6) || (t > 54.6 && t < FIM_FALA) ? 2.2 : (t > 0.42 && t < 0.9) ? 9 * (0.9 - t) / 0.48 + 1 : 1;
+  const bx = (Math.sin(t * 1.3) * 3 + Math.sin(t * 3.1) * 1.2) * medo, by = (Math.cos(t * 1.1) * 2.5 + Math.sin(t * 5.7) * (medo > 1 ? 2 : 0.6)) * medo, rot = Math.sin(t * 0.9) * 0.3;
+  return `translate(${540 + bx} ${960 + by}) rotate(${rot.toFixed(3)}) scale(${k.toFixed(4)}) translate(${-cx} ${-cy})`;
+}
+
+// ===================== TIMELINE =====================
+const rendering = navigator.webdriver;
+const tl = gsap.timeline({ paused: true, defaults: { ease: 'power2.inOut' } });
+$$('.scene').forEach(s => gsap.set(s, { autoAlpha: 0 }));
+const show = (sel, t0, t1) => { tl.fromTo(sel, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.01, ease: 'none', immediateRender: false }, t0); if (t1 != null) tl.to(sel, { autoAlpha: 0, duration: 0.01, ease: 'none' }, t1); };
+const fade = (sel, t0, t1, d = 0.35) => { gsap.set(sel, { autoAlpha: 0 }); tl.to(sel, { autoAlpha: 1, duration: d }, t0); if (t1 != null) tl.to(sel, { autoAlpha: 0, duration: d }, t1); };
+const pop = (sel, t, d = 0.35) => { gsap.set(sel, { autoAlpha: 0, scale: 0.6, transformOrigin: '50% 50%' }); tl.fromTo(sel, { autoAlpha: 0, scale: 0.6 }, { autoAlpha: 1, scale: 1, duration: d, ease: 'back.out(2)', immediateRender: false }, t); };
+gsap.set('#c-gancho', { autoAlpha: 0 }); show('#c-gancho', S.abre[0], S.abre[1]);
+const USO = { 'c-estr': ['abre'], 'c-corr': ['corr', 'bate', 'mostra', 'doisdias', 'chora', 'tranca', 'volto'], 'c-cafe': ['cafe'], 'c-braco': ['braco'], 'c-regra': ['regra'],
+  'c-neta': ['neta'], 'c-quarto': ['suando'], 'c-quartoEsc': ['rouco'], 'c-porteira': ['sai'], 'c-mac': ['macaneta'] };
+Object.entries(USO).forEach(([id, planos]) => planos.forEach(k => show('#' + id, S[k][0], S[k][1])));
+gsap.set('#escuro', { autoAlpha: 1 }); tl.to('#escuro', { autoAlpha: 0.15, duration: 0.25 }, 0.18).to('#escuro', { autoAlpha: 0, duration: 0.5 }, 1.0);
+// corte seco para o preto quando a maçaneta gira; depois o cartão final
+gsap.set('#preto', { autoAlpha: 0 }); tl.set('#preto', { autoAlpha: 1 }, FIM_FALA); tl.set('#preto', { autoAlpha: 0 }, CARTAO);
+gsap.set('#g-dia', { autoAlpha: 0, scale: 2.6, transformOrigin: '540px 790px' }); tl.to('#g-dia', { autoAlpha: 1, scale: 1, duration: 0.22, ease: 'power4.in' }, 0.2);
+gsap.set('#g-flash', { opacity: 0 }); tl.to('#g-flash', { opacity: 0.85, duration: 0.03 }, 0.42).to('#g-flash', { opacity: 0, duration: 0.35 }, 0.45);
+gsap.set('#g-apoc', { autoAlpha: 0, y: 30 }); tl.to('#g-apoc', { autoAlpha: 1, y: 0, duration: 0.25, ease: 'power3.out' }, 0.95);
+tl.to('#g-dia', { scale: 1.06, duration: 1.6, ease: 'none' }, 0.45);
+fade('#selo1', 3.0, 7.0);
+pop('#co-t1', 5.6, 0.35); pop('#co-t2', 6.6, 0.4); tl.to(['#co-t1', '#co-t2'], { autoAlpha: 0, duration: 0.15 }, S.corr[1] - 0.1);
+pop('#ca-antes', 8.6, 0.3); tl.to('#ca-antes', { autoAlpha: 0, duration: 0.15 }, S.cafe[1] - 0.1); pop('#br-tag', 20.2, 0.35);
+gsap.set('#br-braco', { x: -260 }); tl.to('#br-braco', { x: 0, duration: 0.7, ease: 'power2.out' }, 19.4);
+pop('#rg-card', 22.0, 0.35); pop('#rg-l1', 23.6, 0.3); pop('#rg-l2', 24.9, 0.3); pop('#rg-rel', 25.3, 0.3);
+fade('#dd-tag', 31.3, 33.3, 0.25);
+pop('#qu-t1', 39.4, 0.35); pop('#qu-t2', 41.0, 0.4);
+show('#fim', CARTAO); pop('#fim-t', CARTAO + 0.3, 0.6); pop('#fim-c', CARTAO + 1.0);
+tl.to('#fim-c', { scale: 1.05, duration: 0.45, repeat: 4, yoyo: true, ease: 'sine.inOut' }, CARTAO + 1.6);
+tl.set({}, {}, END);
+
+// ===================== LEGENDA =====================
+const leg = Legenda($('#legenda'), window.PALAVRAS || [], { y: PISO_LEG, fs: 78, fonte: "'Anton', sans-serif", destaque: AMBAR, cor: BRANCO, contorno: '#000', enfase: ['TIÃO', 'ZÉ', 'ZÉ.', 'PORTA!', 'BRAÇO', 'CORTE.', 'TRÊS:', 'MACHUCADO', 'NETA?', 'SOZINHA!', 'DIAS,', 'SUANDO.', 'MOCHILA.', 'TRANCA', 'MAÇANETA', 'GIRAR.'] }).esconder([[0, S.abre[1]], [FIM_FALA, 999]]);
+const NOMES = { tiao: 'TIÃO', ze: 'SEU ZÉ' };
+
+// ===================== RENDER =====================
+const dentro = (t, janelas) => janelas.some(([a, b]) => t >= a && t < b);
+function desenhar(t) {
+  $('#cam').setAttribute('transform', camEm(t));
+  for (const A of ATORES) { const o = dentro(t, A.janelas); A.g.style.display = o ? '' : 'none'; if (o) A.b.desenhar(t); }
+  for (const I of ITENS) I.g.style.display = dentro(t, I.janelas) ? '' : 'none';
+  // quem fala agora
+  const sg = (window.SEGMENTOS || []).find(s => t >= s.de && t <= s.ate + 0.15 && NOMES[s.quem]);
+  const qn = sg && t >= S.abre[1] && t < FIM_FALA ? NOMES[sg.quem] : '';
+  $('#quem-t').textContent = qn; $('#quem').style.display = qn ? '' : 'none'; $('#quem-r').setAttribute('x', -(qn.length * 13 + 40)); $('#quem-r').setAttribute('width', qn.length * 26 + 80);
+  // a porta treme quando o seu Zé bate e quando chora encostado nela
+  const bate = (t > 13.6 && t < 15.6) ? Math.sin(t * 52) * Math.max(0, Math.sin(t * 9.5)) * 4 : (t > 33.6 && t < 36.0) ? Math.sin(t * 30) * 1.2 : 0;
+  $$('.portaQuarto').forEach(p => p.setAttribute('transform', `translate(${bate.toFixed(2)} 0) rotate(${(bate * 0.15).toFixed(3)} ${p.dataset.cx} ${p.dataset.cy})`));
+  $$('#c-corr .fresta').forEach(fr => fr.setAttribute('fill', (t > 13.4 && t < 16.3) || (t > 33.4 && t < 36.6) ? '#1A1A10' : '#000'));
+  // a chave gira (tranca por fora) e a maçaneta do quarto gira devagar no fim
+  const ch = t < 45.3 ? 0 : Math.min(1, (t - 45.3) / 0.5) * 90;
+  $$('#c-corr .chave').forEach(c => c.setAttribute('transform', `rotate(${ch.toFixed(1)} ${c.dataset.cx} ${c.dataset.cy})`));
+  const mg = t < 55.0 ? 0 : Math.min(1, (t - 55.0) / 1.7);
+  $$('#c-mac .macaneta').forEach(m => m.setAttribute('transform', `rotate(${(-mg * mg * 38 + Math.sin(t * 40) * mg * 0.8).toFixed(2)} 0 0)`));
+  // veias escurecendo no braço; gotas de suor escorrendo
+  $$('.veias').forEach(v => v.setAttribute('opacity', Math.min(1, Math.max(0, (t - 20.2) / 1.2)).toFixed(2)));
+  if (dentro(t, J('suando'))) { const c = zQ.mao ? zQ : null; $$('.gota').forEach((g, i) => { const u = ((t * 0.7 + i * 0.27) % 1), cab = [600 - 50 + i * 30, 760 + i * 8]; g.setAttribute('transform', `translate(${cab[0]} ${(cab[1] + u * 120).toFixed(1)})`); g.setAttribute('opacity', (Math.sin(u * Math.PI)).toFixed(2)); }); }
+  // a mochila acompanha o ombro do Tião; o curativo acompanha o antebraço do seu Zé
+  if (dentro(t, [[44.1, S.volto[1]]])) { const m = tK.mao(t < 44.3 ? 'd' : 'e'); mochila.setAttribute('transform', `translate(${m[0].toFixed(1)} ${(m[1] + 140).toFixed(1)})`); }
+  if (dentro(t, J('sai'))) { const m = tS.mao('e'); mochilaS.setAttribute('transform', `translate(${m[0].toFixed(1)} ${(m[1] + 126).toFixed(1)})`); }
+  if (dentro(t, J('cafe'))) { const m = zC.mao('d'); curativo.setAttribute('transform', `translate(${(m[0] - 50).toFixed(1)} ${(m[1] + 20).toFixed(1)})`); }
+  // vida: neblina, estática, vapor, ponteiro do relógio da regra correndo
+  $$('.neblina').forEach((n, i) => n.setAttribute('transform', `translate(${((t * 12 + i * 70) % 200 - 100).toFixed(1)} 0)`));
+  $$('.estatica').forEach(e => e.setAttribute('opacity', (Math.abs(Math.sin(t * 91.7) * Math.cos(t * 37.3)) * 0.9).toFixed(2)));
+  $$('.vapor path').forEach(v => { const ph = +v.dataset.ph, u = ((t * 0.5 + ph * 0.3) % 1); v.setAttribute('transform', `translate(${(Math.sin(t * 2 + ph) * 8).toFixed(1)} ${(-u * 30).toFixed(1)})`); v.setAttribute('opacity', (0.42 * Math.sin(u * Math.PI)).toFixed(2)); });
+  $$('.ponteiro').forEach(p => p.setAttribute('transform', `rotate(${(t * (dentro(t, J('regra')) ? 160 : 6)).toFixed(1)} ${p.dataset.cx} ${p.dataset.cy})`));
+}
+window.__timeline = tl;
+window.__duration = tl.duration();
+window.__seek = t => { tl.seek(t, false); desenhar(t); leg.seek(t); };
+document.fonts.ready.then(() => Palco.caberTextos(document));
+window.__seek(0);
+if (!rendering) { tl.eventCallback('onUpdate', () => { const t = tl.time(); desenhar(t); leg.seek(t); }); document.addEventListener('click', () => tl.paused() ? tl.play() : tl.pause()); }
+</script>
+</body>
+</html>
