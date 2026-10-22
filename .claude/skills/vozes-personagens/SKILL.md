@@ -57,3 +57,9 @@ Rate/pitch leves (`--rate=-8% --pitch=-4Hz`) — nunca mais que isso.
 - Tirar do texto as vírgulas que não são pausa de verdade (ex.: "quem chega machucado espera vinte e quatro horas").
 - Pausa só entre falas (a montagem cuida) e onde o roteiro pede ("..." = hesitação).
 - Elenco da série Apocalipse Zumbi (escolha do usuário, "combinação B"): Tião = piper pt_BR-cadu-medium; Seu Zé = kokoro pm_santa. Sem efeito nenhum na voz.
+
+## Elenco de vozes da série Apocalipse Zumbi (Qwen3-TTS VoiceDesign) — `videos/serie-zumbi/elenco-vozes.json`
+- Motor principal agora: **Qwen3-TTS VoiceDesign** (`scripts/qwen_vozes.py`): voz descrita em texto, natural, com direção por fala.
+- **Tião** = senhor caipira de ~65 anos do interior de Minas (aprovado pelo usuário). **Aninha** = menina de 8 anos. **Seu Zé** = avô de ~70, voz fraca.
+- **Narrador**: até o dia 3 parte 2, o usuário GRAVA. Nos próximos vídeos usar o **narrador de TV paulistano** do elenco (aprovado) — o usuário não precisa mais gravar.
+- Cuidado: o Qwen às vezes come a primeira palavra ou erra nome; conferir cada fala com a transcrição antes de montar.

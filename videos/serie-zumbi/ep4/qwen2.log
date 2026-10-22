@@ -1,0 +1,34 @@
+
+********
+Warning: flash-attn is not installed. Will only run the manual PyTorch version. Please install flash-attn for faster inference.
+********
+ 
+Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+P01 tiao 3.76 s
+Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+P02 tiao 4.72 s
+Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+P03 tiao 4.88 s
+Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+P05 tiao 5.36 s
+Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+P07 tiao 2.64 s
+Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+P09 tiao 5.52 s
+Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+P11 tiao 6.32 s
+Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+P12 tiao 2.24 s
+Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+P14 tiao 2.72 s
+Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+P16 tiao 2.64 s
+Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+P17 tiao 3.04 s
+Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+P19 tiao 8.96 s
+Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+P20 tiao 3.2 s
+Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+P23 tiao 1.76 s
+QFIM 0
