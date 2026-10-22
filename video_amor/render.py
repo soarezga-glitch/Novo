@@ -79,6 +79,7 @@ def nn_order(cells, start):
         i = int(np.argmin(d)); order.append(cells[i]); left[i] = False; cur = pts[i]
     return order
 
+BORDER = (234, 244, 250)  # cor do papel fora da imagem
 FREE = False  # True: câmera pode passar da borda (imagens com fundo de papel)
 def clamp_cam(cx, cy, z):
     z = max(1.0, z); hw, hh = W / (2 * z), H / (2 * z)
@@ -89,7 +90,8 @@ def warp(img, cam):
     cx, cy, z = clamp_cam(*cam)
     if abs(z - 1) < 1e-4: return img
     M = np.float32([[z, 0, W / 2 - cx * z], [0, z, H / 2 - cy * z]])
-    return cv2.warpAffine(img, M, (W, H), flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_REFLECT)
+    return cv2.warpAffine(img, M, (W, H), flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT,
+                          borderValue=tuple(float(v) for v in BORDER))
 
 def to_screen(p, cam):
     cx, cy, z = clamp_cam(*cam)
@@ -276,14 +278,21 @@ WIPE_NOISE = cv2.GaussianBlur(np.random.default_rng(3).random((H, W)).astype(np.
 WIPE_NOISE = (WIPE_NOISE - WIPE_NOISE.min()) / np.ptp(WIPE_NOISE)
 
 # ---------------------------------------------------------------- render
+def set_border(seg):
+    global BORDER
+    c = seg.color
+    b = np.concatenate([c[:20].reshape(-1, 3), c[-20:].reshape(-1, 3), c[:, :20].reshape(-1, 3), c[:, -20:].reshape(-1, 3)])
+    BORDER = tuple(np.median(b, 0))
+
 def render(idx, out):
     global FREE
     free = lambda i: SEGS[i]['kind'] == 'comp' or SEGS[i]['img'] in ('29', '16', '19', '13', '18')
     prev = None
     if idx > 0:
-        FREE = free(idx - 1); prev = Seg(idx - 1).final_frame().astype(np.float32)
+        FREE = free(idx - 1); ps = Seg(idx - 1); set_border(ps); prev = ps.final_frame().astype(np.float32)
     FREE = free(idx)
     seg = Seg(idx)
+    set_border(seg)
     tr_kind = seg.s.get('tr', TRS[idx % len(TRS)])
     tr_len = 0.3 if seg.kind == 'still' and tr_kind == 'slide' else TR
     f0, f1 = round(seg.t0 * FPS), round(seg.t1 * FPS)
