@@ -1,0 +1,328 @@
+{
+ "duracao": 56.5,
+ "voz": "fala_master.wav",
+ "biblioteca": [
+  "../../../.claude/skills/sons-de-ambiente/biblioteca/apocalipse",
+  "../../../.claude/skills/sons-de-ambiente/biblioteca/hoje",
+  "../../../.claude/skills/sons-de-ambiente/biblioteca/ui",
+  "../../../.claude/skills/sons-de-ambiente/biblioteca/roma",
+  "../../../.claude/skills/sons-de-ambiente/biblioteca/escola"
+ ],
+ "ambientes": [
+  {
+   "som": "amb_horda",
+   "de": 0,
+   "ate": 2.4,
+   "db": -9,
+   "fade": 0.1
+  },
+  {
+   "som": "amb_sitio_noite",
+   "de": 2.4,
+   "ate": 24.6,
+   "db": -10,
+   "fade": 0.4
+  },
+  {
+   "som": "amb_tensao_grave",
+   "de": 8.9,
+   "ate": 23.7,
+   "db": -12,
+   "fade": 0.5
+  },
+  {
+   "som": "sfx_coracao",
+   "de": 14.5,
+   "ate": 23.7,
+   "db": -6,
+   "fade": 0.3
+  },
+  {
+   "som": "amb_amanhecer",
+   "de": 24.2,
+   "ate": 33.0,
+   "db": -12,
+   "fade": 1.5
+  },
+  {
+   "som": "amb_natureza",
+   "de": 32.9,
+   "ate": 45.9,
+   "db": -13,
+   "fade": 0.5
+  },
+  {
+   "som": "amb_cozinha_noite",
+   "de": 45.9,
+   "ate": 53.3,
+   "db": -14,
+   "fade": 0.3
+  },
+  {
+   "som": "sfx_estatica",
+   "de": 45.9,
+   "ate": 49.0,
+   "db": -17,
+   "fade": 0.2
+  },
+  {
+   "som": "sfx_estatica",
+   "de": 49.0,
+   "ate": 53.3,
+   "db": -25,
+   "fade": 0.3
+  },
+  {
+   "som": "amb_tensao_grave",
+   "de": 49.0,
+   "ate": 53.3,
+   "db": -11,
+   "fade": 0.5
+  },
+  {
+   "som": "sfx_coracao",
+   "de": 50.5,
+   "ate": 53.3,
+   "db": -6,
+   "fade": 0.2
+  },
+  {
+   "som": "amb_tensao_grave",
+   "de": 53.3,
+   "ate": 56.5,
+   "db": -15,
+   "fade": 0.6
+  }
+ ],
+ "efeitos": [
+  {
+   "som": "whoosh-cinematic",
+   "em": 0.05,
+   "db": -6
+  },
+  {
+   "som": "sfx_impacto_cinema",
+   "em": 0.4,
+   "db": 0
+  },
+  {
+   "som": "impact-bass-1",
+   "em": 0.42,
+   "db": -4
+  },
+  {
+   "som": "sfx_gemido_perto",
+   "em": 1.2,
+   "db": -10
+  },
+  {
+   "som": "whoosh",
+   "em": 2.5,
+   "db": -14
+  },
+  {
+   "som": "pop",
+   "em": 3.95,
+   "db": -12
+  },
+  {
+   "som": "impact-bass-2",
+   "em": 4.55,
+   "db": -6
+  },
+  {
+   "som": "sfx_clique",
+   "em": 6.45,
+   "db": -2
+  },
+  {
+   "som": "sfx_cai_capim",
+   "em": 7.85,
+   "db": -3
+  },
+  {
+   "som": "sfx_capim_mexe",
+   "em": 7.95,
+   "db": -8
+  },
+  {
+   "som": "sfx_coruja",
+   "em": 9.6,
+   "db": -16
+  },
+  {
+   "som": "sfx_gemido_1",
+   "em": 10.8,
+   "db": -16
+  },
+  {
+   "som": "sfx_gemido_3",
+   "em": 12.2,
+   "db": -15
+  },
+  {
+   "som": "pop",
+   "em": 12.5,
+   "db": -14
+  },
+  {
+   "som": "whoosh-short",
+   "em": 17.6,
+   "db": -12
+  },
+  {
+   "som": "sfx_ferrao",
+   "em": 19.0,
+   "db": -6
+  },
+  {
+   "som": "sfx_farejar",
+   "em": 20.05,
+   "db": -2
+  },
+  {
+   "som": "sfx_gemido_perto",
+   "em": 21.2,
+   "db": -8
+  },
+  {
+   "som": "sfx_galo",
+   "em": 25.8,
+   "db": -10
+  },
+  {
+   "som": "whoosh",
+   "em": 27.1,
+   "db": -14
+  },
+  {
+   "som": "sfx_cachorro_longe",
+   "em": 28.2,
+   "db": -18
+  },
+  {
+   "som": "pop",
+   "em": 29.0,
+   "db": -12
+  },
+  {
+   "som": "impact-bass-2",
+   "em": 31.2,
+   "db": -8
+  },
+  {
+   "som": "sfx_porteira_range",
+   "em": 34.6,
+   "db": -6
+  },
+  {
+   "som": "sfx_ferrao",
+   "em": 35.4,
+   "db": -8
+  },
+  {
+   "som": "pop",
+   "em": 36.4,
+   "db": -14
+  },
+  {
+   "som": "whoosh-cinematic",
+   "em": 38.0,
+   "db": -8
+  },
+  {
+   "som": "impact-bass-1",
+   "em": 38.15,
+   "db": -6
+  },
+  {
+   "som": "pop",
+   "em": 40.0,
+   "db": -12
+  },
+  {
+   "som": "pop",
+   "em": 40.8,
+   "db": -12
+  },
+  {
+   "som": "click-soft",
+   "em": 41.2,
+   "db": -10
+  },
+  {
+   "som": "sfx_pano",
+   "em": 44.0,
+   "db": -6
+  },
+  {
+   "som": "sfx_ferrao",
+   "em": 44.85,
+   "db": -6
+  },
+  {
+   "som": "pop",
+   "em": 47.5,
+   "db": -14
+  },
+  {
+   "som": "whoosh-short",
+   "em": 48.9,
+   "db": -14
+  },
+  {
+   "som": "sfx_impacto_cinema",
+   "em": 52.05,
+   "db": -2
+  },
+  {
+   "som": "impact-bass-2",
+   "em": 52.07,
+   "db": -4
+  },
+  {
+   "som": "whoosh-cinematic",
+   "em": 53.3,
+   "db": -8
+  },
+  {
+   "som": "pop",
+   "em": 54.5,
+   "db": -12
+  }
+ ],
+ "passos": [
+  {
+   "som": "sfx_passo_capim",
+   "de": 16.6,
+   "ate": 19.0,
+   "intervalo": 0.62,
+   "db": -8
+  },
+  {
+   "som": "sfx_passo_capim",
+   "de": 22.5,
+   "ate": 23.7,
+   "intervalo": 0.62,
+   "db": -9
+  },
+  {
+   "som": "sfx_passo_capim",
+   "de": 32.9,
+   "ate": 35.2,
+   "intervalo": 0.45,
+   "db": -10
+  },
+  {
+   "som": "sfx_passo_capim",
+   "de": 41.9,
+   "ate": 43.4,
+   "intervalo": 0.42,
+   "db": -10
+  }
+ ],
+ "ducking": {
+  "db": 6
+ },
+ "volume_final_lufs": -10
+}
