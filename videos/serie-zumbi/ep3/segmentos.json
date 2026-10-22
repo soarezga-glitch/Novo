@@ -1,0 +1,65 @@
+[
+ {
+  "id": "03",
+  "quem": "ze",
+  "texto": "Tião, abre essa porta! Eu tô bem, homem!",
+  "de": 0.25,
+  "ate": 2.927
+ },
+ {
+  "id": "04",
+  "quem": "tiao",
+  "texto": "Então mostra o braço pela janela.",
+  "de": 3.477,
+  "ate": 6.019
+ },
+ {
+  "id": "05",
+  "quem": "ze",
+  "texto": "É só um corte. Foi no arame, fugindo.",
+  "de": 6.569,
+  "ate": 8.584
+ },
+ {
+  "id": "06",
+  "quem": "tiao",
+  "texto": "Regra número três: quem chega machucado, espera vinte e quatro horas.",
+  "de": 9.134,
+  "ate": 14.533
+ },
+ {
+  "id": "07",
+  "quem": "ze",
+  "texto": "E a minha neta? Ela ficou escondida na caixa d'água. Sozinha!",
+  "de": 15.083,
+  "ate": 18.607
+ },
+ {
+  "id": "08",
+  "quem": "tiaobaixo",
+  "texto": "Já faz dois dias, seu Zé.",
+  "de": 19.157,
+  "ate": 22.361
+ },
+ {
+  "id": "09",
+  "quem": "zechora",
+  "texto": "Então vai buscar ela. Pelo amor de Deus.",
+  "de": 22.911,
+  "ate": 25.402
+ },
+ {
+  "id": "12",
+  "quem": "tiao",
+  "texto": "Eu volto com ela.",
+  "de": 25.952,
+  "ate": 27.775
+ },
+ {
+  "id": "13",
+  "quem": "zerouco",
+  "texto": "Volta logo, Tião... volta logo.",
+  "de": 28.325,
+  "ate": 30.679
+ }
+]

@@ -1,0 +1,7 @@
+{
+ "tiao":      {"motor": "piper", "voz": "pt_BR-jeff-medium", "lento": 1.05, "fx": "equalizer=f=140:t=q:w=1:g=3,equalizer=f=3000:t=q:w=1.2:g=2"},
+ "tiaobaixo": {"motor": "piper", "voz": "pt_BR-jeff-medium", "lento": 1.25, "fx": "equalizer=f=140:t=q:w=1:g=3,volume=0.8"},
+ "ze":        {"motor": "piper", "voz": "pt_BR-faber-medium", "lento": 0.9, "fx": "vibrato=f=6:d=0.06,lowpass=f=2800,aecho=0.8:0.6:18:0.2"},
+ "zechora":   {"motor": "piper", "voz": "pt_BR-faber-medium", "lento": 1.2, "fx": "vibrato=f=5:d=0.12,tremolo=f=4:d=0.15,lowpass=f=2800,aecho=0.8:0.6:18:0.2"},
+ "zerouco":   {"motor": "piper", "voz": "pt_BR-faber-medium", "lento": 1.5, "fx": "acrusher=bits=10:mix=0.2:mode=log,lowpass=f=2400,vibrato=f=4:d=0.15,aecho=0.8:0.6:20:0.25"}
+}
