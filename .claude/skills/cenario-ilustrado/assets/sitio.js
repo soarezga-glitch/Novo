@@ -351,6 +351,47 @@
       <ellipse cx="0" cy="-806" rx="146" ry="26" fill="#2E6AA8" stroke="${L}" stroke-width="6"/><path d="M-60 -812 Q0 -880 60 -812" fill="#2E6AA8" stroke="${L}" stroke-width="6"/>
       <path d="M200 0 L170 -560 M260 0 L230 -560" stroke="#5A4430" stroke-width="10"/>${[...Array(9)].map((_, i) => `<path d="M${198 - i * 3.3} ${-40 - i * 58} H${258 - i * 3.3}" stroke="#5A4430" stroke-width="8"/>`).join('')}</g>`;
 
+    // ---------- CAPIM AMASSADO de perto (de dia): o chão do pasto visto de cima/perto, com trilhas de capim deitado e
+    // arrastado (marcas de pés arrastando), terra aparecendo, gotas escuras; as trilhas apontam para o fundo ----------
+    S.rastros = ({ x = 0, y = 0, w = 1080, h = 1920, hz = 700 } = {}) => {
+      let s = defs() + ceu(x, y, w, h, hz, true) + serra(x, w, hz, 200, '#4A3E58', 0.9) + `<rect x="${x}" y="${hz - 10}" width="${w}" height="${h - hz}" fill="#4A5A34"/>`;
+      s += neblina(x, hz, w, 160, 0.25);
+      for (let i = 0; i < 60; i++) { const gy = rnd(hz + 20, y + h), gx = rnd(x, x + w); s += touceira(gx, gy, 0.5 + (gy - hz) / 600, '#5A6E3A'); }
+      // trilhas: faixas de capim deitado (mais claro, folhas tombadas na direção do arrasto) convergindo para o fundo
+      [[-0.32, 0], [0.02, 1], [0.34, 2]].forEach(([dx, k]) => {
+        const xb = x + w / 2 + dx * w * 1.4, xt = x + w / 2 + dx * 120;
+        s += `<path d="M${f(xb - 90)} ${y + h} L${f(xt - 14)} ${hz + 20} L${f(xt + 14)} ${hz + 20} L${f(xb + 90)} ${y + h}Z" fill="#7A7A48" opacity=".85"/>`;
+        for (let q = 0; q < 26; q++) { const u = rnd(0, 1), yy = lerp(hz + 30, y + h, u * u), xc = lerp(xt, xb, u * u) + rnd(-1, 1) * lerp(10, 70, u * u), L2 = lerp(8, 46, u * u);
+          s += `<path d="M${f(xc)} ${f(yy)} q${f(L2 * 0.3)} ${f(-L2 * 0.25)} ${f(L2 * 0.1)} ${f(-L2)}" stroke="#9A9A5A" stroke-width="${f(lerp(2, 6, u * u))}" fill="none" stroke-linecap="round"/>`; }
+        for (let q = 0; q < 6; q++) { const u = 0.3 + q * 0.12, yy = lerp(hz + 30, y + h, u * u), xc = lerp(xt, xb, u * u) + (q % 2 ? 1 : -1) * lerp(6, 34, u * u);
+          s += `<ellipse cx="${f(xc)}" cy="${f(yy)}" rx="${f(lerp(5, 30, u * u))}" ry="${f(lerp(2, 10, u * u))}" fill="#3A3020" opacity=".7"/>`; }
+      });
+      s += `<g opacity=".8">${[[420, 1500], [470, 1560], [600, 1430]].map(([gx, gy]) => `<ellipse cx="${gx}" cy="${gy}" rx="9" ry="5" fill="#3A1410"/>`).join('')}</g>`;
+      return clip(x, y, w, h, s + acabamento(0.28));
+    };
+    // ---------- CERCA DE ARAME ARREBENTADA de perto, com uma FITA DE CABELO cor-de-rosa presa no arame ----------
+    S.cercaArrebentada = ({ x = 0, y = 0, w = 1080, h = 1920, chao = 1380 } = {}) => {
+      let s = defs() + ceu(x, y, w, h, chao - 380, true) + serra(x, w, chao - 380, 220, '#4A3E58', 0.95) + `<rect x="${x}" y="${chao - 400}" width="${w}" height="${h - chao + 400}" fill="#4A5A34"/>` + neblina(x, chao - 380, w, 200, 0.25);
+      for (let i = 0; i < 40; i++) { const gy = rnd(chao - 360, y + h), gx = rnd(x, x + w); s += touceira(gx, gy, 0.6 + (gy - chao + 360) / 500, '#5A6E3A'); }
+      // mourões tortos e o arame farpado arrebentado, pontas enroladas
+      const m1 = [x + 150, chao + 40], m2 = [x + 930, chao + 60];
+      [m1, m2].forEach(([mx, mb], i) => { s += `<path d="M${mx - 18} ${mb} L${mx - 10 + (i ? 14 : -8)} ${mb - 620} L${mx + 18 + (i ? 14 : -8)} ${mb - 620} L${mx + 18} ${mb}Z" fill="#6A5038" stroke="${L}" stroke-width="6"/><path d="M${mx - 6} ${mb - 20} L${mx + (i ? 10 : -6)} ${mb - 600}" stroke="#8A6A48" stroke-width="6"/>`; });
+      const farpas = (x0, y0, x1, y1) => { let d = ''; for (let u = 0.1; u < 1; u += 0.12) { const px = lerp(x0, x1, u), py = lerp(y0, y1, u); d += `M${f(px - 7)} ${f(py - 7)} l14 14 M${f(px + 7)} ${f(py - 7)} l-14 14 `; } return `<path d="${d}" stroke="#6A6A70" stroke-width="3"/>`; };
+      [[-520, 0], [-380, 1], [-240, 2]].forEach(([dy, i]) => {
+        const ya = chao + dy, yb = chao + dy + 20;
+        s += `<path d="M${m1[0]} ${ya} Q${x + 330} ${ya + 40 + i * 30} ${x + 430} ${ya + 140 + i * 50} q20 30 -6 40" stroke="#7A7A80" stroke-width="5" fill="none"/>` + farpas(m1[0], ya, x + 420, ya + 130 + i * 50);
+        s += `<path d="M${m2[0]} ${yb} Q${x + 760} ${yb + 60 + i * 20} ${x + 640} ${yb + 160 + i * 40} q-24 24 4 40" stroke="#7A7A80" stroke-width="5" fill="none"/>` + farpas(x + 650, yb + 150 + i * 40, m2[0], yb);
+      });
+      // fita de cabelo cor-de-rosa presa numa farpa, balançando (.fita)
+      s += `<g class="fita" data-cx="${x + 400}" data-cy="${chao - 400}"><path d="M${x + 400} ${chao - 400} q-30 10 -40 -14 q30 -10 40 14 q20 -26 46 -12 q-24 18 -46 12Z" fill="#F07AA8" stroke="${L}" stroke-width="4"/><path d="M${x + 400} ${chao - 400} q-10 60 -36 110 M${x + 400} ${chao - 400} q14 50 40 96" stroke="#F07AA8" stroke-width="12" fill="none" stroke-linecap="round"/><path d="M${x + 400} ${chao - 400} q-10 60 -36 110 M${x + 400} ${chao - 400} q14 50 40 96" stroke="#FFB0CC" stroke-width="4" fill="none" stroke-linecap="round" opacity=".7"/><circle cx="${x + 400}" cy="${chao - 400}" r="8" fill="#D0507A" stroke="${L}" stroke-width="3"/></g>`;
+      // pegadas e capim amassado passando pelo buraco da cerca
+      s += `<path d="M${x + 380} ${y + h} L${x + 500} ${chao - 340} L${x + 580} ${chao - 340} L${x + 760} ${y + h}Z" fill="#7A7A48" opacity=".7"/>`;
+      return clip(x, y, w, h, s + acabamento(0.28));
+    };
+    // sapatinho de criança (boneca de verniz rosa com fivela), caído de lado
+    S.sapatinho = (x, y, k = 1, rot = -14) => `<g transform="translate(${f(x)} ${f(y)}) rotate(${rot}) scale(${k})"><ellipse cx="0" cy="6" rx="70" ry="12" fill="#000" opacity=".3"/><path d="M-60 0 Q-64 -40 -20 -44 Q30 -50 60 -20 Q70 0 50 4 H-56Z" fill="#E86A9A" stroke="${L}" stroke-width="5"/><path d="M-30 -42 Q0 -60 20 -46" stroke="${L}" stroke-width="10" fill="none"/><path d="M-30 -42 Q0 -60 20 -46" stroke="#E86A9A" stroke-width="5" fill="none"/><rect x="14" y="-54" width="14" height="12" fill="#E8D070" stroke="${L}" stroke-width="3"/><path d="M-50 -10 Q0 -30 50 -14" stroke="#FFB0CC" stroke-width="6" fill="none" opacity=".6"/><path d="M-60 4 H54" stroke="#3A2A2A" stroke-width="7"/></g>`;
+    // moscas voando em volta de um ponto (.mosca, animar no __seek)
+    S.moscas = (x, y, n = 8) => [...Array(n)].map((_, i) => `<g class="mosca" data-cx="${f(x)}" data-cy="${f(y)}" data-i="${i}"><ellipse rx="5" ry="4" fill="#111"/><ellipse cx="-3" cy="-5" rx="4" ry="2.5" fill="#C8D0DA" opacity=".7"/><ellipse cx="3" cy="-5" rx="4" ry="2.5" fill="#C8D0DA" opacity=".7"/></g>`).join('');
     // ---------- XÍCARA DE ÁGATA de perto (café ainda quente): pires, borda azul lascada, café, vapor subindo (.vapor) ----------
     S.mochila = (x, y, k = 1) => `<g transform="translate(${f(x)} ${f(y)}) scale(${k})"><path d="M-14 -128 q14 -24 28 0" stroke="#2A3220" stroke-width="8" fill="none"/><path d="M-46 0 Q-50 -110 0 -116 Q50 -110 46 0Z" fill="#4A5A3A" stroke="${L}" stroke-width="5"/><rect x="-34" y="-50" width="68" height="40" rx="8" fill="#3A4A2E" stroke="${L}" stroke-width="4"/><path d="M-40 -80 H40" stroke="#3A4A2E" stroke-width="5"/></g>`;   // mochila de lona (origem = base)
     S.xicara = (x, y, k = 1) => `<g transform="translate(${f(x)} ${f(y)}) scale(${k})"><ellipse cx="0" cy="6" rx="150" ry="26" fill="#000" opacity=".35"/>

@@ -1,0 +1,90 @@
+[
+ {
+  "id": "N01",
+  "quem": "narrador",
+  "texto": "Terceiro dia do apocalipse zumbi. Parte dois. E o Tião acabou de deixar um homem ferido trancado dentro da casa dele.",
+  "de": 0.3,
+  "ate": 8.965,
+  "arq": "falas-final/N01.wav"
+ },
+ {
+  "id": "N02",
+  "quem": "narrador",
+  "texto": "A maçaneta gira uma vez. Duas. Mas o Tião não escuta. Ele já está no meio do pasto.",
+  "de": 9.115,
+  "ate": 15.875,
+  "arq": "falas-final/N02.wav"
+ },
+ {
+  "id": "N03",
+  "quem": "narrador",
+  "texto": "Oitocentos metros. De dia, parecem seguros. Até ele ver as marcas no capim.",
+  "de": 16.025,
+  "ate": 22.045,
+  "arq": "falas-final/N03.wav"
+ },
+ {
+  "id": "P01",
+  "quem": "tiao",
+  "texto": "Isso aqui não é pegada de bicho.",
+  "de": 22.495,
+  "ate": 24.701,
+  "arq": "falas-final/P01.wav"
+ },
+ {
+  "id": "N04",
+  "quem": "narrador",
+  "texto": "São dezenas. Capim amassado, arrastado. Todas indo pro mesmo lugar. A casa do Seu Zé.",
+  "de": 25.151,
+  "ate": 32.651,
+  "arq": "falas-final/N04.wav"
+ },
+ {
+  "id": "N05",
+  "quem": "narrador",
+  "texto": "No meio do caminho, a cerca de arame está arrebentada. E presa no arame, tem uma fita de cabelo. Cor-de-rosa.",
+  "de": 32.801,
+  "ate": 40.386,
+  "arq": "falas-final/N05.wav"
+ },
+ {
+  "id": "P02",
+  "quem": "tiao",
+  "texto": "Aguenta firme, menina. Eu tô chegando.",
+  "de": 40.836,
+  "ate": 44.961,
+  "arq": "falas-final/P02.wav"
+ },
+ {
+  "id": "N06",
+  "quem": "narrador",
+  "texto": "O portão do Seu Zé está aberto. A caixa de som, caída. E o bolo da festa ainda está na mesa, coberto de moscas.",
+  "de": 45.411,
+  "ate": 53.826,
+  "arq": "falas-final/N06.wav"
+ },
+ {
+  "id": "N07",
+  "quem": "narrador",
+  "texto": "Tem cadeira virada, prato quebrado, sapato de criança no chão. Mas nenhuma pessoa. Nenhuma.",
+  "de": 53.976,
+  "ate": 61.351,
+  "arq": "falas-final/N07.wav"
+ },
+ {
+  "id": "P03",
+  "quem": "tiao",
+  "texto": "Aninha? É o Tião. Amigo do seu avô.",
+  "de": 61.801,
+  "ate": 66.43,
+  "arq": "falas-final/P03.wav"
+ },
+ {
+  "id": "N08",
+  "quem": "narrador",
+  "texto": "Nada. Só o vento batendo a janela. Até que lá em cima, na caixa d'água, alguma coisa se mexe.",
+  "de": 66.88,
+  "ate": 74.505,
+  "arq": "falas-final/N08.wav"
+ }
+]

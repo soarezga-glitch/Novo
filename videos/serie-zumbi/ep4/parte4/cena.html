@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Apocalipse Zumbi: Parte 4</title>
+<!-- Série APOCALIPSE ZUMBI — PARTE 4 (dia 3, parte dois): o pasto, as marcas no capim, a fita rosa na cerca, a casa do seu Zé vazia e algo se mexendo na caixa d'água. Narrador gravado pelo usuário + vozes (skill vozes-personagens). -->
+<style>
+  html, body { margin: 0; background: #000; overflow: hidden; }
+  #stage { width: 1080px; height: 1920px; display: block; }
+  @font-face { font-family: 'Anton'; src: url(../fontes/anton.woff2); }
+  @font-face { font-family: 'Luckiest Guy'; src: url(../fontes/luckiest-guy.woff2); }
+  text:not([font-family]) { font-family: 'Anton', sans-serif; }
+</style>
+<script src="../gsap.min.js"></script>
+<script src="../boneco.js"></script>
+<script src="../paletas.js"></script>
+<script src="../cenario.js"></script>
+<script src="../sitio.js"></script>
+<script src="../palco.js"></script>
+<script src="../legenda.js"></script>
+<script src="legenda-dados.js"></script>
+<script src="bocas.js"></script>
+</head>
+<body>
+<svg id="stage" viewBox="0 0 1080 1920" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="outline" x="-20%" y="-20%" width="140%" height="140%">
+      <feMorphology in="SourceAlpha" operator="dilate" radius="5" result="d"/>
+      <feFlood flood-color="#0A0A0E"/>
+      <feComposite in2="d" operator="in" result="o"/>
+      <feMerge><feMergeNode in="o"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="sombraTxt" x="-10%" y="-30%" width="120%" height="160%"><feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#000" flood-opacity=".8"/></filter>
+    <radialGradient id="vin" cx=".5" cy=".5" r=".72"><stop offset=".45" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".7"/></radialGradient>
+  </defs>
+  <g id="cam"><g id="scenes"></g><g id="atores"></g><g id="props"></g><g id="luzes"></g></g>
+  <rect width="1080" height="1920" fill="url(#vin)"/>
+  <g id="escuro"><rect width="1080" height="1920" fill="#05070E"/></g>
+  <g id="topo"></g>
+  <g id="legenda"></g>
+</svg>
+
+<script>
+const NS = 'http://www.w3.org/2000/svg';
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const AMBAR = '#E8B23A', BRANCO = '#F2EEE2', VERMELHO = '#C8342A', L = '#0E0E14';
+const Si = (n, hora = 'amanhecer') => Sitio(Cenario({ seed: n, luz: -1, hora, prefixo: 's' + n }));
+
+// ===================== PLANOS =====================
+const S = {
+  abre:     [0, 3.0],     // N01 "Terceiro dia do apocalipse zumbi. Parte dois."
+  trancado: [3.0, 9.0],   // N01 "E o Tião acabou de deixar um homem ferido trancado dentro da casa dele."
+  mac:      [9.0, 12.2],  // N02 "A maçaneta gira uma vez. Duas. Mas o Tião não escuta."
+  pasto:    [12.2, 16.0], // N02 "Ele já está no meio do pasto."
+  regua:    [16.0, 19.0], // N03 "Oitocentos metros. De dia, parecem seguros."
+  marcas:   [19.0, 25.1], // N03 "Até ele ver as marcas no capim." + TIÃO "Isso aqui não é pegada de bicho."
+  dezenas:  [25.1, 32.7], // N04 "São dezenas. Capim amassado, arrastado. Todas indo pro mesmo lugar. A casa do Seu Zé."
+  cerca:    [32.7, 40.6], // N05 "No meio do caminho, a cerca de arame está arrebentada. E presa no arame, tem uma fita de cabelo. Cor-de-rosa."
+  fita:     [40.6, 45.2], // TIÃO "Aguenta firme, menina. Eu tô chegando."
+  portao:   [45.2, 50.0], // N06 "O portão do Seu Zé está aberto. A caixa de som, caída."
+  bolo:     [50.0, 53.9], // N06 "E o bolo da festa ainda está na mesa, coberto de moscas."
+  cadeiras: [53.9, 61.6], // N07 "Tem cadeira virada, prato quebrado, sapato de criança no chão. Mas nenhuma pessoa. Nenhuma."
+  chama:    [61.6, 66.7], // TIÃO "Aninha? É o Tião. Amigo do seu avô."
+  caixa:    [66.7, 74.6], // N08 "Nada. Só o vento batendo a janela. Até que lá em cima, na caixa d'água, alguma coisa se mexe."
+};
+const FIM_FALA = 74.6, CARTAO = 75.3, END = 78.6;
+const PISO_LEG = 1560;
+
+// ===================== CENAS =====================
+const scenes = [];
+const cena = (id, corpo) => scenes.push(`<g id="${id}" class="scene">${corpo}</g>`);
+const zoom = (corpo, k, cx = 540, cy = 1300) => `<g transform="translate(${cx} ${cy}) scale(${k}) translate(${-cx} ${-cy})">${corpo}</g>`;
+const txt = (id, y, partes, fs = 110) => `<g id="${id}" filter="url(#sombraTxt)"><text x="540" y="${y}" font-size="${fs}" text-anchor="middle" stroke="#000" stroke-width="${fs * 0.08}" paint-order="stroke">${partes.map(([t, c]) => `<tspan fill="${c || BRANCO}">${t}</tspan>`).join('')}</text></g>`;
+const selo = (id, linha1, linha2) => `<g id="${id}" transform="translate(540 150)"><rect x="-300" y="-62" width="600" height="136" rx="22" fill="#0B0D14" fill-opacity=".86" stroke="#2A2E3A" stroke-width="3"/><circle cx="-232" cy="-26" r="9" fill="${VERMELHO}"/><text x="14" y="-14" font-size="30" text-anchor="middle" fill="${VERMELHO}" letter-spacing="2">${linha1}</text><text y="52" font-size="68" text-anchor="middle" fill="${BRANCO}" letter-spacing="3">${linha2}</text></g>`;
+const etiqueta = (id, x, y, t, cor = AMBAR, corTxt = '#16120A', rot = 0) => `<g id="${id}" transform="translate(${x} ${y}) rotate(${rot})"><rect x="${-t.length * 13 - 30}" y="-34" width="${t.length * 26 + 60}" height="68" rx="34" fill="${cor}" stroke="#000" stroke-width="4"/><text y="14" font-size="40" text-anchor="middle" fill="${corTxt}">${t}</text></g>`;
+
+const GANCHO = (`<g id="c-gancho"><rect width="1080" height="1920" fill="#C8342A" opacity=".18" style="mix-blend-mode:multiply"/><rect width="1080" height="1920" fill="#000" opacity=".35"/>` +
+  txt('g-dia', 880, [['DIA ', BRANCO], ['3', AMBAR]], 330) + txt('g-apoc', 1060, [['DO APOCALIPSE ', BRANCO], ['ZUMBI', VERMELHO]], 96) + `<rect id="g-flash" width="1080" height="1920" fill="#FFF6E0"/></g>`);
+cena('c-estr', Si(60, 'noite').estrada({}));
+cena('c-quarto', Si(61).quartoRoca({ chao: 1420, escuro: true }));
+cena('c-mac', Si(62).macanetaClose({}));
+const VALE = Si(63);
+cena('c-vale', VALE.vale({ festa: false, amanhecer: true }));
+// as trilhas de capim amassado convergindo para a casa do seu Zé (vista do alto do pasto)
+cena('c-trilhas', `<g id="tr-linhas">${[[-60, 1920], [180, 1920], [420, 1920], [760, 1920], [1000, 1920], [1140, 1700]].map(([x0, y0], i) => `<path d="M${x0} ${y0} Q${(x0 + 670) / 2 + (i % 2 ? 60 : -60)} ${(y0 + 1080) / 2 + 80} 670 1090" stroke="#9A9A5A" stroke-width="${26 - i}" fill="none" opacity=".75" stroke-linecap="round" stroke-dasharray="40 18"/>`).join('')}</g>` +
+  `<g id="tr-alvo"><circle cx="670" cy="1040" r="90" fill="none" stroke="${VERMELHO}" stroke-width="8"/></g>`);
+cena('c-rastros', Si(64).rastros({ hz: 700 }));
+cena('c-cerca', Si(65).cercaArrebentada({ chao: 1380 }));
+const FESTA = Si(66);
+cena('c-festa', FESTA.festa({ chao: 1300, abandonada: true }));
+// cartão final
+scenes.push(`<g id="fim" class="scene"><rect width="1080" height="1920" fill="#08090E"/>${Si(20, 'noite').estrada({})}<rect width="1080" height="1920" fill="#000" opacity=".6"/>
+  <g id="fim-t">${txt('fim-a', 800, [['PARTE ', BRANCO], ['4', AMBAR]], 150)}${txt('fim-b', 940, [['CONTINUA...', BRANCO]], 96)}</g>
+  <g id="fim-c" transform="translate(540 1120)"><rect x="-330" y="-56" width="660" height="112" rx="56" fill="${AMBAR}" stroke="#000" stroke-width="5"/><text y="22" font-size="58" text-anchor="middle" fill="#16120A">SEGUE PRA PARTE 5 ↓</text></g></g>`);
+$('#scenes').innerHTML = scenes.join('');
+$('#topo').innerHTML = GANCHO + selo('selo1', 'APOCALIPSE ZUMBI · PARTE 4', 'DIA 3 · 07:30') +
+  txt('t-trancado', 330, [['UM HOMEM ', BRANCO], ['FERIDO', VERMELHO]], 100) + txt('t-trancado2', 440, [['TRANCADO NA CASA', BRANCO]], 80) +
+  txt('t-pasto', 330, [['MEIO DO ', BRANCO], ['PASTO', AMBAR]], 104) +
+  `<g id="t-regua"><path d="M150 1300 L900 1020" stroke="${AMBAR}" stroke-width="12" stroke-linecap="round"/><path d="M136 1270 l30 56 M886 990 l30 56" stroke="${AMBAR}" stroke-width="12" stroke-linecap="round"/>${etiqueta('t-800', 540, 1080, '800 METROS')}</g>` +
+  txt('t-dezenas', 330, [['DEZENAS', VERMELHO]], 140) + txt('t-casaze', 460, [['A CASA DO ', BRANCO], ['SEU ZÉ', AMBAR]], 92) +
+  etiqueta('t-rosa', 540, 330, 'COR-DE-ROSA', '#F07AA8', '#2A0A16') +
+  txt('t-nenhuma', 330, [['NENHUMA ', BRANCO], ['PESSOA', VERMELHO]], 100) +
+  `<g id="quem" transform="translate(540 1452)"><rect id="quem-r" x="-120" y="-30" width="240" height="60" rx="30" fill="#0B0D14" fill-opacity=".85" stroke="${AMBAR}" stroke-width="3"/><text id="quem-t" y="14" font-size="40" text-anchor="middle" fill="${AMBAR}" letter-spacing="2"></text></g>` +
+  `<rect id="preto" width="1080" height="1920" fill="#000"/>`;
+
+// ===================== ELENCO =====================
+const BOCA = q => t => { const c = (window.BOCAS || {})[q] ? window.BOCAS[q][Math.floor(t * 30)] : '-'; return c && c !== '-' ? c : 'smile'; };
+const TIAO = { figurino: 'tiao', seed: 60, boca: BOCA('tiao') };
+const SEUZE_PALIDO = { figurino: 'seuze', seed: 61, cor: '#DCE2CE', corLonge: '#C2CAB4' };
+const VULTO = (i) => ({ figurino: 'vulto', cor: '#17181E', corLonge: '#101116', bochecha: '#17181E', seed: 70 + i });
+const ATORES = [], ITENS = [];
+function ator(escala, janelas, opts = {}, pai = '#atores') { const g = document.createElementNS(NS, 'g'); if (pai) $(pai).appendChild(g); const b = new Boneco(g, { escala, seed: 4, ...opts }); b.grupo = g; ATORES.push({ b, g, janelas }); return b; }
+function item(svg, janelas, pai = '#atores') { const g = document.createElementNS(NS, 'g'); $(pai).appendChild(g); g.innerHTML = svg; ITENS.push({ g, janelas }); return g; }
+const J = n => [[S[n][0], S[n][1]]];
+const JJ = (...ns) => ns.map(n => [S[n][0], S[n][1]]);
+
+// gancho: zumbis de frente, balançando, olhos acesos
+[[300, 1300, 0.9], [760, 1320, 1.0], [540, 1400, 1.2], [140, 1520, 1.45], [920, 1560, 1.55], [520, 1900, 2.2]].forEach(([x, y, k], i) => { const v = ator(k, J('abre'), VULTO(50 + i));
+  v.base(0, S.abre[1], 'parado', { x, y, vista: 'frente' }); v.braco('ambos', 0, S.abre[1], 'estender'); v.expressao(0, S.abre[1], 'zumbi'); v.cabeca(0, S.abre[1], { inclinar: (i % 2 ? 1 : -1) * 14, baixar: -6 }); });
+// o seu Zé trancado no quarto, sentado na cama, pálido
+const zQ = ator(1.3, J('trancado'), SEUZE_PALIDO);
+zQ.base(S.trancado[0], S.trancado[1], 'sentar', { x: 560, y: 1200, chao: 1440, dir: -1 }); zQ.expressao(S.trancado[0], S.trancado[1], 'cansado'); zQ.cabeca(S.trancado[0], S.trancado[1], { baixar: 12, gesto: 'balancar' });
+zQ.braco('ambos', S.trancado[0], S.trancado[1], 'pose', { o: 30, c: 60 });
+// o Tião atravessando o pasto (pequeno, longe) com a mochila
+const tP = ator(0.7, JJ('pasto', 'regua'), TIAO);
+tP.base(S.pasto[0], S.regua[1], 'andar', { de: [900, 1560], ate: [300, 1500], passo: 84, chao: x => 1500 + (x - 300) * 0.1 });
+tP.expressao(S.pasto[0], S.regua[1], 'determinado');
+// agachado olhando as marcas; fala sussurrando
+const tM = ator(1.35, J('marcas'), TIAO);
+tM.base(S.marcas[0], 20.0, 'andar', { de: [1180, 1560], ate: [880, 1560], passo: 110 }); tM.base(20.0, S.marcas[1], 'agachar', { x: 880, y: 1560, vista: 'perfil', dir: -1, quanto: 120, inclina: 24 });
+tM.braco('d', 20.3, S.marcas[1], 'alcancar', { alvo: [700, 1500] }); tM.expressao(S.marcas[0], 21.2, 'determinado'); tM.expressao(21.2, S.marcas[1], 'preocupado'); tM.cabeca(20.0, S.marcas[1], { baixar: 18 });
+// a fita na mão: segurando e olhando, determinado
+const tF = ator(1.6, J('fita'), TIAO);
+tF.base(S.fita[0], S.fita[1], 'parado', { x: 420, y: 1720, vista: 'perfil', dir: 1 }); tF.braco('d', S.fita[0], S.fita[1], 'pose', { o: 60, c: 70, mao: 'punho' }); tF.expressao(S.fita[0], S.fita[1], 'determinado'); tF.cabeca(S.fita[0], S.fita[1], { baixar: 8 });
+const fitaMao = item(`<g><path d="M0 0 q-30 10 -40 -14 q30 -10 40 14 q20 -26 46 -12 q-24 18 -46 12Z" fill="#F07AA8" stroke="${L}" stroke-width="4"/><path d="M0 0 q-10 60 -36 110 M0 0 q14 50 40 96" stroke="#F07AA8" stroke-width="12" fill="none" stroke-linecap="round"/></g>`, J('fita'), '#props');
+// na casa do seu Zé: o Tião chega pelo portão, olha tudo, chama a Aninha
+const tZ = ator(1.2, JJ('portao', 'cadeiras', 'chama'), TIAO);
+tZ.base(S.portao[0], 47.6, 'andar', { de: [-120, 1560], ate: [220, 1560], passo: 100 }); tZ.base(47.6, S.chama[1], 'parado', { x: 220, y: 1560, vista: 'perfil', dir: 1 });
+tZ.expressao(S.portao[0], 54.0, 'desconfiado'); tZ.expressao(54.0, 61.6, 'preocupado'); tZ.expressao(61.6, S.chama[1], 'serio');
+tZ.braco('d', 61.8, S.chama[1], 'chamar'); tZ.cabeca(61.8, S.chama[1], { baixar: -8 });
+// a caixa d'água no quintal (atrás do Tião), a tampa que se mexe e o sapatinho no chão
+item(FESTA.caixaDagua(860, 1480, 0.9), JJ('portao', 'bolo', 'cadeiras', 'chama', 'caixa'));
+const tampa = item(`<g class="tampa" data-cx="860" data-cy="${1480 - 812 * 0.9}"><path d="M${860 - 54} ${1480 - 811 * 0.9} Q860 ${1480 - 880 * 0.9} ${860 + 54} ${1480 - 811 * 0.9}Z" fill="#2E6AA8" stroke="${L}" stroke-width="6"/></g>`, JJ('caixa'), '#props');
+item(FESTA.sapatinho(640, 1600, 1.1, -18) + FESTA.moscas(324, 1120, 9), JJ('portao', 'bolo', 'cadeiras', 'chama', 'caixa'), '#props');
+// a janela batendo com o vento (folha solta)
+const folha = item(`<g class="folhaJanela"><path d="M0 0 L120 -10 L120 250 L0 240Z" fill="#4A6A5A" stroke="${L}" stroke-width="5"/><path d="M40 -4 V246 M80 -8 V248" stroke="#3A5A4A" stroke-width="4"/></g>`, JJ('caixa'), '#props');
+
+// ===================== CÂMERA =====================
+const CAM = [
+  [0, 1.0, 540, 1000], [3.0, 1.12, 540, 1040],
+  [3.0, 1.0, 540, 960], [9.0, 1.1, 560, 980],
+  [9.0, 1.0, 540, 960], [12.2, 1.15, 500, 900],
+  [12.2, 1.0, 540, 960], [19.0, 1.0, 540, 960],
+  [19.0, 1.0, 540, 960], [21.0, 1.25, 760, 1240], [25.1, 1.3, 760, 1260],
+  [25.1, 1.0, 540, 960], [32.7, 1.08, 600, 1000],
+  [32.7, 1.0, 540, 960], [36.5, 1.0, 540, 960], [38.5, 2.0, 420, 1000], [40.6, 2.1, 410, 1000],
+  [40.6, 1.5, 480, 1040], [45.2, 1.6, 480, 1040],
+  [45.2, 1.0, 540, 960], [50.0, 1.0, 540, 960],
+  [50.0, 2.2, 330, 1150], [53.9, 2.4, 330, 1140],
+  [53.9, 1.0, 540, 960], [56.0, 1.0, 540, 960], [58.5, 1.9, 620, 1450], [61.6, 1.9, 620, 1440],
+  [61.6, 1.3, 340, 1080], [66.7, 1.35, 340, 1080],
+  [66.7, 1.0, 540, 960], [71.0, 1.0, 600, 960], [74.6, 1.9, 820, 760],
+  [74.6, 1, 540, 960], [99, 1, 540, 960],
+];
+const sm = u => u * u * (3 - 2 * u);
+function camEm(t) {
+  let a = CAM[0], b = CAM[0];
+  for (let i = 0; i < CAM.length - 1; i++) if (t >= CAM[i][0] && t < CAM[i + 1][0]) { a = CAM[i]; b = CAM[i + 1]; break; }
+  const u = b[0] > a[0] ? sm((t - a[0]) / (b[0] - a[0])) : 0;
+  const k = a[1] + (b[1] - a[1]) * u, cl = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
+  const cx = cl(a[2] + (b[2] - a[2]) * u, 540 / k + 4, 1080 - 540 / k - 4), cy = cl(a[3] + (b[3] - a[3]) * u, 960 / k + 4, 1920 - 960 / k - 4);
+  const medo = (t > 9.0 && t < 12.2) || (t > 72.0 && t < FIM_FALA) ? 2.2 : (t > 0.42 && t < 0.9) ? 9 * (0.9 - t) / 0.48 + 1 : 1;
+  const bx = (Math.sin(t * 1.3) * 3 + Math.sin(t * 3.1) * 1.2) * medo, by = (Math.cos(t * 1.1) * 2.5 + Math.sin(t * 5.7) * (medo > 1 ? 2 : 0.6)) * medo, rot = Math.sin(t * 0.9) * 0.3;
+  return `translate(${540 + bx} ${960 + by}) rotate(${rot.toFixed(3)}) scale(${k.toFixed(4)}) translate(${-cx} ${-cy})`;
+}
+
+// ===================== TIMELINE =====================
+const rendering = navigator.webdriver;
+const tl = gsap.timeline({ paused: true, defaults: { ease: 'power2.inOut' } });
+$$('.scene').forEach(s => gsap.set(s, { autoAlpha: 0 }));
+const show = (sel, t0, t1) => { tl.fromTo(sel, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.01, ease: 'none', immediateRender: false }, t0); if (t1 != null) tl.to(sel, { autoAlpha: 0, duration: 0.01, ease: 'none' }, t1); };
+const fade = (sel, t0, t1, d = 0.35) => { gsap.set(sel, { autoAlpha: 0 }); tl.to(sel, { autoAlpha: 1, duration: d }, t0); if (t1 != null) tl.to(sel, { autoAlpha: 0, duration: d }, t1); };
+const pop = (sel, t, d = 0.35, t1 = null) => { gsap.set(sel, { autoAlpha: 0, scale: 0.6, transformOrigin: '50% 50%' }); tl.fromTo(sel, { autoAlpha: 0, scale: 0.6 }, { autoAlpha: 1, scale: 1, duration: d, ease: 'back.out(2)', immediateRender: false }, t); if (t1 != null) tl.to(sel, { autoAlpha: 0, duration: 0.15 }, t1); };
+gsap.set('#c-gancho', { autoAlpha: 0 }); show('#c-gancho', S.abre[0], S.abre[1]);
+const USO = { 'c-estr': ['abre'], 'c-quarto': ['trancado'], 'c-mac': ['mac'], 'c-vale': ['pasto', 'regua', 'dezenas'], 'c-trilhas': ['dezenas'], 'c-rastros': ['marcas'], 'c-cerca': ['cerca'], 'c-festa': ['portao', 'bolo', 'cadeiras', 'chama', 'caixa'] };
+Object.entries(USO).forEach(([id, planos]) => planos.forEach(k => show('#' + id, S[k][0], S[k][1])));
+show('#c-cerca', S.fita[0], S.fita[1]);
+gsap.set('#escuro', { autoAlpha: 1 }); tl.to('#escuro', { autoAlpha: 0.15, duration: 0.25 }, 0.18).to('#escuro', { autoAlpha: 0, duration: 0.5 }, 1.0);
+gsap.set('#preto', { autoAlpha: 0 }); tl.set('#preto', { autoAlpha: 1 }, FIM_FALA); tl.set('#preto', { autoAlpha: 0 }, CARTAO);
+gsap.set('#g-dia', { autoAlpha: 0, scale: 2.6, transformOrigin: '540px 790px' }); tl.to('#g-dia', { autoAlpha: 1, scale: 1, duration: 0.22, ease: 'power4.in' }, 0.2);
+gsap.set('#g-flash', { opacity: 0 }); tl.to('#g-flash', { opacity: 0.85, duration: 0.03 }, 0.42).to('#g-flash', { opacity: 0, duration: 0.35 }, 0.45);
+gsap.set('#g-apoc', { autoAlpha: 0, y: 30 }); tl.to('#g-apoc', { autoAlpha: 1, y: 0, duration: 0.25, ease: 'power3.out' }, 0.95);
+tl.to('#g-dia', { scale: 1.06, duration: 1.8, ease: 'none' }, 0.45);
+fade('#selo1', 12.4, 16.0);
+pop('#t-trancado', 5.6, 0.35, S.trancado[1] - 0.1); pop('#t-trancado2', 6.6, 0.35, S.trancado[1] - 0.1);
+pop('#t-pasto', 14.3, 0.35, S.pasto[1] - 0.1);
+gsap.set('#t-regua', { autoAlpha: 0 }); tl.to('#t-regua', { autoAlpha: 1, duration: 0.4 }, 16.1).to('#t-regua', { autoAlpha: 0, duration: 0.15 }, S.regua[1] - 0.1);
+pop('#t-dezenas', 25.4, 0.35, S.dezenas[1] - 0.1); pop('#t-casaze', 31.0, 0.35, S.dezenas[1] - 0.1);
+gsap.set('#tr-linhas', { autoAlpha: 0 }); tl.to('#tr-linhas', { autoAlpha: 1, duration: 1.2 }, 26.0); pop('#tr-alvo', 31.0, 0.35);
+pop('#t-rosa', 39.0, 0.35, S.cerca[1] - 0.1);
+pop('#t-nenhuma', 60.0, 0.35, S.cadeiras[1] - 0.1);
+show('#fim', CARTAO); pop('#fim-t', CARTAO + 0.3, 0.6); pop('#fim-c', CARTAO + 1.0);
+tl.to('#fim-c', { scale: 1.05, duration: 0.45, repeat: 4, yoyo: true, ease: 'sine.inOut' }, CARTAO + 1.6);
+tl.set({}, {}, END);
+
+// ===================== LEGENDA =====================
+const leg = Legenda($('#legenda'), window.PALAVRAS || [], { y: PISO_LEG, fs: 78, fonte: "'Anton', sans-serif", destaque: AMBAR, cor: BRANCO, contorno: '#000', enfase: ['TIÃO', 'ZÉ.', 'FERIDO', 'MAÇANETA', 'PASTO.', 'OITOCENTOS', 'MARCAS', 'BICHO.', 'DEZENAS.', 'ARREBENTADA.', 'FITA', 'COR-DE-ROSA.', 'MOSCAS.', 'CRIANÇA', 'NENHUMA.', 'ANINHA?', 'MEXE.'] }).esconder([[0, S.abre[1]], [FIM_FALA, 999]]);
+const NOMES = { tiao: 'TIÃO', ze: 'SEU ZÉ', aninha: 'ANINHA' };
+
+// ===================== RENDER =====================
+const dentro = (t, janelas) => janelas.some(([a, b]) => t >= a && t < b);
+function desenhar(t) {
+  $('#cam').setAttribute('transform', camEm(t));
+  for (const A of ATORES) { const o = dentro(t, A.janelas); A.g.style.display = o ? '' : 'none'; if (o) A.b.desenhar(t); }
+  for (const I of ITENS) I.g.style.display = dentro(t, I.janelas) ? '' : 'none';
+  const sg = (window.SEGMENTOS || []).find(s => t >= s.de && t <= s.ate + 0.15 && NOMES[s.quem]);
+  const qn = sg && t >= S.abre[1] && t < FIM_FALA ? NOMES[sg.quem] : '';
+  $('#quem-t').textContent = qn; $('#quem').style.display = qn ? '' : 'none'; $('#quem-r').setAttribute('x', -(qn.length * 13 + 40)); $('#quem-r').setAttribute('width', qn.length * 26 + 80);
+  // maçaneta: gira uma vez (9,9 s) e duas (11,7 s)
+  const tranco = tt => (t > tt && t < tt + 0.7) ? Math.sin((t - tt) / 0.7 * Math.PI) * 32 : 0;
+  $$('#c-mac .macaneta').forEach(m => m.setAttribute('transform', `rotate(${(-(tranco(9.85) + tranco(11.65))).toFixed(2)} 0 0)`));
+  // a fita balança no arame; a fita na mão do Tião
+  $$('.fita').forEach(fi => fi.setAttribute('transform', `rotate(${(Math.sin(t * 2.3) * 8).toFixed(2)} ${fi.dataset.cx} ${fi.dataset.cy})`));
+  if (dentro(t, J('fita'))) { const m = tF.mao('d'); fitaMao.setAttribute('transform', `translate(${m[0].toFixed(1)} ${(m[1] - 6).toFixed(1)}) rotate(${(Math.sin(t * 2) * 6).toFixed(1)})`); }
+  // moscas zumbindo em volta do bolo
+  $$('.mosca').forEach(mo => { const i = +mo.dataset.i, a = t * (3 + i * 0.4) + i * 2.1, r = 26 + (i % 3) * 16; mo.setAttribute('transform', `translate(${(+mo.dataset.cx + Math.cos(a) * r * 1.4).toFixed(1)} ${(+mo.dataset.cy + Math.sin(a * 1.3) * r * 0.6).toFixed(1)})`); });
+  // a folha da janela batendo com o vento; a tampa da caixa d'água se mexendo no fim
+  const bate = Math.max(0, Math.sin(t * 2.2)) ** 3;
+  folha.setAttribute('transform', `translate(142 893) scale(-0.66 0.84) rotate(${(8 + bate * 55).toFixed(1)} 0 0)`);
+  const mx = t > 72.6 ? Math.sin(t * 22) * 5 * Math.min(1, (t - 72.6) / 0.4) + (t > 73.6 ? -6 : 0) : 0;
+  tampa.setAttribute('transform', `rotate(${mx.toFixed(2)} 860 ${(1480 - 812 * 0.9).toFixed(1)}) translate(0 ${(t > 73.6 ? -6 : 0)})`);
+  $$('.neblina').forEach((n, i) => n.setAttribute('transform', `translate(${((t * 12 + i * 70) % 200 - 100).toFixed(1)} 0)`));
+}
+window.__timeline = tl;
+window.__duration = tl.duration();
+window.__seek = t => { tl.seek(t, false); desenhar(t); leg.seek(t); };
+document.fonts.ready.then(() => Palco.caberTextos(document));
+window.__seek(0);
+if (!rendering) { tl.eventCallback('onUpdate', () => { const t = tl.time(); desenhar(t); leg.seek(t); }); document.addEventListener('click', () => tl.paused() ? tl.play() : tl.pause()); }
+</script>
+</body>
+</html>
