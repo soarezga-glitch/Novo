@@ -28,7 +28,7 @@
     for (let i = 0; i < 160; i++) { const u = i / 159, y = u * horizonte * 1.15; let k = 0; while (k < paradas.length - 2 && u > paradas[k + 1][0]) k++;
       const [u0, c0] = paradas[k], [u1, c1] = paradas[k + 1]; g.rect(0, y, w, horizonte * 1.15 / 159 + 1).fill(mix(c0, c1, (u - u0) / (u1 - u0))); }
     // brilho do sol (camadas em "add")
-    const b = new PIXI.Graphics(); for (let i = 0; i < 30; i++) b.circle(sol[0], sol[1], 100 + i * 18).fill({ color: 0xFFB060, alpha: 0.035 });
+    const b = new PIXI.Graphics(); for (let i = 0; i < 40; i++) b.circle(sol[0], sol[1], 96 + i * 16).fill({ color: 0xFF8A40, alpha: 0.022 });
     b.blendMode = 'add'; c.addChild(b);
     const s = new PIXI.Graphics(); s.circle(sol[0], sol[1], 92).fill(PAL.sol); s.circle(sol[0], sol[1], 70).fill(0xFFF4D0); c.addChild(s);
     return c;
@@ -45,9 +45,10 @@
     return c;
   };
 
-  Mundo.skyline = (w, base, { cor = 0x5A3E58, alt = 420, n = 30, seed = 5, janelas = true } = {}) => {
+  Mundo.skyline = (w, base, { cor = 0x5A3E58, alt = 420, n = 30, seed = 5, janelas = true, vazio = null } = {}) => {
     const r = RNG(seed), g = new PIXI.Graphics();
     let x = -40; while (x < w + 40) { const bw = r.entre(40, 110), bh = r.entre(alt * 0.35, alt), quebrado = r() < 0.35;
+      if (vazio && x + bw > vazio[0] && x < vazio[1]) { x = vazio[1] + r.entre(0, 20); continue; }
       const topo = base - bh; const pts = quebrado ? [x, base, x, topo + r.entre(0, 40), x + bw * 0.4, topo + r.entre(30, 80), x + bw * 0.7, topo + r.entre(0, 30), x + bw, topo + r.entre(40, 90), x + bw, base] : [x, base, x, topo, x + bw, topo, x + bw, base];
       g.poly(pts).fill(mix(cor, 0x000000, r.entre(0, 0.12)));
       if (r() < 0.4) g.rect(x + bw * 0.45, topo - r.entre(20, 50), 3, 50).fill(cor);   // antena
@@ -56,22 +57,39 @@
     return g;
   };
 
-  Mundo.cipo = (g, x0, y0, comp, { seed = 1, cor = PAL.verde, luz = PAL.verdeLuz, k = 1, balanco = 0 } = {}) => {
-    const r = RNG(seed); let x = x0, y = y0;
-    const pts = [[x, y]]; for (let s = 0; s < comp; s += 14 * k) { x += Math.sin(s * 0.05 + seed) * 2 * k + balanco * s * 0.004; y += 14 * k; pts.push([x, y]); }
-    g.moveTo(...pts[0]); pts.forEach(p => g.lineTo(...p)); g.stroke({ width: 2.2 * k, color: 0x2A3A1A });
-    pts.forEach(([px, py], i) => { if (i % 2) return; const lado = i % 4 ? 1 : -1, sz = r.entre(5, 9) * k, lit = r() < 0.5;
-      g.poly([px, py, px + lado * sz * 1.4, py + sz * 0.4, px + lado * sz * 2.2, py + sz * 1.6, px + lado * sz * 0.6, py + sz * 1.3]).fill(lit ? luz : cor); });
+  // folha de hera/mato com nervura (forma de folha clara, não "risco")
+  const folha = (g, x, y, L, ang, cor, nerv) => { const c = Math.cos(ang), s = Math.sin(ang), P = (u, v) => [x + c * u - s * v, y + s * u + c * v];
+    g.poly([...P(0, 0), ...P(L * 0.25, -L * 0.36), ...P(L * 0.7, -L * 0.3), ...P(L, 0), ...P(L * 0.7, L * 0.3), ...P(L * 0.25, L * 0.36)]).fill(cor);
+    if (nerv && L > 9) g.moveTo(...P(L * 0.08, 0)).lineTo(...P(L * 0.85, 0)).stroke({ width: Math.max(1, L * 0.06), color: nerv, alpha: 0.6 }); };
+  Mundo.folha = folha;
+
+  // TREPADEIRA pendurada: cortina de folhas descendo de uma borda (fio + folhas alternadas, cada vez menores na ponta)
+  Mundo.cipo = (g, x0, y0, comp, { seed = 1, k = 1, sol = 1, balanco = 0 } = {}) => {
+    const r = RNG(seed); let x = x0, y = y0; const pts = [[x, y]];
+    for (let s = 0; s < comp; s += 9 * k) { x += Math.sin(s * 0.04 + seed) * 1.6 * k + balanco * 0.3; y += 9 * k; pts.push([x, y]); }
+    g.moveTo(...pts[0]); pts.forEach(p => g.lineTo(...p)); g.stroke({ width: 2 * k, color: 0x1E2A14 });
+    pts.forEach(([px, py], i) => { const fim = 1 - i / pts.length, L = (8 + 10 * fim) * k * r.entre(0.8, 1.2), lado = i % 2 ? 1 : -1, lit = (lado === sol) && r() < 0.7;
+      folha(g, px, py, L, Math.PI / 2 + lado * r.entre(0.6, 1.2), lit ? (r() < 0.5 ? PAL.verdeLuz : 0xA8B03A) : (r() < 0.5 ? 0x3E5A24 : 0x2C401A), lit ? 0x6A7A20 : 0x1A2610); });
   };
 
-  // folha pontuda; lado do sol (sx>0 → sol à direita) mais clara
+  // MOITA / massa de folhagem: silhueta "em bolinhas" (lobos), escura por dentro, acesa na borda do lado do sol, folhas soltas na beira
   Mundo.folhagem = (g, cx, cy, rad, n, { seed = 1, sol = 1, escuro = false, k = 1 } = {}) => {
-    const r = RNG(seed);
-    g.ellipse(cx, cy, rad * 0.9, rad * 0.65).fill(escuro ? 0x0C1008 : PAL.verdeEsc);
-    for (let i = 0; i < n; i++) { const a = r.entre(0, Math.PI * 2), d = Math.sqrt(r()) * rad, x = cx + Math.cos(a) * d, y = cy + Math.sin(a) * d * 0.7, L = r.entre(14, 26) * k, ang = r.entre(0, Math.PI * 2);
-      const borda = d > rad * 0.55, luzLado = borda && (Math.cos(a) * sol * 0.8 - Math.sin(a) * 0.7) > 0.25, cor = escuro ? (luzLado ? 0x8A8A26 : (r() < 0.5 ? 0x141C0C : 0x1C2810)) : (luzLado ? (r() < 0.6 ? PAL.verdeLuz : 0xE8D050) : (r() < 0.5 ? 0x3A5222 : 0x2A3A1A));
-      const c = Math.cos(ang), s = Math.sin(ang), P = (u, v) => [x + c * u - s * v, y + s * u + c * v];
-      g.poly([...P(0, 0), ...P(L * 0.5, -L * 0.32), ...P(L, 0), ...P(L * 0.5, L * 0.32)]).fill(cor); }
+    const r = RNG(seed), lobos = 9 + Math.round(rad / 8);
+    const base = escuro ? 0x0E140A : 0x22321A, meio = escuro ? 0x16200E : 0x3A5424, luz = escuro ? 0x6A6E20 : PAL.verdeLuz, luz2 = escuro ? 0x4A5218 : 0x9AAE38;
+    const L = []; for (let i = 0; i < lobos; i++) { const a = i / lobos * Math.PI * 2 + r.entre(-0.2, 0.2); L.push([cx + Math.cos(a) * rad * r.entre(0.62, 0.8), cy + Math.sin(a) * rad * 0.68 * r.entre(0.62, 0.8), rad * r.entre(0.3, 0.42), a]); }
+    g.ellipse(cx, cy, rad * 0.78, rad * 0.55).fill(base); L.forEach(([x, y, rr]) => g.circle(x, y, rr).fill(base));                     // massa escura
+    L.forEach(([x, y, rr, a]) => { const f = Math.cos(a) * sol * 0.7 - Math.sin(a) * 0.7; if (f > -0.2) g.circle(x - Math.cos(a) * rr * 0.12, y - Math.sin(a) * rr * 0.12 - rr * 0.08, rr * 0.8).fill(meio); });   // volume
+    L.forEach(([x, y, rr, a]) => { const f = Math.cos(a) * sol * 0.7 - Math.sin(a) * 0.7; if (f > 0.35) g.circle(x + Math.cos(a) * rr * 0.1, y + Math.sin(a) * rr * 0.1 - rr * 0.1, rr * 0.55).fill(f > 0.7 ? luz : luz2); });   // borda acesa
+    for (let i = 0; i < n; i++) { const a = r.entre(0, Math.PI * 2), x = cx + Math.cos(a) * rad * r.entre(0.85, 1.1), y = cy + Math.sin(a) * rad * 0.7 * r.entre(0.85, 1.1), f = Math.cos(a) * sol * 0.7 - Math.sin(a) * 0.7;
+      folha(g, x, y, r.entre(9, 16) * k, a + r.entre(-0.8, 0.8), f > 0.3 ? (r() < 0.5 ? luz : luz2) : (r() < 0.5 ? base : meio), f > 0.3 ? 0x6A7A20 : null); }
+  };
+
+  // ÁRVORE crescendo no meio do concreto: tronco torto + copa de moitas
+  Mundo.arvore = (g, x, base, alt, { seed = 1, sol = 1, k = 1 } = {}) => {
+    const r = RNG(seed), topo = base - alt;
+    g.poly([x - 9 * k, base, x - 4 * k, topo + alt * 0.3, x + 4 * k, topo + alt * 0.3, x + 9 * k, base]).fill(0x2A1E18);
+    g.moveTo(x, topo + alt * 0.45).lineTo(x - alt * 0.22, topo + alt * 0.2).stroke({ width: 5 * k, color: 0x2A1E18 }); g.moveTo(x, topo + alt * 0.4).lineTo(x + alt * 0.2, topo + alt * 0.18).stroke({ width: 5 * k, color: 0x2A1E18 });
+    [[0, 0.1, 0.42], [-0.22, 0.24, 0.32], [0.22, 0.22, 0.32], [0, 0.32, 0.3]].forEach(([dx, dy, rr], i) => Mundo.folhagem(g, x + dx * alt, topo + dy * alt, rr * alt, 18, { seed: seed + i, sol, k }));
   };
 
   Mundo.predio = (x, base, w, h, { seed = 1, lado = 0.28, sol = 1, cor = PAL.concreto, quebrado = true, vegetacao = 1, anuncio = null } = {}) => {
@@ -101,7 +119,7 @@
     const v = new PIXI.Graphics(); c.addChild(v);
     const nc = Math.round(cols * 1.5 * vegetacao); for (let i = 0; i < nc; i++) Mundo.cipo(v, fx + r.entre(4, w - 4), topo + r.entre(0, h * 0.4), r.entre(h * 0.15, h * 0.65), { seed: seed * 31 + i });
     for (let i = 0; i < Math.round(6 * vegetacao); i++) Mundo.folhagem(v, fx + r.entre(0, w), topo + r.entre(0, h), r.entre(18, 40), 30, { seed: seed * 7 + i, sol });
-    if (vegetacao > 0.5) { Mundo.folhagem(v, fx + w * r.entre(0.3, 0.7), topo - 20, w * 0.22, 70, { seed: seed + 99, sol }); v.rect(fx + w * 0.48, topo - 10, 6, 30).fill(0x3A2A1E); }
+    if (vegetacao > 0.5) Mundo.arvore(v, fx + w * r.entre(0.3, 0.7), topo + 6, w * 0.55, { seed: seed + 99, sol });
     Mundo.folhagem(v, fx + w * 0.15, base - 30, w * 0.25, 60, { seed: seed + 5, sol }); Mundo.folhagem(v, fx + w * 0.8, base - 20, w * 0.22, 50, { seed: seed + 6, sol });
     return c;
   };
@@ -133,7 +151,7 @@
   // tufo de capim alto (lâminas finas, pontas acesas pelo sol)
   Mundo.capim = (g, x, y, alt, n, { seed = 1, k = 1, sol = 1 } = {}) => {
     const r = RNG(seed);
-    for (let i = 0; i < n; i++) { const bx = x + r.entre(-alt * 0.4, alt * 0.4), h = alt * r.entre(0.5, 1.1), inc = r.entre(-0.5, 0.5) + 0.15 * sol, w = r.entre(2, 4.5) * k;
+    n = n * 2; for (let i = 0; i < n; i++) { const bx = x + r.entre(-alt * 0.3, alt * 0.3), h = alt * r.entre(0.45, 1.1), inc = (bx - x) / alt * 0.9 + r.entre(-0.25, 0.25) + 0.12 * sol, w = r.entre(2.5, 5) * k;
       const tx = bx + Math.sin(inc) * h, ty = y - Math.cos(inc) * h, lit = r() < 0.4;
       g.poly([bx - w, y, tx, ty, bx + w, y]).fill(lit ? 0x8A8A2A : (r() < 0.5 ? 0x24301A : 0x1A2412));
       if (lit) g.poly([tx, ty, tx - Math.sin(inc) * h * 0.3 - w * 0.4, ty + Math.cos(inc) * h * 0.3, tx - Math.sin(inc) * h * 0.3 + w * 0.4, ty + Math.cos(inc) * h * 0.3]).fill(0xE8C860); }

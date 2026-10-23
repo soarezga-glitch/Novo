@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Abertura Os Sobreviventes</title>
+<!-- ABERTURA OFICIAL — OS SOBREVIVENTES (skill os-sobreviventes §11). Tudo desenhado por código (mundo-pixi.js, PixiJS v8):
+     voo de drone em camadas de parallax por 6 lugares do mundo abandonado + LOGO oficial. Vertical 1080×1920, 15 s.
+     Número e nome do episódio em episodio.js. -->
+<style>html, body { margin: 0; background: #000; overflow: hidden; } canvas { display: block; } @font-face { font-family: 'Anton'; src: url(fontes/anton.woff2); }</style>
+<script src="pixi.min.js"></script><script src="pixi-filters.js"></script><script src="mundo-pixi.js"></script><script src="episodio.js"></script><script src="boneco.js"></script><script src="volume.js"></script>
+</head>
+<body>
+<script>
+(async () => {
+const W = 1080, H = 1920, DUR = 15.0, app = new PIXI.Application();
+await app.init({ width: W, height: H, preference: 'webgl', autoStart: false, preserveDrawingBuffer: true, background: '#000', antialias: true });
+document.body.appendChild(app.canvas); await document.fonts.load('80px Anton');
+const M = Mundo, P = M.PAL, EP = window.EPISODIO || { num: '', nome: '' };
+const sm = u => u * u * (3 - 2 * u), cl = (v, a, b) => Math.min(b, Math.max(a, v)), lerp = (a, b, u) => a + (b - a) * u;
+const textura = src => new Promise((ok, err) => { const i = new Image(); i.onload = () => ok(PIXI.Texture.from(i)); i.onerror = err; i.src = src; });
+// ===== planos: cada um com camadas de parallax e uma câmera de drone =====
+const PLANOS = [];
+async function planoAsync(a, b, cam, montar) { const root = new PIXI.Container(); app.stage.addChild(root); const p = { a, b, root, cam, camadas: [], anim: [] }; await montar(p); PLANOS.push(p); return p; }
+// a foto de família: avô (Seu Zé), Aninha e o irmãozinho, desenhados pelo motor de bonecos no estilo volume, num fundo de quintal ensolarado
+async function fotoFamilia() {
+  const NSs = 'http://www.w3.org/2000/svg', svg = document.createElementNS(NSs, 'svg'); svg.setAttribute('width', 580); svg.setAttribute('height', 400); svg.setAttribute('viewBox', '0 0 580 400');
+  svg.innerHTML = '<defs><filter id="outline" x="-20%" y="-20%" width="140%" height="140%"><feMorphology in="SourceAlpha" operator="dilate" radius="5" result="d"/><feFlood flood-color="#0A0A0E"/><feComposite in2="d" operator="in" result="o"/><feMerge><feMergeNode in="o"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><rect width="580" height="400" fill="#E8C898"/><rect y="250" width="580" height="150" fill="#9AA860"/><circle cx="470" cy="80" r="46" fill="#FFE6A0"/><rect x="40" y="150" width="140" height="110" fill="#C8A878"/><path d="M30 155 L110 95 L190 155Z" fill="#A85A3A"/><g id="esq" style="display:none"></g><g id="vol"></g>';
+  document.body.appendChild(svg); svg.style.position = 'absolute'; svg.style.left = '-9999px';
+  const out = [];
+  [[215, 392, 0.52, { figurino: 'seuze', seed: 61 }, Volume.LOOK.seuze], [375, 392, 0.4, { figurino: { preset: 'neta' }, seed: 62 }, Volume.LOOK.aninha], [295, 396, 0.3, { figurino: { preset: 'tiao', chapeu: null }, seed: 63 }, Volume.LOOK.tiaozinho]].forEach(([x, y, k, fig, look]) => {
+    const g = document.createElementNS(NSs, 'g'); svg.querySelector('#esq').appendChild(g); const b = new Boneco(g, { escala: k, ...fig, boca: () => 'smile' });
+    b.base(0, 9, 'parado', { x, y, vista: 'frente' }); b.expressao(0, 9, 'feliz'); b.desenhar(1); out.push(Volume(b, look, { borda: '#FFD8A0', sombra: '#8A6A50' }).svg(1)); });
+  svg.querySelector('#vol').innerHTML = out.join('');
+  svg.removeAttribute('style');   // o 'left:-9999px' iria junto para a imagem
+  const url = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(new XMLSerializer().serializeToString(svg));
+  svg.remove();
+  const im = await new Promise((ok, err) => { const i = new Image(); i.onload = () => ok(i); i.onerror = err; i.src = url; });
+  try { await im.decode(); } catch (e) {} await new Promise(r => setTimeout(r, 50));
+  const cv = document.createElement('canvas'); cv.width = 1160; cv.height = 800; cv.getContext('2d').drawImage(im, 0, 0, 1160, 800);   // rasteriza (o WebGL não aceita SVG direto)
+  return PIXI.Texture.from(cv);
+}
+function plano(a, b, cam, montar) { const root = new PIXI.Container(); app.stage.addChild(root); const p = { a, b, root, cam, camadas: [], anim: [] }; montar(p); PLANOS.push(p); return p; }
+const camadaDe = (p, par) => { const c = new PIXI.Container(); c.__p = par; p.root.addChild(c); p.camadas.push(c); return c; };
+const neblina = (c, x0, y0, w, y1, cor, a) => { const g = new PIXI.Graphics(); for (let i = 0; i < 40; i++) g.rect(x0, y0 + (y1 - y0) * i / 40, w, (y1 - y0) / 40 + 1).fill({ color: cor, alpha: a * Math.pow(i / 39, 1.5) }); c.addChild(g); return g; };
+const brilhoSol = (c, x, y, n = 24, passo = 32, cor = 0xFF7A3A, a = 0.009) => { const g = new PIXI.Graphics(); for (let i = 0; i < n; i++) g.circle(x, y, 110 + i * passo).fill({ color: cor, alpha: a }); g.blendMode = 'add'; c.addChild(g); return g; };
+// silhueta de sobrevivente andando (de lado, com mochila) — redesenhada a cada quadro
+const silhueta = (g, x, y, k, fase, dir = 1, borda = P.borda) => {
+  const s = Math.sin(fase), c2 = Math.cos(fase), L = 0x0C080E, quad = [x, y - 92 * k];
+  const perna = (sg) => { const a = sg * s * 0.55; g.moveTo(x, y - 92 * k).lineTo(x + Math.sin(a) * 48 * k * dir, y - 50 * k).lineTo(x + Math.sin(a - Math.max(0, -sg * s) * 0.6) * 90 * k * dir * 0.6 + Math.sin(a) * 30 * k * dir, y - 4 * k).stroke({ width: 15 * k, color: L, cap: 'round', join: 'round' }); };
+  perna(1); perna(-1);
+  g.moveTo(x, y - 92 * k).lineTo(x + 6 * k * dir, y - 170 * k).stroke({ width: 26 * k, color: L, cap: 'round' });
+  g.roundRect(x - 34 * k * dir - (dir < 0 ? 0 : 0), y - 170 * k, 26 * k * dir, 56 * k, 8 * k).fill(L);               // mochila
+  g.circle(x + 10 * k * dir, y - 196 * k + Math.abs(c2) * 2 * k, 17 * k).fill(L);                                    // cabeça
+  g.moveTo(x + 4 * k * dir, y - 160 * k).lineTo(x + (8 + s * 22) * k * dir, y - 118 * k).stroke({ width: 11 * k, color: L, cap: 'round' });
+  g.moveTo(x + 18 * k * dir, y - 212 * k).arc(x + 10 * k * dir, y - 196 * k, 17 * k, -1.2, 0.4).stroke({ width: 3 * k, color: borda, alpha: 0.9 });
+};
+
+// ---------------- 1. RODOVIA ESQUECIDA ----------------
+plano(0, 2.45, { foco: [640, 905], zoom: [1, 1.42], dx: 30, dy: -140 }, p => {
+  const camada = par => camadaDe(p, par), HZ = 1120, VP = [600, HZ], SOL = [640, 905];
+  // céu + sol + nuvens em faixas
+  const L0 = camada(0.02); L0.addChild(M.ceu(W, H, { horizonte: HZ, sol: SOL }));
+  const Ln = camada(0.05), nuv = M.nuvens(W + 600, H, { horizonte: HZ - 80, sol: [SOL[0] + 300, SOL[1]], n: 30, seed: 4 }); nuv.x = -300; Ln.addChild(nuv);
+  // cidade ao longe, enevoada (rosa/laranja perto do sol)
+  const L1 = camada(0.1); L1.addChild(M.skyline(W, HZ + 5, { cor: 0xA05A66, alt: 230, seed: 9 })); neblina(L1, -300, HZ - 300, W + 600, HZ + 10, 0xF0905A, 0.55);
+  const L2 = camada(0.18); L2.addChild(M.skyline(W, HZ + 15, { cor: 0x5A3450, alt: 380, seed: 12, vazio: [520, 780] })); neblina(L2, -300, HZ - 200, W + 600, HZ + 20, 0xE07A50, 0.35);
+  // prédios grandes nas laterais, em contraluz
+  const L3 = camada(0.38);
+  L3.addChild(M.predio(-120, HZ + 120, 340, 900, { seed: 21, sol: 1, vegetacao: 1.3, cor: 0x5A4E50 }));
+  L3.addChild(M.predio(950, HZ + 100, 260, 700, { seed: 22, sol: -1, vegetacao: 1.1, cor: 0x5A4E50 }));
+  // chão: mato dos lados, rodovia rachada com o reflexo do sol
+  const L4 = camada(0.7), rd = new PIXI.Graphics(); L4.addChild(rd);
+  rd.rect(-400, HZ, W + 800, H - HZ + 200).fill(0x1E2614);
+  rd.poly([VP[0] - 26, HZ, VP[0] + 26, HZ, 1500, H + 100, -400, H + 100]).fill(0x2A2430);
+  for (let i = 0; i < 30; i++) { const u = i / 30; rd.poly([VP[0] - 8 - 120 * u, HZ + (H - HZ) * u, VP[0] + 8 + 120 * u, HZ + (H - HZ) * u, VP[0] + 8 + 124 * u, HZ + (H - HZ) * (u + 0.034), VP[0] - 8 - 124 * u, HZ + (H - HZ) * (u + 0.034)]).fill({ color: 0xFFA860, alpha: 0.22 * (1 - u) }); }   // reflexo do sol no asfalto
+  const r = M.RNG(3);
+  for (let i = 0; i < 46; i++) { let y = r.entre(HZ + 40, H), u = (y - HZ) / (H - HZ), x = VP[0] + r.entre(-1, 1) * (40 + 900 * u); rd.moveTo(x, y); for (let k = 0; k < 6; k++) { x += r.entre(-40, 40) * u; y += r.entre(-4, 14) * u; rd.lineTo(x, y); } rd.stroke({ width: 1 + 3 * u, color: 0x120E14 }); }
+  for (let i = 0; i < 12; i++) { const u0 = Math.pow(i / 12, 1.8), u1 = Math.pow((i + 0.45) / 12, 1.8); rd.poly([VP[0] - 2 - 6 * u0, HZ + (H - HZ) * u0, VP[0] + 2 + 6 * u0, HZ + (H - HZ) * u0, VP[0] + 2 + 6 * u1, HZ + (H - HZ) * u1, VP[0] - 2 - 6 * u1, HZ + (H - HZ) * u1]).fill({ color: 0xC8B890, alpha: 0.35 }); }
+  // guard-rail
+  rd.moveTo(VP[0] + 30, HZ - 6).lineTo(1300, 1560).stroke({ width: 12, color: 0x2A2228 }); rd.moveTo(VP[0] + 30, HZ - 9).lineTo(1300, 1550).stroke({ width: 3, color: P.borda, alpha: 0.7 });
+  for (let i = 0; i < 14; i++) { const u = Math.pow(i / 14, 1.6), x = VP[0] + 30 + (1300 - VP[0] - 30) * u, y = HZ + (1560 - HZ) * u; rd.rect(x, y - 4, 3 + 9 * u, 12 + 60 * u).fill(0x221C22); }
+  // mato: tufos nas beiradas e nas rachaduras (pequenos, finos)
+  const mato = new PIXI.Graphics(); L4.addChild(mato);
+  for (let i = 0; i < 160; i++) { const y = r.entre(HZ + 10, H + 40), u = (y - HZ) / (H - HZ), borda = r() < 0.92, x = borda ? VP[0] + (r() < 0.5 ? -1 : 1) * (40 + 760 * u) * r.entre(0.95, 1.5) : VP[0] + r.entre(-1, 1) * (30 + 700 * u);
+    M.capim(mato, x, y, (10 + (borda ? 90 : 40) * u), 6 + Math.round(18 * u), { seed: 200 + i, k: 0.4 + u * 1.2 }); }
+  // moitas grandes tomando as beiradas da pista e o canteiro (proporção: maiores que um carro de perto)
+  const moitas = new PIXI.Graphics(); L4.addChild(moitas);
+  for (let i = 0; i < 26; i++) { const u = Math.pow(r.entre(0.02, 1), 1.3), y = HZ + 10 + (H - HZ) * u, lado = i % 2 ? 1 : -1, x = VP[0] + lado * (60 + 820 * u) * r.entre(1.0, 1.6); M.folhagem(moitas, x, y, (14 + 150 * u) * r.entre(0.7, 1.2), 14 + Math.round(24 * u), { seed: 400 + i, sol: 1, k: 0.4 + u }); }
+  // carros parados em fila (fuga que não deu certo)
+  [[560, HZ + 22, 0.14, 1, 0], [660, HZ + 30, 0.16, 2, 0.05], [500, HZ + 60, 0.24, 3, -0.04], [760, HZ + 90, 0.3, 4, 0.06], [400, HZ + 170, 0.45, 5, -0.05], [840, HZ + 260, 0.62, 6, 0.08], [230, HZ + 470, 1.0, 7, -0.06]].forEach(([x, y, k, s, rot]) => L4.addChild(M.carro(x, y, k, { seed: s, rot })));
+  // placa verde torta, com trepadeira (primeiro plano à esquerda)
+  const L5 = camada(0.95), pl = new PIXI.Graphics(); L5.addChild(pl); pl.scale.set(0.72); pl.position.set(-30, 40);
+  pl.rect(70, 700, 30, 900).fill(0x1E181E).stroke({ width: 4, color: 0x0E0A10 }); pl.rect(70, 740, 420, 20).fill(0x1E181E);
+  pl.poly([130, 600, 640, 560, 660, 830, 150, 880]).fill(0x1E3E26).stroke({ width: 8, color: 0x0E0A10 });
+  pl.moveTo(640, 560).lineTo(660, 830).stroke({ width: 6, color: P.borda, alpha: 0.8 }); pl.moveTo(130, 600).lineTo(640, 560).stroke({ width: 4, color: P.borda, alpha: 0.6 });
+  pl.poly([440, 670, 560, 692, 460, 790, 460, 752, 330, 742, 330, 706, 460, 712]).fill(0xC8C2B0);
+  for (let i = 0; i < 10; i++) M.cipo(pl, 150 + i * 50, 590 + i * -4, M.RNG(i + 7).entre(60, 240), { seed: 300 + i, k: 1.4 });
+  M.folhagem(pl, 90, 1560, 160, 140, { seed: 41, sol: 1, k: 1.8 });
+  // primeiro plano: folhas escuras desfocadas
+  const L6 = camada(1.5), fr = new PIXI.Graphics(); L6.addChild(fr);
+  M.folhagem(fr, 40, 1900, 300, 170, { seed: 51, sol: 1, escuro: true, k: 3 }); M.folhagem(fr, 1080, 1860, 260, 150, { seed: 52, sol: -1, escuro: true, k: 2.6 });
+  fr.filters = [new PIXI.BlurFilter({ strength: 8 })];
+  brilhoSol(p.root, SOL[0], SOL[1]);
+  p.anim.push(t => nuv.children.forEach(n => n.x = n.__vel * t));
+});
+
+// ---------------- 2. PRÉDIOS TOMADOS PELA NATUREZA (câmera subindo pela fachada) ----------------
+plano(2.45, 4.6, { foco: [540, 1500], zoom: [1.15, 1.05], dx: 0, dy: 520 }, p => {
+  const camada = par => camadaDe(p, par), SOL = [900, 1180], r = M.RNG(77);
+  const L0 = camada(0.05); L0.addChild(M.ceu(W, H, { horizonte: 1500, sol: SOL })); const nv = M.nuvens(W + 600, H, { horizonte: 1300, sol: SOL, n: 26, seed: 8 }); nv.x = -300; L0.addChild(nv);
+  const L1 = camada(0.15); L1.addChild(M.skyline(W, 1560, { cor: 0x8A4A5A, alt: 700, seed: 31 })); neblina(L1, 0, 900, W, 1560, 0xF08A50, 0.4);
+  // o prédio enorme visto de baixo (perspectiva: estreita em cima), com painel desbotado e cortinas de hera
+  const L2 = camada(0.35), pg = new PIXI.Graphics(); L2.addChild(pg);
+  const B = [[60, 1700], [700, 1700], [620, 180], [150, 140]], Q = (u, v) => [lerp(lerp(B[0][0], B[1][0], u), lerp(B[3][0], B[2][0], u), v), lerp(lerp(B[0][1], B[1][1], u), lerp(B[3][1], B[2][1], u), v)];
+  pg.poly(B.flat()).fill(0x4A3E44).stroke({ width: 6, color: 0x0E0A10 });
+  pg.poly([700, 1700, 840, 1640, 760, 230, 620, 180]).fill(0x6A4A44).stroke({ width: 6, color: 0x0E0A10 }); pg.moveTo(700, 1700).lineTo(620, 180).stroke({ width: 6, color: P.borda, alpha: 0.8 });
+  for (let a = 0; a < 22; a++) { const v = a / 22; for (let i = 0; i < 6; i++) { const u0 = 0.06 + i * 0.155, u1 = u0 + 0.09, v0 = v + 0.012, v1 = v + 0.034; const pts = [Q(u0, v0), Q(u1, v0), Q(u1, v1), Q(u0, v1)].flat(); pg.poly(pts).fill(r() < 0.1 ? 0xC87A4A : 0x140E16); } const l0 = Q(0, v + 0.04), l1 = Q(1, v + 0.04); pg.moveTo(...l0).lineTo(...l1).stroke({ width: 4, color: 0x2A2228 }); }
+  pg.poly([...Q(0.08, 0.5), ...Q(0.62, 0.5), ...Q(0.62, 0.86), ...Q(0.08, 0.86)]).fill(0x8A3A3A).stroke({ width: 5, color: 0x0E0A10 });               // painel de propaganda desbotado
+  pg.ellipse(...Q(0.32, 0.66), 70, 110).fill({ color: 0xD8C0A8, alpha: 0.5 }); pg.ellipse(...Q(0.45, 0.72), 60, 50).fill({ color: 0xD8C0A8, alpha: 0.4 });
+  for (let i = 0; i < 16; i++) { const [x, y] = Q(r.entre(0, 1), r.entre(0.05, 0.98)); M.cipo(pg, x, y, r.entre(150, 520), { seed: 500 + i, k: 1.3 }); }
+  for (let i = 0; i < 7; i++) { const v = Math.round(r.entre(3, 20)) / 22 + 0.034, [x, y] = Q(r.entre(0.05, 0.95), v); M.folhagem(pg, x, y, r.entre(26, 46), 22, { seed: 520 + i, sol: 1 }); }
+  M.arvore(pg, 380, 175, 220, { seed: 540, sol: 1 }); M.folhagem(pg, 180, 160, 70, 30, { seed: 545, sol: 1 });
+  // prédio da direita, em contraluz, e fios do poste
+  pg.poly([860, 1700, 1080, 1700, 1080, 560, 900, 620]).fill(0x2A2028).stroke({ width: 5, color: 0x0E0A10 }); pg.moveTo(900, 620).lineTo(900, 1700).stroke({ width: 5, color: P.borda, alpha: 0.7 });
+  pg.moveTo(1080, 820).quadraticCurveTo(900, 900, 760, 860).stroke({ width: 3, color: 0x0E0A10 }); pg.moveTo(1080, 860).quadraticCurveTo(880, 960, 700, 900).stroke({ width: 3, color: 0x0E0A10 });
+  // rua: ônibus enferrujado, carros, poste, moitas e capim
+  const L3 = camada(0.8), rg = new PIXI.Graphics(); L3.addChild(rg);
+  rg.rect(-200, 1690, W + 400, 600).fill(0x241E24);
+  rg.poly([-140, 1700, 460, 1660, 520, 1880, -140, 1960]).fill(0x7A2E26).stroke({ width: 6, color: 0x0E0A10 }); rg.poly([-140, 1700, 460, 1660, 470, 1700, -140, 1745]).fill(0xA88A70);
+  for (let i = 0; i < 5; i++) rg.poly([-110 + i * 110, 1720 - i * 8, -30 + i * 110, 1712 - i * 8, -26 + i * 110, 1790 - i * 9, -106 + i * 110, 1798 - i * 9]).fill(0x140E16).stroke({ width: 4, color: 0x0E0A10 });
+  for (let i = 0; i < 14; i++) rg.ellipse(r.entre(-120, 480), r.entre(1700, 1900), r.entre(10, 30), r.entre(6, 14)).fill({ color: 0x5A2416, alpha: 0.8 });
+  rg.rect(560, 1080, 16, 640).fill(0x2A2228); rg.moveTo(568, 1090).quadraticCurveTo(600, 1050, 650, 1060).stroke({ width: 10, color: 0x2A2228 }); rg.ellipse(650, 1066, 22, 10).fill(0xE8C890);
+  L3.addChild(M.carro(760, 1860, 0.75, { seed: 61, rot: 0.03 })); L3.addChild(M.carro(940, 1760, 0.5, { seed: 62 }));
+  for (let i = 0; i < 14; i++) M.folhagem(rg, r.entre(-60, 1140), r.entre(1640, 1920), r.entre(50, 120), 28, { seed: 560 + i, sol: 1 });
+  for (let i = 0; i < 40; i++) M.capim(rg, r.entre(-40, 1120), r.entre(1700, 1940), r.entre(50, 110), 10, { seed: 600 + i });
+  brilhoSol(p.root, SOL[0], SOL[1], 20, 30);
+  p.anim.push(t => nv.children.forEach(n => n.x = n.__vel * t));
+});
+
+// ---------------- 3. A TRAVESSIA (sobreviventes atravessando o viaduto) ----------------
+let SIL = null;
+plano(4.6, 6.8, { foco: [540, 900], zoom: [1.12, 1.22], dx: -120, dy: 0 }, p => {
+  const camada = par => camadaDe(p, par), SOL = [800, 820], r = M.RNG(88), AG = 1240;
+  const L0 = camada(0.05); L0.addChild(M.ceu(W, H, { horizonte: 1100, sol: SOL })); const nv = M.nuvens(W + 600, H, { horizonte: 1000, sol: SOL, n: 28, seed: 11 }); nv.x = -300; L0.addChild(nv);
+  const L1 = camada(0.12); L1.addChild(M.skyline(W, 1100, { cor: 0x9A5A66, alt: 380, seed: 33, vazio: [700, 900] })); neblina(L1, 0, 700, W, 1100, 0xF09A5A, 0.45);
+  // água da cidade alagada com reflexo do sol
+  const ag = new PIXI.Graphics(); L1.addChild(ag); ag.rect(-200, 1090, W + 400, 900).fill(0x4A3A52);
+  const refl = new PIXI.Graphics(); refl.__anim = 1; L1.addChild(refl);
+  const L2 = camada(0.3); L2.addChild(M.skyline(W, 1130, { cor: 0x3E2A3E, alt: 520, seed: 34, vazio: [680, 920] }));
+  // o viaduto: tabuleiro em diagonal, pilares, cipós pendurados
+  const L3 = camada(0.55), vg = new PIXI.Graphics(); L3.addChild(vg);
+  const y0 = 860, y1 = 640, X0 = -100, X1 = 1180, Y = x => lerp(y0, y1, (x - X0) / (X1 - X0));
+  vg.poly([X0, y0, X1, y1, X1, y1 + 90, X0, y0 + 110]).fill(0x2E242C).stroke({ width: 6, color: 0x0E0A10 });
+  vg.moveTo(X0, y0 - 2).lineTo(X1, y1 - 2).stroke({ width: 5, color: P.borda, alpha: 0.85 });
+  vg.moveTo(X0, y0 - 70).lineTo(X1, y1 - 70).stroke({ width: 5, color: 0x1A141A }); for (let x = X0; x < X1; x += 40) vg.moveTo(x, Y(x) - 70).lineTo(x, Y(x)).stroke({ width: 3, color: 0x1A141A });
+  [60, 420, 780].forEach(x => { vg.rect(x, Y(x) + 90, 70, 1200).fill(0x241C24).stroke({ width: 5, color: 0x0E0A10 }); vg.rect(x + 56, Y(x) + 90, 8, 1200).fill({ color: P.borda, alpha: 0.5 }); });
+  for (let i = 0; i < 26; i++) { const x = r.entre(X0, X1); M.cipo(vg, x, Y(x) + 100, r.entre(100, 420), { seed: 700 + i, k: 1.1 }); }
+  for (let i = 0; i < 8; i++) { const x = r.entre(X0, X1); M.folhagem(vg, x, Y(x) + 60, r.entre(30, 60), 20, { seed: 730 + i, sol: 1 }); }
+  // os sobreviventes andando em fila (contraluz)
+  const sg = new PIXI.Graphics(); sg.__anim = 1; L3.addChild(sg); SIL = { g: sg, Y };
+  // primeiro plano: entulho e folhagem escura
+  const L4 = camada(1.2), fg = new PIXI.Graphics(); L4.addChild(fg);
+  fg.poly([-100, 1700, 300, 1560, 700, 1640, 1180, 1580, 1180, 2000, -100, 2000]).fill(0x140E12);
+  M.folhagem(fg, 120, 1700, 280, 140, { seed: 751, sol: 1, escuro: true, k: 2.4 }); M.folhagem(fg, 960, 1760, 260, 130, { seed: 752, sol: 1, escuro: true, k: 2.2 });
+  M.folhagem(fg, 1000, 200, 200, 90, { seed: 753, sol: -1, escuro: true, k: 2 }); for (let i = 0; i < 8; i++) M.cipo(fg, 900 + i * 25, -20, r.entre(200, 500), { seed: 760 + i, k: 1.6 });
+  brilhoSol(p.root, SOL[0], SOL[1], 22, 30);
+  p.anim.push(t => { nv.children.forEach(n => n.x = n.__vel * t);
+    refl.clear(); for (let i = 0; i < 26; i++) { const y = 1100 + i * 30, w = 30 + i * 9 + Math.sin(t * 3 + i) * 12; refl.rect(SOL[0] - w / 2 + Math.sin(t * 2 + i * 1.7) * 10, y, w, 5).fill({ color: 0xFFB070, alpha: 0.6 - i * 0.02 }); }
+    sg.clear(); [0, 1, 2, 3].forEach(i => { const x = 120 + i * 150 + (t - 4.6) * 70; silhueta(sg, x, Y(x) - 2, 0.62 + i * 0.03, (t - 4.6) * 7 + i * 1.3, 1); }); });
+});
+
+// ---------------- 4. O ÚLTIMO MORADOR (pela janela quebrada) ----------------
+plano(6.8, 8.8, { foco: [560, 1000], zoom: [1.0, 1.16], dx: 0, dy: -40 }, p => {
+  const camada = par => camadaDe(p, par), SOL = [760, 900], r = M.RNG(99);
+  // lá fora (visto pela janela)
+  const L0 = camada(0.1); L0.addChild(M.ceu(W, H, { horizonte: 1100, sol: SOL })); const nv = M.nuvens(W + 600, H, { horizonte: 980, sol: SOL, n: 20, seed: 14 }); nv.x = -300; L0.addChild(nv);
+  L0.addChild(M.skyline(W, 1080, { cor: 0x9A5866, alt: 320, seed: 40, vazio: [690, 820] })); neblina(L0, 0, 800, W, 1080, 0xF0905A, 0.45);
+  const fora = new PIXI.Graphics(); L0.addChild(fora); fora.rect(0, 1075, W, 300).fill(0x4A3A50); fora.poly([280, 1080, 900, 1060, 900, 1072, 280, 1092]).fill(0x2A2028);
+  for (let i = 0; i < 8; i++) fora.rect(320 + i * 75, 1060, 14, 50).fill(0x2A2028);
+  for (let i = 0; i < 12; i++) M.folhagem(fora, r.entre(200, 960), r.entre(1150, 1300), r.entre(40, 80), 20, { seed: 800 + i, sol: 1 });
+  const reflJ = new PIXI.Graphics(); reflJ.__anim = 1; L0.addChild(reflJ);
+  // o quarto escuro: parede com o vão da janela, cortinas rasgadas, sofá, entulho
+  const L1 = camada(0.45), q = new PIXI.Graphics(); L1.addChild(q);
+  q.poly([-200, -200, 1280, -200, 1280, 2100, -200, 2100, -200, -200, 240, 420, 240, 1380, 960, 1380, 960, 420, 240, 420]).fill(0x1E161C);
+  q.rect(240, 1380, 720, 30).fill(0x2A2028).stroke({ width: 4, color: 0x0E0A10 }); q.rect(580, 420, 22, 960).fill(0x16101A); q.rect(240, 860, 720, 18).fill(0x16101A);
+  for (let i = 0; i < 6; i++) { const x0 = 240 + i * 120; q.poly([x0, 400, x0 + 130, 400, x0 + 110 + r.entre(-10, 10), 520 + r.entre(0, 160), x0 + 70, 470 + r.entre(0, 260), x0 + 30, 520 + r.entre(0, 120)]).fill({ color: 0xC8B8A0, alpha: 0.85 }).stroke({ width: 3, color: 0x2A2228 }); }
+  for (let i = 0; i < 14; i++) M.cipo(q, 250 + i * 50, 420, r.entre(150, 700), { seed: 820 + i, k: 1.1 });
+  q.poly([-200, 1410, 1280, 1410, 1280, 2100, -200, 2100]).fill(0x221A20);
+  for (let i = 0; i < 18; i++) q.rect(r.entre(-100, 1100), r.entre(1420, 1900), r.entre(40, 120), r.entre(8, 20)).fill(r.pick([0x3A2A26, 0x4A3A30, 0x2A2026])).stroke({ width: 3, color: 0x0E0A10 });
+  q.poly([240, 1410, 960, 1410, 1180, 1900, 60, 1900]).fill({ color: 0xFF9A50, alpha: 0.18 });       // luz da janela no chão
+  q.roundRect(-60, 1180, 380, 260, 40).fill(0x5A2420).stroke({ width: 6, color: 0x0E0A10 }); q.roundRect(-60, 1100, 340, 140, 40).fill(0x4A1E1C).stroke({ width: 6, color: 0x0E0A10 });
+  q.moveTo(320, 1190).lineTo(320, 1430).stroke({ width: 5, color: P.borda, alpha: 0.6 });
+  // o sobrevivente de costas, de mochila, olhando a cidade (silhueta com borda de luz)
+  const L2 = camada(0.6), s = new PIXI.Graphics(); L2.addChild(s);
+  const X = 650, Yp = 1420; s.ellipse(X, Yp + 6, 90, 14).fill({ color: 0x000000, alpha: 0.5 });
+  s.roundRect(X - 46, Yp - 150, 36, 150, 14).fill(0x0E0A10); s.roundRect(X + 10, Yp - 150, 36, 150, 14).fill(0x0E0A10);
+  s.roundRect(X - 64, Yp - 330, 128, 200, 30).fill(0x140E14); s.roundRect(X - 56, Yp - 320, 112, 150, 22).fill(0x3A3426).stroke({ width: 5, color: 0x0E0A10 });   // mochila
+  s.roundRect(X - 44, Yp - 300, 88, 40, 10).fill(0x2A2620); s.circle(X, Yp - 370, 52).fill(0x0E0A10);
+  for (let i = 0; i < 9; i++) s.poly([X - 50 + i * 12, Yp - 400, X - 44 + i * 12, Yp - 440 - (i % 3) * 8, X - 36 + i * 12, Yp - 402]).fill(0x0E0A10);
+  s.moveTo(X + 44, Yp - 400).arc(X, Yp - 370, 52, -0.8, 0.5).stroke({ width: 5, color: P.borda, alpha: 0.9 }); s.moveTo(X + 64, Yp - 300).lineTo(X + 64, Yp - 150).stroke({ width: 5, color: P.borda, alpha: 0.7 });
+  s.roundRect(X - 82, Yp - 310, 22, 140, 10).fill(0x0E0A10); s.roundRect(X + 60, Yp - 310, 22, 140, 10).fill(0x0E0A10);
+  const L3 = camada(1.1), fg = new PIXI.Graphics(); L3.addChild(fg); M.folhagem(fg, 80, 1880, 220, 120, { seed: 851, sol: 1, escuro: true, k: 2.4 }); fg.filters = [new PIXI.BlurFilter({ strength: 8 })];
+  brilhoSol(p.root, SOL[0], SOL[1], 18, 30);
+  p.anim.push(t => { nv.children.forEach(n => n.x = n.__vel * t); reflJ.clear(); for (let i = 0; i < 6; i++) reflJ.rect(SOL[0] - 30 - i * 8 + Math.sin(t * 3 + i) * 6, 1085 + i * 14, 60 + i * 16, 4).fill({ color: 0xFFB070, alpha: 0.6 }); });
+});
+
+// ---------------- 5. MEMÓRIAS (a foto de família entre os escombros) ----------------
+await planoAsync(8.8, 10.4, { foco: [560, 1240], zoom: [1.0, 1.18], dx: 0, dy: 0 }, async p => {
+  const camada = par => camadaDe(p, par), SOL = [780, 520], r = M.RNG(111);
+  const L0 = camada(0.08); L0.addChild(M.ceu(W, H, { horizonte: 700, sol: SOL })); L0.addChild(M.skyline(W, 700, { cor: 0x3A2232, alt: 520, seed: 50 })); L0.filters = [new PIXI.BlurFilter({ strength: 10 })];
+  const L1 = camada(0.3), ch = new PIXI.Graphics(); L1.addChild(ch); ch.rect(-200, 680, W + 400, 1500).fill(0x1E1418);
+  for (let i = 0; i < 30; i++) ch.poly([r.entre(-100, 1100), r.entre(700, 1900), r.entre(-100, 1100), r.entre(700, 1900), r.entre(-100, 1100), r.entre(700, 1900)]).fill(r.pick([0x2A1E22, 0x3A2A28, 0x221A1E])).stroke({ width: 3, color: 0x0E0A10 });
+  for (let i = 0; i < 14; i++) M.folhagem(ch, r.entre(-60, 1140), r.entre(760, 1900), r.entre(50, 130), 26, { seed: 900 + i, sol: 1 });
+  for (let i = 0; i < 26; i++) ch.circle(r.entre(0, W), r.entre(720, 1000), r.entre(10, 40)).fill({ color: 0xFFB070, alpha: 0.15 });   // bokeh do sol
+  ch.filters = [new PIXI.BlurFilter({ strength: 3 })];
+  // a foto: moldura polaroid suja, desenho da família (avô, Aninha e o irmãozinho sorrindo)
+  const L2 = camada(0.7), f = new PIXI.Container(); L2.addChild(f); f.position.set(540, 1260); f.rotation = -0.2;
+  let fg = new PIXI.Graphics(); f.addChild(fg);
+  fg.roundRect(-330, -280, 660, 560, 14).fill(0xE8DEC8).stroke({ width: 6, color: 0x2A2020 }); fg.rect(-290, -240, 580, 400).fill(0xB8A890);
+  const rosto = (x, y, rr, cabelo, pele = 0xE8B890, roupa = 0x6A8AA8, olhosFechados = false) => {
+    fg.roundRect(x - rr * 1.1, y + rr * 0.9, rr * 2.2, rr * 2.4, rr * 0.6).fill(roupa).stroke({ width: 3, color: 0x2A2020 });
+    fg.circle(x, y, rr).fill(pele).stroke({ width: 3, color: 0x2A2020 }); cabelo(x, y, rr);
+    if (olhosFechados) { fg.moveTo(x - rr * 0.5, y - rr * 0.05).arc(x - rr * 0.35, y - rr * 0.05, rr * 0.16, Math.PI, 0).stroke({ width: 3, color: 0x2A2020 }); fg.moveTo(x + rr * 0.2, y - rr * 0.05).arc(x + rr * 0.35, y - rr * 0.05, rr * 0.16, Math.PI, 0).stroke({ width: 3, color: 0x2A2020 }); }
+    else { fg.circle(x - rr * 0.35, y - rr * 0.05, rr * 0.12).fill(0x2A2020); fg.circle(x + rr * 0.35, y - rr * 0.05, rr * 0.12).fill(0x2A2020); }
+    fg.moveTo(x - rr * 0.4, y + rr * 0.35).quadraticCurveTo(x, y + rr * 0.75, x + rr * 0.4, y + rr * 0.35).fill(0x8A3A3A).stroke({ width: 3, color: 0x2A2020 });
+    fg.circle(x - rr * 0.6, y + rr * 0.3, rr * 0.13).fill({ color: 0xE87A7A, alpha: 0.5 }); fg.circle(x + rr * 0.6, y + rr * 0.3, rr * 0.13).fill({ color: 0xE87A7A, alpha: 0.5 }); };
+  const fotoTex = await fotoFamilia(); const fs = new PIXI.Sprite(fotoTex); fs.position.set(-290, -240); fs.width = 580; fs.height = 400; f.addChild(fs); const fg2 = new PIXI.Graphics(); f.addChild(fg2); const fgS = fg; fg = fg2;
+  for (let i = 0; i < 70; i++) fg.circle(r.entre(-320, 320), r.entre(-270, 270), r.entre(2, 12)).fill({ color: r.pick([0x5A3A2A, 0x3A2A1E, 0x7A5A3A]), alpha: r.entre(0.4, 0.85) });   // sujeira e mofo
+  fg.moveTo(80, -240).lineTo(40, -60).lineTo(120, 60).lineTo(90, 160).stroke({ width: 3, color: 0x2A2020, alpha: 0.7 });   // rachadura
+  fg.poly([-330, -280, -40, -280, -330, -60]).fill({ color: 0xFFE0B0, alpha: 0.18 });   // brilho do sol no papel
+  const L3 = camada(1.2), fr = new PIXI.Graphics(); L3.addChild(fr); M.folhagem(fr, 980, 1780, 240, 120, { seed: 951, sol: -1, escuro: true, k: 2.4 }); M.folhagem(fr, 60, 1880, 200, 100, { seed: 952, sol: 1, escuro: true, k: 2.2 }); fr.filters = [new PIXI.BlurFilter({ strength: 9 })];
+  brilhoSol(p.root, SOL[0], SOL[1], 20, 34);
+});
+
+// ---------------- 6. A NATUREZA VENCEU (o cervo sobre a cidade alagada) ----------------
+let CERVO = null;
+plano(10.4, 12.25, { foco: [400, 760], zoom: [1.06, 1.16], dx: 160, dy: 20 }, p => {
+  const camada = par => camadaDe(p, par), SOL = [790, 1000], r = M.RNG(122);
+  const L0 = camada(0.04); L0.addChild(M.ceu(W, H, { horizonte: 1160, sol: SOL })); const nv = M.nuvens(W + 600, H, { horizonte: 1060, sol: SOL, n: 30, seed: 17 }); nv.x = -300; L0.addChild(nv);
+  const L1 = camada(0.12); L1.addChild(M.skyline(W, 1160, { cor: 0x8A5262, alt: 420, seed: 60, vazio: [720, 860] })); neblina(L1, 0, 800, W, 1160, 0xF09A5A, 0.5);
+  const ag = new PIXI.Graphics(); L1.addChild(ag); ag.rect(-200, 1150, W + 400, 900).fill(0x5A4258);
+  const ponte = new PIXI.Graphics(); L1.addChild(ponte); ponte.rect(420, 1080, 700, 22).fill(0x3A2A36); for (let i = 0; i < 6; i++) { ponte.rect(440 + i * 120, 1100, 24, 70).fill(0x3A2A36); ponte.moveTo(464 + i * 120, 1100).arc(500 + i * 120, 1110, 36, Math.PI, 0).stroke({ width: 8, color: 0x3A2A36 }); }
+  const refl = new PIXI.Graphics(); refl.__anim = 1; L1.addChild(refl);
+  for (let i = 0; i < 10; i++) M.folhagem(ag, r.entre(-100, 1100), r.entre(1240, 1500), r.entre(40, 100), 24, { seed: 1000 + i, sol: 1 });   // ilhas de mato na água
+  ag.roundRect(700, 1310, 160, 60, 10).fill(0x3A3038).stroke({ width: 4, color: 0x0E0A10 });   // ônibus afundado
+  // a construção tomada pelo verde onde o cervo está
+  const L2 = camada(0.5), c = new PIXI.Graphics(); L2.addChild(c);
+  c.rect(-40, 820, 560, 70).fill(0x4A3E44).stroke({ width: 6, color: 0x0E0A10 }); c.rect(40, 890, 60, 700).fill(0x3A3038).stroke({ width: 5, color: 0x0E0A10 }); c.rect(380, 890, 60, 700).fill(0x3A3038).stroke({ width: 5, color: 0x0E0A10 });
+  c.moveTo(-40, 820).lineTo(520, 820).stroke({ width: 5, color: P.borda, alpha: 0.85 });
+  for (let i = 0; i < 26; i++) M.cipo(c, r.entre(-30, 520), 860, r.entre(120, 600), { seed: 1020 + i, k: 1.2 });
+  for (let i = 0; i < 9; i++) M.folhagem(c, r.entre(-20, 520), r.entre(790, 860), r.entre(30, 60), 24, { seed: 1050 + i, sol: 1 });
+  const cv = new PIXI.Graphics(); cv.__anim = 1; L2.addChild(cv); CERVO = cv; cv.pivot.set(230, 822); cv.position.set(230, 822); cv.scale.set(1.35);
+  // primeiro plano: folhagem e cipós escuros
+  const L3 = camada(1.1), fg = new PIXI.Graphics(); L3.addChild(fg);
+  M.folhagem(fg, 140, 1800, 320, 160, { seed: 1061, sol: 1, k: 2.6 }); M.folhagem(fg, 980, 1820, 280, 140, { seed: 1062, sol: -1, k: 2.4 }); M.folhagem(fg, 1000, 120, 240, 100, { seed: 1063, sol: -1, escuro: true, k: 2 });
+  for (let i = 0; i < 10; i++) M.cipo(fg, 860 + i * 22, -20, r.entre(300, 900), { seed: 1070 + i, k: 1.5 });
+  brilhoSol(p.root, SOL[0], SOL[1], 22, 30);
+  p.anim.push(t => { nv.children.forEach(n => n.x = n.__vel * t);
+    refl.clear(); for (let i = 0; i < 24; i++) { const w = 30 + i * 10 + Math.sin(t * 3 + i) * 10; refl.rect(SOL[0] - w / 2 + Math.sin(t * 2 + i * 1.7) * 8, 1160 + i * 26, w, 5).fill({ color: 0xFFB070, alpha: 0.6 - i * 0.022 }); }
+    // o cervo: de pé, a cabeça vira devagar para a cidade
+    const g = cv, x = 230, y = 822, cab = -0.08 + Math.sin((t - 10.4) * 1.2) * 0.1; g.clear(); const C = 0x5A3E2C, C2 = 0x3A281E, E = 0x0E0A10, B = P.borda;
+    const perna = (px, dobra, cor) => g.poly([px - 9, y - 130, px + 9, y - 130, px + 6 + dobra, y - 60, px + 5, y - 2, px - 3, y - 2, px - 4 + dobra, y - 60]).fill(cor).stroke({ width: 3, color: E });
+    perna(x - 48, -4, C2); perna(x + 52, 4, C2);
+    g.poly([x - 100, y - 150, x - 70, y - 186, x + 10, y - 196, x + 80, y - 188, x + 112, y - 170, x + 118, y - 132, x + 90, y - 110, x - 20, y - 104, x - 90, y - 112, x - 108, y - 128]).fill(C).stroke({ width: 4, color: E });   // corpo
+    g.poly([x - 96, y - 120, x + 100, y - 118, x + 88, y - 108, x - 20, y - 102, x - 86, y - 108]).fill({ color: 0xD8C0A0, alpha: 0.55 });                                   // barriga clara
+    g.poly([x + 70, y - 180, x + 92, y - 250, x + 118, y - 268, x + 140, y - 252, x + 128, y - 200, x + 116, y - 150]).fill(C).stroke({ width: 4, color: E });              // pescoço grosso
+    perna(x - 70, -6, C); perna(x + 80, 6, C);
+    g.poly([x - 104, y - 150, x - 116, y - 168, x - 100, y - 160]).fill(C).stroke({ width: 3, color: E });                                                                      // rabinho
+    g.moveTo(x - 100, y - 152).lineTo(x - 70, y - 186).lineTo(x + 10, y - 196).lineTo(x + 80, y - 188).lineTo(x + 92, y - 250).lineTo(x + 118, y - 268).stroke({ width: 5, color: B, alpha: 0.9 });   // borda de luz
+    const hx = x + 128, hy = y - 272, ca = Math.cos(cab), sa = Math.sin(cab), R2 = (u, v) => [hx + ca * u - sa * v, hy + sa * u + ca * v];
+    g.poly([...R2(-14, -16), ...R2(18, -22), ...R2(58, -6), ...R2(62, 8), ...R2(30, 18), ...R2(-12, 16)]).fill(C).stroke({ width: 4, color: E });                              // cabeça
+    g.circle(...R2(56, 2), 6).fill(E); g.circle(...R2(14, -6), 4).fill(E);
+    g.poly([...R2(-8, -14), ...R2(-36, -34), ...R2(-14, -24)]).fill(C).stroke({ width: 3, color: E }); g.poly([...R2(0, -16), ...R2(-6, -46), ...R2(8, -24)]).fill(C).stroke({ width: 3, color: E });
+    const chifre = (s2) => { const [ax, ay] = R2(4 * s2, -18); g.moveTo(ax, ay).bezierCurveTo(ax + s2 * 10, ay - 50, ax - 30, ay - 90, ax - 10 + s2 * 18, ay - 140).stroke({ width: 7, color: 0x2A1E16, cap: 'round' });
+      [[0.3, 34, -14], [0.55, 30, -10], [0.78, 22, -8]].forEach(([u, l, a]) => { const px = ax + s2 * 4 - 14 * u, py = ay - 140 * u; g.moveTo(px, py).lineTo(px + l, py + a).stroke({ width: 5, color: 0x2A1E16, cap: 'round' }); g.moveTo(px, py).lineTo(px - l * 0.7, py + a - 6).stroke({ width: 5, color: 0x2A1E16, cap: 'round' }); }); };
+    chifre(1); chifre(-0.6); });
+});
+
+// desempenho: tudo que é parado vira textura uma vez só (nuvens, reflexos, silhuetas e o cervo continuam vivos)
+const temAnim = o => o.__anim || (o.children || []).some(temAnim);
+const cachear = o => { if (temAnim(o)) { (o.children || []).forEach(cachear); return; } if (o.__vel) return; if ((o.children || []).some(c => c.__vel)) { o.children.forEach(cachear); return; } o.cacheAsTexture({ resolution: 1.3, antialias: true }); };
+PLANOS.forEach(p => p.camadas.forEach(cachear));
+// ---------------- 7. LOGO ----------------
+const LOGO = 12.25;
+const lg = new PIXI.Container(); app.stage.addChild(lg);
+const fundoL = new PIXI.Graphics(); lg.addChild(fundoL); fundoL.rect(0, 0, W, H).fill(0x0C0A0C); for (let i = 0; i < 30; i++) fundoL.ellipse(540, 900, 700 - i * 20, 560 - i * 16).fill({ color: 0x5A1A10, alpha: 0.025 });
+const brasas = new PIXI.Graphics(); lg.addChild(brasas);
+const logoS = new PIXI.Sprite(await textura('img/logo.png')); logoS.anchor.set(0.5); logoS.position.set(540, 900); logoS.width = 1040; logoS.scale.y = logoS.scale.x; lg.addChild(logoS); const LS = logoS.scale.x;
+const t1 = new PIXI.Text({ text: `EPISÓDIO ${EP.num}`, style: { fontFamily: 'Anton', fontSize: 74, fill: 0xE8E2D2, letterSpacing: 16, dropShadow: { color: 0x000000, blur: 8, distance: 4 } } }); t1.anchor.set(0.5); t1.position.set(540, 1260); lg.addChild(t1);
+const t2 = new PIXI.Text({ text: EP.nome, style: { fontFamily: 'Anton', fontSize: 82, fill: 0xE8B23A, letterSpacing: 4, dropShadow: { color: 0x000000, blur: 8, distance: 4 } } }); t2.anchor.set(0.5); t2.position.set(540, 1370); lg.addChild(t2);
+
+// ===== camada global: poeira dourada, vinheta, clarão dos cortes, grão =====
+const poeira = new PIXI.Graphics(); poeira.blendMode = 'add'; app.stage.addChild(poeira);
+const vin = new PIXI.Graphics(); for (let i = 0; i < 30; i++) vin.rect(0, 0, W, H).stroke({ width: 40 + i * 16, color: 0x000000, alpha: 0.03, alignment: 1 }); app.stage.addChild(vin); vin.cacheAsTexture(true);
+const flash = new PIXI.Graphics(); flash.rect(0, 0, W, H).fill(0xFFF0D8); app.stage.addChild(flash);
+const preto = new PIXI.Graphics(); preto.rect(0, 0, W, H).fill(0x000000); app.stage.addChild(preto);
+const ruido = { seed: 0 };   // o grão de filme é aplicado depois no ffmpeg (bem mais rápido que um filtro na tela toda)
+const rnd = (i, k = 0) => { const x = Math.sin(i * 12.9898 + k * 78.233) * 43758.5453; return x - Math.floor(x); };
+
+window.__duration = DUR;
+window.__seek = t => {
+  const fr = Math.round(t * 30);
+  for (const p of PLANOS) { const on = t >= p.a - 0.2 && t < p.b; p.root.visible = on; if (!on) continue;
+    p.root.alpha = cl((t - (p.a - 0.2)) / 0.2, 0, 1);
+    const u = sm(cl((t - p.a) / (p.b - p.a), 0, 1)), C = p.cam, zz = lerp(C.zoom[0], C.zoom[1], u);
+    const bx = Math.sin(t * 1.7) * 3, by = Math.cos(t * 1.3) * 2.5;   // balanço do drone
+    p.camadas.forEach(l => { const q = l.__p, z = 1 + (zz - 1) * (0.25 + q), ox = C.foco[0], oy = C.foco[1];
+      l.scale.set(z); l.position.set(ox * (1 - z) - C.dx * u * q + bx * q, oy * (1 - z) - C.dy * u * q + by * q); });
+    p.anim.forEach(f => f(t)); }
+  // logo
+  lg.visible = t >= LOGO - 0.05;
+  if (lg.visible) { const u = t - LOGO, e = 1.2 - 0.2 * sm(cl(u / 0.4, 0, 1)) + u * 0.012, tr = u < 0.5 ? (rnd(fr, 21) - 0.5) * 16 * (1 - u / 0.5) : 0;
+    logoS.scale.set(LS * e); logoS.x = 540 + tr; t1.alpha = cl((u - 0.9) / 0.4, 0, 1); t2.alpha = cl((u - 1.3) / 0.4, 0, 1);
+    brasas.clear(); for (let k = 0; k < 34; k++) { const per = 2 + rnd(k, 11) * 2, ph = ((u + rnd(k, 12) * per) % per) / per; brasas.circle(rnd(k, 13) * W + Math.sin(u * 2 + k) * 30, 1900 - ph * 1500, 3 + rnd(k, 14) * 6).fill({ color: 0xFF8A3A, alpha: (1 - ph) * 0.9 }); } }
+  // poeira
+  poeira.clear(); if (t < LOGO) for (let k = 0; k < 30; k++) { const x = (rnd(k, 1) * W + t * (20 + rnd(k, 2) * 40)) % W, y = (rnd(k, 3) * H - t * (14 + rnd(k, 4) * 26) + H * 3) % H; poeira.circle(x, y, 1.5 + rnd(k, 5) * 3).fill({ color: 0xFFD9A0, alpha: 0.2 + 0.35 * Math.abs(Math.sin(t * 2 + k)) }); }
+  // clarão nos cortes e fade
+  const cortes = [...PLANOS.slice(1).map(p => p.a), LOGO]; let fl = 0; cortes.forEach(c => { if (t >= c - 0.06 && t < c + 0.25) fl = Math.max(fl, (1 - Math.abs(t - c) / 0.25) * (c === LOGO ? 0.95 : 0.5)); });
+  flash.alpha = fl; preto.alpha = t < 0.15 ? 1 - t / 0.15 : t > DUR - 0.6 ? (t - (DUR - 0.6)) / 0.6 : 0;
+  ruido.seed = rnd(fr, 9);
+  app.render();
+};
+window.__seek(0);
+})();
+</script>
+</body>
+</html>

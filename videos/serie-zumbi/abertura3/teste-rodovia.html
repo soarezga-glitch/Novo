@@ -12,7 +12,7 @@
   const Ln = camada(0.05), nuv = M.nuvens(W + 600, H, { horizonte: HZ - 80, sol: [SOL[0] + 300, SOL[1]], n: 30, seed: 4 }); nuv.x = -300; Ln.addChild(nuv);
   // cidade ao longe, enevoada (rosa/laranja perto do sol)
   const L1 = camada(0.1); L1.addChild(M.skyline(W, HZ + 5, { cor: 0xA05A66, alt: 230, seed: 9 })); neblina(L1, HZ - 300, HZ + 10, 0xF0905A, 0.55);
-  const L2 = camada(0.18); const sk2 = M.skyline(W, HZ + 15, { cor: 0x5A3450, alt: 380, seed: 12 }); L2.addChild(sk2); const furo = new PIXI.Graphics(); furo.rect(500, 600, 280, 560).fill(0xffffff); L2.addChild(furo); sk2.mask = null; furo.visible = false; neblina(L2, HZ - 200, HZ + 20, 0xE07A50, 0.35);
+  const L2 = camada(0.18); L2.addChild(M.skyline(W, HZ + 15, { cor: 0x5A3450, alt: 380, seed: 12, vazio: [520, 780] })); neblina(L2, HZ - 200, HZ + 20, 0xE07A50, 0.35);
   // prédios grandes nas laterais, em contraluz
   const L3 = camada(0.38);
   L3.addChild(M.predio(-120, HZ + 120, 340, 900, { seed: 21, sol: 1, vegetacao: 1.3, cor: 0x5A4E50 }));
@@ -30,8 +30,11 @@
   for (let i = 0; i < 14; i++) { const u = Math.pow(i / 14, 1.6), x = VP[0] + 30 + (1300 - VP[0] - 30) * u, y = HZ + (1560 - HZ) * u; rd.rect(x, y - 4, 3 + 9 * u, 12 + 60 * u).fill(0x221C22); }
   // mato: tufos nas beiradas e nas rachaduras (pequenos, finos)
   const mato = new PIXI.Graphics(); L4.addChild(mato);
-  for (let i = 0; i < 90; i++) { const y = r.entre(HZ + 10, H + 40), u = (y - HZ) / (H - HZ), borda = r() < 0.75, x = borda ? VP[0] + (r() < 0.5 ? -1 : 1) * (40 + 760 * u) * r.entre(0.95, 1.5) : VP[0] + r.entre(-1, 1) * (30 + 700 * u);
+  for (let i = 0; i < 160; i++) { const y = r.entre(HZ + 10, H + 40), u = (y - HZ) / (H - HZ), borda = r() < 0.92, x = borda ? VP[0] + (r() < 0.5 ? -1 : 1) * (40 + 760 * u) * r.entre(0.95, 1.5) : VP[0] + r.entre(-1, 1) * (30 + 700 * u);
     M.capim(mato, x, y, (10 + (borda ? 90 : 40) * u), 6 + Math.round(18 * u), { seed: 200 + i, k: 0.4 + u * 1.2 }); }
+  // moitas grandes tomando as beiradas da pista e o canteiro (proporção: maiores que um carro de perto)
+  const moitas = new PIXI.Graphics(); L4.addChild(moitas);
+  for (let i = 0; i < 26; i++) { const u = Math.pow(r.entre(0.02, 1), 1.3), y = HZ + 10 + (H - HZ) * u, lado = i % 2 ? 1 : -1, x = VP[0] + lado * (60 + 820 * u) * r.entre(1.0, 1.6); M.folhagem(moitas, x, y, (14 + 150 * u) * r.entre(0.7, 1.2), 14 + Math.round(24 * u), { seed: 400 + i, sol: 1, k: 0.4 + u }); }
   // carros parados em fila (fuga que não deu certo)
   [[560, HZ + 22, 0.14, 1, 0], [660, HZ + 30, 0.16, 2, 0.05], [500, HZ + 60, 0.24, 3, -0.04], [760, HZ + 90, 0.3, 4, 0.06], [400, HZ + 170, 0.45, 5, -0.05], [840, HZ + 260, 0.62, 6, 0.08], [230, HZ + 470, 1.0, 7, -0.06]].forEach(([x, y, k, s, rot]) => L4.addChild(M.carro(x, y, k, { seed: s, rot })));
   // placa verde torta, com trepadeira (primeiro plano à esquerda)
@@ -47,7 +50,7 @@
   M.folhagem(fr, 40, 1900, 300, 170, { seed: 51, sol: 1, escuro: true, k: 3 }); M.folhagem(fr, 1080, 1860, 260, 150, { seed: 52, sol: -1, escuro: true, k: 2.6 });
   fr.filters = [new PIXI.BlurFilter({ strength: 8 })];
   // luz por cima de tudo: brilho do sol (add) e vinheta
-  const brilho = new PIXI.Graphics(); for (let i = 0; i < 24; i++) brilho.circle(SOL[0], SOL[1], 120 + i * 32).fill({ color: 0xFF9A50, alpha: 0.012 }); brilho.blendMode = 'add'; app.stage.addChild(brilho);
+  const brilho = new PIXI.Graphics(); for (let i = 0; i < 24; i++) brilho.circle(SOL[0], SOL[1], 120 + i * 32).fill({ color: 0xFF7A3A, alpha: 0.008 }); brilho.blendMode = 'add'; app.stage.addChild(brilho);
   const vin = new PIXI.Graphics(); for (let i = 0; i < 30; i++) vin.rect(0, 0, W, H).stroke({ width: 40 + i * 16, color: 0x000000, alpha: 0.03, alignment: 1 }); app.stage.addChild(vin);
   const camadas = [L0, Ln, L1, L2, L3, L4, L5, L6];
   window.__duration = 3; window.__seek = t => {
