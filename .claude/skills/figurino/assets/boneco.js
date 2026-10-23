@@ -767,6 +767,10 @@
         if (this.fig.tronco === 'armadura') this.el.detalhe.setAttribute('stroke', '#5A5A62');
         const temAvental = (this.fig.extras || []).includes('avental');
         this.el.avental.setAttribute('d', temAvental ? `M${f(P_(c0, c1, 0.18))} L${f(P_(c0, c1, 0.82))} L${f(P_(b0, b1, 0.86))} L${f(P_(b0, b1, 0.14))}Z` : '');
+        // colete aberto (sem camisa por baixo): um "V" de peito à mostra do pescoço até a cintura, com as bordas do couro
+        if (this.fig.colete) { const v0 = P_(o0, o1, 0.36), v1 = P_(o0, o1, 0.64), vb = P_(c0, c1, 0.5), w = vista === 'frente' ? 1 : 0.45;
+          this.el.avental.setAttribute('d', `M${f(P_(top, v0, w))} L${f(P_(top, v1, w))} L${f(P_(H, vb, 0.6))}Z`); this.el.avental.setAttribute('fill', this.cor);
+          this.el.detalhe.setAttribute('d', `M${f(P_(top, v0, w))} L${f(P_(H, vb, 0.6))} L${f(P_(top, v1, w))}`); this.el.detalhe.setAttribute('stroke', this.fig.cor2 || '#3A3A42'); this.el.detalhe.setAttribute('stroke-width', 6 * s); }
         // zumbi: roupa em farrapos — tiras penduradas na barra da camisa, na manga e na boca da calça
         if (this.fig.zumbi || this.fig.rasgos) {
           const zv = this.zv, tiras = (a, b, baixo, n, comp, cor, sem) => {
@@ -1190,7 +1194,7 @@
     'seuze':         { tronco: 'camiseta', cor: '#7A8A9A', mangas: 'curta', pernas: 'calca', corPernas: '#4A3A2A', pes: 'sapato', corPes: '#2A1E14', cabelo: 'curto', corCabelo: '#E8E8E2', cinto: '#2A1E14', semBochecha: true },
     'neta':          { tronco: 'vestido', cor: '#C97A9A', mangas: 'curta', pes: 'sapato', corPes: '#F2F2F2', cabelo: 'longo', corCabelo: '#3A2418', chapeu: 'tiara', corChapeu: '#F2E26A', semBochecha: true },
     'vulto':         { tronco: 'camiseta', cor: '#15161C', mangas: 'curta', pernas: 'calca', corPernas: '#101116', pes: 'descalco', cabelo: 'zumbi', corCabelo: '#0C0C10', semBochecha: true, zumbi: true },   // zumbi no escuro: silhueta curvada, farrapos, braços tortos
-    'dimas':         { tronco: 'moletom', cor: '#4A3424', cor2: '#2E2018', mangas: 'longa', corManga: '#4A3424', pernas: 'calca', corPernas: '#3A3E44', pes: 'bota', corPes: '#2A1E14', cabelo: 'zumbi', corCabelo: '#2A2018', cinto: '#1A1410', rasgos: true, barba: true, semBochecha: true },   // o sobrevivente da moto: jaqueta de couro rasgada, cabelo comprido
+    'dimas':         { tronco: 'camiseta', cor: '#16161A', cor2: '#3A3A42', mangas: 'nenhuma', pernas: 'calca', corPernas: '#1C1C22', pes: 'bota', corPes: '#0E0E10', cabelo: 'zumbi', corCabelo: '#1E1A16', cinto: '#2A2A30', rasgos: true, barba: true, colete: true, semBochecha: true },   // o sobrevivente da moto: colete preto de couro sem manga (roqueiro), braços de fora, calça e bota pretas
     'aluno':         { tronco: 'camiseta', cor: '#5A7A9A', mangas: 'curta', pernas: 'calca', corPernas: '#2E3A4A', pes: 'tenis', corPes: '#F2F2F2', corPes2: '#5A5A60', cabelo: 'curto', corCabelo: '#2A1E16', semBochecha: true },
     // --- SOBREVIVENTE: personagem oficial (skill personagem-sobrevivente) ---
     'sobrevivente':  { tronco: 'camiseta', cor: '#FFFFFF', mangas: 'curta', pernas: 'calca', corPernas: '#26262B', cargo: true, pes: 'tenis', corPes: '#FF7A00', corPes2: '#111111', cabelo: 'militar', corCabelo: '#111111', extras: ['cachecol', 'mochila'], luvas: true, semBochecha: true, cinto: 'none' }

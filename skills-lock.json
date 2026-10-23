@@ -1,6 +1,18 @@
 {
   "version": 1,
   "skills": {
+    "create-game-assets": {
+      "source": "gamedev-skills/awesome-gamedev-agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/disciplines/create-game-assets/SKILL.md",
+      "computedHash": "e0991db4ed544179782a60a7020aa49c7469b66744de5a5eda28eb3a35f856be"
+    },
+    "design-action-combat": {
+      "source": "mengto/skills",
+      "sourceType": "github",
+      "skillPath": "agent-skills/game-development/design-action-combat/SKILL.md",
+      "computedHash": "91c2d3efce8665e2483bafc1f9959f4224d3105c5c38a3d05097bdab1bd8b62e"
+    },
     "edge-tts": {
       "source": "aahl/skills",
       "sourceType": "github",
