@@ -16,7 +16,7 @@ Referência visual oficial da abertura: `referencias/abertura-referencia.png` (1
 
 Nome: OS SOBREVIVENTES
 Gênero: Apocalipse zumbi, sobrevivência, suspense, drama e aventura.
-Formato: Série animada 2D, horizontal 16:9.
+Formato: Série animada 2D, **vertical 9:16 para o TikTok** (correção do criador).
 Referências de atmosfera: The Walking Dead e The Last of Us.
 Referência de acabamento da animação: Brawl Stars, adaptado para uma narrativa mais séria e sombria.
 
@@ -147,7 +147,7 @@ A trilha deve reforçar solidão, perigo e mistério: piano lento e melancólico
 
 ## 13. FORMATO TÉCNICO
 
-Formato padrão: 16:9 horizontal. Resolução preferencial: 1920 × 1080 ou superior. Frequência sugerida: 24 quadros por segundo.
+Formato padrão: **vertical 9:16 (TikTok)**, 1080 × 1920, 30 quadros por segundo. Imagens/planos horizontais viram planos em que a câmera passeia (pan) dentro do quadro vertical.
 
 Cenários em camadas para animação: primeiro plano; personagens; plano intermediário; arquitetura; fundo distante; céu; efeitos atmosféricos. Sempre que possível, gerar cenas com espaço suficiente para movimentos de câmera.
 
@@ -194,5 +194,4 @@ A prioridade máxima é fazer cada nova cena parecer parte da mesma série anima
 - **Episódio:** pasta `videos/serie-zumbi/epN/` — `cortar.py` (corta a narração gravada pelo texto), `montar.py`, `partitura.py`
   (trilha + efeitos), `montagem.py` (começo da história → abertura → resto do episódio). Abertura em `videos/serie-zumbi/abertura/`.
 - **Vozes:** narrador gravado pelo criador; personagens com Qwen3-TTS (`vozes-personagens`). Áudio final a −10 LUFS.
-- **Formato:** os episódios até o 6 são verticais 1080×1920 para TikTok. A §13 pede 16:9 horizontal — confirmar com o criador
-  antes de mudar o formato de um episódio.
+- **Formato:** vertical 1080×1920 para TikTok (confirmado pelo criador). Legenda dinâmica no meio-baixo, longe dos botões do app.
