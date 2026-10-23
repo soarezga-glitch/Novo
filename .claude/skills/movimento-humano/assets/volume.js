@@ -88,15 +88,15 @@
       // ----- cabeça (grande), cabelo e rosto -----
       const cabeca = () => { const Rh = 58 * s * (look.cabeca || 1), pesc = R(E.pescoco), yaw = E.cabeca.yaw || 0, ay = Math.abs(yaw), sy = ay > 0.5 ? Math.sign(yaw) : 0;
         const incl = ((E.cabeca.inclinar || 0) - (E.cabeca.baixar || 0) * 0.3 * (sy || 1)) * (sy || 1);
-        const C = add(pesc, mul(up, Rh * 0.92));
+        const C = add(pesc, mul(up, Rh * 0.92 + 14 * s));   // um pedaço de pescoço à mostra
         const hb = look.cabelo, F0 = [], F = [];
         let o = '';
-        // pescoço
-        o += peca([membro(add(pesc, mul(up, -10 * s)), add(pesc, mul(up, Rh * 0.4)), 13 * s * W, 12 * s * W, pele)]);
         // cabelo de trás
         if (hb.tipo === 'longo') F0.push({ d: `M${P2(add(C, [-Rh * 1.05, -Rh * 0.2]))} Q${P2(add(C, [-Rh * 1.25, Rh * 1.6]))} ${P2(add(C, [-Rh * 0.7, Rh * 2.1]))} L${P2(add(C, [Rh * 0.7, Rh * 2.1]))} Q${P2(add(C, [Rh * 1.25, Rh * 1.6]))} ${P2(add(C, [Rh * 1.05, -Rh * 0.2]))} Q${P2(add(C, [0, -Rh * 1.5]))} ${P2(add(C, [-Rh * 1.05, -Rh * 0.2]))}Z`, fill: grad(add(C, [0, Rh * 0.6]), [1, 0], Rh, hb.cor) });
         if (hb.tipo === 'medio') F0.push({ d: `M${P2(add(C, [-Rh * 1.08, -Rh * 0.3]))} L${P2(add(C, [-Rh * 1.12 - sy * Rh * 0.2, Rh * 0.85]))} L${P2(add(C, [-Rh * 0.8 - sy * Rh * 0.3, Rh * 0.65]))} L${P2(add(C, [-Rh * 0.7 - sy * Rh * 0.3, Rh * 1.1]))} L${P2(add(C, [-sy * Rh * 0.6, Rh * 0.9]))} L${P2(add(C, [Rh * 0.7 - sy * Rh * 0.3, Rh * 1.1]))} L${P2(add(C, [Rh * 0.8 - sy * Rh * 0.3, Rh * 0.65]))} L${P2(add(C, [Rh * 1.12 - sy * Rh * 0.2, Rh * 0.85]))} L${P2(add(C, [Rh * 1.08, -Rh * 0.3]))} Q${P2(add(C, [0, -Rh * 1.45]))} ${P2(add(C, [-Rh * 1.08, -Rh * 0.3]))}Z`, fill: grad(C, [1, 0], Rh, hb.cor) });
         if (F0.length) o += peca(F0);
+        // pescoço (depois do cabelo de trás, para não sumir atrás dele)
+        o += peca([membro(add(pesc, mul(up, -10 * s)), add(pesc, mul(up, Rh * 0.5)), 12 * s * Math.min(W, 1.2), 11 * s * Math.min(W, 1.2), pele)]);
         // rosto (formato)
         const qx = look.queixo === 'quadrado' ? 0.82 : 0.95, fc = add(C, [sy * Rh * 0.06, 0]);
         const face = `M${P2(add(fc, [-Rh, -Rh * 0.1]))} Q${P2(add(fc, [-Rh, -Rh * 1.05]))} ${P2(add(fc, [0, -Rh * 1.05]))} Q${P2(add(fc, [Rh, -Rh * 1.05]))} ${P2(add(fc, [Rh, -Rh * 0.1]))} Q${P2(add(fc, [Rh * qx + (sy > 0 ? Rh * 0.12 : 0), Rh * 0.85]))} ${P2(add(fc, [sy * Rh * 0.25, Rh * 0.98]))} Q${P2(add(fc, [-Rh * qx - (sy < 0 ? Rh * 0.12 : 0), Rh * 0.85]))} ${P2(add(fc, [-Rh, -Rh * 0.1]))}Z`;
