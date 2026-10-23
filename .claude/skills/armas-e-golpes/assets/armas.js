@@ -7,6 +7,8 @@
     Armas.machadinha(k)       machadinha: cabo de madeira curvo, cabeça de aço com fio afiado e olho do cabo
     Armas.vergalhao(k)        lança de vergalhão: barra de ferro com nervuras, ponta esmerilhada, punho de fita isolante
     Armas.faca(k)             faca de caça
+    Armas.besta(k, {carregada, corda})  besta de caça (arma do Dimas, nas costas) que atira virotes de vergalhão
+    Armas.virote(k)           virote de vergalhão (a flecha da besta) — voa reto e crava na cabeça
     Armas.respingo(x, y, k)   respingo escuro do golpe na cabeça (classe .respingo; animar escala/opacidade)
     Armas.estrela(x, y, k)    clarão do impacto (classe .clarao)
     Armas.rastro(cx, cy, r, a0, a1)   rastro curvo do golpe (o "arco" que mostra o caminho da lâmina)
@@ -33,6 +35,25 @@
     <path d="M-120 -3 L430 -3" stroke="#A8968A" stroke-width="2" opacity=".6"/><path d="M440 -7 L520 0 L440 7Z" fill="#C8CCD0" stroke="${L}" stroke-width="3"/>
     <rect x="-40" y="-11" width="110" height="22" rx="6" fill="#1A1A20" stroke="${L}" stroke-width="4"/>${[0, 1, 2, 3].map(i => `<path d="M${-34 + i * 26} -11 l10 22" stroke="#3A3A44" stroke-width="3"/>`).join('')}
     <path d="M-120 -7 Q-136 0 -120 7" fill="#5A4A3E" stroke="${L}" stroke-width="4"/></g>`;
+  // BESTA (crossbow) de caça: coronha preta com apoio de ombro, trilho, arcos recurvos de fibra, corda, estribo na frente, mira,
+  // gatilho com guarda-mato; pode vir CARREGADA com um virote de vergalhão. Origem = mão no punho (gatilho), aponta para +x.
+  Armas.besta = (k = 1, { carregada = true, corda = 1 } = {}) => {
+    const cx = 250, cy = -20, arco = 150 * corda;   // corda=1 armada (puxada para trás), 0 = disparada (corda para a frente)
+    const cordaX = carregada || corda >= 0.5 ? cx - 120 : cx - 16;
+    return `<g transform="scale(${k})">
+    <path d="M-150 -6 L-40 -30 L10 -30 L22 -6 L10 24 L-30 24 L-150 30 Q-170 12 -150 -6Z" fill="#1E1E24" stroke="${L}" stroke-width="5" stroke-linejoin="round"/>
+    <path d="M-140 -2 L-50 -22" stroke="#4A4A54" stroke-width="4" opacity=".8"/><path d="M-6 24 Q0 54 -24 58 L-34 54 Q-14 48 -16 24Z" fill="#1E1E24" stroke="${L}" stroke-width="4"/>
+    <path d="M-2 22 q4 18 -6 24" stroke="#8A8A92" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <rect x="10" y="-30" width="260" height="22" rx="4" fill="#2E2E36" stroke="${L}" stroke-width="5"/><path d="M14 -24 H266" stroke="#5A5A66" stroke-width="3"/>
+    <rect x="40" y="-62" width="90" height="22" rx="10" fill="#2A2A30" stroke="${L}" stroke-width="4"/><circle cx="130" cy="-51" r="11" fill="#5A7AA8" stroke="${L}" stroke-width="3"/><path d="M70 -40 v10 M110 -40 v10" stroke="${L}" stroke-width="5"/>
+    <path d="M${cx} ${cy} Q${cx - 30} ${cy - arco * 0.6} ${cx - 10} ${cy - arco} L${cx + 6} ${cy - arco + 4} Q${cx - 8} ${cy - arco * 0.55} ${cx + 18} ${cy}Z" fill="#3A3A44" stroke="${L}" stroke-width="5"/>
+    <path d="M${cx} ${cy} Q${cx - 30} ${cy + arco * 0.6} ${cx - 10} ${cy + arco} L${cx + 6} ${cy + arco - 4} Q${cx - 8} ${cy + arco * 0.55} ${cx + 18} ${cy}Z" fill="#3A3A44" stroke="${L}" stroke-width="5"/>
+    <path d="M${cx - 8} ${cy - arco + 2} L${cordaX} ${cy} L${cx - 8} ${cy + arco - 2}" stroke="#D8D2C0" stroke-width="3" fill="none"/>
+    <path d="M${cx + 14} ${cy - 22} q34 -4 34 22 q0 26 -34 22" stroke="#4A4A54" stroke-width="7" fill="none"/>
+    ${carregada ? `<g transform="translate(${cordaX} -20)">${Armas.virote(1)}</g>` : ''}</g>`; };
+  // virote (flecha da besta) feito de VERGALHÃO: barra com nervuras, ponta esmerilhada, "penas" de garrafa PET cortada
+  Armas.virote = (k = 1) => `<g transform="scale(${k})"><path d="M0 -4 L230 -4 L262 0 L230 4 L0 4Z" fill="#7A6A5E" stroke="${L}" stroke-width="3"/>${[...Array(10)].map((_, i) => `<path d="M${14 + i * 21} -4 l6 8" stroke="#4A3E36" stroke-width="2.5"/>`).join('')}
+    <path d="M230 -4 L262 0 L230 4Z" fill="#D0D4D8"/><path d="M4 -4 L36 -18 L44 -4Z M4 4 L36 18 L44 4Z" fill="#E86A3A" stroke="${L}" stroke-width="2.5"/></g>`;
   Armas.faca = (k = 1) => `<g transform="scale(${k})">${madeira(-40, -11, 80, 22, 10)}<path d="M40 -16 L48 -16 L48 16 L40 16Z" fill="#5A5A60" stroke="${L}" stroke-width="3"/>
     <path d="M48 -10 L170 -8 Q196 -4 204 8 L48 10Z" fill="#A8AEB4" stroke="${L}" stroke-width="4"/><path d="M60 6 L200 6" stroke="#E2E6EA" stroke-width="4"/></g>`;
   Armas.respingo = (x, y, k = 1) => `<g class="respingo" transform="translate(${f(x)} ${f(y)}) scale(${k})">${[[0, 0, 26], [34, -18, 12], [-30, -24, 10], [44, 14, 9], [-40, 10, 8], [10, -40, 9], [56, -36, 6], [-58, -30, 5]].map(([dx, dy, r]) => `<circle cx="${dx}" cy="${dy}" r="${r}" fill="#2A1012"/>`).join('')}

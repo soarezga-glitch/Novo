@@ -26,3 +26,9 @@ Origem na mão, apontando para +x. Segurar: `translate(b.mao('d')) rotate(ângul
 5. **Recuperação:** quem bateu volta à guarda / segue andando.
 Sons: whoosh no golpe, `impact-bass` + baque seco no contato, corpo caindo no chão. Sem sangue vermelho vivo: respingo escuro.
 Lança arremessada: rastro reto + vergalhão cravado na cabeça (fica preso), o zumbi cai de lado.
+
+## Besta do Dimas
+`Armas.besta(k, { carregada, corda })` — atravessada nas COSTAS (alça do ombro ao quadril) quando ele anda/pilota; na mão para atirar:
+apoia a coronha no ombro, mira (cabeça inclinada), dispara (corda vai para a frente, `carregada: false`), o `Armas.virote`
+de vergalhão voa RETO com rastro fino e crava na cabeça (fica preso, metade para fora). O "vergalhão que atravessa o ar" do
+roteiro é esse virote.
