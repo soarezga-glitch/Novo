@@ -3,3 +3,22 @@
 Warning: flash-attn is not installed. Will only run the manual PyTorch version. Please install flash-attn for faster inference.
 ********
  
+Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+P01 aninha 2.24 s
+Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+P02 dimas 3.28 s
+Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+P03 dimas 2.0 s
+Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+P04 tiao 6.8 s
+Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+P05 aninha 0.64 s
+Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+P06 tiao 3.68 s
+Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+P07 dimas 1.52 s
+Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+P08 tiao 4.08 s
+Setting `pad_token_id` to `eos_token_id`:2150 for open-end generation.
+P09 dimas 2.72 s
+QFIM 0
