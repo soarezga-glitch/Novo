@@ -1,7 +1,7 @@
 # Roteiro: Se Você Entender o Salmo 91, Nunca Mais Vai Ter Medo
 
 - **Formato:** série "Se Você Entender..." · vídeo longo · 16:9 · YouTube
-- **Duração:** cerca de 16–18 min (narração pausada, ~2.300 palavras)
+- **Duração:** cerca de 13–15 min nesta versão (narração pausada, ~1.500 palavras). Para chegar a 17–18 min, falta acrescentar 1 ou 2 capítulos.
 - **Tom:** emotivo e reflexivo, com mistérios revelados aos poucos
 - **Narradora:** Aline (primeiro vídeo em que ela se apresenta)
 - **Visual:** aquarela + mão desenhando · papel envelhecido · tons de pergaminho, dourado e terra
