@@ -1,0 +1,60 @@
+<!doctype html><html><head><meta charset="utf-8"><style>html,body{margin:0;background:#000}canvas{display:block}</style>
+<script src="pixi.min.js"></script><script src="pixi-filters.js"></script><script src="mundo-pixi.js"></script></head><body><script>
+(async () => {
+  const W = 1080, H = 1920, app = new PIXI.Application();
+  await app.init({ width: W, height: H, preference: 'webgl', autoStart: false, preserveDrawingBuffer: true, background: '#000', antialias: true });
+  document.body.appendChild(app.canvas);
+  const M = Mundo, P = M.PAL, HZ = 1120, VP = [600, HZ], SOL = [640, 905];
+  const camada = p => { const c = new PIXI.Container(); c.__p = p; app.stage.addChild(c); return c; };
+  const neblina = (c, y0, y1, cor, a) => { const g = new PIXI.Graphics(); for (let i = 0; i < 40; i++) g.rect(-300, y0 + (y1 - y0) * i / 40, W + 600, (y1 - y0) / 40 + 1).fill({ color: cor, alpha: a * Math.pow(i / 39, 1.5) }); c.addChild(g); };
+  // céu + sol + nuvens em faixas
+  const L0 = camada(0.02); L0.addChild(M.ceu(W, H, { horizonte: HZ, sol: SOL }));
+  const Ln = camada(0.05), nuv = M.nuvens(W + 600, H, { horizonte: HZ - 80, sol: [SOL[0] + 300, SOL[1]], n: 30, seed: 4 }); nuv.x = -300; Ln.addChild(nuv);
+  // cidade ao longe, enevoada (rosa/laranja perto do sol)
+  const L1 = camada(0.1); L1.addChild(M.skyline(W, HZ + 5, { cor: 0xA05A66, alt: 230, seed: 9 })); neblina(L1, HZ - 300, HZ + 10, 0xF0905A, 0.55);
+  const L2 = camada(0.18); const sk2 = M.skyline(W, HZ + 15, { cor: 0x5A3450, alt: 380, seed: 12 }); L2.addChild(sk2); const furo = new PIXI.Graphics(); furo.rect(500, 600, 280, 560).fill(0xffffff); L2.addChild(furo); sk2.mask = null; furo.visible = false; neblina(L2, HZ - 200, HZ + 20, 0xE07A50, 0.35);
+  // prédios grandes nas laterais, em contraluz
+  const L3 = camada(0.38);
+  L3.addChild(M.predio(-120, HZ + 120, 340, 900, { seed: 21, sol: 1, vegetacao: 1.3, cor: 0x5A4E50 }));
+  L3.addChild(M.predio(950, HZ + 100, 260, 700, { seed: 22, sol: -1, vegetacao: 1.1, cor: 0x5A4E50 }));
+  // chão: mato dos lados, rodovia rachada com o reflexo do sol
+  const L4 = camada(0.7), rd = new PIXI.Graphics(); L4.addChild(rd);
+  rd.rect(-400, HZ, W + 800, H - HZ + 200).fill(0x1E2614);
+  rd.poly([VP[0] - 26, HZ, VP[0] + 26, HZ, 1500, H + 100, -400, H + 100]).fill(0x2A2430);
+  for (let i = 0; i < 30; i++) { const u = i / 30; rd.poly([VP[0] - 8 - 120 * u, HZ + (H - HZ) * u, VP[0] + 8 + 120 * u, HZ + (H - HZ) * u, VP[0] + 8 + 124 * u, HZ + (H - HZ) * (u + 0.034), VP[0] - 8 - 124 * u, HZ + (H - HZ) * (u + 0.034)]).fill({ color: 0xFFA860, alpha: 0.22 * (1 - u) }); }   // reflexo do sol no asfalto
+  const r = M.RNG(3);
+  for (let i = 0; i < 46; i++) { let y = r.entre(HZ + 40, H), u = (y - HZ) / (H - HZ), x = VP[0] + r.entre(-1, 1) * (40 + 900 * u); rd.moveTo(x, y); for (let k = 0; k < 6; k++) { x += r.entre(-40, 40) * u; y += r.entre(-4, 14) * u; rd.lineTo(x, y); } rd.stroke({ width: 1 + 3 * u, color: 0x120E14 }); }
+  for (let i = 0; i < 12; i++) { const u0 = Math.pow(i / 12, 1.8), u1 = Math.pow((i + 0.45) / 12, 1.8); rd.poly([VP[0] - 2 - 6 * u0, HZ + (H - HZ) * u0, VP[0] + 2 + 6 * u0, HZ + (H - HZ) * u0, VP[0] + 2 + 6 * u1, HZ + (H - HZ) * u1, VP[0] - 2 - 6 * u1, HZ + (H - HZ) * u1]).fill({ color: 0xC8B890, alpha: 0.35 }); }
+  // guard-rail
+  rd.moveTo(VP[0] + 30, HZ - 6).lineTo(1300, 1560).stroke({ width: 12, color: 0x2A2228 }); rd.moveTo(VP[0] + 30, HZ - 9).lineTo(1300, 1550).stroke({ width: 3, color: P.borda, alpha: 0.7 });
+  for (let i = 0; i < 14; i++) { const u = Math.pow(i / 14, 1.6), x = VP[0] + 30 + (1300 - VP[0] - 30) * u, y = HZ + (1560 - HZ) * u; rd.rect(x, y - 4, 3 + 9 * u, 12 + 60 * u).fill(0x221C22); }
+  // mato: tufos nas beiradas e nas rachaduras (pequenos, finos)
+  const mato = new PIXI.Graphics(); L4.addChild(mato);
+  for (let i = 0; i < 90; i++) { const y = r.entre(HZ + 10, H + 40), u = (y - HZ) / (H - HZ), borda = r() < 0.75, x = borda ? VP[0] + (r() < 0.5 ? -1 : 1) * (40 + 760 * u) * r.entre(0.95, 1.5) : VP[0] + r.entre(-1, 1) * (30 + 700 * u);
+    M.capim(mato, x, y, (10 + (borda ? 90 : 40) * u), 6 + Math.round(18 * u), { seed: 200 + i, k: 0.4 + u * 1.2 }); }
+  // carros parados em fila (fuga que não deu certo)
+  [[560, HZ + 22, 0.14, 1, 0], [660, HZ + 30, 0.16, 2, 0.05], [500, HZ + 60, 0.24, 3, -0.04], [760, HZ + 90, 0.3, 4, 0.06], [400, HZ + 170, 0.45, 5, -0.05], [840, HZ + 260, 0.62, 6, 0.08], [230, HZ + 470, 1.0, 7, -0.06]].forEach(([x, y, k, s, rot]) => L4.addChild(M.carro(x, y, k, { seed: s, rot })));
+  // placa verde torta, com trepadeira (primeiro plano à esquerda)
+  const L5 = camada(0.95), pl = new PIXI.Graphics(); L5.addChild(pl); pl.scale.set(0.72); pl.position.set(-30, 40);
+  pl.rect(70, 700, 30, 900).fill(0x1E181E).stroke({ width: 4, color: 0x0E0A10 }); pl.rect(70, 740, 420, 20).fill(0x1E181E);
+  pl.poly([130, 600, 640, 560, 660, 830, 150, 880]).fill(0x1E3E26).stroke({ width: 8, color: 0x0E0A10 });
+  pl.moveTo(640, 560).lineTo(660, 830).stroke({ width: 6, color: P.borda, alpha: 0.8 }); pl.moveTo(130, 600).lineTo(640, 560).stroke({ width: 4, color: P.borda, alpha: 0.6 });
+  pl.poly([440, 670, 560, 692, 460, 790, 460, 752, 330, 742, 330, 706, 460, 712]).fill(0xC8C2B0);
+  for (let i = 0; i < 10; i++) M.cipo(pl, 150 + i * 50, 590 + i * -4, M.RNG(i + 7).entre(60, 240), { seed: 300 + i, k: 1.4 });
+  M.folhagem(pl, 90, 1560, 160, 140, { seed: 41, sol: 1, k: 1.8 });
+  // primeiro plano: folhas escuras desfocadas
+  const L6 = camada(1.5), fr = new PIXI.Graphics(); L6.addChild(fr);
+  M.folhagem(fr, 40, 1900, 300, 170, { seed: 51, sol: 1, escuro: true, k: 3 }); M.folhagem(fr, 1080, 1860, 260, 150, { seed: 52, sol: -1, escuro: true, k: 2.6 });
+  fr.filters = [new PIXI.BlurFilter({ strength: 8 })];
+  // luz por cima de tudo: brilho do sol (add) e vinheta
+  const brilho = new PIXI.Graphics(); for (let i = 0; i < 24; i++) brilho.circle(SOL[0], SOL[1], 120 + i * 32).fill({ color: 0xFF9A50, alpha: 0.012 }); brilho.blendMode = 'add'; app.stage.addChild(brilho);
+  const vin = new PIXI.Graphics(); for (let i = 0; i < 30; i++) vin.rect(0, 0, W, H).stroke({ width: 40 + i * 16, color: 0x000000, alpha: 0.03, alignment: 1 }); app.stage.addChild(vin);
+  const camadas = [L0, Ln, L1, L2, L3, L4, L5, L6];
+  window.__duration = 3; window.__seek = t => {
+    const u = t / 3;   // drone avançando pela rodovia, subindo de leve
+    camadas.forEach(l => { const p = l.__p, z = 1 + p * u * 0.4; l.scale.set(z); l.position.set(SOL[0] * (1 - z) - p * u * 30, SOL[1] * (1 - z) + p * u * 140); });
+    nuv.children.forEach(n => n.x = n.__vel * t);
+    app.render(); };
+  window.__seek(0);
+})();
+</script></body></html>
