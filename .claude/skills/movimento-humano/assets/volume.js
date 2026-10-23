@@ -26,12 +26,23 @@
       tronco: { cor: '#6A5238', cinto: '#2A1E14' }, braco: { manga: '#6A5238' }, calca: '#3A4458', bota: '#3A2618', largura: 1.35 },
     seuze: { pele: '#E2B89A', cabelo: { tipo: 'curto', cor: '#E8E6DE', brilho: '#FFFFFF' }, olhos: 'normal', cabeca: 1.25, queixo: 'quadrado',
       tronco: { cor: '#7A8A9A', cinto: '#2A1E14' }, braco: { pele: true, manga: '#7A8A9A' }, calca: '#4A3A2A', bota: '#2A1E14', largura: 1.15 },
+    zeZumbi: { pele: '#AEBA9A', cabelo: { tipo: 'curto', cor: '#D8D8CC', brilho: '#F2F2E8' }, olhos: 'zumbi', cabeca: 1.25, queixo: 'quadrado', rasgado: true,
+      tronco: { cor: '#6E7A88', cinto: '#2A1E14' }, braco: { pele: true, manga: '#6E7A88' }, calca: '#4A3A2A', bota: '#2A1E14', largura: 1.1 },
+    zumbi: { pele: '#A2AE8E', cabelo: { tipo: 'curto', cor: '#3A3A30', brilho: '#5A5A4A' }, olhos: 'zumbi', cabeca: 1.2, queixo: 'quadrado', rasgado: true,
+      tronco: { cor: '#5E6A4E' }, braco: { pele: true, manga: '#5E6A4E' }, calca: '#3A4A5A', bota: '#5A5A50', largura: 1.1 },
+    vulto: { pele: '#1A1A22', cabelo: { tipo: 'curto', cor: '#101016', brilho: '#22222A' }, olhos: 'zumbi', cabeca: 1.15, queixo: 'quadrado', rasgado: true, sombraTotal: true,
+      tronco: { cor: '#16161E' }, braco: { pele: true }, calca: '#121218', bota: '#0C0C10', largura: 1.1 },
+    seuzeMoco: { pele: '#E2B89A', cabelo: { tipo: 'curto', cor: '#3A2A20', brilho: '#5A4A3A' }, olhos: 'normal', cabeca: 1.25, queixo: 'quadrado',
+      tronco: { cor: '#7A8A9A', cinto: '#2A1E14' }, braco: { pele: true, manga: '#7A8A9A' }, calca: '#4A3A2A', bota: '#2A1E14', largura: 1.15 },
+    tiaozinho: { pele: '#C98E6A', cabelo: { tipo: 'curto', cor: '#3A2A1A', brilho: '#5A4A3A' }, olhos: 'grande', cabeca: 1.6, queixo: 'redondo',
+      tronco: { cor: '#8AA0C0' }, braco: { pele: true, manga: '#8AA0C0' }, perna: 'pele', bota: '#3A2618', largura: 1.1 },
   };
 
   function Volume(b, look, { luz = [-0.75, -0.55], borda = '#FF8AD8', sombra = '#3A2058', contorno = 7, id = 'v' + Math.floor(Math.random() * 1e6) } = {}) {
     const Ld = nrm(luz);                                   // de onde vem a luz principal
     let gid = 0, defs = '';
     const tons = cor => ({ base: cor, sombra: mix(cor, sombra, 0.3), borda: mix(cor, borda, 0.55) });
+    const setLuz = (b2, s2) => { if (b2) borda = b2; if (s2) sombra = s2; };
     // gradiente "cel": lado da luz = base, lado oposto = sombra, beirada oposta = luz de borda colorida
     const grad = (centro, n, r, cor, som = 0.66) => { const T = tons(cor), k = dot(n, Ld) < 0 ? 1 : -1, a = add(centro, mul(n, -k * r)), z = add(centro, mul(n, k * r)), i = `${id}g${gid++}`;
       defs += `<linearGradient id="${i}" gradientUnits="userSpaceOnUse" x1="${f(a[0] + Ld[0] * r * 0.4)}" y1="${f(a[1] + Ld[1] * r * 0.4)}" x2="${f(z[0])}" y2="${f(z[1])}"><stop offset="0" stop-color="${mix(T.base, '#FFFFFF', 0.14)}"/><stop offset=".3" stop-color="${T.base}"/><stop offset="${som}" stop-color="${T.base}"/><stop offset="${som}" stop-color="${T.sombra}"/><stop offset=".88" stop-color="${T.sombra}"/><stop offset=".9" stop-color="${T.borda}"/><stop offset="1" stop-color="${T.borda}"/></linearGradient>`;
@@ -43,7 +54,7 @@
     // uma "peça": contorno de todas as formas juntas (sem emenda), depois os preenchimentos
     const peca = (formas, ol = contorno) => `<path d="${formas.map(x => x.d).join(' ')}" fill="${L}" stroke="${L}" stroke-width="${f(ol * 2)}" stroke-linejoin="round"/>` + formas.map(x => `<path d="${x.d}" fill="${x.fill}"${x.extra || ''}/>`).join('');
 
-    return { svg(t) {
+    return { luz: setLuz, svg(t) {
       const E = b._esq; if (!E || b.g.style.display === 'none') return '';
       defs = ''; gid = 0;
       const { pernas, bracos, perto, longe, top, H, vista, dir, s, rot } = E, R = p => rot(p);
@@ -108,11 +119,12 @@
         if (costas) { o += cabeloFrente(C, Rh, sy, true); return o; }
         // olhos, sobrancelhas, nariz, boca
         const fx = yaw * Rh * 0.42, ey = C[1] - Rh * 0.08, big = look.olhos === 'grande' ? 1.25 : 1, er = [Rh * 0.2 * big, Rh * 0.25 * big];
-        const tampa = { pesado: 0.42, grande: 0.05, normal: 0.15 }[look.olhos] + ({ serio: 0.12, desconfiado: 0.3, cansado: 0.3, medo: -0.25, espanto: -0.3, susto: -0.3, gritando: -0.1, chorando: 0.1, triste: 0.1, feliz: 0.05 }[ex] || 0);
+        const tampa = { pesado: 0.42, grande: 0.05, normal: 0.15, zumbi: 0.2 }[look.olhos] + ({ serio: 0.12, desconfiado: 0.3, cansado: 0.3, medo: -0.25, espanto: -0.3, susto: -0.3, gritando: -0.1, chorando: 0.1, triste: 0.1, feliz: 0.05 }[ex] || 0);
         const sob = { serio: -16, bravo: -26, determinado: -20, desconfiado: -10, medo: 18, triste: 20, chorando: 22, espanto: 10, preocupado: 16, gritando: -8 }[ex] || 0;
         const olhar = E.cabeca.olhar || [0, 0];
         const olho = (side, k = 1) => { const ox = C[0] + fx + side * Rh * 0.4 * (1 - ay * 0.35), c = [ox, ey], rx = er[0] * k, ry = er[1] * k, pis = (b._t * 0.37 % 4) > 3.86;
           let h = `<ellipse cx="${f(c[0])}" cy="${f(c[1])}" rx="${f(rx)}" ry="${f(ry)}" fill="#FFFFFF" stroke="${L}" stroke-width="${f(4 * s)}"/>`;
+          if (look.olhos === 'zumbi') { h = `<ellipse cx="${f(c[0])}" cy="${f(c[1])}" rx="${f(rx)}" ry="${f(ry * 0.85)}" fill="${look.sombraTotal ? '#C8D0C0' : '#EEF2E6'}" stroke="${L}" stroke-width="${f(4 * s)}"/><path d="M${f(c[0] - rx * 0.8)} ${f(c[1])} l${f(rx * 0.35)} ${f(-ry * 0.12)} M${f(c[0] + rx * 0.8)} ${f(c[1] + ry * 0.1)} l${f(-rx * 0.3)} ${f(-ry * 0.15)}" stroke="#B8484A" stroke-width="${f(2 * s)}" opacity=".7"/><path d="M${f(c[0] - rx * 1.05)} ${f(c[1] - ry * 0.55)} Q${f(c[0])} ${f(c[1] - ry * 0.85)} ${f(c[0] + rx * 1.05)} ${f(c[1] - ry * 0.55)}" stroke="${L}" stroke-width="${f(6 * s)}" fill="none" stroke-linecap="round"/>`; return h; }
           const pr = rx * (look.olhos === 'grande' ? 0.6 : 0.5) * (ex === 'medo' || ex === 'espanto' ? 0.6 : 1), px = c[0] + yaw * rx * 0.35 + olhar[0] * rx * 0.3, py = c[1] + ry * 0.1;
           h += `<circle cx="${f(px)}" cy="${f(py)}" r="${f(pr)}" fill="#1A1420"/><circle cx="${f(px - pr * 0.35)}" cy="${f(py - pr * 0.4)}" r="${f(pr * 0.32)}" fill="#FFFFFF"/>`;
           const tp = pis ? 1 : Math.max(0, tampa), ly = c[1] - ry + ry * 2 * tp;
@@ -132,6 +144,7 @@
         const bf = b.boca ? b.boca(t) : 'smile', mx = C[0] + fx * 1.15 + sy * Rh * 0.2, my = C[1] + Rh * 0.55, mw = Rh * (ay < 0.55 ? 0.34 : 0.22);
         const ab = { '0': 0, '1': 0.12, '2': 0.24, '3': 0.36 }[bf];
         if (ab != null && ab > 0) fcSvg += `<path d="M${f(mx - mw)} ${f(my)} Q${f(mx)} ${f(my - Rh * 0.05)} ${f(mx + mw)} ${f(my)} Q${f(mx)} ${f(my + Rh * ab * 1.6)} ${f(mx - mw)} ${f(my)}Z" fill="#4A1420" stroke="${L}" stroke-width="${f(4 * s)}" stroke-linejoin="round"/><path d="M${f(mx - mw * 0.5)} ${f(my + Rh * ab * 0.9)} Q${f(mx)} ${f(my + Rh * ab * 0.5)} ${f(mx + mw * 0.5)} ${f(my + Rh * ab * 0.9)}" stroke="#E86A7A" stroke-width="${f(5 * s)}" fill="none"/>`;
+        else if (look.olhos === 'zumbi') fcSvg += `<path d="M${f(mx - mw * 0.9)} ${f(my - 2 * s)} Q${f(mx)} ${f(my - 8 * s)} ${f(mx + mw * 0.9)} ${f(my)} Q${f(mx + mw * 0.2)} ${f(my + Rh * 0.42)} ${f(mx - mw * 0.9)} ${f(my - 2 * s)}Z" fill="#1A0A0C" stroke="${L}" stroke-width="${f(4 * s)}"/><path d="M${f(mx - mw * 0.6)} ${f(my - 4 * s)} v${f(7 * s)} M${f(mx - mw * 0.1)} ${f(my - 5 * s)} v${f(8 * s)} M${f(mx + mw * 0.45)} ${f(my - 3 * s)} v${f(7 * s)}" stroke="#D8D0B0" stroke-width="${f(5 * s)}"/>`;
         else if (ex === 'medo' || ex === 'espanto' || ex === 'gritando') fcSvg += `<path d="M${f(mx - mw)} ${f(my + 4 * s)} q${f(mw * 0.33)} ${f(-8 * s)} ${f(mw * 0.66)} 0 t${f(mw * 0.66)} 0 t${f(mw * 0.66)} 0" stroke="${L}" stroke-width="${f(5 * s)}" fill="none" stroke-linecap="round"/>`;
         else if (ex === 'triste' || ex === 'chorando') fcSvg += `<path d="M${f(mx - mw * 0.8)} ${f(my + 8 * s)} Q${f(mx)} ${f(my - 6 * s)} ${f(mx + mw * 0.8)} ${f(my + 8 * s)}" stroke="${L}" stroke-width="${f(5 * s)}" fill="none" stroke-linecap="round"/>`;
         else fcSvg += `<path d="M${f(mx - mw * 0.8)} ${f(my)} Q${f(mx + mw * 0.1)} ${f(my + 10 * s)} ${f(mx + mw * 0.9)} ${f(my - 8 * s)}" stroke="${L}" stroke-width="${f(5 * s)}" fill="none" stroke-linecap="round"/>`;   // meio sorriso de canto
