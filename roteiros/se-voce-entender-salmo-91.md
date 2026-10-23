@@ -1,7 +1,8 @@
 # Roteiro: Se Você Entender o Salmo 91, Nunca Mais Vai Ter Medo
 
 - **Formato:** série "Se Você Entender..." · vídeo longo · 16:9 · YouTube
-- **Duração:** cerca de 13–15 min nesta versão (narração pausada, ~1.500 palavras). Para chegar a 17–18 min, falta acrescentar 1 ou 2 capítulos.
+- **Duração:** cerca de 14–16 min nesta versão (narração pausada, ~1.750 palavras). Para chegar a 17–18 min, falta acrescentar 1 capítulo.
+- **Retenção:** todo capítulo termina com uma pergunta ou promessa que só se resolve no seguinte. Toda promessa feita é cumprida.
 - **Tom:** emotivo e reflexivo, com mistérios revelados aos poucos
 - **Narradora:** Aline (primeiro vídeo em que ela se apresenta)
 - **Visual:** aquarela + mão desenhando · papel envelhecido · tons de pergaminho, dourado e terra
@@ -54,7 +55,11 @@ Um detalhe tão importante que, quando o diabo tentou usar esse salmo contra Jes
 (pausa)
 
 Hoje você vai descobrir qual parte foi essa.
-E por que, quando você entender o Salmo 91, você nunca mais vai ler esse salmo do mesmo jeito.
+E no final desse salmo existe uma frase que muda tudo o que vem antes dela.
+
+(pausa)
+
+Mas pra chegar lá, você primeiro precisa entender por que tanta gente lê o Salmo 91 do jeito errado.
 
 ### 0:45 – Apresentação da Aline
 
@@ -106,15 +111,24 @@ Descansará.
 Talvez você esteja cansado de lutar sozinho.
 O salmo começa te convidando a parar de lutar sozinho, e a morar perto de Deus.
 
+(pausa)
+
+Mas espera.
+Antes de entrar nesse esconderijo, você precisa saber **quem** está lá dentro.
+Porque no versículo seguinte, Deus é chamado de um jeito que só aparece no hebraico.
+E esse detalhe vai voltar no final do vídeo, de um jeito que você não espera.
+
 ---
 
 ### 3:15 – [CAPÍTULO 2: OS QUATRO NOMES]
 
 [TELA: "Direi do Senhor: Ele é o meu Deus, o meu refúgio, a minha fortaleza, e nele confiarei." – Salmo 91:2]
 
-Agora tem um detalhe que só aparece no hebraico, a língua em que esse salmo foi escrito.
+E é aqui que aparece aquele detalhe do hebraico, a língua em que esse salmo foi escrito.
 
 Nos dois primeiros versículos, Deus é chamado por **quatro nomes diferentes**.
+Cada nome revela uma coisa diferente sobre Ele.
+E o último é o mais poderoso de todos, apesar de ser o mais simples.
 
 [IMAGEM: a mão desenha quatro pergaminhos lado a lado, cada um com um nome em dourado]
 
@@ -145,6 +159,12 @@ O Deus que está acima de tudo, que pode tudo, que nunca falha...
 O salmista não está falando de um Deus distante.
 Está falando de alguém que ele conhece pelo nome.
 
+(pausa)
+
+Mas conhecer esse Deus não quer dizer que o perigo deixa de existir.
+E o versículo seguinte fala de um perigo muito pior do que aquele que a gente vê.
+Um perigo **escondido**.
+
 ---
 
 ### 5:00 – [CAPÍTULO 3: O LAÇO ESCONDIDO]
@@ -153,8 +173,13 @@ Está falando de alguém que ele conhece pelo nome.
 
 [IMAGEM: um passarinho pousado num galho, e escondida no chão, uma armadilha de cordas]
 
-Na época da Bíblia, o passarinheiro era o caçador de pássaros.
-E ele não caçava com flecha.
+Na época da Bíblia, existia um caçador que era o pesadelo dos pássaros: o passarinheiro.
+E o mais assustador nele não era a arma.
+Era o jeito como ele caçava.
+
+(pausa)
+
+Ele não caçava com flecha.
 Ele preparava um laço, uma armadilha escondida no chão, e esperava.
 
 (pausa)
@@ -174,6 +199,13 @@ Quantas portas se fecharam e você chorou, sem saber que do outro lado tinha um 
 
 Às vezes a maior proteção de Deus é aquela que a gente nunca fica sabendo.
 
+(pausa)
+
+Mas e quando o perigo não está escondido?
+Quando a tempestade já chegou, e você está bem no meio dela?
+O versículo 4 responde com uma imagem que Deus escolheu para falar de si mesmo.
+E é uma imagem que ninguém esperaria.
+
 ---
 
 ### 6:30 – [CAPÍTULO 4: DEBAIXO DAS ASAS]
@@ -182,7 +214,8 @@ Quantas portas se fecharam e você chorou, sem saber que do outro lado tinha um 
 
 [IMAGEM: uma ave mãe abrindo as asas sobre os filhotes, no meio de uma tempestade]
 
-Esse é um dos versículos mais bonitos da Bíblia inteira.
+O Deus Altíssimo, o Onipotente, poderia se comparar a um rei. A um guerreiro. A um exército.
+Mas aqui Ele escolhe ser comparado a uma ave.
 "Ele te cobrirá com as suas penas."
 
 (pausa)
@@ -201,8 +234,12 @@ Eles só escutam o coração da mãe.
 Talvez a sua tempestade ainda não tenha passado.
 Mas você pode estar debaixo das asas, escutando o coração de Deus, enquanto ela passa.
 
-E Jesus usou essa mesma imagem.
-Olhando para Jerusalém, Ele disse: "Quantas vezes quis eu ajuntar os teus filhos, como a galinha ajunta os seus pintos debaixo das asas."
+E séculos depois, alguém usou exatamente essa mesma imagem.
+Chorando.
+
+(pausa)
+
+Foi Jesus. Olhando para Jerusalém, Ele disse: "Quantas vezes quis eu ajuntar os teus filhos, como a galinha ajunta os seus pintos debaixo das asas."
 
 [IMAGEM: Jesus no alto de um monte, olhando a cidade de Jerusalém ao pôr do sol]
 
@@ -216,6 +253,8 @@ O convite das asas ainda está aberto.
 
 Se esse salmo está falando com você hoje, deixa seu like, se inscreve no canal, e escreve nos comentários: **"Eu estou debaixo das asas."**
 Eu leio cada um.
+
+Porque agora o salmo vai fazer uma promessa tão forte que muita gente tem medo de acreditar nela.
 
 ---
 
@@ -251,17 +290,20 @@ Então o que esse salmo promete?
 
 Guarda essa pergunta. Porque a resposta está no final. E ela vem da boca do próprio Deus.
 
+Mas antes, a gente precisa voltar para aquele mistério do começo.
+O dia em que o próprio diabo abriu o Salmo 91.
+
 ---
 
 ### 10:15 – [CAPÍTULO 6: O SALMO QUE O DIABO CITOU]
 
 [TELA: "Porque aos seus anjos dará ordem a teu respeito, para te guardarem em todos os teus caminhos." – Salmo 91:11]
 
-Agora chegou o mistério que eu te prometi no começo.
-
 [IMAGEM: o deserto ao entardecer, Jesus sozinho, magro depois de 40 dias de jejum]
 
-Quando Jesus foi para o deserto, depois de 40 dias de jejum, o diabo veio tentá-lo.
+Jesus estava no deserto havia 40 dias, em jejum.
+Sozinho. Com fome. Fraco.
+E foi exatamente nesse momento que o diabo apareceu.
 
 [IMAGEM: o pináculo do templo de Jerusalém, muito alto, Jesus lá em cima e uma sombra ao lado]
 
@@ -297,7 +339,10 @@ Jesus respondeu: "Também está escrito: não tentarás o Senhor teu Deus."
 
 (pausa)
 
-E tem mais uma coisa.
+Mas o corte não foi o único detalhe.
+Tem uma coisa ainda mais impressionante.
+E ela está no versículo que ele **não leu**.
+
 O diabo parou de citar no versículo 12.
 Sabe o que diz o versículo 13, logo depois?
 
@@ -313,6 +358,11 @@ O diabo parou exatamente um versículo antes da parte que fala da **derrota dele
 
 Ele conhecia o Salmo 91.
 Ele só não leu até o fim.
+
+(pausa)
+
+Mas a gente vai ler.
+Porque é justamente no fim que está a frase que eu te prometi no começo do vídeo.
 
 ---
 
@@ -396,7 +446,9 @@ E escreve aqui embaixo o nome de alguém por quem você quer que a gente ore.
 
 (pausa)
 
-No próximo vídeo, a gente vai entender o Salmo 23: por que Davi diz que não vai temer mal nenhum, mesmo no vale da sombra da morte.
+No próximo vídeo, a gente vai entender o Salmo 23.
+E tem uma palavra no último versículo que, no hebraico, é muito mais forte do que parece.
+Quando você entender essa palavra, o vale da sombra da morte nunca mais vai te assustar.
 
 [IMAGEM: um pastor com o cajado, guiando ovelhas num vale ao entardecer]
 
