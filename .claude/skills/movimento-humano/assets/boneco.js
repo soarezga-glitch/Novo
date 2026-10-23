@@ -853,12 +853,14 @@
             d += `M${p1[0].toFixed(1)} ${p1[1].toFixed(1)} L${tip[0].toFixed(1)} ${tip[1].toFixed(1)} L${p2[0].toFixed(1)} ${p2[1].toFixed(1)}Z`;
           }
         }
-        if (est === 'medio') {               // cabelo MÉDIO até o pescoço (tipo motoqueiro): mechas caindo dos lados e atrás, franja desfiada na testa
-          const dx = -giroX * r * 0.35, zv = this.zv, pz = (x, y) => x.toFixed(1) + ' ' + y.toFixed(1);
-          let b = `M${pz(C[0] - r * 1.04 + dx, C[1] - r * 0.3)} Q${pz(C[0] - r * 1.14 + dx, C[1] + r * 0.5)} ${pz(C[0] - r * 0.92 + dx, C[1] + r * 0.98)}`;
-          for (let q = 1; q <= 8; q++) { const u = q / 8, x = C[0] + dx + (-0.92 + 1.84 * u) * r, y = C[1] + r * (q % 2 ? 0.8 + zv[q % 12] * 0.1 : 0.98); b += ` L${pz(x, y)}`; }
-          b += ` Q${pz(C[0] + r * 1.14 + dx, C[1] + r * 0.5)} ${pz(C[0] + r * 1.04 + dx, C[1] - r * 0.3)}Z`;
-          dT = b;
+        if (est === 'medio') {               // cabelo MÉDIO até o pescoço (tipo motoqueiro): de frente cai dos dois lados; de lado vai
+          // para TRÁS (nuca), deixando o rosto livre; a forma muda aos poucos conforme a cabeça vira. Franja desfiada na testa.
+          const zv = this.zv, pz = (x, y) => x.toFixed(1) + ' ' + y.toFixed(1), w = Math.min(1, Math.abs(giroX) * 1.15), sx = giroX >= 0 ? 1 : -1;
+          const fr = [[-1.04, -0.3], [-1.12, 0.4], [-0.92, 0.98]], pr = [[-1.0, -0.55], [-1.16, 0.3], [-1.02, 0.96]];
+          for (let q = 1; q <= 8; q++) { const u = q / 8, jag = q % 2 ? 0.8 + zv[q % 12] * 0.1 : 0.98; fr.push([-0.92 + 1.84 * u, jag]); pr.push([-1.02 + 0.86 * u, jag + 0.02 * q]); }
+          fr.push([1.12, 0.4], [1.04, -0.3]); pr.push([-0.02, 0.62], [0.12, -0.18]);
+          const pts2 = fr.map(([fx, fy], i) => { const [px, py] = pr[i]; return [C[0] + r * lerp(fx, px * sx, w), C[1] + r * lerp(fy, py, w)]; });
+          dT = 'M' + pts2.map(p => pz(p[0], p[1])).join(' L') + 'Z';
           for (let q = -2; q <= 2; q++) { const lon = q * 0.32, cz = Math.cos(lon + TH); if (cz < 0.15) continue;   // franja: mechas pontudas na testa
             const a0 = pt(lon - 0.16, h(lon - 0.16)), a1 = pt(lon + 0.16, h(lon + 0.16)), tip = pt(lon + 0.08 * (zv[(q + 6) % 12] - 0.5), h(lon) - 0.16 - 0.1 * zv[(q + 3) % 12]);
             d += `M${pz(a0[0], a0[1])} L${pz(tip[0], tip[1])} L${pz(a1[0], a1[1])}Z`; }

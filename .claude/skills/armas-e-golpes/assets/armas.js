@@ -61,5 +61,11 @@
   Armas.estrela = (x, y, k = 1) => `<g class="clarao" transform="translate(${f(x)} ${f(y)}) scale(${k})"><path d="M0 -70 L14 -16 L70 -20 L22 8 L44 60 L0 26 L-44 60 L-22 8 L-70 -20 L-14 -16Z" fill="#FFF4C8" stroke="${L}" stroke-width="5" stroke-linejoin="round"/><circle r="16" fill="#FFFFFF"/></g>`;
   Armas.rastro = (cx, cy, r, a0, a1) => { const R = a => [cx + Math.cos(a * Math.PI / 180) * r, cy + Math.sin(a * Math.PI / 180) * r], p0 = R(a0), p1 = R(a1), big = Math.abs(a1 - a0) > 180 ? 1 : 0, sw = a1 > a0 ? 1 : 0;
     return `<path class="rastro" d="M${f(p0[0])} ${f(p0[1])} A${r} ${r} 0 ${big} ${sw} ${f(p1[0])} ${f(p1[1])}" stroke="#FFFFFF" stroke-width="22" fill="none" stroke-linecap="round" opacity=".55"/><path d="M${f(p0[0])} ${f(p0[1])} A${r} ${r} 0 ${big} ${sw} ${f(p1[0])} ${f(p1[1])}" stroke="#DDE6F2" stroke-width="8" fill="none" stroke-linecap="round" opacity=".9"/>`; };
+  // besta carregada NAS COSTAS (descarregada), na posição certa para cada vista do boneco b (escala k):
+  //   lado → atravessada atrás das costas, arcos saindo atrás do ombro; frente → saindo por cima do ombro; costas → em diagonal por cima
+  Armas.bestaNasCostas = (b, vista, k = 1, dir = 1) => { const q = b.ombros(), h = b.quadril();
+    if (vista === 'lado') return `<g transform="translate(${f(q[0] - dir * 30 * k)} ${f(q[1] + 150 * k)}) scale(${dir} 1) rotate(-115)">${Armas.besta(0.72 * k, { carregada: false })}</g>`;
+    if (vista === 'frente') return `<g transform="translate(${f(q[0] + 80 * k)} ${f(q[1] - 40 * k)}) rotate(120)">${Armas.besta(0.55 * k, { carregada: false })}</g>`;
+    return `<g transform="translate(${f(q[0] - 40 * k)} ${f(q[1] + 150 * k)}) rotate(-35)">${Armas.besta(0.55 * k, { carregada: false })}</g>`; };
   global.Armas = Armas;
 })(typeof window !== 'undefined' ? window : globalThis);
