@@ -43,16 +43,27 @@ function plano(a, b, cam, montar) { const root = new PIXI.Container(); app.stage
 const camadaDe = (p, par) => { const c = new PIXI.Container(); c.__p = par; p.root.addChild(c); p.camadas.push(c); return c; };
 const neblina = (c, x0, y0, w, y1, cor, a) => { const g = new PIXI.Graphics(); for (let i = 0; i < 40; i++) g.rect(x0, y0 + (y1 - y0) * i / 40, w, (y1 - y0) / 40 + 1).fill({ color: cor, alpha: a * Math.pow(i / 39, 1.5) }); c.addChild(g); return g; };
 const brilhoSol = (c, x, y, n = 24, passo = 32, cor = 0xFF7A3A, a = 0.009) => { const g = new PIXI.Graphics(); for (let i = 0; i < n; i++) g.circle(x, y, 110 + i * passo).fill({ color: cor, alpha: a }); g.blendMode = 'add'; c.addChild(g); return g; };
-// silhueta de sobrevivente andando (de lado, com mochila) — redesenhada a cada quadro
-const silhueta = (g, x, y, k, fase, dir = 1, borda = P.borda) => {
-  const s = Math.sin(fase), c2 = Math.cos(fase), L = 0x0C080E, quad = [x, y - 92 * k];
-  const perna = (sg) => { const a = sg * s * 0.55; g.moveTo(x, y - 92 * k).lineTo(x + Math.sin(a) * 48 * k * dir, y - 50 * k).lineTo(x + Math.sin(a - Math.max(0, -sg * s) * 0.6) * 90 * k * dir * 0.6 + Math.sin(a) * 30 * k * dir, y - 4 * k).stroke({ width: 15 * k, color: L, cap: 'round', join: 'round' }); };
-  perna(1); perna(-1);
-  g.moveTo(x, y - 92 * k).lineTo(x + 6 * k * dir, y - 170 * k).stroke({ width: 26 * k, color: L, cap: 'round' });
-  g.roundRect(x - 34 * k * dir - (dir < 0 ? 0 : 0), y - 170 * k, 26 * k * dir, 56 * k, 8 * k).fill(L);               // mochila
-  g.circle(x + 10 * k * dir, y - 196 * k + Math.abs(c2) * 2 * k, 17 * k).fill(L);                                    // cabeça
-  g.moveTo(x + 4 * k * dir, y - 160 * k).lineTo(x + (8 + s * 22) * k * dir, y - 118 * k).stroke({ width: 11 * k, color: L, cap: 'round' });
-  g.moveTo(x + 18 * k * dir, y - 212 * k).arc(x + 10 * k * dir, y - 196 * k, 17 * k, -1.2, 0.4).stroke({ width: 3 * k, color: borda, alpha: 0.9 });
+// silhueta de ZUMBI andando de lado (contraluz): curvado, cabeça caída para a frente, um braço esticado, o outro pendurado,
+// mancando (a perna de trás arrasta), roupa rasgada nas pontas, cabelo desgrenhado; passo irregular
+const zumbiSil = (g, x, y, k, fase, dir = 1, var_ = 0, borda = P.borda) => {
+  const Lc = 0x0C080E, s = Math.sin(fase), ss = Math.sin(fase * 0.5 + var_), inc = 0.42 + 0.05 * Math.sin(fase * 0.7 + var_);   // tronco inclinado
+  const H = [x, y - 88 * k + Math.abs(s) * 4 * k], top = [H[0] + Math.sin(inc) * 92 * k * dir, H[1] - Math.cos(inc) * 92 * k];
+  // pernas: a da frente dá o passo, a de trás arrasta (manca)
+  const pf = 0.35 * Math.max(-0.4, s), pt = -0.25 + 0.12 * Math.sin(fase + 2);
+  g.moveTo(...H).lineTo(H[0] + Math.sin(pf) * 46 * k * dir, H[1] + 42 * k).lineTo(H[0] + Math.sin(pf) * 46 * k * dir + 8 * k * dir, y - 2 * k).stroke({ width: 15 * k, color: Lc, cap: 'round', join: 'round' });
+  g.moveTo(...H).lineTo(H[0] + Math.sin(pt) * 40 * k * dir, H[1] + 44 * k).lineTo(H[0] + Math.sin(pt) * 60 * k * dir - 14 * k * dir, y).stroke({ width: 15 * k, color: Lc, cap: 'round', join: 'round' });
+  // tronco (torto) com a barra da camisa rasgada
+  g.moveTo(...H).lineTo(...top).stroke({ width: 30 * k, color: Lc, cap: 'round' });
+  for (let i = 0; i < 4; i++) { const bx = H[0] - 14 * k + i * 9 * k, by = H[1] + 2 * k; g.poly([bx, by, bx + 8 * k, by, bx + 3 * k + Math.sin(fase + i) * 2 * k, by + (10 + (i % 2) * 8) * k]).fill(Lc); }
+  // braços: um esticado para a frente (balançando), o outro mole, pendurado
+  const ombro = [top[0] - 4 * k * dir, top[1] + 10 * k], ba = 0.15 * Math.sin(fase * 0.8 + var_);
+  g.moveTo(...ombro).lineTo(ombro[0] + 52 * k * dir, ombro[1] + (8 + ba * 40) * k).lineTo(ombro[0] + 98 * k * dir, ombro[1] + (14 + ba * 50) * k).stroke({ width: 11 * k, color: Lc, cap: 'round', join: 'round' });
+  for (let i = 0; i < 3; i++) g.moveTo(ombro[0] + 98 * k * dir, ombro[1] + (14 + ba * 50) * k).lineTo(ombro[0] + (110 + i * 2) * k * dir, ombro[1] + (22 + i * 6 + ba * 50) * k).stroke({ width: 4 * k, color: Lc, cap: 'round' });   // dedos caídos
+  g.moveTo(ombro[0] - 6 * k * dir, ombro[1]).lineTo(ombro[0] + 6 * k * dir, ombro[1] + 52 * k).lineTo(ombro[0] + 14 * k * dir + ss * 6 * k, ombro[1] + 100 * k).stroke({ width: 11 * k, color: Lc, cap: 'round', join: 'round' });
+  // cabeça caída para a frente e tombada, cabelo desgrenhado
+  const cab = [top[0] + 22 * k * dir, top[1] + 4 * k];
+  g.circle(...cab, 18 * k).fill(Lc); for (let i = 0; i < 6; i++) { const a = -2.4 + i * 0.45; g.poly([cab[0] + Math.cos(a) * 14 * k, cab[1] + Math.sin(a) * 14 * k, cab[0] + Math.cos(a + 0.2) * 27 * k, cab[1] + Math.sin(a + 0.2) * 26 * k, cab[0] + Math.cos(a + 0.4) * 14 * k, cab[1] + Math.sin(a + 0.4) * 14 * k]).fill(Lc); }
+  g.moveTo(top[0] - 18 * k * dir, top[1] + 4 * k).lineTo(...top).lineTo(cab[0] - 4 * k * dir, cab[1] - 16 * k).stroke({ width: 4 * k, color: borda, alpha: 0.85, cap: 'round' });   // borda de luz nas costas e na cabeça
 };
 
 // ---------------- 1. RODOVIA ESQUECIDA ----------------
@@ -166,7 +177,7 @@ plano(4.6, 6.8, { foco: [540, 900], zoom: [1.12, 1.22], dx: -120, dy: 0 }, p => 
   brilhoSol(p.root, SOL[0], SOL[1], 22, 30);
   p.anim.push(t => { nv.children.forEach(n => n.x = n.__vel * t);
     refl.clear(); for (let i = 0; i < 26; i++) { const y = 1100 + i * 30, w = 30 + i * 9 + Math.sin(t * 3 + i) * 12; refl.rect(SOL[0] - w / 2 + Math.sin(t * 2 + i * 1.7) * 10, y, w, 5).fill({ color: 0xFFB070, alpha: 0.6 - i * 0.02 }); }
-    sg.clear(); [0, 1, 2, 3].forEach(i => { const x = 120 + i * 150 + (t - 4.6) * 70; silhueta(sg, x, Y(x) - 2, 0.62 + i * 0.03, (t - 4.6) * 7 + i * 1.3, 1); }); });
+    sg.clear(); [[0, 1.0, 0.62], [1, 0.8, 0.66], [2, 1.15, 0.6], [3, 0.9, 0.68], [4, 1.05, 0.64]].forEach(([i, vel, k]) => { const tt = t - 4.6, x = 60 + i * 135 + tt * 34 * vel + Math.sin(tt * 2 + i) * 4, fase = tt * 4.2 * vel + i * 1.7 + Math.sin(tt * 1.3 + i) * 0.6; zumbiSil(sg, x, Y(x) - 2, k, fase, 1, i * 0.9); }); });
 });
 
 // ---------------- 4. O ÚLTIMO MORADOR (pela janela quebrada) ----------------
@@ -181,15 +192,40 @@ plano(6.8, 8.8, { foco: [560, 1000], zoom: [1.0, 1.16], dx: 0, dy: -40 }, p => {
   const reflJ = new PIXI.Graphics(); reflJ.__anim = 1; L0.addChild(reflJ);
   // o quarto escuro: parede com o vão da janela, cortinas rasgadas, sofá, entulho
   const L1 = camada(0.45), q = new PIXI.Graphics(); L1.addChild(q);
-  q.poly([-200, -200, 1280, -200, 1280, 2100, -200, 2100, -200, -200, 240, 420, 240, 1380, 960, 1380, 960, 420, 240, 420]).fill(0x1E161C);
-  q.rect(240, 1380, 720, 30).fill(0x2A2028).stroke({ width: 4, color: 0x0E0A10 }); q.rect(580, 420, 22, 960).fill(0x16101A); q.rect(240, 860, 720, 18).fill(0x16101A);
-  for (let i = 0; i < 6; i++) { const x0 = 240 + i * 120; q.poly([x0, 400, x0 + 130, 400, x0 + 110 + r.entre(-10, 10), 520 + r.entre(0, 160), x0 + 70, 470 + r.entre(0, 260), x0 + 30, 520 + r.entre(0, 120)]).fill({ color: 0xC8B8A0, alpha: 0.85 }).stroke({ width: 3, color: 0x2A2228 }); }
-  for (let i = 0; i < 14; i++) M.cipo(q, 250 + i * 50, 420, r.entre(150, 700), { seed: 820 + i, k: 1.1 });
-  q.poly([-200, 1410, 1280, 1410, 1280, 2100, -200, 2100]).fill(0x221A20);
-  for (let i = 0; i < 18; i++) q.rect(r.entre(-100, 1100), r.entre(1420, 1900), r.entre(40, 120), r.entre(8, 20)).fill(r.pick([0x3A2A26, 0x4A3A30, 0x2A2026])).stroke({ width: 3, color: 0x0E0A10 });
-  q.poly([240, 1410, 960, 1410, 1180, 1900, 60, 1900]).fill({ color: 0xFF9A50, alpha: 0.18 });       // luz da janela no chão
-  q.roundRect(-60, 1180, 380, 260, 40).fill(0x5A2420).stroke({ width: 6, color: 0x0E0A10 }); q.roundRect(-60, 1100, 340, 140, 40).fill(0x4A1E1C).stroke({ width: 6, color: 0x0E0A10 });
-  q.moveTo(320, 1190).lineTo(320, 1430).stroke({ width: 5, color: P.borda, alpha: 0.6 });
+  // parede com um rombo irregular no lugar da janela (a janela foi arrancada)
+  const furo = [240, 430, 330, 395, 470, 418, 600, 385, 760, 410, 905, 380, 975, 470, 958, 640, 990, 830, 950, 1060, 968, 1270, 930, 1385, 700, 1392, 470, 1378, 268, 1390, 228, 1180, 252, 960, 218, 760, 246, 580];
+  q.rect(-200, -200, 1480, 2300).fill(0x1E161C); q.poly(furo).cut();   // parede com o rombo vazado
+  q.poly(furo).stroke({ width: 6, color: 0x0E0A10 }); for (let i = 0; i < furo.length; i += 4) { const x = furo[i], y = furo[i + 1]; q.poly([x, y, x + r.entre(-26, 26), y + r.entre(-26, 26), x + r.entre(-18, 18), y + r.entre(-18, 18)]).fill(0x2E2228); }   // reboco lascado na borda
+  // moldura torta pendurada e cacos de vidro presos nos cantos
+  q.moveTo(255, 470).lineTo(560, 520).lineTo(600, 700).stroke({ width: 16, color: 0x2A2026 }); q.moveTo(255, 470).lineTo(560, 520).stroke({ width: 4, color: P.borda, alpha: 0.6 });
+  q.moveTo(950, 470).lineTo(870, 900).stroke({ width: 14, color: 0x2A2026 });
+  [[255, 475, 330, 480, 268, 600], [560, 522, 640, 540, 590, 640], [950, 470, 900, 480, 955, 560], [250, 1380, 300, 1300, 340, 1385], [960, 1380, 900, 1330, 935, 1250]].forEach(pt => q.poly(pt).fill({ color: 0xB8C8D8, alpha: 0.45 }).stroke({ width: 2, color: 0xE8F0F8, alpha: 0.8 }));
+  for (let i = 0; i < 6; i++) { const x0 = 270 + i * 110; q.poly([x0, 400, x0 + 110, 405, x0 + 95 + r.entre(-10, 10), 470 + r.entre(0, 160), x0 + 60, 430 + r.entre(0, 240), x0 + 20, 470 + r.entre(0, 100)]).fill({ color: 0xA89880, alpha: 0.8 }).stroke({ width: 3, color: 0x2A2228 }); }   // cortina em farrapos
+  for (let i = 0; i < 16; i++) M.cipo(q, 250 + i * 46, 400, r.entre(150, 760), { seed: 820 + i, k: 1.1 });
+  // rachaduras e tijolo aparecendo
+  for (let i = 0; i < 9; i++) { let x = r.pick([r.entre(-100, 200), r.entre(1000, 1180)]), y = r.entre(100, 1500); q.moveTo(x, y); for (let k = 0; k < 6; k++) { x += r.entre(-30, 30); y += r.entre(20, 60); q.lineTo(x, y); } q.stroke({ width: 4, color: 0x0A060A }); }
+  for (let i = 0; i < 7; i++) { const x = r.pick([r.entre(-60, 160), r.entre(1000, 1140)]), y = r.entre(200, 1300); q.poly([x, y, x + 120, y + 10, x + 100, y + 90, x - 10, y + 70]).fill(0x5A2E26); for (let k = 0; k < 4; k++) q.moveTo(x, y + 18 * k + 10).lineTo(x + 110, y + 18 * k + 14).stroke({ width: 2, color: 0x2A1610 }); }
+  // teto desabado: laje quebrada pendurada em diagonal, com ferragem
+  q.poly([-200, -200, 600, -200, 520, 120, 280, 300, -200, 360]).fill(0x16101A);
+  q.poly([-120, 160, 420, 60, 470, 130, -60, 300]).fill(0x3A3036).stroke({ width: 6, color: 0x0E0A10 }); q.moveTo(-120, 160).lineTo(420, 60).stroke({ width: 4, color: P.borda, alpha: 0.5 });
+  for (let i = 0; i < 6; i++) q.moveTo(400 + i * 6, 70 + i * 10).lineTo(440 + i * 14, 150 + i * 30).stroke({ width: 4, color: 0x6A3A2A });
+  // chão: entulho, tábuas, móveis virados, papéis, poças
+  q.poly([-200, 1400, 1280, 1400, 1280, 2100, -200, 2100]).fill(0x221A20);
+  q.poly([240, 1400, 960, 1400, 1180, 1900, 60, 1900]).fill({ color: 0xFF9A50, alpha: 0.16 });       // luz que entra pelo rombo
+  for (let i = 0; i < 26; i++) { const x = r.entre(-100, 1150), y = r.entre(1420, 1920), w = r.entre(30, 110); q.poly([x, y, x + w, y - r.entre(0, 20), x + w + r.entre(-10, 10), y + r.entre(10, 30), x + r.entre(-10, 10), y + r.entre(14, 34)]).fill(r.pick([0x3A2E2C, 0x4A3A34, 0x2A2026, 0x5A4A40])).stroke({ width: 3, color: 0x0E0A10 }); }
+  for (let i = 0; i < 6; i++) q.rect(r.entre(-80, 1000), r.entre(1450, 1850), r.entre(120, 260), 18).fill(0x4A3424).stroke({ width: 3, color: 0x0E0A10 });
+  for (let i = 0; i < 12; i++) { const x = r.entre(0, 1060), y = r.entre(1480, 1900), a = r.entre(0, 3); q.poly([x, y, x + Math.cos(a) * 46, y + Math.sin(a) * 20, x + Math.cos(a) * 46 - Math.sin(a) * 30, y + Math.sin(a) * 20 + 18, x - Math.sin(a) * 30, y + 18]).fill({ color: 0xD8D0C0, alpha: 0.55 }); }   // papéis
+  q.ellipse(820, 1700, 160, 26).fill({ color: 0x3A3A4A, alpha: 0.7 }); q.ellipse(800, 1696, 80, 8).fill({ color: 0xFFB070, alpha: 0.35 });
+  // sofá rasgado e tombado, cadeira virada, estante caída
+  q.roundRect(-80, 1190, 380, 250, 40).fill(0x4A1E1C).stroke({ width: 6, color: 0x0E0A10 }); q.roundRect(-80, 1110, 330, 130, 40).fill(0x3A1816).stroke({ width: 6, color: 0x0E0A10 });
+  for (let i = 0; i < 5; i++) q.ellipse(r.entre(0, 260), r.entre(1150, 1380), r.entre(14, 30), r.entre(10, 20)).fill(0xD8C8A8);   // espuma saindo
+  q.moveTo(310, 1200).lineTo(310, 1430).stroke({ width: 5, color: P.borda, alpha: 0.5 });
+  const cad = new PIXI.Graphics(); q.addChild ? 0 : 0; q.poly([1000, 1520, 1110, 1480, 1130, 1500, 1020, 1545]).fill(0x3A2A20).stroke({ width: 4, color: 0x0E0A10 });
+  q.moveTo(1010, 1530).lineTo(980, 1640).stroke({ width: 10, color: 0x3A2A20 }); q.moveTo(1100, 1495).lineTo(1150, 1600).stroke({ width: 10, color: 0x3A2A20 }); q.moveTo(1040, 1530).lineTo(1060, 1440).stroke({ width: 10, color: 0x3A2A20 });
+  q.poly([980, 1100, 1180, 1180, 1140, 1440, 950, 1380]).fill(0x2E2220).stroke({ width: 5, color: 0x0E0A10 }); for (let i = 1; i < 4; i++) q.moveTo(975 - i * 8, 1100 + i * 70).lineTo(1170 - i * 10, 1180 + i * 65).stroke({ width: 6, color: 0x1A1214 });
+  // mato entrando pelo rombo e crescendo nos cantos
+  M.folhagem(q, 300, 1360, 90, 30, { seed: 870, sol: 1 }); M.folhagem(q, 930, 1350, 80, 26, { seed: 871, sol: -1 }); M.folhagem(q, 600, 1395, 70, 22, { seed: 872, sol: 1 });
+  for (let i = 0; i < 18; i++) M.capim(q, r.entre(200, 1000), r.entre(1400, 1500), r.entre(30, 70), 8, { seed: 880 + i });
   // o sobrevivente de costas, de mochila, olhando a cidade (silhueta com borda de luz)
   const L2 = camada(0.6), s = new PIXI.Graphics(); L2.addChild(s);
   const X = 650, Yp = 1420; s.ellipse(X, Yp + 6, 90, 14).fill({ color: 0x000000, alpha: 0.5 });
