@@ -415,18 +415,106 @@
 
     // ---------- CURRAL por dentro (fim de tarde, quase escuro): tábuas, vigas, feno empilhado no fundo, cocho, porteira do curral,
     // luz entrando pelas frestas; as vacas ficam por conta de S.vaca ----------
-    S.curral = ({ x = 0, y = 0, w = 1080, h = 1920, chao = 1400 } = {}) => {
-      let s = defs() + tabuas(x, y, w, chao - y, '#4A3A28', true, 110) + `<rect x="${x}" y="${y}" width="${w}" height="${chao}" fill="#08060A" opacity=".35"/>`;
-      for (let i = 0; i < 6; i++) { const fx = x + 80 + i * 180; s += `<path d="M${fx} ${y + 200} L${fx + 40} ${y + 200} L${fx + 260} ${chao + 300} L${fx + 120} ${chao + 300}Z" fill="#F6B07A" opacity=".08" style="mix-blend-mode:screen"/>`; }
-      s += `<rect x="${x}" y="${y + 160}" width="${w}" height="40" fill="#3A2A1C" stroke="${L}" stroke-width="5"/>` + [0.15, 0.5, 0.85].map(u => `<rect x="${x + w * u - 22}" y="${y + 160}" width="44" height="${chao - y - 160}" fill="#4A3220" stroke="${L}" stroke-width="5"/>`).join('');
-      // feno empilhado (fardos) no fundo à direita
-      for (let r = 0; r < 3; r++) for (let q = 0; q < 3 - r; q++) { const bx = x + 600 + q * 150 + r * 75, by = chao - 110 - r * 100; s += `<rect x="${bx}" y="${by}" width="150" height="100" rx="10" fill="#C8A85A" stroke="${L}" stroke-width="4"/>${[0, 1, 2, 3].map(k => `<path d="M${bx + 10} ${by + 20 + k * 20} h130" stroke="#A88A40" stroke-width="3"/>`).join('')}<path d="M${bx + 50} ${by} V${by + 100} M${bx + 100} ${by} V${by + 100}" stroke="#7A5A2A" stroke-width="4"/>`; }
-      s += `<path d="M${x + 560} ${chao} Q${x + 700} ${chao - 70} ${x + 900} ${chao - 30} L${x + 1000} ${chao} Z" fill="#B8984A" stroke="${L}" stroke-width="3"/>`;
-      // cocho de madeira à esquerda e o chão de terra com feno espalhado
-      s += `<path d="M${x + 40} ${chao - 120} H${x + 380} L${x + 360} ${chao - 30} H${x + 60}Z" fill="#5A3E26" stroke="${L}" stroke-width="5"/>`;
-      s += `<rect x="${x}" y="${chao}" width="${w}" height="${h - chao}" fill="#4A3A26"/>`;
-      for (let i = 0; i < 60; i++) { const fx = rnd(x, x + w), fy = rnd(chao + 10, y + h); s += `<path d="M${f(fx)} ${f(fy)} l${f(rnd(-30, 30))} ${f(rnd(-6, 6))}" stroke="#B8984A" stroke-width="3" opacity=".7"/>`; }
+    S.curral = ({ x = 0, y = 0, w = 1080, h = 1920, chao = 1400, porta = null, feno = true } = {}) => {
+      // CURRAL DETALHADO: tábuas de tons diferentes com nós e pregos, frestas de luz, caibros do telhado, ferramentas penduradas,
+      // lampião aceso, teia de aranha, porteira do curral (porta = {x, w}) mostrando o entardecer lá fora, carrinho de mão, latão de leite
+      let s = defs();
+      const H = chao - y;
+      for (let px = x, i = 0; px < x + w; px += 96, i++) { const cor = tom(pick(['#4A3A28', '#52402C', '#46362A', '#5A4630']), rnd(-0.06, 0.04));
+        s += `<rect x="${f(px)}" y="${y}" width="96" height="${H}" fill="${cor}"/><path d="M${f(px + 30)} ${y} q${f(rnd(-6, 6))} ${f(H / 2)} 0 ${H} M${f(px + 64)} ${y} q${f(rnd(-6, 6))} ${f(H / 2)} 0 ${H}" stroke="${tom(cor, -0.12)}" stroke-width="3" fill="none" opacity=".7"/>`;
+        for (let k = 0; k < 2; k++) { const ky = rnd(y + 260, chao - 200); s += `<ellipse cx="${f(px + rnd(20, 76))}" cy="${f(ky)}" rx="9" ry="15" fill="${tom(cor, -0.25)}"/><ellipse cx="${f(px + 48)}" cy="${f(ky)}" rx="3" ry="5" fill="${tom(cor, -0.4)}" opacity="0"/>`; }
+        [y + 260, chao - 260].forEach(ny => { s += `<circle cx="${f(px + 18)}" cy="${f(ny)}" r="4" fill="#2A2420"/><circle cx="${f(px + 78)}" cy="${f(ny + 6)}" r="4" fill="#2A2420"/>`; });
+        if (i % 2) s += `<rect x="${f(px - 2)}" y="${y + 200}" width="4" height="${H - 200}" fill="#F6C890" opacity="${f(rnd(0.25, 0.55))}"/>`;   // fresta de luz
+        else s += `<rect x="${f(px - 2)}" y="${y}" width="4" height="${H}" fill="#140E0A"/>`; }
+      s += `<rect x="${x}" y="${y}" width="${w}" height="${H}" fill="#08060A" opacity=".3"/>`;
+      // porteira do curral: vão aberto com o entardecer lá fora
+      if (porta) { const { x: dx, w: dw } = porta, top = chao - 760, [gid, gd] = grad(['#5A3A5A', '#C86A4A', '#E8A060']);
+        s += gd + `<rect x="${f(dx)}" y="${f(top)}" width="${f(dw)}" height="760" fill="url(#${gid})"/>`;
+        s += `<path d="M${f(dx)} ${f(chao - 250)} Q${f(dx + dw / 2)} ${f(chao - 300)} ${f(dx + dw)} ${f(chao - 240)} V${chao} H${f(dx)}Z" fill="#2E3A24"/>`;
+        for (let k = 0; k < 5; k++) s += `<path d="M${f(dx + 20 + k * dw / 5)} ${f(chao - 250)} v-70" stroke="#2A2018" stroke-width="8"/>`;
+        s += `<path d="M${f(dx)} ${f(chao - 300)} H${f(dx + dw)} M${f(dx)} ${f(chao - 280)} H${f(dx + dw)}" stroke="#2A2018" stroke-width="4"/>`;
+        s += `<path d="M${f(dx)} ${f(chao)} L${f(dx + dw)} ${f(chao)} L${f(dx + dw + 140)} ${f(y + h)} L${f(dx - 140)} ${f(y + h)}Z" fill="#E8A060" opacity=".12" style="mix-blend-mode:screen"/>`;   // luz que entra no chão
+        s += `<rect x="${f(dx - 34)}" y="${f(top - 34)}" width="${f(dw + 68)}" height="40" fill="#3A2A1C" stroke="${L}" stroke-width="5"/><rect x="${f(dx - 34)}" y="${f(top)}" width="34" height="760" fill="#3E2C1C" stroke="${L}" stroke-width="5"/><rect x="${f(dx + dw)}" y="${f(top)}" width="34" height="760" fill="#3E2C1C" stroke="${L}" stroke-width="5"/>`;
+        // folha da porteira aberta para dentro (em fuga), com X de travamento
+        const g0 = [dx + dw + 34, chao - 40], g1 = [dx + dw + 34, chao - 560], q0 = [dx + dw + 250, chao + 60], q1 = [dx + dw + 250, chao - 600];
+        s += `<path d="M${f(g0[0])} ${f(g0[1])} L${f(q0[0])} ${f(q0[1])} L${f(q1[0])} ${f(q1[1])} L${f(g1[0])} ${f(g1[1])}Z" fill="none"/>`;
+        [0, 0.33, 0.66, 1].forEach(v => s += `<path d="M${f(g0[0])} ${f(lerp(g0[1], g1[1], v))} L${f(q0[0])} ${f(lerp(q0[1], q1[1], v))}" stroke="#6A4A2C" stroke-width="26"/><path d="M${f(g0[0])} ${f(lerp(g0[1], g1[1], v))} L${f(q0[0])} ${f(lerp(q0[1], q1[1], v))}" stroke="${L}" stroke-width="3" opacity=".6"/>`);
+        s += `<path d="M${f(g0[0])} ${f(g0[1])} L${f(q1[0])} ${f(q1[1])} M${f(g1[0])} ${f(g1[1])} L${f(q0[0])} ${f(q0[1])}" stroke="#5A3E24" stroke-width="18"/><path d="M${f(q0[0])} ${f(q0[1] + 10)} V${f(q1[1] - 10)}" stroke="#4A3220" stroke-width="30"/>`; }
+      // caibros do telhado (em fuga) e viga
+      for (let i = 0; i < 7; i++) { const cx = x - 100 + i * 210; s += `<path d="M${cx} ${y} L${cx + 120} ${y + 150}" stroke="#2A1E14" stroke-width="34"/><path d="M${cx} ${y} L${cx + 120} ${y + 150}" stroke="${L}" stroke-width="3" opacity=".5"/>`; }
+      s += `<rect x="${x}" y="${y + 150}" width="${w}" height="44" fill="#3A2A1C" stroke="${L}" stroke-width="5"/>`;
+      // teia de aranha nos cantos
+      [[x + 8, y + 194, 1], [x + w - 8, y + 194, -1]].forEach(([tx, ty, sd]) => { for (let r = 1; r <= 4; r++) s += `<path d="M${tx + sd * r * 30} ${ty} Q${tx + sd * r * 22} ${ty + r * 22} ${tx} ${ty + r * 30}" stroke="#C8C0B0" stroke-width="1.5" fill="none" opacity=".35"/>`; s += `<path d="M${tx} ${ty} l${sd * 130} 0 M${tx} ${ty} l${sd * 95} 95 M${tx} ${ty} l0 130" stroke="#C8C0B0" stroke-width="1.5" opacity=".35"/>`; });
+      // esteios
+      s += [0.15, 0.5, 0.85].map(u => `<rect x="${x + w * u - 24}" y="${y + 150}" width="48" height="${chao - y - 150}" fill="#4A3220" stroke="${L}" stroke-width="5"/><rect x="${x + w * u - 24}" y="${y + 150}" width="14" height="${chao - y - 150}" fill="#5A4030"/>`).join('');
+      // feixes de luz poeirenta
+      for (let i = 0; i < 6; i++) { const fx = x + 80 + i * 180; s += `<path d="M${fx} ${y + 200} L${fx + 40} ${y + 200} L${fx + 260} ${chao + 300} L${fx + 120} ${chao + 300}Z" fill="#F6B07A" opacity=".07" style="mix-blend-mode:screen"/>`; }
+      // ferramentas penduradas: corda enrolada, ferradura, foice, balde, cabresto
+      const pend = (px, py, corpo) => `<circle cx="${px}" cy="${py}" r="5" fill="#2A2420"/><g transform="translate(${px} ${py})">${corpo}</g>`;
+      s += pend(x + 300, y + 420, `<ellipse cx="0" cy="60" rx="46" ry="56" fill="none" stroke="#B89A60" stroke-width="12"/><ellipse cx="0" cy="60" rx="34" ry="42" fill="none" stroke="#A88A50" stroke-width="8"/><path d="M0 0 V10" stroke="#B89A60" stroke-width="8"/>`);
+      s += pend(x + 410, y + 380, `<path d="M-22 10 A26 30 0 1 1 22 10" stroke="#6A6A70" stroke-width="12" fill="none" transform="rotate(180 0 22)"/>`);
+      s += pend(x + 680, y + 400, `<path d="M0 0 V150" stroke="#6A4A2C" stroke-width="12"/><path d="M0 150 Q70 170 90 110 Q60 150 0 140" fill="#8A8A90" stroke="${L}" stroke-width="3"/>`);
+      s += pend(x + 960, y + 430, `<path d="M-40 20 L-32 100 H32 L40 20Z" fill="#7A8088" stroke="${L}" stroke-width="4"/><path d="M-40 20 Q0 -30 40 20" stroke="#4A4A50" stroke-width="4" fill="none"/>`);
+      s += pend(x + 820, y + 360, `<path d="M0 0 q-30 50 -10 110 q30 20 40 -10 q-10 -60 -30 -100" stroke="#5A2A1A" stroke-width="9" fill="none"/>`);
+      // lampião aceso pendurado (com brilho)
+      s += `<path d="M${x + 540} ${y + 194} V${y + 330}" stroke="#2A2420" stroke-width="3"/><g transform="translate(${x + 540} ${y + 330})"><path d="M-16 0 H16 L20 60 H-20Z" fill="#FFE2A0" stroke="${L}" stroke-width="4"/><path d="M-20 0 H20 M-22 60 H22" stroke="#3A3A40" stroke-width="7"/><path d="M-8 -10 q8 -14 16 0" stroke="#3A3A40" stroke-width="4" fill="none"/></g>` + brilho(x + 540, y + 360, 300, '#FFC870', 0.5);
+      // fardos de feno empilhados (direita) com fios soltos
+      for (let r = 0; r < 3; r++) for (let q = 0; q < 3 - r; q++) { const bx = x + 600 + q * 150 + r * 75, by = chao - 110 - r * 100, c = pick(['#C8A85A', '#BFA052', '#D0B066']);
+        s += `<rect x="${bx}" y="${by}" width="150" height="100" rx="10" fill="${c}" stroke="${L}" stroke-width="4"/>${[0, 1, 2, 3].map(k => `<path d="M${bx + 10} ${by + 20 + k * 20} q65 ${f(rnd(-4, 4))} 130 0" stroke="${tom(c, -0.18)}" stroke-width="3" fill="none"/>`).join('')}<path d="M${bx + 50} ${by} V${by + 100} M${bx + 100} ${by} V${by + 100}" stroke="#7A5A2A" stroke-width="4"/>${[0, 1, 2].map(() => `<path d="M${f(bx + rnd(0, 150))} ${by} l${f(rnd(-14, 14))} ${f(rnd(-18, -8))}" stroke="${c}" stroke-width="3"/>`).join('')}`; }
+      // monte de feno solto (onde o seu Zé caiu)
+      if (feno) { s += `<path d="M${x + 520} ${chao + 20} Q${x + 600} ${chao - 110} ${x + 780} ${chao - 80} Q${x + 960} ${chao - 120} ${x + 1060} ${chao + 20}Z" fill="#B8984A" stroke="${L}" stroke-width="4"/>`;
+        for (let i = 0; i < 40; i++) { const fx = rnd(x + 540, x + 1040), fy = chao - rnd(0, 80) + Math.abs(fx - (x + 790)) * 0.25; s += `<path d="M${f(fx)} ${f(fy)} l${f(rnd(-24, 24))} ${f(rnd(-14, 4))}" stroke="${pick(['#D8B860', '#9A7A38'])}" stroke-width="3"/>`; } }
+      // cocho, latão de leite, carrinho de mão
+      s += `<path d="M${x + 40} ${chao - 120} H${x + 380} L${x + 360} ${chao - 30} H${x + 60}Z" fill="#5A3E26" stroke="${L}" stroke-width="5"/><path d="M${x + 60} ${chao - 110} H${x + 360}" stroke="#3A5A6A" stroke-width="10" opacity=".7"/><path d="M${x + 80} ${chao - 30} v30 M${x + 340} ${chao - 30} v30" stroke="#3A2A1C" stroke-width="14"/>`;
+      s += `<g transform="translate(${x + 440} ${chao})"><path d="M-30 0 V-80 Q-30 -100 -16 -104 V-124 H16 V-104 Q30 -100 30 -80 V0Z" fill="#9AA0A8" stroke="${L}" stroke-width="4"/><path d="M-30 -40 H30" stroke="#6A7078" stroke-width="5"/><rect x="-20" y="-134" width="40" height="12" rx="4" fill="#7A8088" stroke="${L}" stroke-width="3"/></g>`;
+      // chão: terra batida, pegadas de casco, poça, feno espalhado
+      const [cid, cd] = grad(['#4A3A26', '#3A2C1C']);
+      s += cd + `<rect x="${x}" y="${chao}" width="${w}" height="${h - chao}" fill="url(#${cid})"/>`;
+      for (let i = 0; i < 26; i++) { const fx = rnd(x, x + w), fy = rnd(chao + 30, y + h), k = 0.6 + (fy - chao) / 600; s += `<path d="M${f(fx - 9 * k)} ${f(fy)} q${f(4 * k)} ${f(-12 * k)} ${f(8 * k)} 0 M${f(fx + 2 * k)} ${f(fy)} q${f(4 * k)} ${f(-12 * k)} ${f(8 * k)} 0" stroke="#2A2014" stroke-width="${f(3 * k)}" fill="none"/>`; }
+      s += `<ellipse cx="${x + 220}" cy="${chao + 320}" rx="140" ry="26" fill="#2A3038" opacity=".55"/><ellipse cx="${x + 200}" cy="${chao + 316}" rx="60" ry="6" fill="#8A98A8" opacity=".3"/>`;
+      for (let i = 0; i < 80; i++) { const fx = rnd(x, x + w), fy = rnd(chao + 10, y + h); s += `<path d="M${f(fx)} ${f(fy)} l${f(rnd(-30, 30))} ${f(rnd(-6, 6))}" stroke="#B8984A" stroke-width="3" opacity=".7"/>`; }
       return clip(x, y, w, h, s + acabamento(0.3));
+    };
+    // ---------- ESTRADA DE CHÃO ao entardecer (vista em perspectiva), com poeira opcional ----------
+    S.estradaTarde = ({ x = 0, y = 0, w = 1080, h = 1920, fuga = [x + w * 0.5, y + h * 0.46] } = {}) => {
+      const [gid, gdef] = grad(['#2A2244', '#7A4A5A', '#E0885A', '#F2B070']);
+      let s = defs() + gdef + `<rect x="${x}" y="${y}" width="${w}" height="${f(fuga[1] - y + 20)}" fill="url(#${gid})"/>` + brilho(fuga[0] + 180, fuga[1] - 40, 340, '#FFB070', 0.6);
+      s += `<circle cx="${f(fuga[0] + 180)}" cy="${f(fuga[1] - 30)}" r="46" fill="#FFD8A0" opacity=".9"/>`;
+      s += serra(x, w, fuga[1] + 6, 240, '#4A3A50', 0.9) + serra(x, w, fuga[1] + 14, 130, '#3A3040', 1);
+      s += `<path d="M${x} ${f(fuga[1])} H${x + w} V${y + h} H${x}Z" fill="#3E4A2C"/>`;
+      for (let i = 0; i < 6; i++) s += araucaria(x + rnd(0, w), fuga[1] + rnd(10, 40), rnd(90, 180), '#22281E');
+      s += `<path d="M${f(fuga[0] - 24)} ${f(fuga[1])} H${f(fuga[0] + 24)} L${f(x + w * 0.92)} ${y + h} H${f(x + w * 0.08)}Z" fill="#8A6A48"/>`;
+      // sulcos de roda e pedras
+      [-0.28, 0.28].forEach(sd => s += `<path d="M${f(fuga[0] + sd * 20)} ${f(fuga[1])} L${f(x + w / 2 + sd * w * 0.62)} ${y + h}" stroke="#6A4E34" stroke-width="40" opacity=".5"/>`);
+      for (let i = 0; i < 60; i++) { const yy = rnd(fuga[1] + 10, y + h), u = (yy - fuga[1]) / (y + h - fuga[1]); s += `<ellipse cx="${f(fuga[0] + rnd(-1, 1) * lerp(20, w * 0.42, u))}" cy="${f(yy)}" rx="${f(3 + u * 14)}" ry="${f(2 + u * 5)}" fill="${pick(['#5A4430', '#A88A68', '#6A5038'])}"/>`; }
+      // cerca de arame e mourões
+      for (let k = 0; k < 9; k++) { const u = Math.pow(k / 9, 1.6); [-1, 1].forEach(sd => { const px = lerp(x + w / 2 + sd * w * 0.62, fuga[0] + sd * 50, u), pb = lerp(y + h * 0.98, fuga[1], u), hh = lerp(240, 14, u); s += `<path d="M${f(px)} ${f(pb)} v${f(-hh)}" stroke="#4A3824" stroke-width="${f(lerp(16, 2, u))}"/>`; }); }
+      [-1, 1].forEach(sd => { [0.45, 0.75].forEach(v => { s += `<path d="M${f(x + w / 2 + sd * w * 0.62)} ${f(y + h * 0.98 - 240 * v)} L${f(fuga[0] + sd * 50)} ${f(fuga[1] - 14 * v)}" stroke="#2A2A2A" stroke-width="2" opacity=".8"/>`; }); });
+      for (let i = 0; i < 50; i++) { const gx = rnd(x, x + w), gy = rnd(fuga[1] + 30, y + h); if (Math.abs(gx - (x + w / 2)) < (gy - fuga[1]) * 0.5) continue; s += touceira(gx, gy, 0.4 + (gy - fuga[1]) / 500, '#3A4A26'); }
+      return clip(x, y, w, h, s + acabamento(0.28));
+    };
+    // ---------- ENTRADA DO SÍTIO DE LADO: estrada de chão, MATA-BURRO (vala com trilhos) e a PORTEIRA (quebrável: .porteiraTabua) ----------
+    // a moto vem da esquerda, voa por cima do mata-burro (mbX) e arrebenta a porteira (ptX). chão = y da estrada
+    S.mataBurro = ({ x = 0, y = 0, w = 1080, h = 1920, chao = 1420, mbX = 420, ptX = 820, largura = w } = {}) => {
+      const [gid, gdef] = grad(['#2A2244', '#7A4A5A', '#E0885A', '#F2B070']);
+      let s = defs() + gdef + `<rect x="${x}" y="${y}" width="${largura}" height="${chao - 300}" fill="url(#${gid})"/>`;
+      s += serra(x, largura, chao - 420, 260, '#4A3A50', 0.9) + `<path d="M${x} ${chao - 420} H${x + largura} V${chao} H${x}Z" fill="#3E4A2C"/>`;
+      s += casaRoca(x + ptX + 120, chao - 330, 260, 150, { acesa: true, cor: '#8A7A62' });
+      for (let i = 0; i < 8; i++) s += araucaria(x + rnd(0, largura), chao - rnd(330, 420), rnd(120, 240), '#22281E');
+      for (let i = 0; i < 30; i++) s += touceira(x + rnd(0, largura), chao - rnd(10, 300), rnd(0.4, 0.8), '#3A4A26');
+      // cerca de arame ao longo da estrada (atrás)
+      for (let px = x; px < x + largura; px += 140) s += `<path d="M${px} ${chao - 40} v-170" stroke="#4A3824" stroke-width="12"/>`;
+      s += `<path d="M${x} ${chao - 150} H${x + ptX - 80} M${x} ${chao - 100} H${x + ptX - 80} M${x + ptX + 80} ${chao - 150} H${x + largura} M${x + ptX + 80} ${chao - 100} H${x + largura}" stroke="#2A2A2A" stroke-width="2"/>`;
+      // estrada
+      s += `<rect x="${x}" y="${chao - 30}" width="${largura}" height="${y + h - chao + 30}" fill="#8A6A48"/><rect x="${x}" y="${chao - 30}" width="${largura}" height="10" fill="#6A5038"/>`;
+      for (let i = 0; i < 70; i++) s += `<ellipse cx="${f(x + rnd(0, largura))}" cy="${f(chao + rnd(-20, 200))}" rx="${f(rnd(3, 12))}" ry="${f(rnd(2, 4))}" fill="${pick(['#5A4430', '#A88A68', '#6A5038'])}"/>`;
+      // mata-burro: vala escura com trilhos atravessados + muretas de concreto dos lados
+      s += `<rect x="${x + mbX - 130}" y="${chao - 24}" width="260" height="80" fill="#140E0A"/>` + [...Array(9)].map((_, i) => `<rect x="${x + mbX - 124 + i * 30}" y="${chao - 26}" width="16" height="16" rx="3" fill="#6A6A70" stroke="${L}" stroke-width="3"/>`).join('');
+      s += `<path d="M${x + mbX - 130} ${chao - 18} H${x + mbX + 130}" stroke="#4A4A50" stroke-width="6"/><rect x="${x + mbX - 160}" y="${chao - 70}" width="30" height="60" fill="#9A948A" stroke="${L}" stroke-width="4"/><rect x="${x + mbX + 130}" y="${chao - 70}" width="30" height="60" fill="#9A948A" stroke="${L}" stroke-width="4"/>`;
+      // porteira de madeira fechada (cada tábua com classe para voar quando a moto bater)
+      s += `<rect x="${x + ptX - 110}" y="${chao - 330}" width="34" height="330" fill="#5A3E26" stroke="${L}" stroke-width="5"/><rect x="${x + ptX + 120}" y="${chao - 330}" width="34" height="330" fill="#5A3E26" stroke="${L}" stroke-width="5"/>`;
+      s += `<g class="porteiraFolha">` + [0, 1, 2, 3, 4].map(i => `<g class="porteiraTabua" data-i="${i}" data-cx="${x + ptX + 20}" data-cy="${chao - 60 - i * 52}"><rect x="${x + ptX - 76}" y="${chao - 76 - i * 52}" width="196" height="30" rx="4" fill="#7A5634" stroke="${L}" stroke-width="4"/></g>`).join('') + `<g class="porteiraTabua" data-i="5" data-cx="${x + ptX + 20}" data-cy="${chao - 170}"><path d="M${x + ptX - 70} ${chao - 50} L${x + ptX + 110} ${chao - 280}" stroke="#6A4A2C" stroke-width="24"/></g></g>`;
+      return clip(x, y, w, h, s + acabamento(0.28));
     };
     // VACA (de lado, cartoon com contorno): corpo malhado, cabeça com chifrinhos, úbere, rabo; olhar para (dir)
     S.vaca = (x, base, k = 1, { dir = 1, cor = '#E8E2D0', mancha = '#2A2420', cabeca = 0 } = {}) => `<g transform="translate(${f(x)} ${f(base)}) scale(${f(k * dir)} ${f(k)})"><ellipse cx="0" cy="4" rx="190" ry="20" fill="#000" opacity=".3"/>

@@ -1,0 +1,464 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Apocalipse Zumbi: Dia 3, Parte 4</title>
+<!-- Série APOCALIPSE ZUMBI — DIA 3, PARTE 4: a Aninha vai pro curral; na cidade, o DIMAS (moto de roqueiro, besta nas costas) mata um
+     infectado com um golpe só, a ponte está tomada, ele pega a estrada de chão; no curral o Seu Zé levanta do feno, avança na menina e o
+     Dimas chega voando pelo mata-burro, derruba a porteira e crava um virote de vergalhão na cabeça dele. Narrador gravado pelo usuário;
+     personagens com Qwen3-TTS. Tempos de cada plano vêm das falas (segmentos). -->
+<style>
+  html, body { margin: 0; background: #000; overflow: hidden; }
+  #stage { width: 1080px; height: 1920px; display: block; }
+  @font-face { font-family: 'Anton'; src: url(fontes/anton.woff2); }
+  @font-face { font-family: 'Luckiest Guy'; src: url(fontes/luckiest-guy.woff2); }
+  text:not([font-family]) { font-family: 'Anton', sans-serif; }
+</style>
+<script src="gsap.min.js"></script>
+<script src="boneco.js"></script>
+<script src="paletas.js"></script>
+<script src="cenario.js"></script>
+<script src="sitio.js"></script>
+<script src="cidade-zumbi.js"></script>
+<script src="armas.js"></script>
+<script src="moto.js"></script>
+<script src="palco.js"></script>
+<script src="legenda.js"></script>
+<script src="legenda-dados.js"></script>
+<script src="bocas.js"></script>
+</head>
+<body>
+<svg id="stage" viewBox="0 0 1080 1920" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="outline" x="-20%" y="-20%" width="140%" height="140%">
+      <feMorphology in="SourceAlpha" operator="dilate" radius="5" result="d"/>
+      <feFlood flood-color="#0A0A0E"/>
+      <feComposite in2="d" operator="in" result="o"/>
+      <feMerge><feMergeNode in="o"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="sombraTxt" x="-10%" y="-30%" width="120%" height="160%"><feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#000" flood-opacity=".8"/></filter>
+    <radialGradient id="vin" cx=".5" cy=".5" r=".72"><stop offset=".45" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".7"/></radialGradient>
+  </defs>
+  <g id="cam"><g id="scenes"></g><g id="atores"></g><g id="props"></g><g id="luzes"></g></g>
+  <rect width="1080" height="1920" fill="url(#vin)"/>
+  <g id="escuro"><rect width="1080" height="1920" fill="#05070E"/></g>
+  <g id="topo"></g>
+  <g id="legenda"></g>
+</svg>
+
+<script>
+const NS = 'http://www.w3.org/2000/svg';
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const AMBAR = '#E8B23A', BRANCO = '#F2EEE2', VERMELHO = '#C8342A', L = '#0E0E14';
+const Si = (n, hora = 'amanhecer') => Sitio(Cenario({ seed: n, luz: -1, hora, prefixo: 's' + n }));
+const Cz = n => CidadeZumbi(Cenario({ seed: n, luz: -1, hora: 'amanhecer', prefixo: 'z' + n }));
+const f1 = v => v.toFixed(1);
+// ---- tempos vindos das falas ----
+const SEG = Object.fromEntries((window.SEGMENTOS || []).map(s => [s.id, s]));
+const SG = id => SEG[id];
+const W = (id, n) => { const ws = (window.PALAVRAS || []).filter(p => p.seg === id); return (ws[Math.min(n, ws.length - 1)] || { start: SG(id).de }).start; };
+const FIM_FALA = SG('P09').ate + 0.35, CARTAO = FIM_FALA + 0.8, END = CARTAO + 3.6;
+const PISO_LEG = 1560;
+
+// ===================== PLANOS =====================
+const ORDEM = [
+  ['abre', 0], ['aninha', W('N01', 7) - 0.1], ['vovo1', SG('P01').de - 0.2], ['tiao1', SG('N02').de - 0.1], ['levanta', W('N02', 11)],
+  ['cidade', SG('N03').de - 0.1], ['motoF', SG('N04').de - 0.1], ['motoL', W('N04', 11) - 0.1], ['facao', W('N05', 0) - 0.15], ['machad', W('N05', 5) - 0.1], ['vergal', W('N05', 8) - 0.1],
+  ['dimas', SG('N06').de - 0.1], ['onibus', SG('P02').de - 0.3], ['golpe', W('N07', 13) - 0.3], ['tanque', SG('N08').de - 0.1], ['ponte', W('N08', 6) - 0.1], ['terra', SG('P03').de - 0.2],
+  ['estrada', SG('N09').de - 0.1], ['flashV', W('N09', 6) - 0.05], ['volta', SG('N10').de - 0.1], ['olhos', W('N10', 10) - 0.1], ['tiaoF', SG('P04').de - 0.2], ['enxada', W('N11', 0) - 0.1],
+  ['colo', W('N11', 9) - 0.1], ['olhaP', SG('N12').de - 0.1], ['menina', W('N12', 14) - 0.1], ['vovo2', SG('P05').de - 0.2], ['corre', SG('P06').de - 0.2], ['avanca', W('N13', 0) - 0.1],
+  ['estrada2', SG('N14').de - 0.1], ['dois', SG('N16').de - 0.1], ['mira', W('N16', 13) - 0.3], ['voa', W('N16', 15) - 0.05], ['cai', SG('N17').de - 0.2],
+  ['paral', SG('N18').de - 0.1], ['joelhos', W('N18', 4) - 0.1], ['desce', W('N18', 8) - 0.1], ['quem', SG('P07').de - 0.2], ['sonos', SG('P08').de - 0.2],
+  ['olha', SG('N19').de - 0.1], ['perna', W('N19', 7) - 0.1], ['explica', SG('P09').de - 0.2], ['_fim', FIM_FALA],
+];
+const S = {}; ORDEM.forEach(([k, t], i) => { if (i < ORDEM.length - 1) S[k] = [t, ORDEM[i + 1][1]]; });
+// momentos-chave
+const T_GOLPE = W('N07', 14) + 0.1, T_CRAVA = W('N16', 17) + 0.05, T_VOA0 = W('N16', 16) - 0.1, T_CAI = W('N17', 4), T_PORTEIRA = W('N15', 13), T_FACAO = W('N18', 14);
+
+// ===================== CENÁRIOS =====================
+const scenes = [];
+const cena = (id, corpo) => scenes.push(`<g id="${id}" class="scene">${corpo}</g>`);
+const txt = (id, y, partes, fs = 110) => `<g id="${id}" filter="url(#sombraTxt)"><text x="540" y="${y}" font-size="${fs}" text-anchor="middle" stroke="#000" stroke-width="${fs * 0.08}" paint-order="stroke">${partes.map(([t, c]) => `<tspan fill="${c || BRANCO}">${t}</tspan>`).join('')}</text></g>`;
+const selo = (id, linha1, linha2) => `<g id="${id}" transform="translate(540 150)"><rect x="-300" y="-62" width="600" height="136" rx="22" fill="#0B0D14" fill-opacity=".86" stroke="#2A2E3A" stroke-width="3"/><circle cx="-232" cy="-26" r="9" fill="${VERMELHO}"/><text x="14" y="-14" font-size="30" text-anchor="middle" fill="${VERMELHO}" letter-spacing="2">${linha1}</text><text y="52" font-size="68" text-anchor="middle" fill="${BRANCO}" letter-spacing="3">${linha2}</text></g>`;
+const etiqueta = (id, x, y, t, cor = AMBAR, corTxt = '#16120A', rot = 0) => `<g id="${id}" transform="translate(${x} ${y}) rotate(${rot})"><rect x="${-t.length * 13 - 30}" y="-34" width="${t.length * 26 + 60}" height="68" rx="34" fill="${cor}" stroke="#000" stroke-width="4"/><text y="14" font-size="40" text-anchor="middle" fill="${corTxt}">${t}</text></g>`;
+const onoma = (id, x, y, t, rot = -8, cor = BRANCO, fs = 120) => `<g id="${id}" transform="translate(${x} ${y}) rotate(${rot})" filter="url(#sombraTxt)"><text font-size="${fs}" text-anchor="middle" fill="${cor}" stroke="#000" stroke-width="${fs / 10}" paint-order="stroke" font-family="'Luckiest Guy', sans-serif">${t}</text></g>`;
+
+const AV = Cz(11), LADO = Cz(12), BUS = Cz(13), PONTE = Cz(14);
+const AVP = AV.proj({ hz: 860, fx: 540, h: 1920 });
+const CURRAL = Si(72), MB = Si(75), PORT = Si(71);
+cena('c-av', AV.avenida({}));
+cena('c-lado', `<g id="rolo">${LADO.avenidaLado({ w: 3240, largura: 3240, chao: 1500 })}</g>`);
+cena('c-onibus', BUS.avenidaLado({ chao: 1500 }));
+cena('c-ponte', PONTE.ponte({ deck: 1180 }));
+cena('c-porteira', PORT.porteira({ chao: 1440, aberta: true }));
+cena('c-curral', CURRAL.curral({ chao: 1400, porta: { x: 120, w: 300 } }));
+cena('c-estrada', Si(73).estradaTarde({}));
+cena('c-flashV', Si(60, 'noite').estrada({}) + `<rect width="1080" height="1920" fill="#2A3A6A" opacity=".3" style="mix-blend-mode:multiply"/>`);
+cena('c-colo', Si(74).vale({ festa: false, amanhecer: true }) + `<rect width="1080" height="1920" fill="#B08A50" opacity=".45" style="mix-blend-mode:color"/><rect width="1080" height="1920" fill="#F2D8A0" opacity=".18"/>`);
+cena('c-mb', MB.mataBurro({ chao: 1420, mbX: 430, ptX: 900 }));
+// close do tanque: o marcador de gasolina caindo pro E
+cena('c-tanque', `<rect width="1080" height="1920" fill="#2A2228"/><g opacity=".5">${[...Array(14)].map((_, i) => `<rect x="${i * 80 - 20}" y="${300 + (i % 3) * 60}" width="60" height="${600 + (i % 4) * 80}" fill="#4A3A44"/>`).join('')}</g>
+  <path d="M60 760 Q60 520 540 500 Q1020 520 1020 760 Q1020 1180 540 1220 Q60 1180 60 760Z" fill="#141418" stroke="${L}" stroke-width="10"/>
+  <path d="M120 700 Q540 560 960 700" stroke="${AMBAR}" stroke-width="26" fill="none" opacity=".85"/><path d="M110 760 Q540 620 970 760" stroke="${VERMELHO}" stroke-width="10" fill="none" opacity=".8"/>
+  <path d="M200 600 Q540 540 880 600" stroke="#5A5A64" stroke-width="10" fill="none" opacity=".6"/>
+  <circle cx="540" cy="900" r="230" fill="#2A2A30" stroke="#C8CED6" stroke-width="18"/><circle cx="540" cy="900" r="200" fill="#E8E2D0" stroke="${L}" stroke-width="5"/>
+  ${[...Array(9)].map((_, i) => { const a = (-60 + i * 15) * Math.PI / 180; return `<path d="M${f1(540 + Math.sin(a) * 170)} ${f1(900 - Math.cos(a) * 170)} L${f1(540 + Math.sin(a) * (i % 2 ? 150 : 130))} ${f1(900 - Math.cos(a) * (i % 2 ? 150 : 130))}" stroke="${i < 2 ? VERMELHO : L}" stroke-width="${i % 2 ? 6 : 10}"/>`; }).join('')}
+  <text x="${f1(540 + Math.sin(-1.05) * 105)}" y="${f1(900 - Math.cos(-1.05) * 105 + 18)}" font-size="58" text-anchor="middle" fill="${VERMELHO}">E</text><text x="${f1(540 + Math.sin(1.05) * 105)}" y="${f1(900 - Math.cos(1.05) * 105 + 18)}" font-size="58" text-anchor="middle" fill="${L}">F</text>
+  <text x="540" y="1030" font-size="34" text-anchor="middle" fill="#5A5A60" letter-spacing="4">GASOLINA</text>
+  <g id="ponteiro"><path d="M534 900 L540 730 L546 900Z" fill="${VERMELHO}" stroke="${L}" stroke-width="3"/><circle cx="540" cy="900" r="22" fill="#2A2A30" stroke="#C8CED6" stroke-width="5"/></g>
+  <circle id="luzRes" cx="800" cy="1120" r="34" fill="#FF6A2A" stroke="${L}" stroke-width="5"/><circle cx="800" cy="1120" r="80" fill="#FF6A2A" opacity=".25" class="luzResB"/>
+  <path d="M-40 380 Q300 320 400 260 M1120 380 Q780 320 680 260" stroke="#C8CED6" stroke-width="34" fill="none"/>`);
+// close da perna do Tião: calça rasgada, a mordida e o sangue escorrendo
+cena('c-perna', `<rect width="1080" height="1920" fill="#3A2C1C"/>${[...Array(50)].map((_, i) => `<path d="M${(i * 137) % 1080} ${(i * 251) % 1920} l${(i % 7) * 8 - 24} ${(i % 3) * 4 - 4}" stroke="#B8984A" stroke-width="5" opacity=".6"/>`).join('')}
+  <path d="M300 -40 L780 -40 L760 1500 L330 1500Z" fill="#3A4250" stroke="${L}" stroke-width="10"/>
+  <path d="M360 -40 Q380 700 350 1500 M720 -40 Q700 700 740 1500" stroke="#2A3240" stroke-width="8" fill="none"/>
+  <path d="M520 -40 V1500" stroke="#4A5466" stroke-width="5" stroke-dasharray="16 10"/>
+  <path d="M380 560 L450 470 L520 540 L600 450 L700 560 L690 900 L610 980 L540 900 L460 990 L370 900Z" fill="#C49478" stroke="${L}" stroke-width="7"/>
+  <path d="M380 560 l-40 30 l30 20 M700 560 l40 40 l-36 10 M370 900 l-30 40 l40 -6 M690 900 l40 30 l-44 4" stroke="#3A4250" stroke-width="12" fill="none"/>
+  <path d="M470 690 Q540 620 610 690 Q600 760 540 770 Q480 760 470 690Z" fill="#6A1410"/>
+  ${[0, 1, 2, 3, 4, 5].map(i => `<path d="M${484 + i * 22} ${i % 5 === 0 ? 690 : 668 + Math.abs(2.5 - i) * 6} l10 22 l10 -22Z" fill="#E8E2D0" opacity="0" />`).join('')}
+  ${[[480, 700], [505, 680], [530, 674], [555, 676], [580, 684], [600, 700], [485, 742], [510, 756], [540, 762], [570, 756], [596, 740]].map(([x, y]) => `<ellipse cx="${x}" cy="${y}" rx="9" ry="12" fill="#2A0604"/>`).join('')}
+  <path d="M500 760 Q490 900 505 1060 Q512 1120 500 1180" stroke="#8A1410" stroke-width="20" fill="none" stroke-linecap="round"/><path d="M560 770 Q575 920 560 1000" stroke="#8A1410" stroke-width="14" fill="none" stroke-linecap="round"/><path d="M600 740 Q620 820 612 880" stroke="#8A1410" stroke-width="10" fill="none" stroke-linecap="round"/>
+  <path d="M500 760 Q490 900 505 1060" stroke="#C83A2A" stroke-width="6" fill="none" opacity=".7"/>
+  <path d="M300 1500 L330 1360 L780 1360 L800 1500 L840 1700 Q820 1760 700 1760 L280 1760 Q250 1700 300 1500Z" fill="#3A2618" stroke="${L}" stroke-width="10"/><path d="M290 1720 H820" stroke="#1A120C" stroke-width="20"/>
+  <g id="gotas">${[0, 1, 2].map(i => `<path class="gota" data-i="${i}" d="M0 -18 Q10 0 0 10 Q-10 0 0 -18Z" fill="#8A1410" stroke="#2A0604" stroke-width="2"/>`).join('')}</g>
+  <ellipse cx="520" cy="1790" rx="90" ry="20" fill="#5A0A08" opacity=".8"/>`);
+scenes.push(`<g id="fim" class="scene"><rect width="1080" height="1920" fill="#08090E"/>${Si(20, 'noite').estrada({})}<rect width="1080" height="1920" fill="#000" opacity=".6"/>
+  <g id="fim-t">${txt('fim-a', 780, [['DIA 3 · ', BRANCO], ['PARTE 4', AMBAR]], 120)}${txt('fim-b', 920, [['CONTINUA...', BRANCO]], 96)}</g>
+  <g id="fim-c" transform="translate(540 1100)"><rect x="-340" y="-56" width="680" height="112" rx="56" fill="${AMBAR}" stroke="#000" stroke-width="5"/><text y="22" font-size="54" text-anchor="middle" fill="#16120A">SEGUE PRA PARTE 5 ↓</text></g></g>`);
+$('#scenes').innerHTML = scenes.join('');
+
+const GANCHO = `<g id="c-gancho"><rect width="1080" height="1920" fill="#C8342A" opacity=".2" style="mix-blend-mode:multiply"/><rect width="1080" height="1920" fill="#000" opacity=".3"/>` +
+  txt('g-dia', 880, [['DIA ', BRANCO], ['3', AMBAR]], 330) + txt('g-apoc', 1060, [['PARTE 4', VERMELHO]], 110) + `<rect id="g-flash" width="1080" height="1920" fill="#FFF6E0"/></g>`;
+const TOPO = [
+  GANCHO, selo('selo1', 'APOCALIPSE ZUMBI · DIA 3', 'DIA 3 · 17:52'), selo('selo2', 'ENQUANTO ISSO · 20 KM DALI', 'NA CIDADE'),
+  etiqueta('t-20km', 540, 1180, '20 KM DALI', AMBAR), txt('t-cidade', 330, [['A ', BRANCO], ['CIDADE', AMBAR]], 120),
+  etiqueta('t-facao', 330, 560, 'FACÃO DE CANA', AMBAR, '#16120A', -4), etiqueta('t-machad', 640, 600, 'MACHADINHA', AMBAR, '#16120A', 4), etiqueta('t-vergal', 520, 640, 'VERGALHÃO', VERMELHO, BRANCO, -3),
+  txt('t-dimas', 380, [['DIMAS', AMBAR]], 220), txt('t-naopara', 500, [['NÃO PARA PRA ', BRANCO], ['NINGUÉM', VERMELHO]], 72),
+  onoma('o-tchac', 700, 640, 'TCHAC!', 10, BRANCO, 140), etiqueta('t-vazio', 540, 1340, 'QUASE VAZIO', VERMELHO, BRANCO), txt('t-tomada', 360, [['TOMADA', VERMELHO]], 160),
+  etiqueta('t-mesma', 540, 330, 'A MESMA ESTRADA', AMBAR), etiqueta('t-festa', 540, 330, 'NOITE DA FESTA', '#2A241A', AMBAR),
+  etiqueta('t-volta', 540, 330, 'DE VOLTA AO CURRAL', '#2A241A', AMBAR), etiqueta('t-colo', 540, 330, 'MUITOS ANOS ATRÁS', '#5A4020', '#F2E2C0'),
+  txt('t-tarde', 360, [['TARDE ', BRANCO], ['DEMAIS', VERMELHO]], 120), onoma('o-grito', 760, 520, 'AAAAH!', 8, BRANCO, 110), onoma('o-vrum', 330, 560, 'VRUUUM!', -8, AMBAR, 120),
+  onoma('o-crac', 760, 760, 'CRAC!', 10, BRANCO, 150), etiqueta('t-2passos', 540, 330, 'A DOIS PASSOS', VERMELHO, BRANCO), txt('t-silencio', 360, [['SILÊNCIO', BRANCO]], 110),
+  `<g id="quem" transform="translate(540 1452)"><rect id="quem-r" x="-120" y="-30" width="240" height="60" rx="30" fill="#0B0D14" fill-opacity=".85" stroke="${AMBAR}" stroke-width="3"/><text id="quem-t" y="14" font-size="40" text-anchor="middle" fill="${AMBAR}" letter-spacing="2"></text></g>`,
+  `<rect id="clarao" width="1080" height="1920" fill="#FFF6E0"/>`, `<rect id="preto" width="1080" height="1920" fill="#000"/>`];
+$('#topo').innerHTML = TOPO.join('');
+
+// ===================== ELENCO =====================
+const BOCA = q => t => { const c = (window.BOCAS || {})[q] ? window.BOCAS[q][Math.floor(t * 30)] : '-'; return c && c !== '-' ? c : 'smile'; };
+const TIAO = { figurino: 'tiao', seed: 60, boca: BOCA('tiao') };
+const ANINHA = { figurino: { preset: 'neta', cor: '#C97A9A' }, seed: 62, boca: BOCA('aninha') };
+const SEUZE_ZUMBI = { figurino: { preset: 'seuze', zumbi: true, cabelo: 'curto' }, seed: 61, cor: '#B8C4A4', corLonge: '#9EAA8C' };
+const SEUZE_JOVEM = { figurino: { preset: 'seuze', corCabelo: '#3A2A20' }, seed: 61 };
+const DIMAS = { figurino: 'dimas', seed: 90, boca: BOCA('dimas') };
+const INFECTADO = { figurino: 'zumbi', seed: 77, cor: '#A8B494', corLonge: '#8E9A7C' };
+const VULTO = i => ({ figurino: 'vulto', cor: '#17181E', corLonge: '#101116', bochecha: '#17181E', seed: 70 + i });
+const ATORES = [], ITENS = [], MOTOS = [];
+function ator(escala, janelas, opts = {}, pai = '#atores') { const w = document.createElementNS(NS, 'g'), g = document.createElementNS(NS, 'g'); w.appendChild(g); $(pai).appendChild(w); const b = new Boneco(g, { escala, seed: 4, ...opts }); b.grupo = w; ATORES.push({ b, g: w, janelas }); return b; }
+function item(svg, janelas, pai = '#atores') { const g = document.createElementNS(NS, 'g'); $(pai).appendChild(g); g.innerHTML = svg; ITENS.push({ g, janelas }); return g; }
+const J = n => [[S[n][0], S[n][1]]];
+const JJ = (...ns) => ns.map(n => [S[n][0], S[n][1]]);
+const ATE = (a, b) => [[S[a][0], S[b][1]]];
+const dentro = (t, janelas) => janelas.some(([a, b]) => t >= a && t < b);
+const sm = u => u * u * (3 - 2 * u), cl = (v, a, b) => Math.min(b, Math.max(a, v)), lerp = (a, b, u) => a + (b - a) * u;
+const ang = (a, b) => Math.atan2(b[1] - a[1], b[0] - a[0]) * 180 / Math.PI;
+// interpola uma lista de chaves [[t, v], ...] (suave entre elas)
+const chave = (K, t) => { if (t <= K[0][0]) return K[0][1]; for (let i = 1; i < K.length; i++) if (t <= K[i][0]) { const u = sm((t - K[i - 1][0]) / (K[i][0] - K[i - 1][0])); return Array.isArray(K[i][1]) ? K[i][1].map((v, j) => lerp(K[i - 1][1][j], v, u)) : lerp(K[i - 1][1], K[i][1], u); } return K[K.length - 1][1]; };
+
+// ---------- o DIMAS NA MOTO (camadas: moto de trás → besta nas costas → piloto → peças da frente da moto) ----------
+function piloto(vista, k, janelas, { pos, dir = 1, extra = null, semBesta = null, freio = null } = {}) {
+  const wrap = document.createElementNS(NS, 'g'); $('#atores').appendChild(wrap);
+  const [fundo, costas, corpo, frente] = [0, 1, 2, 3].map(() => { const g = document.createElementNS(NS, 'g'); wrap.appendChild(g); return g; });
+  const b = new Boneco(corpo, { escala: k, ...DIMAS });
+  const M = { vista, k, b, wrap, fundo, costas, frente, janelas, pos, dir, extra, semBesta, freio };
+  M.montar = (t0, t1) => {
+    if (vista === 'lado') { const P = Moto.lado.pontos(k); b.base(t0, t1, 'montar', { assento: P.assento, pe: P.pe, guidao: P.guidao, chao: 0 }); }
+    else { const P = Moto[vista].pontos(k); b.base(t0, t1, 'agachar', { x: 0, y: P.pe[0][1] + 10 * k, vista: 'frente', quanto: 110, abertura: 90, costas: vista === 'tras' });
+      b.braco('e', t0, t1, 'alcancar', { alvo: P.guidao[0] }); b.braco('d', t0, t1, 'alcancar', { alvo: P.guidao[1] }); }
+    return M; };
+  MOTOS.push(M); return M;
+}
+function desenharMoto(M, t) {
+  const on = dentro(t, M.janelas); M.wrap.style.display = on ? '' : 'none'; if (!on) return;
+  const p = M.pos(t), k = M.k;
+  M.wrap.setAttribute('transform', `translate(${f1(p.x)} ${f1(p.y)}) rotate(${f1(p.rot || 0)}) scale(${(M.dir * (p.s ?? 1)).toFixed(4)} ${(p.s ?? 1).toFixed(4)})`);
+  M.b.desenhar(t);
+  if (M.vista === 'lado') M.fundo.innerHTML = Moto.lado(k, { roda: p.roda || 0 }) + `<g transform="translate(${f1(-150 * k)} ${f1(-230 * k)}) rotate(-6)">${[0, 1, 2].map(i => `<g transform="translate(0 ${i * 9 * k})">${Armas.virote(0.62 * k)}</g>`).join('')}<path d="M${f1(40 * k)} ${f1(-10 * k)} v${f1(40 * k)} M${f1(120 * k)} ${f1(-10 * k)} v${f1(40 * k)}" stroke="#3A2618" stroke-width="${f1(10 * k)}"/></g>`;
+  else if (M.vista === 'frente') { M.fundo.innerHTML = Moto.frente(k, { camada: 'fundo' }); }
+  else M.fundo.innerHTML = Moto.tras(k, { freio: M.freio ? M.freio(t) : false });
+  const semB = M.semBesta && M.semBesta(t);
+  M.costas.innerHTML = semB ? '' : Armas.bestaNasCostas(M.b, M.vista === 'tras' ? 'costas' : M.vista, k, 1);
+  let fr = M.vista === 'frente' ? Moto.frente(k, { camada: 'frente' }) : '';
+  if (M.vista === 'lado' && !semB) { const q = M.b.ombros(), h = M.b.quadril(); fr += `<path d="M${f1(q[0] + 4 * k)} ${f1(q[1] + 8 * k)} L${f1(h[0] - 14 * k)} ${f1(h[1] - 30 * k)}" stroke="#2A2A30" stroke-width="${f1(9 * k)}" stroke-linecap="round"/>`; }
+  const ex = M.extra ? M.extra(t, M) : null;
+  if (ex && ex.costas) M.costas.innerHTML = ex.costas + M.costas.innerHTML;
+  M.frente.innerHTML = fr + (ex && ex.frente ? ex.frente : '');
+}
+// facão nas costas e machadinha no cinto (vista de lado, piloto virado para +x)
+const armasLado = (M, { facao = true, machad = true } = {}) => { const q = M.b.ombros(), h = M.b.quadril(), k = M.k;
+  return { costas: facao ? `<g transform="translate(${f1(q[0] - 30 * k)} ${f1(q[1] - 60 * k)}) scale(-1 1) rotate(110)">${Armas.facao(0.7 * k)}</g>` : '',
+    frente: machad ? `<g transform="translate(${f1(h[0] + 10 * k)} ${f1(h[1] + 10 * k)}) scale(-1 1) rotate(95)">${Armas.machadinha(0.55 * k)}</g>` : '' }; };
+
+// ===== gancho: a horda na avenida =====
+[[300, 1300, 0.9], [760, 1320, 1.0], [540, 1400, 1.2], [140, 1520, 1.45], [920, 1560, 1.55], [520, 1900, 2.2]].forEach(([x, y, k], i) => { const v = ator(k, J('abre'), VULTO(50 + i));
+  v.base(0, S.abre[1], 'parado', { x, y, vista: 'frente' }); v.braco('ambos', 0, S.abre[1], 'estender'); v.expressao(0, S.abre[1], 'zumbi'); v.cabeca(0, S.abre[1], { inclinar: (i % 2 ? 1 : -1) * 14, baixar: -6 }); });
+// ===== a Aninha andando pro curral, e chamando =====
+const aA = ator(1.0, J('aninha'), ANINHA); aA.base(S.aninha[0], S.aninha[1], 'andarCostas', { de: [505, 1860], ate: [505, 1520], passo: 60, perspectiva: { horizonte: 900, yRef: 1860 } }); aA.expressao(S.aninha[0], S.aninha[1], 'triste');
+const aV1 = ator(2.1, J('vovo1'), ANINHA); aV1.base(S.vovo1[0], S.vovo1[1], 'parado', { x: 540, y: 2160, vista: 'frente' }); aV1.expressao(S.vovo1[0], S.vovo1[1], 'triste');
+aV1.braco('ambos', S.vovo1[0] + 0.2, S.vovo1[1], 'pose', { o: 30, c: 115 }); aV1.cabeca(S.vovo1[0], S.vovo1[1], { baixar: -6, virar: 0.25 });
+
+// ===== no curral: o Tião (enxada) e o Seu Zé levantando do feno =====
+const ZX = 700, ZY = 1500;
+const zL = ator(1.15, ATE('tiao1', 'levanta'), SEUZE_ZUMBI);
+zL.base(S.tiao1[0], W('N02', 15), 'agachar', { x: ZX, y: ZY, vista: 'frente', quanto: 190, inclina: 40 });
+zL.base(W('N02', 15), S.levanta[1], 'parado', { x: ZX, y: ZY, vista: 'frente', transicao: 1.6 }); zL.expressao(S.tiao1[0], S.levanta[1], 'zumbi');
+zL.cabeca(S.tiao1[0], S.levanta[1], { baixar: 24, inclinar: 18, gesto: 'balancar' }); zL.braco('ambos', W('N02', 17), S.levanta[1], 'estender');
+const fenoFrente = `<path d="M${ZX - 230} 1540 Q${ZX - 150} 1380 ${ZX} 1400 Q${ZX + 160} 1370 ${ZX + 250} 1540Z" fill="#C8A85A" stroke="${L}" stroke-width="5"/>` + [...Array(26)].map((_, i) => `<path d="M${ZX - 210 + i * 17} ${1420 + (i % 4) * 26} l${(i % 5) * 8 - 16} -${18 + (i % 3) * 6}" stroke="${i % 2 ? '#D8B860' : '#9A7A38'}" stroke-width="4"/>`).join('');
+item(fenoFrente, ATE('tiao1', 'levanta'), '#props');
+const tT = ator(1.5, ATE('tiao1', 'levanta'), TIAO, '#props'); tT.base(S.tiao1[0], S.levanta[1], 'parado', { x: 930, y: 1880, vista: 'perfil', dir: -1 });
+tT.expressao(S.tiao1[0], S.levanta[1], 'medo'); tT.braco('d', S.tiao1[0], S.levanta[1], 'pose', { o: 40, c: 60, mao: 'punho' }); tT.cabeca(S.tiao1[0], S.levanta[1], { baixar: 6 });
+const enxT = item(CURRAL.enxada(0, 0, 1.3, 0), ATE('tiao1', 'levanta'), '#props');
+
+// ===== a cidade: a moto vindo pela avenida, desviando dos carros =====
+const pathX = [[S.motoF[0], [0, 16]], [S.motoF[0] + 1.6, [-60, 9]], [S.motoF[0] + 2.8, [170, 4.6]], [S.motoF[0] + 3.8, [-120, 2.9]], [S.motoF[1], [10, 1.6]]];
+const mF = piloto('frente', 1, J('motoF'), { pos: t => { const [X, z] = chave(pathX, t), [x, y] = AVP(X, z); return { x, y: y + Math.sin(t * 31) * 2 / z, s: 1 / z, rot: (chave(pathX, t + 0.15)[0] - X) * 0.04 }; } }).montar(S.motoF[0], S.motoF[1]);
+mF.b.expressao(S.motoF[0], S.motoF[1], 'serio');
+// de lado: o cenário rola, a moto fica; depois os closes nas armas
+const mL = piloto('lado', 1, ATE('motoL', 'vergal'), { pos: t => ({ x: 520, y: 1700 + Math.sin(t * 27) * 2, roda: t * 900 }), extra: (t, M) => armasLado(M) }).montar(S.motoL[0], S.vergal[1]);
+mL.b.expressao(S.motoL[0], S.vergal[1], 'serio'); mL.b.cabeca(S.motoL[0], S.vergal[1], { baixar: -4 });
+// "o nome dele é Dimas": vem de frente e para perto da câmera
+const mD = piloto('frente', 1, J('dimas'), { pos: t => { const u = sm(cl((t - S.dimas[0]) / 2.6, 0, 1)), z = lerp(3.2, 1.25, u), [x, y] = AVP(-20, z); return { x, y: y + (u < 1 ? Math.sin(t * 31) * 2 : 0), s: 1 / z }; } }).montar(S.dimas[0], S.dimas[1]);
+mD.b.expressao(S.dimas[0], S.dimas[1], 'serio'); mD.b.cabeca(S.dimas[0] + 2.6, S.dimas[1], { virar: 0.2, baixar: -4 });
+
+// ===== o infectado atrás do ônibus e o golpe na cabeça =====
+const zI = ator(0.95, ATE('onibus', 'golpe'), INFECTADO);
+const T_SAI = SG('P02').de + 0.2, T_CHEGA = W('N07', 12);
+zI.base(S.onibus[0], T_SAI, 'parado', { x: 640, y: 1600, vista: 'perfil', dir: -1 });
+zI.base(T_SAI, W('P02', 3), 'andar', { de: [640, 1600], ate: [500, 1640], passo: 44 });
+zI.base(W('P02', 3), W('N07', 2), 'parado', { x: 500, y: 1640, vista: 'perfil', dir: -1 });
+zI.base(W('N07', 2), T_CHEGA, 'andar', { de: [500, 1640], ate: [430, 1670], passo: 40 });
+zI.base(T_CHEGA, S.golpe[1], 'parado', { x: 430, y: 1670, vista: 'perfil', dir: -1, inclina: 20 });
+zI.braco('ambos', S.onibus[0], T_GOLPE, 'estender'); zI.expressao(S.onibus[0], S.golpe[1], 'zumbi');
+zI.cabeca(W('P02', 0), W('P02', 3), { virar: 0.2, inclinar: 10 }); zI.cabeca(T_GOLPE, S.golpe[1], { inclinar: 34, baixar: 20 });
+item(BUS.onibus(820, 1600, 0.6, { dir: -1, linha: '102 CENTRO' }), ATE('onibus', 'golpe'));
+const mG = piloto('lado', 0.85, ATE('onibus', 'golpe'), { pos: t => { const u = sm(cl((t - S.onibus[0]) / 1.4, 0, 1)), v = sm(cl((t - W('N07', 9)) / 1.4, 0, 1)); return { x: lerp(-140, 70, u) + 60 * v, y: 1740, roda: (lerp(-140, 70, u) + 60 * v) * 1.2 }; },
+  extra: (t, M) => { const a = armasLado(M, { machad: t < W('N07', 9) + 0.3 }); if (t >= W('N07', 9) + 0.3) { const m = M.b.mao('d'), q = M.b.ombros(); a.frente += `<g transform="translate(${f1(m[0])} ${f1(m[1])}) rotate(${f1(ang(q, m) - 25)})">${Armas.machadinha(0.62 * M.k)}</g>`; } return a; } }).montar(S.onibus[0], S.golpe[1]);
+mG.b.expressao(S.onibus[0], S.golpe[1], 'serio'); mG.b.cabeca(S.onibus[0], S.golpe[1], { baixar: -2 });
+// golpe: puxa a machadinha → prepara → corta → contato → recupera
+mG.b.braco('d', W('N07', 9), W('N07', 9) + 0.5, 'pose', { o: 10, c: 70, entrada: 0.25 });
+mG.b.braco('d', W('N07', 9) + 0.5, T_GOLPE - 0.12, 'pose', { o: 165, c: 80, entrada: 0.35 });
+mG.b.braco('d', T_GOLPE - 0.12, T_GOLPE + 0.35, 'pose', { o: 92, c: 4, entrada: 0.1 });
+mG.b.braco('d', T_GOLPE + 0.35, S.golpe[1], 'pose', { o: 40, c: 60, entrada: 0.35 });
+const rastroG = item('', [[T_GOLPE - 0.12, T_GOLPE + 0.06]], '#props'), impactoG = item('', [[T_GOLPE, T_GOLPE + 0.4]], '#props');
+
+// ===== a ponte tomada =====
+for (let i = 0; i < 16; i++) { const k = 0.4 + (i % 3) * 0.03, x = 40 + i * 64 + (i % 2) * 20, y = 1176 - (i % 3) * 3, ida = i % 3 !== 0;
+  const v = ator(k, ATE('ponte', 'terra'), VULTO(20 + i)); if (ida) v.base(S.ponte[0], S.terra[1], 'andar', { de: [x, y], ate: [x - 120 - (i % 4) * 30, y], passo: 26 }); else v.base(S.ponte[0], S.terra[1], 'parado', { x, y, vista: 'frente' });
+  v.braco('ambos', S.ponte[0], S.terra[1], 'estender'); v.expressao(S.ponte[0], S.terra[1], 'zumbi'); v.cabeca(S.ponte[0], S.terra[1], { inclinar: (i % 2 ? 1 : -1) * 12 }); }
+item(PONTE.ponteFrente({ deck: 1180 }), J('ponte'), '#props');
+// "então vai ser pela terra": close de frente (a ponte lá atrás)
+const mT = piloto('frente', 1.9, J('terra'), { pos: t => ({ x: 540, y: 2120 }) }).montar(S.terra[0], S.terra[1]);
+mT.b.expressao(S.terra[0], S.terra[1], 'serio'); mT.b.cabeca(S.terra[0], S.terra[1], { virar: -0.35, baixar: -4 });
+
+// ===== a estrada de chão: a moto indo embora, levantando poeira =====
+const mE = piloto('tras', 1, J('estrada'), { pos: t => { const u = cl((t - S.estrada[0]) / (S.estrada[1] - S.estrada[0]), 0, 1), y = lerp(2050, 1060, Math.sqrt(u)), s = (y - 883) / (1880 - 883); return { x: 540 + Math.sin(t * 2) * 10 * s, y, s: Math.max(0.05, s) }; } }).montar(S.estrada[0], S.estrada[1]);
+const poeira = item([...Array(10)].map((_, i) => `<circle class="po" data-i="${i}" r="60" fill="#B89A78" opacity=".35"/>`).join(''), J('estrada'), '#props');
+// flash: os vultos na noite da festa, vindo pela mesma estrada
+for (let i = 0; i < 9; i++) { const x = 300 + (i % 3) * 220 + (i % 2) * 40, t0 = S.flashV[0] + (i % 3) * 0.25;
+  const v = ator(0.9, J('flashV'), VULTO(30 + i)); v.base(S.flashV[0], S.flashV[1], 'andarFrente', { de: [x, 1250 + Math.floor(i / 3) * 120], ate: [x + (x - 540) * 0.3, 1450 + Math.floor(i / 3) * 160], passo: 40, perspectiva: { horizonte: 960, yRef: 1800 } });
+  v.braco('ambos', S.flashV[0], S.flashV[1], 'estender'); v.expressao(S.flashV[0], S.flashV[1], 'zumbi'); }
+
+// ===== de volta ao curral (o Seu Zé de pé; o Tião com a enxada) =====
+const POR = 270;   // centro da porteira do curral
+const CUR = ['volta', 'olhaP', 'menina', 'avanca', 'dois', 'voa', 'cai', 'explica'];
+const zV = ator(1.2, JJ('volta', 'olhaP'), SEUZE_ZUMBI); zV.base(S.volta[0], S.olhaP[1], 'parado', { x: 640, y: 1600, vista: 'frente' });
+zV.expressao(S.volta[0], S.olhaP[1], 'zumbi'); zV.braco('ambos', S.volta[0], S.olhaP[1], 'estender'); zV.cabeca(S.volta[0], W('N12', 8), { virar: 0.5, inclinar: 14 }); zV.cabeca(W('N12', 8), S.olhaP[1], { virar: -1, inclinar: 8 });
+const tV = ator(1.5, JJ('volta', 'olhaP', 'menina', 'avanca', 'dois', 'voa'), TIAO, '#props'); tV.base(S.volta[0], S.voa[1], 'parado', { x: 940, y: 1890, vista: 'perfil', dir: -1 });
+tV.expressao(S.volta[0], S.voa[1], 'medo'); tV.braco('d', S.volta[0], S.voa[1], 'pose', { o: 40, c: 60, mao: 'punho' }); tV.cabeca(S.menina[0], S.voa[1], { virar: -1 });
+const enxV = item(CURRAL.enxada(0, 0, 1.3, 0), JJ('volta', 'olhaP', 'menina', 'avanca', 'dois', 'voa'), '#props');
+// close dos olhos brancos
+const zO = ator(3.6, J('olhos'), { ...SEUZE_ZUMBI, boca: t => t > W('N10', 13) ? '3' : '1' }); zO.base(S.olhos[0], S.olhos[1], 'parado', { x: 540, y: 2750, vista: 'frente' }); zO.expressao(S.olhos[0], S.olhos[1], 'zumbi'); zO.cabeca(S.olhos[0], S.olhos[1], { inclinar: 10, gesto: 'balancar' });
+// o Tião: "Seu Zé... sou eu" e a enxada que não desce
+const tF = ator(2.2, J('tiaoF'), TIAO); tF.base(S.tiaoF[0], S.tiaoF[1], 'parado', { x: 640, y: 2120, vista: 'perfil', dir: -1 }); tF.expressao(S.tiaoF[0], S.tiaoF[1], 'medo'); tF.braco('d', S.tiaoF[0], S.tiaoF[1], 'pose', { o: 40, c: 60, mao: 'punho' });
+const enxF = item(CURRAL.enxada(0, 0, 1.9, 0), J('tiaoF'));
+const zE = ator(1.15, J('enxada'), SEUZE_ZUMBI); zE.base(S.enxada[0], S.enxada[1], 'parado', { x: 330, y: 1620, vista: 'frente' }); zE.expressao(S.enxada[0], S.enxada[1], 'zumbi'); zE.braco('ambos', S.enxada[0], S.enxada[1], 'estender');
+const tE = ator(1.6, J('enxada'), TIAO); tE.base(S.enxada[0], S.enxada[1], 'parado', { x: 800, y: 1900, vista: 'perfil', dir: -1 }); tE.expressao(S.enxada[0], S.enxada[1], 'medo');
+tE.braco('d', S.enxada[0], S.enxada[0] + 0.3, 'pose', { o: 40, c: 60, mao: 'punho' }); tE.braco('d', W('N11', 1), S.enxada[1], 'pose', { o: 168, c: 20, mao: 'punho', entrada: 0.5 }); tE.braco('e', W('N11', 1), S.enxada[1], 'pose', { o: 150, c: 30, mao: 'punho', entrada: 0.5 });
+const enxE = item(CURRAL.enxada(0, 0, 1.4, 0), J('enxada'));
+// flashback: o Seu Zé moço com o Tiãozinho no colo
+const zJ = ator(1.3, J('colo'), SEUZE_JOVEM); zJ.base(S.colo[0], S.colo[1], 'parado', { x: 500, y: 1700, vista: 'perfil', dir: 1 }); zJ.expressao(S.colo[0], S.colo[1], 'feliz'); zJ.braco('ambos', S.colo[0], S.colo[1], 'pose', { o: 40, c: 85 });
+zJ.cabeca(S.colo[0], S.colo[1], { baixar: 16 });
+const tJ = ator(0.5, J('colo'), { figurino: { preset: 'tiao', chapeu: null, corCabelo: '#3A2A1A', pernas: 'shorts' }, seed: 63 }); tJ.base(S.colo[0], S.colo[1], 'sentar', { x: 0, y: 0, chao: 90, dir: -1 }); tJ.cabeca(S.colo[0], S.colo[1], { baixar: -10 }); tJ.expressao(S.colo[0], S.colo[1], 'alegre'); tJ.braco('d', S.colo[0], S.colo[1], 'acenar');
+// a menina aparece na porteira do curral
+const aP = ator(0.78, JJ('menina', 'avanca', 'dois', 'voa', 'cai'), ANINHA);
+aP.base(S.menina[0], S.menina[0] + 1.4, 'andar', { de: [40, 1436], ate: [POR - 20, 1436], passo: 40 }); aP.base(S.menina[0] + 1.4, S.cai[1], 'parado', { x: POR - 20, y: 1436, vista: 'frente' });
+aP.expressao(S.menina[0], S.avanca[0], 'triste'); aP.expressao(S.avanca[0], S.cai[1], 'medo'); aP.braco('ambos', S.avanca[0], S.cai[1], 'pose', { o: 30, c: 110 });
+const aV2 = ator(2.1, J('vovo2'), ANINHA); aV2.base(S.vovo2[0], S.vovo2[1], 'parado', { x: 540, y: 2160, vista: 'frente' }); aV2.expressao(S.vovo2[0], S.vovo2[1], 'triste'); aV2.cabeca(S.vovo2[0], S.vovo2[1], { inclinar: -8 });
+const tC = ator(2.1, J('corre'), TIAO); tC.base(S.corre[0], S.corre[1], 'parado', { x: 700, y: 2080, vista: 'perfil', dir: -1 }); tC.expressao(S.corre[0], S.corre[1], 'gritando'); tC.braco('e', S.corre[0] + 0.1, S.corre[1], 'pose', { o: 95, c: 4, mao: 'aberta' });
+// o Seu Zé avança (rápido demais) e fica a dois passos da menina
+const zA = ator(1.2, JJ('avanca', 'dois', 'voa', 'cai'), SEUZE_ZUMBI);
+zA.base(S.avanca[0], W('N13', 5), 'parado', { x: 760, y: 1600, vista: 'perfil', dir: -1 });
+zA.base(W('N13', 5), W('N13', 9), 'correr', { de: [760, 1600], ate: [640, 1592] });
+zA.base(W('N13', 9), S.avanca[1], 'andar', { de: [640, 1592], ate: [610, 1590], passo: 30 });
+zA.base(S.dois[0], W('N16', 9), 'andar', { de: [610, 1590], ate: [530, 1585], passo: 34 });
+zA.base(W('N16', 9), S.cai[1], 'parado', { x: 530, y: 1585, vista: 'perfil', dir: -1, inclina: -4 });
+zA.braco('ambos', S.avanca[0], T_CRAVA, 'estender'); zA.braco('e', W('N16', 9), T_CRAVA, 'pose', { o: 92, c: 6 }); zA.expressao(S.avanca[0], S.cai[1], 'zumbi');
+zA.cabeca(S.avanca[0], T_CRAVA, { inclinar: 10 }); zA.cabeca(T_CRAVA, S.cai[1], { inclinar: -26, baixar: -14 });
+const zeGiro = t => sm(cl((t - T_CAI) / 0.55, 0, 1)) * 82 + (t > T_CRAVA && t < T_CAI ? Math.sin((t - T_CRAVA) * 3) * 3 : 0);
+const cabZe = t => { const c = zA.cabecaPos(), a = zeGiro(t) * Math.PI / 180, dx = c[0] - 530, dy = c[1] - 1585; return [530 + dx * Math.cos(a) - dy * Math.sin(a), 1585 + dx * Math.sin(a) + dy * Math.cos(a)]; };
+const viroteVoo = item(Armas.virote(0.9), [[T_VOA0, S.cai[1]]], '#props'), impactoV = item('', [[T_CRAVA, T_CRAVA + 0.45]], '#props'), fenoPuf = item('', [[T_CAI + 0.35, T_CAI + 1.4]], '#props');
+// a mira (do lado de fora, a porteira já no chão)
+const mM = piloto('lado', 1.05, J('mira'), { pos: t => ({ x: 420, y: 1560 }), semBesta: () => true,
+  extra: (t, M) => { const m = M.b.mao('d'), a = armasLado(M, { machad: true }); a.frente += `<g transform="translate(${f1(m[0])} ${f1(m[1])}) rotate(-4)">${Armas.besta(0.72 * M.k, { carregada: t < T_VOA0 })}</g>`; return a; } }).montar(S.mira[0], S.mira[1]);
+mM.b.braco('d', S.mira[0], S.mira[1], 'pose', { o: 92, c: 8, entrada: 0.15 }); mM.b.braco('e', S.mira[0], S.mira[1], 'pose', { o: 80, c: 30, entrada: 0.15 }); mM.b.expressao(S.mira[0], S.mira[1], 'serio'); mM.b.cabeca(S.mira[0], S.mira[1], { inclinar: 10 });
+
+// ===== na estrada lá embaixo: escuta o grito, acelera, voa no mata-burro, derruba a porteira =====
+const MBX = 430, PTX = 900;
+const motoKX = [[S.estrada2[0], -380], [W('N14', 9) - 0.3, 130], [W('N15', 1), 150], [W('N15', 4) - 0.2, MBX - 120], [W('N15', 8), MBX + 230], [T_PORTEIRA, PTX - 40], [T_PORTEIRA + 1.0, 1500]];
+const motoXAt = t => { for (let i = 1; i < motoKX.length; i++) if (t <= motoKX[i][0]) { const [t0, x0] = motoKX[i - 1], [t1, x1] = motoKX[i], u = (t - t0) / (t1 - t0); return lerp(x0, x1, i === 1 ? 1 - (1 - u) ** 2 : i === 3 ? u * u : u); } return 1500; };
+const pulo = t => { const t0 = W('N15', 4) - 0.2, t1 = W('N15', 8); if (t < t0 || t > t1) return 0; return Math.sin((t - t0) / (t1 - t0) * Math.PI); };
+const mB = piloto('lado', 0.8, J('estrada2'), { pos: t => { const x = motoXAt(t), p = pulo(t); return { x, y: 1530 - p * 170, rot: p ? lerp(-14, 10, (t - (W('N15', 4) - 0.2)) / (W('N15', 8) - W('N15', 4) + 0.2)) : 0, roda: x * 1.4 }; }, extra: (t, M) => armasLado(M) }).montar(S.estrada2[0], S.estrada2[1]);
+mB.b.expressao(S.estrada2[0], S.estrada2[1], 'serio'); mB.b.cabeca(W('N14', 9), W('N15', 1), { virar: -0.9, baixar: -4 }); mB.b.expressao(W('N14', 9), W('N15', 1), 'desconfiado');
+mB.b.cabeca(W('N15', 1), S.estrada2[1], { baixar: 6 });
+
+// ===== o silêncio: a menina paralisada, o Tião de joelhos, o estranho desce da moto com o facão =====
+const aPa = ator(2.1, J('paral'), ANINHA); aPa.base(S.paral[0], S.paral[1], 'parado', { x: 540, y: 2160, vista: 'frente' }); aPa.expressao(S.paral[0], S.paral[1], 'medo'); aPa.braco('ambos', S.paral[0], S.paral[1], 'pose', { o: 30, c: 120 });
+const tJo = ator(1.5, J('joelhos'), TIAO); tJo.base(S.joelhos[0], S.joelhos[0] + 0.5, 'parado', { x: 640, y: 1800, vista: 'perfil', dir: -1 }); tJo.base(S.joelhos[0] + 0.5, S.joelhos[1], 'agachar', { x: 640, y: 1800, vista: 'perfil', dir: -1, quanto: 170, inclina: 28, transicao: 0.6 });
+tJo.expressao(S.joelhos[0], S.joelhos[1], 'chorando'); tJo.braco('ambos', S.joelhos[0] + 0.6, S.joelhos[1], 'pose', { o: 20, c: 30 }); tJo.cabeca(S.joelhos[0] + 0.5, S.joelhos[1], { baixar: 22 });
+item(CURRAL.enxada(380, 1830, 1.2, -82), J('joelhos'));
+const T_DESCE = W('N18', 11);
+const mS = piloto('lado', 1.0, J('desce'), { pos: t => ({ x: 600, y: 1600 }), extra: (t, M) => { const a = armasLado(M, { facao: t < T_FACAO + 0.2 }); if (t >= T_FACAO + 0.2) { const m = M.b.mao('d'), q = M.b.ombros(); a.frente += `<g transform="translate(${f1(m[0])} ${f1(m[1])}) rotate(${f1(ang(q, m) - 10)})">${Armas.facao(0.8)}</g>`; } return a; } });
+mS.montar(S.desce[0], T_DESCE); mS.b.base(T_DESCE, S.desce[1], 'parado', { x: -330, y: 0, vista: 'perfil', dir: 1, transicao: 0.7 });
+mS.b.expressao(S.desce[0], S.desce[1], 'serio'); mS.b.braco('d', T_FACAO - 0.4, T_FACAO + 0.2, 'pose', { o: 175, c: 40, entrada: 0.3 }); mS.b.braco('d', T_FACAO + 0.2, S.desce[1], 'pose', { o: 30, c: 20, entrada: 0.3 });
+// os closes do diálogo
+const dQ = ator(2.0, JJ('quem', 'olha'), DIMAS); dQ.base(S.quem[0], S.olha[1], 'parado', { x: 540, y: 1820, vista: 'frente' }); dQ.expressao(S.quem[0], S.quem[1], 'serio'); dQ.expressao(S.olha[0], S.olha[1], 'desconfiado');
+dQ.braco('d', S.quem[0], S.olha[1], 'pose', { o: 30, c: 70, mao: 'punho' }); dQ.cabeca(S.olha[0] + 0.5, S.olha[1], { baixar: 20, virar: 0.3 });
+const facaoQ = item(Armas.facao(1.5), JJ('quem', 'olha'));
+const tS = ator(2.1, J('sonos'), TIAO); tS.base(S.sonos[0], S.sonos[1], 'agachar', { x: 620, y: 1760, vista: 'perfil', dir: -1, quanto: 150, inclina: 18 }); tS.expressao(S.sonos[0], S.sonos[1], 'medo'); tS.cabeca(S.sonos[0], S.sonos[1], { baixar: -14 });
+tS.braco('e', S.sonos[0] + 0.3, S.sonos[1], 'explicar');
+// "então me explica esse sangue aí"
+const dX = ator(1.4, J('explica'), DIMAS); dX.base(S.explica[0], S.explica[1], 'parado', { x: 330, y: 1720, vista: 'perfil', dir: 1 }); dX.expressao(S.explica[0], S.explica[1], 'serio');
+dX.braco('d', S.explica[0] + 0.2, S.explica[1], 'pose', { o: 84, c: 4, entrada: 0.4 });
+const facaoX = item(Armas.facao(1.1), J('explica'));
+const tX = ator(1.4, J('explica'), TIAO); tX.base(S.explica[0], S.explica[1], 'agachar', { x: 800, y: 1740, vista: 'perfil', dir: -1, quanto: 150, inclina: 18 }); tX.expressao(S.explica[0], S.explica[1], 'medo'); tX.cabeca(S.explica[0], S.explica[1], { baixar: -10 });
+
+// ===================== CÂMERA =====================
+const CAMP = {
+  abre: [1, 540, 1000, 1.12, 540, 1040], aninha: [1, 540, 960, 1.1, 520, 1000], vovo1: [1.05, 540, 1000, 1.1, 540, 980], tiao1: [1, 540, 960, 1.1, 620, 1100], levanta: [1.25, 680, 1180, 1.6, 700, 1060],
+  cidade: [1, 540, 960, 1.15, 540, 900], motoF: [1, 540, 960, 1.25, 540, 1150], motoL: [1, 540, 1150, 1.05, 540, 1200], facao: [2.0, 500, 1080, 2.1, 500, 1080], machad: [2.2, 560, 1320, 2.3, 560, 1320], vergal: [1.9, 420, 1450, 1.6, 480, 1400],
+  dimas: [1.1, 540, 1250, 1.9, 540, 1420], onibus: [1, 540, 1200, 1.15, 420, 1300], golpe: [1.55, 330, 1280, 1.7, 330, 1260], tanque: [1, 540, 960, 1.2, 540, 900], ponte: [1, 540, 960, 1.15, 600, 1000], terra: [1.0, 540, 960, 1.08, 540, 960],
+  estrada: [1, 540, 1100, 1.25, 540, 1000], flashV: [1, 540, 960, 1.1, 540, 1000], volta: [1, 540, 960, 1.25, 620, 1150], olhos: [1, 540, 960, 1.15, 540, 900], tiaoF: [1, 540, 960, 1.06, 560, 960], enxada: [1, 540, 960, 1.12, 640, 1000],
+  colo: [1, 540, 960, 1.15, 540, 1100], olhaP: [1.15, 600, 1150, 1.25, 560, 1150], menina: [1.4, 300, 1150, 1.6, 280, 1120], vovo2: [1.05, 540, 1000, 1.15, 540, 980], corre: [1.05, 560, 1000, 1.1, 560, 1000], avanca: [1, 540, 1050, 1.2, 440, 1150],
+  estrada2: [1.2, 450, 1250, 1.3, 760, 1200], dois: [1.25, 400, 1150, 1.6, 370, 1120], mira: [1.7, 520, 1050, 1.8, 560, 1040], voa: [1.35, 400, 1080, 1.45, 410, 1060], cai: [1.4, 460, 1150, 1.15, 520, 1200],
+  paral: [1.05, 540, 1000, 1.12, 540, 980], joelhos: [1, 540, 1000, 1.1, 560, 1050], desce: [1.2, 420, 1150, 1.35, 330, 1150], quem: [1.0, 540, 960, 1.1, 540, 900], sonos: [1.0, 540, 960, 1.08, 560, 960],
+  olha: [1.1, 540, 900, 1.25, 540, 860], perna: [1, 540, 960, 1.3, 540, 1000], explica: [1, 540, 960, 1.1, 560, 1100],
+};
+const tenso = t => (t >= S.golpe[0] && t < S.golpe[1]) || (t >= S.avanca[0] && t < S.avanca[1]) || (t >= S.estrada2[0] + 4.2 && t < S.estrada2[1]) || (t >= S.dois[0] && t < S.voa[1]);
+function camEm(t) {
+  let k = 1, cx = 540, cy = 960;
+  for (const [nome, [a, b]] of Object.entries(S)) if (t >= a && t < b && CAMP[nome]) { const c = CAMP[nome], u = sm((t - a) / (b - a)); k = c[0] + (c[3] - c[0]) * u; cx = c[1] + (c[4] - c[1]) * u; cy = c[2] + (c[5] - c[2]) * u; }
+  if (t >= S.estrada2[0] && t < S.estrada2[1]) cx = motoXAt(t) + 80;   // a câmera acompanha a moto
+  cx = cl(cx, 540 / k + 28, 1080 - 540 / k - 28); cy = cl(cy, 960 / k + 28, 1920 - 960 / k - 28);
+  const choque = tt => (t > tt && t < tt + 0.5) ? (1 - (t - tt) / 0.5) * 22 : 0;
+  const sh = (tenso(t) ? 2.2 : 1) + ((t > 0.42 && t < 0.9) ? 9 * (0.9 - t) / 0.48 : 0) + choque(T_GOLPE) + choque(T_CRAVA) + choque(T_PORTEIRA) + choque(T_CAI + 0.4) * 0.6 + choque(W('N15', 8)) * 0.7;
+  const bx = (Math.sin(t * 1.3) * 3 + Math.sin(t * 3.1) * 1.2 + (sh > 3 ? Math.sin(t * 61) * 1.4 : 0)) * sh, by = (Math.cos(t * 1.1) * 2.5 + Math.sin(t * 5.7) * (sh > 1 ? 2 : 0.6) + (sh > 3 ? Math.cos(t * 53) * 1.4 : 0)) * sh, rot = Math.sin(t * 0.9) * 0.3;
+  return `translate(${540 + bx} ${960 + by}) rotate(${rot.toFixed(3)}) scale(${k.toFixed(4)}) translate(${-cx} ${-cy})`;
+}
+
+// ===================== TIMELINE =====================
+const rendering = navigator.webdriver;
+const tl = gsap.timeline({ paused: true, defaults: { ease: 'power2.inOut' } });
+$$('.scene').forEach(s => gsap.set(s, { autoAlpha: 0 }));
+const show = (sel, t0, t1) => { tl.fromTo(sel, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.01, ease: 'none', immediateRender: false }, t0); if (t1 != null) tl.to(sel, { autoAlpha: 0, duration: 0.01, ease: 'none' }, t1); };
+const fade = (sel, t0, t1, d = 0.35) => { gsap.set(sel, { autoAlpha: 0 }); tl.to(sel, { autoAlpha: 1, duration: d }, t0); if (t1 != null) tl.to(sel, { autoAlpha: 0, duration: d }, t1); };
+const pop = (sel, t, t1 = null, d = 0.35) => { gsap.set(sel, { autoAlpha: 0, scale: 0.6, transformOrigin: '50% 50%' }); tl.fromTo(sel, { autoAlpha: 0, scale: 0.6 }, { autoAlpha: 1, scale: 1, duration: d, ease: 'back.out(2)', immediateRender: false }, t); if (t1 != null) tl.to(sel, { autoAlpha: 0, duration: 0.15 }, t1 - 0.12); };
+gsap.set('#c-gancho', { autoAlpha: 0 }); show('#c-gancho', S.abre[0], S.abre[1]);
+const USO = { 'c-av': ['abre', 'cidade', 'motoF', 'dimas'], 'c-porteira': ['aninha', 'vovo1'], 'c-curral': ['tiao1', 'levanta', 'volta', 'olhos', 'tiaoF', 'enxada', 'olhaP', 'menina', 'vovo2', 'corre', 'avanca', 'dois', 'voa', 'cai', 'paral', 'joelhos', 'quem', 'sonos', 'olha', 'explica'],
+  'c-lado': ['motoL', 'facao', 'machad', 'vergal'], 'c-onibus': ['onibus', 'golpe'], 'c-tanque': ['tanque'], 'c-ponte': ['ponte', 'terra'], 'c-estrada': ['estrada'], 'c-flashV': ['flashV'], 'c-colo': ['colo'],
+  'c-mb': ['estrada2', 'mira', 'desce'], 'c-perna': ['perna'] };
+Object.entries(USO).forEach(([id, planos]) => { const iv = planos.map(k => [...S[k]]).sort((a, b) => a[0] - b[0]), m = [];
+  iv.forEach(([a, b]) => { if (m.length && a <= m[m.length - 1][1] + 0.001) m[m.length - 1][1] = Math.max(m[m.length - 1][1], b); else m.push([a, b]); }); m.forEach(([a, b]) => show('#' + id, a, b)); });
+gsap.set('#escuro', { autoAlpha: 1 }); tl.to('#escuro', { autoAlpha: 0.15, duration: 0.25 }, 0.18).to('#escuro', { autoAlpha: 0, duration: 0.5 }, 1.0);
+gsap.set('#preto', { autoAlpha: 0 }); tl.set('#preto', { autoAlpha: 1 }, FIM_FALA); tl.set('#preto', { autoAlpha: 0 }, CARTAO);
+gsap.set('#clarao', { opacity: 0 }); [T_GOLPE, T_CRAVA, T_PORTEIRA].forEach((tt, i) => tl.to('#clarao', { opacity: i === 1 ? 0.8 : 0.45, duration: 0.03 }, tt).to('#clarao', { opacity: 0, duration: 0.3 }, tt + 0.04));
+gsap.set('#g-dia', { autoAlpha: 0, scale: 2.6, transformOrigin: '540px 790px' }); tl.to('#g-dia', { autoAlpha: 1, scale: 1, duration: 0.22, ease: 'power4.in' }, 0.2);
+gsap.set('#g-flash', { opacity: 0 }); tl.to('#g-flash', { opacity: 0.85, duration: 0.03 }, 0.42).to('#g-flash', { opacity: 0, duration: 0.35 }, 0.45);
+gsap.set('#g-apoc', { autoAlpha: 0, y: 30 }); tl.to('#g-apoc', { autoAlpha: 1, y: 0, duration: 0.25, ease: 'power3.out' }, W('N01', 5)); tl.to('#g-dia', { scale: 1.06, duration: 1.8, ease: 'none' }, 0.45);
+fade('#selo1', S.aninha[0] + 0.2, S.vovo1[0]); fade('#selo2', S.cidade[0] + 0.1, S.cidade[1] - 0.3);
+pop('#t-20km', W('N03', 3), S.cidade[1]); pop('#t-cidade', W('N03', 7), S.cidade[1]);
+pop('#t-facao', W('N05', 0), S.facao[1]); pop('#t-machad', W('N05', 5), S.machad[1]); pop('#t-vergal', W('N05', 13), S.vergal[1]);
+pop('#t-dimas', W('N06', 4), S.dimas[1], 0.45); pop('#t-naopara', W('N06', 7), S.dimas[1]);
+pop('#o-tchac', T_GOLPE, T_GOLPE + 0.9, 0.2); pop('#t-vazio', W('N08', 4), S.tanque[1]); pop('#t-tomada', W('N08', 14), S.ponte[1]);
+pop('#t-mesma', W('N09', 1), S.estrada[1]); pop('#t-festa', S.flashV[0] + 0.1, S.flashV[1]); pop('#t-volta', S.volta[0] + 0.1, W('N10', 7)); pop('#t-colo', S.colo[0] + 0.1, S.colo[1]);
+pop('#t-tarde', W('N13', 0), W('N13', 5)); pop('#o-grito', W('N14', 9), W('N15', 0), 0.2); pop('#o-vrum', W('N15', 1), W('N15', 4)); pop('#o-crac', T_PORTEIRA, T_PORTEIRA + 0.9, 0.2);
+pop('#t-2passos', W('N16', 5), W('N16', 12)); pop('#t-silencio', W('N17', 0), W('N17', 3));
+show('#fim', CARTAO); pop('#fim-t', CARTAO + 0.3); pop('#fim-c', CARTAO + 1.0);
+tl.to('#fim-c', { scale: 1.05, duration: 0.45, repeat: 4, yoyo: true, ease: 'sine.inOut' }, CARTAO + 1.6);
+tl.set({}, {}, END);
+
+// ===================== LEGENDA =====================
+const leg = Legenda($('#legenda'), window.PALAVRAS || [], { y: PISO_LEG, fs: 76, fonte: "'Anton', sans-serif", destaque: AMBAR, cor: BRANCO, contorno: '#000',
+  enfase: ['DIMAS.', 'DIMAS', 'GOLPE', 'TOMADA.', 'BRANCOS.', 'CORRE!', 'TARDE', 'GRITO', 'VERGALHÃO', 'SILÊNCIO.', 'SANGUE', 'MORDIDO.', 'TERRA.', 'VOVÔ?', 'CURRAL.', 'MATA-BURRO.', 'PORTEIRA.'] }).esconder([[0, S.abre[1]], [S.tanque[0], S.tanque[1]], [S.perna[0], S.perna[1]], [FIM_FALA, 999]]);
+const NOMES = { tiao: 'TIÃO', ze: 'SEU ZÉ', aninha: 'ANINHA', dimas: 'DIMAS' };
+
+// ===================== RENDER =====================
+const naMao = (el, b, lado, dx, dy, rot, k = 1) => { const m = b.mao(lado); el.setAttribute('transform', `translate(${f1(m[0] + dx)} ${f1(m[1] + dy)}) rotate(${rot}) scale(${k})`); };
+function desenhar(t) {
+  $('#cam').setAttribute('transform', camEm(t));
+  for (const A of ATORES) { const o = dentro(t, A.janelas); A.g.style.display = o ? '' : 'none'; if (o) A.b.desenhar(t); }
+  for (const I of ITENS) I.g.style.display = dentro(t, I.janelas) ? '' : 'none';
+  for (const M of MOTOS) desenharMoto(M, t);
+  const sg = (window.SEGMENTOS || []).find(s => t >= s.de && t <= s.ate + 0.15 && NOMES[s.quem]);
+  const qn = sg && t >= S.abre[1] && t < FIM_FALA ? NOMES[sg.quem] : '';
+  $('#quem-t').textContent = qn; $('#quem').style.display = qn ? '' : 'none'; $('#quem-r').setAttribute('x', -(qn.length * 13 + 40)); $('#quem-r').setAttribute('width', qn.length * 26 + 80);
+  // cenário de lado rolando (a moto anda, o mundo passa)
+  if (dentro(t, ATE('motoL', 'vergal'))) $('#rolo').setAttribute('transform', `translate(${f1(-((t - S.motoL[0]) * 190) % 2160)} 0)`);
+  // enxadas nas mãos (tremendo quando ele levanta e o braço não obedece)
+  const treme = t >= W('N11', 4) ? Math.sin(t * 47) * 4 : Math.sin(t * 23) * 1.2;
+  if (dentro(t, ATE('tiao1', 'levanta'))) naMao(enxT, tT, 'd', 0, 100, 8);
+  if (dentro(t, tV.grupo && ATORES.find(A => A.b === tV).janelas)) naMao(enxV, tV, 'd', 0, 100, 8);
+  if (dentro(t, J('tiaoF'))) naMao(enxF, tF, 'd', 0, 140, 8 + Math.sin(t * 19) * 1.5);
+  if (dentro(t, J('enxada'))) { naMao(enxE, tE, 'd', treme, 110, 4 + treme * 0.6); tE.grupo.setAttribute('transform', `translate(${f1(treme * 0.4)} 0)`); }
+  // golpe na cabeça
+  if (dentro(t, ATE('onibus', 'golpe'))) {
+    const c = zI.cabecaPos();
+    if (t >= T_GOLPE - 0.12 && t < T_GOLPE + 0.06) { const m = mG.b.mao('d'), p = mG.pos(t); rastroG.innerHTML = Armas.rastro(p.x + (m[0] - 60) * 0.85, p.y + m[1] * 0.85, 150, -150, -30); }
+    if (t >= T_GOLPE) impactoG.innerHTML = Armas.estrela(c[0], c[1], 0.9 + (t - T_GOLPE) * 1.2) + Armas.respingo(c[0] + 30, c[1] - 10, 1.1 + (t - T_GOLPE) * 1.5);
+    const u = sm(cl((t - T_GOLPE - 0.15) / 0.5, 0, 1)), fx = 430, fy = 1670;
+    zI.grupo.setAttribute('transform', `rotate(${f1(u * 84)} ${fx} ${fy})`);
+  }
+  // o tanque: ponteiro descendo e luz da reserva piscando
+  if (dentro(t, J('tanque'))) { const u = sm(cl((t - S.tanque[0]) / 1.6, 0, 1)); $('#ponteiro').setAttribute('transform', `rotate(${f1(lerp(-20, -58, u) + Math.sin(t * 9) * 1.5)} 540 900)`);
+    const pisca = Math.sin(t * 12) > 0 ? 1 : 0.25; $('#luzRes').setAttribute('opacity', pisca); $$('.luzResB').forEach(e => e.setAttribute('opacity', pisca * 0.3)); }
+  // poeira atrás da moto na estrada
+  if (dentro(t, J('estrada'))) { const p = mE.pos(t); $$('.po').forEach(c => { const i = +c.dataset.i, age = ((t * 2.2 + i * 0.1) % 1), s = p.s; c.setAttribute('cx', f1(p.x + Math.sin(i * 2.3) * 120 * s * (0.4 + age))); c.setAttribute('cy', f1(p.y - 40 * s - age * 160 * s)); c.setAttribute('r', f1((30 + age * 90) * s + 4)); c.setAttribute('opacity', ((1 - age) * 0.35).toFixed(2)); }); }
+  // porteira de lado: as tábuas voam quando a moto bate
+  $$('#c-mb .porteiraTabua').forEach(tb => { const i = +tb.dataset.i, u = t - T_PORTEIRA; if (u < 0 || t > S.estrada2[1] + 30) { tb.setAttribute('transform', t > S.estrada2[1] ? `translate(${180 + i * 40} ${120 - i * 52 + 40}) rotate(${i % 2 ? 84 : 96} ${tb.dataset.cx} ${tb.dataset.cy})` : ''); return; }
+    const uu = Math.min(u, 1.2), dx = uu * (420 + i * 90), dy = -uu * (380 - i * 50) + uu * uu * 900; tb.setAttribute('transform', `translate(${f1(dx)} ${f1(Math.min(dy, 120 + i * 30))}) rotate(${f1(uu * (220 + i * 80))} ${tb.dataset.cx} ${tb.dataset.cy})`); });
+  // o virote de vergalhão: atravessa o ar e crava na cabeça
+  if (t >= T_VOA0 && t < S.cai[1]) { const c = cabZe(t); const u = cl((t - T_VOA0) / (T_CRAVA - T_VOA0), 0, 1), x0 = -300, y0 = 520, alvo = [c[0] - 24, c[1] - 6];
+    const a0 = ang([x0, y0], alvo), d = Math.hypot(alvo[0] - x0, alvo[1] - y0), giro = zeGiro(t);
+    const x = lerp(x0, alvo[0], u), y = lerp(y0, alvo[1], u);
+    viroteVoo.innerHTML = `<g transform="translate(-200 0)">${Armas.virote(0.9)}</g>` + (u < 1 ? `<path d="M-230 0 H${f1(-230 - Math.min(d * u, 420))}" stroke="#F2EEE2" stroke-width="6" opacity=".55" stroke-linecap="round"/>` : '');
+    viroteVoo.setAttribute('transform', `translate(${f1(x)} ${f1(y)}) rotate(${f1(a0 + (u < 1 ? 0 : giro))})`); }
+  if (t >= T_CRAVA && t < T_CRAVA + 0.45) { const c = cabZe(t); impactoV.innerHTML = Armas.estrela(c[0] + 10, c[1], 0.8 + (t - T_CRAVA)) + Armas.respingo(c[0] + 40, c[1] - 6, 1 + (t - T_CRAVA) * 1.5); }
+  // o Seu Zé tomba para trás no feno
+  if (dentro(t, JJ('avanca', 'dois', 'voa', 'cai'))) zA.grupo.setAttribute('transform', `rotate(${f1(zeGiro(t))} 530 1585)`);
+  if (t >= T_CAI + 0.35 && t < T_CAI + 1.4) { const u = (t - T_CAI - 0.35) / 1.05; fenoPuf.innerHTML = [...Array(16)].map((_, i) => { const a = -Math.PI * (0.1 + 0.8 * (i / 15)); return `<path d="M${f1(660 + Math.cos(a) * u * 260)} ${f1(1560 + Math.sin(a) * u * 220 + u * u * 160)} l${(i % 5) * 6 - 12} -${8 + i % 4 * 3}" stroke="#D8B860" stroke-width="5" opacity="${f1(1 - u)}"/>`; }).join(''); }
+  if (dentro(t, J('colo'))) { const m = zJ.mao('d'); tJ.grupo.setAttribute('transform', `translate(${f1(m[0] - 10)} ${f1(m[1] - 30)})`); }
+  // facões nas mãos (closes)
+  if (dentro(t, JJ('quem', 'olha'))) naMao(facaoQ, dQ, 'd', 0, 0, -70);
+  if (dentro(t, J('explica'))) naMao(facaoX, dX, 'd', 0, 0, 0);
+  // as gotas de sangue escorrendo
+  if (dentro(t, J('perna'))) $$('.gota').forEach(g => { const i = +g.dataset.i, u = ((t - S.perna[0]) * 0.8 + i * 0.33) % 1, xs = [503, 560, 612][i], y0 = [1180, 1000, 880][i]; g.setAttribute('transform', `translate(${xs} ${f1(y0 + (u < 0.5 ? u * 40 : 20 + (u - 0.5) ** 2 * 2400))}) scale(${f1(0.8 + u * 0.4)})`); });
+}
+window.__timeline = tl;
+window.__duration = tl.duration();
+window.__seek = t => { tl.seek(t, false); desenhar(t); leg.seek(t); };
+document.fonts.ready.then(() => Palco.caberTextos(document));
+window.__seek(0);
+if (!rendering) { tl.eventCallback('onUpdate', () => { const t = tl.time(); desenhar(t); leg.seek(t); }); document.addEventListener('click', () => tl.paused() ? tl.play() : tl.pause()); }
+</script>
+</body>
+</html>
