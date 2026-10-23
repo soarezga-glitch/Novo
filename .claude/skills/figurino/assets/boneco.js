@@ -189,6 +189,7 @@
       const h = this.el.cab = mk('g', {});
       this.el.cabeloTras = mk('path', { fill: F.corCabelo || '#3A2A20' }, h);
       this.el.cranio = mk('circle', { r: M.cabeca * this.s, fill: this.cor }, h);
+      this.el.barba = mk('path', { fill: F.corCabelo || '#3A2A20', opacity: 0.5 }, h);   // barba por fazer (figurino barba: true)
       this.el.cabelo = mk('path', { fill: F.corCabelo || '#3A2A20' }, h);
       this.el.rosto = mk('g', {}, h);
       this.el.manchas = [[-26, -30, 18, 11], [30, 30, 15, 8], [6, -48, 10, 6]].map(([x, y, rx, ry]) => mk('ellipse', { rx: rx * this.s, ry: ry * this.s, fill: '#3A3A3A', opacity: 0.55, 'data-x': x, 'data-y': y }, this.el.rosto));
@@ -767,7 +768,7 @@
         const temAvental = (this.fig.extras || []).includes('avental');
         this.el.avental.setAttribute('d', temAvental ? `M${f(P_(c0, c1, 0.18))} L${f(P_(c0, c1, 0.82))} L${f(P_(b0, b1, 0.86))} L${f(P_(b0, b1, 0.14))}Z` : '');
         // zumbi: roupa em farrapos — tiras penduradas na barra da camisa, na manga e na boca da calça
-        if (this.fig.zumbi) {
+        if (this.fig.zumbi || this.fig.rasgos) {
           const zv = this.zv, tiras = (a, b, baixo, n, comp, cor, sem) => {
             let d = ''; for (let k = 0; k < n; k++) {
               const u0 = k / n, u1 = (k + 1) / n, m = P_(a, b, (u0 + u1) / 2), L = comp * (0.45 + zv[(k + sem) % 12] * 0.9);
@@ -791,11 +792,11 @@
           [bracos.e, bracos.d].forEach(B => { const v = un(B.c, B.m), dn = un([0, 0], [v[0] * 0.5, v[1] * 0.5 + 0.8]);
             [-0.45, 0, 0.45].forEach(a => { const c = Math.cos(a), sn = Math.sin(a), d2 = [dn[0] * c - dn[1] * sn, dn[0] * sn + dn[1] * c], b = [B.m[0] + v[0] * 6 * s, B.m[1] + v[1] * 6 * s];
               g += `M${f(b)} L${f([b[0] + d2[0] * 17 * s, b[1] + d2[1] * 22 * s])} `; }); });
-          this.el.garras.setAttribute('d', g);
+          this.el.garras.setAttribute('d', this.fig.zumbi ? g : '');
           this.el.garras.setAttribute('stroke', this.cor);
         }
       }
-      if (!this.fig.zumbi) { this.el.farrapos.innerHTML = ''; this.el.farraposPerto.innerHTML = ''; this.el.garras.setAttribute('d', ''); }
+      if (!this.fig.zumbi && !this.fig.rasgos) { this.el.farrapos.innerHTML = ''; this.el.farraposPerto.innerHTML = ''; this.el.garras.setAttribute('d', ''); }
       this._maos = { e: rot(maos.e), d: rot(maos.d) };
       this._top = rot(top); this._cab = rot(cab); this._quadril = rot(H);   // para prender coisas no corpo (criança nas costas, chapéu, mochila)
       // cabeça e rosto
@@ -869,6 +870,12 @@
           dT = `M${x - r * 0.36} ${y} a${r * 0.36} ${r * 0.32} 0 1 0 ${r * 0.72} 0 a${r * 0.36} ${r * 0.32} 0 1 0 ${-r * 0.72} 0Z`;
         }
       }
+      if (F.barba) {   // barba por fazer: faixa no queixo e nas bochechas, na mesma esfera do rosto (gira com a cabeça)
+        const R = r * 1.02, ptB = (lon, lat) => [C[0] + R * Math.cos(lat) * Math.sin(lon + TH), C[1] - R * Math.sin(lat)];
+        const L1 = [], L2 = []; for (let k = 0; k <= 14; k++) { const lon = -1.05 + 2.1 * k / 14; if (Math.cos(lon + TH) < 0.05) continue; L1.push(ptB(lon, -0.12 - 0.42 * Math.cos(lon) ** 2)); L2.push(ptB(lon, -1.0)); }
+        el.barba.setAttribute('d', L1.length > 1 ? 'M' + L1.map(p => p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join(' L') + ' L' + L2.reverse().map(p => p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join(' L') + 'Z' : '');
+        el.barba.setAttribute('transform', `rotate(${rot.toFixed(2)} ${C[0].toFixed(1)} ${C[1].toFixed(1)})`);
+      } else el.barba.setAttribute('d', '');
       el.cabelo.setAttribute('d', d); el.cabeloTras.setAttribute('d', dT);
       // chapéus / adornos
       const ch = F.chapeu || 'nenhum', cc = F.corChapeu || '#9E2A22';
@@ -1183,6 +1190,7 @@
     'seuze':         { tronco: 'camiseta', cor: '#7A8A9A', mangas: 'curta', pernas: 'calca', corPernas: '#4A3A2A', pes: 'sapato', corPes: '#2A1E14', cabelo: 'curto', corCabelo: '#E8E8E2', cinto: '#2A1E14', semBochecha: true },
     'neta':          { tronco: 'vestido', cor: '#C97A9A', mangas: 'curta', pes: 'sapato', corPes: '#F2F2F2', cabelo: 'longo', corCabelo: '#3A2418', chapeu: 'tiara', corChapeu: '#F2E26A', semBochecha: true },
     'vulto':         { tronco: 'camiseta', cor: '#15161C', mangas: 'curta', pernas: 'calca', corPernas: '#101116', pes: 'descalco', cabelo: 'zumbi', corCabelo: '#0C0C10', semBochecha: true, zumbi: true },   // zumbi no escuro: silhueta curvada, farrapos, braços tortos
+    'dimas':         { tronco: 'moletom', cor: '#4A3424', cor2: '#2E2018', mangas: 'longa', corManga: '#4A3424', pernas: 'calca', corPernas: '#3A3E44', pes: 'bota', corPes: '#2A1E14', cabelo: 'zumbi', corCabelo: '#2A2018', cinto: '#1A1410', rasgos: true, barba: true, semBochecha: true },   // o sobrevivente da moto: jaqueta de couro rasgada, cabelo comprido
     'aluno':         { tronco: 'camiseta', cor: '#5A7A9A', mangas: 'curta', pernas: 'calca', corPernas: '#2E3A4A', pes: 'tenis', corPes: '#F2F2F2', corPes2: '#5A5A60', cabelo: 'curto', corCabelo: '#2A1E16', semBochecha: true },
     // --- SOBREVIVENTE: personagem oficial (skill personagem-sobrevivente) ---
     'sobrevivente':  { tronco: 'camiseta', cor: '#FFFFFF', mangas: 'curta', pernas: 'calca', corPernas: '#26262B', cargo: true, pes: 'tenis', corPes: '#FF7A00', corPes2: '#111111', cabelo: 'militar', corCabelo: '#111111', extras: ['cachecol', 'mochila'], luvas: true, semBochecha: true, cinto: 'none' }
