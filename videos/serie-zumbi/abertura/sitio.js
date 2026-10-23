@@ -475,6 +475,35 @@
       for (let i = 0; i < 80; i++) { const fx = rnd(x, x + w), fy = rnd(chao + 10, y + h); s += `<path d="M${f(fx)} ${f(fy)} l${f(rnd(-30, 30))} ${f(rnd(-6, 6))}" stroke="#B8984A" stroke-width="3" opacity=".7"/>`; }
       return clip(x, y, w, h, s + acabamento(0.3));
     };
+    // ---------- CASA DESTRUÍDA na roça: telhado afundado, parede caída, janelas quebradas, porta no chão, mato tomando conta ----------
+    S.casaDestruida = ({ x = 0, y = 0, w = 1080, h = 1920, chao = 1400 } = {}) => {
+      const [gid, gdef] = grad(['#1A1830', '#5A3A50', '#C8704A']);
+      let s = defs() + gdef + `<rect x="${x}" y="${y}" width="${w}" height="${chao}" fill="url(#${gid})"/>` + serra(x, w, chao - 280, 200, '#3A2E40', 1);
+      s += `<path d="M${x} ${chao - 280} H${x + w} V${y + h} H${x}Z" fill="#2E3A24"/>`;
+      for (let i = 0; i < 5; i++) s += araucaria(x + rnd(0, w), chao - rnd(240, 300), rnd(120, 220), '#1A2016');
+      // corpo da casa
+      const cx = x + 140, cw = 800, base = chao + 40, ph = 420, topo = base - ph;
+      s += `<rect x="${cx}" y="${topo}" width="${cw}" height="${ph}" fill="#8A7A62" stroke="${L}" stroke-width="7"/>`;
+      for (let i = 0; i < 14; i++) s += `<rect x="${f(cx + rnd(10, cw - 80))}" y="${f(topo + rnd(10, ph - 50))}" width="${f(rnd(30, 70))}" height="${f(rnd(14, 30))}" fill="#9A4A34" opacity=".6"/>`;   // tijolo aparecendo
+      s += `<path d="M${cx + 40} ${topo + 40} l60 120 l-30 80 l50 110 M${cx + 600} ${topo} l-40 140 l60 90" stroke="${L}" stroke-width="5" fill="none"/>`;   // rachaduras
+      s += `<path d="M${cx + cw - 220} ${topo} L${cx + cw} ${topo + 60} L${cx + cw} ${base} L${cx + cw - 140} ${base} L${cx + cw - 180} ${topo + 200}Z" fill="#14100E"/>`;   // parede que caiu (buraco)
+      // telhado afundado: metade das telhas, caibros quebrados aparecendo
+      s += `<path d="M${cx - 60} ${topo + 10} L${cx + cw / 2 - 40} ${topo - 240} L${cx + cw / 2 + 60} ${topo - 210} L${cx + cw / 2 + 120} ${topo - 60} L${cx + cw - 160} ${topo - 120} L${cx + cw + 60} ${topo + 10}Z" fill="#5A2E22" stroke="${L}" stroke-width="7"/>`;
+      for (let r = 0; r < 6; r++) s += `<path d="M${cx - 40 + r * 40} ${topo - r * 40} L${cx + cw / 2 - 40 + r * 10} ${topo - 240 + r * 40}" stroke="#7A3E2A" stroke-width="5" opacity=".6"/>`;
+      s += `<path d="M${cx + cw / 2 + 60} ${topo - 210} L${cx + cw / 2 + 120} ${topo - 60} L${cx + cw - 160} ${topo - 120}Z" fill="#14100E"/>` + [0, 1, 2, 3].map(k => `<path d="M${cx + cw / 2 + 70 + k * 40} ${topo - 200 + k * 30} l${f(rnd(-30, 30))} ${f(rnd(60, 120))}" stroke="#5A3E26" stroke-width="12" stroke-linecap="round"/>`).join('');
+      // janelas: uma tapada com tábua, uma com vidro quebrado
+      s += `<rect x="${cx + 80}" y="${topo + 110}" width="150" height="150" fill="#14100E" stroke="${L}" stroke-width="6"/>` + [0, 1, 2].map(k => `<rect x="${cx + 60}" y="${topo + 130 + k * 45}" width="190" height="28" fill="#6A4A2C" stroke="${L}" stroke-width="4" transform="rotate(${[-8, 6, -4][k]} ${cx + 155} ${topo + 145 + k * 45})"/>`).join('');
+      s += `<rect x="${cx + 470}" y="${topo + 110}" width="150" height="150" fill="#1E2430" stroke="${L}" stroke-width="6"/><path d="M${cx + 470} ${topo + 110} l70 60 l-30 40 l80 50 M${cx + 620} ${topo + 110} l-50 70" stroke="#8A9AAA" stroke-width="4" fill="none"/>`;
+      // porta arrancada caída no chão + vão escuro
+      s += `<rect x="${cx + 290}" y="${topo + 140}" width="130" height="${ph - 140}" fill="#0A0808" stroke="${L}" stroke-width="6"/><path d="M${cx + 250} ${base + 10} L${cx + 420} ${base - 30} L${cx + 460} ${base + 30} L${cx + 290} ${base + 70}Z" fill="#5A3E26" stroke="${L}" stroke-width="5"/>`;
+      // varanda caída, cerca quebrada, mato alto na frente
+      s += `<path d="M${cx - 80} ${topo + 200} L${cx + 300} ${topo + 260}" stroke="#4A3220" stroke-width="22"/><path d="M${cx - 60} ${topo + 210} L${cx - 90} ${base + 20}" stroke="#4A3220" stroke-width="18" transform="rotate(-14 ${cx - 60} ${topo + 210})"/>`;
+      for (let i = 0; i < 9; i++) { const px = x + 20 + i * 120; s += `<path d="M${px} ${chao + 300} v${-rnd(100, 200)}" stroke="#4A3824" stroke-width="16" transform="rotate(${f(rnd(-25, 25))} ${px} ${chao + 300})"/>`; }
+      s += `<path d="M${x} ${chao + 180} L${x + 380} ${chao + 160} M${x + 640} ${chao + 170} L${x + w} ${chao + 150}" stroke="#4A3824" stroke-width="12"/>`;
+      s += `<rect x="${x}" y="${chao + 260}" width="${w}" height="${y + h - chao - 260}" fill="#3A4A2A"/>`;
+      for (let i = 0; i < 70; i++) s += touceira(x + rnd(0, w), chao + rnd(80, h - chao), rnd(0.8, 1.6), pick(['#2E4A28', '#3A5A2E', '#24381E']));
+      return clip(x, y, w, h, s + acabamento(0.3));
+    };
     // ---------- ESTRADA DE CHÃO ao entardecer (vista em perspectiva), com poeira opcional ----------
     S.estradaTarde = ({ x = 0, y = 0, w = 1080, h = 1920, fuga = [x + w * 0.5, y + h * 0.46] } = {}) => {
       const [gid, gdef] = grad(['#2A2244', '#7A4A5A', '#E0885A', '#F2B070']);

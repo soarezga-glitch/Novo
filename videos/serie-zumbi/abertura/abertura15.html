@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Abertura Os Sobreviventes</title>
+<!-- ABERTURA da série (protótipo): cortes lentos pelos lugares da história com imagem envelhecida (granulado, riscos, poeira,
+     tremido de projetor), os nomes dos personagens como créditos, e o título no fim. Música original (musica.py). -->
+<style>
+  html, body { margin: 0; background: #000; overflow: hidden; }
+  #stage { width: 1080px; height: 1920px; display: block; filter: saturate(0.55) contrast(1.12) brightness(1.12); }
+  @font-face { font-family: 'Anton'; src: url(fontes/anton.woff2); }
+  text { font-family: 'Anton', sans-serif; }
+</style>
+<script src="boneco.js"></script>
+<script src="volume.js"></script>
+<script src="cenario.js"></script>
+<script src="sitio.js"></script>
+<script src="cidade-zumbi.js"></script>
+<script src="armas.js"></script>
+<script src="moto.js"></script>
+</head>
+<body>
+<svg id="stage" viewBox="0 0 1080 1920" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="grao" x="0" y="0" width="100%" height="100%"><feTurbulence id="turb" type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="1"/><feColorMatrix type="matrix" values="0 0 0 0 0.5  0 0 0 0 0.5  0 0 0 0 0.5  0 0 0 1.4 -0.55"/></filter>
+    <filter id="gasto" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency="0.035 0.09" numOctaves="3" seed="4" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -2.4 1.75" result="m"/><feComposite in="SourceGraphic" in2="m" operator="in"/></filter>
+    <radialGradient id="vin" cx=".5" cy=".5" r=".75"><stop offset=".4" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".7"/></radialGradient>
+  </defs>
+  <g id="cam"><g id="planos"></g></g>
+  <rect width="1080" height="1920" fill="#4A6A5A" opacity=".18" style="mix-blend-mode:multiply"/>
+  <rect width="1080" height="1920" fill="url(#vin)"/>
+  <g id="creditos"></g>
+  <g id="titulo"></g>
+  <rect id="pisca" width="1080" height="1920" fill="#000" opacity="0"/>
+  <rect width="1080" height="1920" filter="url(#grao)" opacity=".22" style="mix-blend-mode:overlay"/>
+  <g id="riscos"></g>
+  <rect id="preto" width="1080" height="1920" fill="#000"/>
+</svg>
+<script>
+const NS = 'http://www.w3.org/2000/svg', $ = s => document.querySelector(s);
+const BPM = 82, B = 60 / BPM, T0 = 0, CORTE = 2 * B, TIT = 16 * B, DUR = 15.0, RAPIDO = 14 * B;
+const Si = (n, hora = 'amanhecer') => Sitio(Cenario({ seed: n, luz: -1, hora, prefixo: 's' + n }));
+const Cz = n => CidadeZumbi(Cenario({ seed: n, luz: -1, hora: 'amanhecer', prefixo: 'z' + n }));
+const sm = u => u * u * (3 - 2 * u), cl = (v, a, b) => Math.min(b, Math.max(a, v)), lerp = (a, b, u) => a + (b - a) * u;
+// aleatório determinístico por quadro (o render tem que dar sempre igual)
+const rnd = (i, k = 0) => { const x = Math.sin(i * 12.9898 + k * 78.233) * 43758.5453; return x - Math.floor(x); };
+
+// ===== planos: [início, fim, cenário, câmera (zoom e centro no início → fim), crédito] =====
+const CID = Cz(11), LADO = Cz(12), PONTE = Cz(14), RUI = Cz(21), ROD = Cz(22), MB = Si(75);
+const P = [
+  { a: 0, b: CORTE, svg: ROD.rodovia({}), cam: [1.0, 540, 1000, 1.22, 540, 1000] },
+  { a: CORTE, b: 2 * CORTE, svg: RUI.ruinas({}), cam: [1.2, 360, 900, 1.05, 520, 960] },
+  { a: 2 * CORTE, b: 3 * CORTE, svg: CID.avenida({}), cam: [1.0, 540, 900, 1.25, 540, 950] },
+  { a: 3 * CORTE, b: 4 * CORTE, svg: Si(76).casaDestruida({ chao: 1400 }), cam: [1.0, 540, 1150, 1.15, 560, 1250], nome: 'ANINHA', ator: 'aninha' },
+  { a: 4 * CORTE, b: 5 * CORTE, svg: MB.mataBurro({ chao: 1420, mbX: 300, ptX: 820 }), cam: [1.15, 640, 1150, 1.3, 640, 1180], nome: 'TIÃO', ator: 'tiao' },
+  { a: 5 * CORTE, b: 6 * CORTE, svg: RUI.ruinas({}), cam: [1.0, 560, 1300, 1.12, 580, 1380], nome: 'DIMAS', ator: 'dimas' },
+  { a: 6 * CORTE, b: RAPIDO, svg: PONTE.ponte({ deck: 1180 }) + PONTE.ponteFrente({ deck: 1180 }), cam: [1.0, 540, 960, 1.12, 600, 1000], ator: 'horda' },
+];
+const RAP = [0, 1, 2, 6].map((k, i) => ({ k, a: RAPIDO + i * (TIT - RAPIDO) / 4, b: RAPIDO + (i + 1) * (TIT - RAPIDO) / 4 }));
+$('#planos').innerHTML = P.map((p, i) => `<g class="plano" id="p${i}" style="display:none">${p.svg}<g id="a${i}"></g></g>`).join('');
+
+// ===== personagens no estilo novo (aparecem parados, como numa foto viva) =====
+const ATS = [];
+function personagem(i, k, fig, look, base, extra) { const h = document.createElementNS(NS, 'g'); h.style.display = 'none'; $('#a' + i).appendChild(h);
+  const g = document.createElementNS(NS, 'g'); $('#a' + i).appendChild(g); const b = new Boneco(h, { escala: k, seed: 9, ...fig }); base(b);
+  ATS.push({ i, b, g, v: Volume(b, look, { borda: '#9AE8C8', sombra: '#16263A' }), extra }); }
+const D = 99;
+personagem(3, 1.05, { figurino: { preset: 'neta' } }, Volume.LOOK.aninha, b => { b.base(0, D, 'parado', { x: 560, y: 1700, vista: 'frente' }); b.expressao(0, D, 'triste'); b.braco('ambos', 0, D, 'pose', { o: 30, c: 115 }); b.cabeca(0, D, { baixar: 8, virar: -0.2 }); });
+personagem(4, 1.0, { figurino: 'tiao' }, Volume.LOOK.tiao, b => { b.base(0, D, 'parado', { x: 640, y: 1640, vista: 'frente' }); b.expressao(0, D, 'serio'); b.braco('d', 0, D, 'pose', { o: 20, c: 40, mao: 'punho' }); });
+personagem(5, 1.05, { figurino: 'dimas' }, Volume.LOOK.dimas, b => { b.base(0, D, 'parado', { x: 420, y: 1720, vista: 'frente' }); b.expressao(0, D, 'serio'); b.braco('d', 0, D, 'pose', { o: 18, c: 30, mao: 'punho' }); b.cabeca(0, D, { virar: 0.3 }); },
+  b => Armas.bestaNasCostas(b, 'frente', 1.05));
+$('#a5').insertAdjacentHTML('afterbegin', `<g transform="translate(800 1730) scale(-1 1)">${Moto.lado(0.95, { roda: 20 })}</g>`);
+// a horda na ponte (silhuetas)
+for (let j = 0; j < 14; j++) { const h = document.createElementNS(NS, 'g'); $('#a6').appendChild(h); const b = new Boneco(h, { escala: 0.42, figurino: 'vulto', cor: '#101016', corLonge: '#0A0A0E', bochecha: '#101016', seed: 30 + j });
+  b.base(0, D, 'andar', { de: [60 + j * 72, 1176 - (j % 3) * 3], ate: [-60 + j * 72, 1176 - (j % 3) * 3], passo: 24 }); b.braco('ambos', 0, D, 'estender'); b.expressao(0, D, 'zumbi'); ATS.push({ i: 6, b, g: null }); }
+
+// ===== créditos e título =====
+$('#creditos').innerHTML = P.map((p, i) => p.nome ? `<g id="c${i}" opacity="0"><text x="540" y="1640" font-size="86" text-anchor="middle" fill="#E8E6DA" letter-spacing="22" style="filter:drop-shadow(0 4px 8px #000)">${p.nome}</text><rect x="400" y="1672" width="280" height="4" fill="#B8342A"/></g>` : '').join('');
+$('#titulo').innerHTML = `<g id="tit" opacity="0"><rect width="1080" height="1920" fill="#0A0E0C"/>
+  <g filter="url(#gasto)"><text id="t1" x="540" y="880" font-size="170" text-anchor="middle" fill="#E8E2D2" letter-spacing="30">OS</text>
+  <text id="t2" x="540" y="1100" font-size="230" text-anchor="middle" fill="#B8342A" textLength="1000" lengthAdjust="spacingAndGlyphs">SOBREVIVENTES</text></g>
+  <path d="M220 1170 H860" stroke="#E8E2D2" stroke-width="5" opacity=".7"/>
+  <g id="t3" opacity="0"><text x="540" y="1290" font-size="70" text-anchor="middle" fill="#E8E2D2" letter-spacing="16">EPISÓDIO 6</text></g>
+  <g id="t4" opacity="0"><text x="540" y="1400" font-size="84" text-anchor="middle" fill="#E8B23A" letter-spacing="6">DIMAS, O MOTOQUEIRO</text></g></g>`;
+
+// ===== quadro a quadro =====
+function planoEm(t) { if (t >= RAPIDO && t < TIT) { const r = RAP.find(r => t >= r.a && t < r.b); return r ? r.k : 6; } return P.findIndex(p => t >= p.a && t < p.b); }
+window.__duration = DUR;
+window.__seek = t => {
+  const fr = Math.round(t * 30), k = planoEm(t);
+  document.querySelectorAll('.plano').forEach((g, i) => g.style.display = i === k ? '' : 'none');
+  if (k >= 0) { const p = P[k], u = t >= RAPIDO ? 0.5 : sm(cl((t - p.a) / (p.b - p.a), 0, 1)), c = p.cam, z = lerp(c[0], c[3], u); let cx = lerp(c[1], c[4], u), cy = lerp(c[2], c[5], u);
+    cx = cl(cx, 540 / z + 20, 1080 - 540 / z - 20); cy = cl(cy, 960 / z + 20, 1920 - 960 / z - 20);
+    const jx = (rnd(fr, 1) - 0.5) * 3, jy = (rnd(fr, 2) - 0.5) * 4;   // tremido de projetor
+    $('#cam').setAttribute('transform', `translate(${540 + jx} ${960 + jy}) scale(${z.toFixed(4)}) translate(${-cx} ${-cy})`); }
+  for (const A of ATS) if (A.i === k) { A.b.desenhar(t); if (A.g) A.g.innerHTML = A.v.svg(t) + (A.extra ? A.extra(A.b) : ''); }
+  // créditos: entram meio segundo depois do corte e somem antes do próximo
+  P.forEach((p, i) => { const el = $('#c' + i); if (!el) return; const o = t < RAPIDO ? cl(Math.min((t - p.a - 0.15) / 0.3, (p.b - 0.12 - t) / 0.2), 0, 1) : 0; el.setAttribute('opacity', o.toFixed(2)); });
+  // título: batida forte, letras com tremido, depois episódio e nome
+  const ti = t >= TIT ? 1 : 0; $('#tit').setAttribute('opacity', ti);
+  if (ti) { const u = t - TIT, esc = 1.25 - 0.25 * sm(cl(u / 0.35, 0, 1)) + u * 0.012; $('#tit').setAttribute('transform', `translate(540 1000) scale(${esc.toFixed(4)}) translate(-540 -1000)`);
+    $('#t3').setAttribute('opacity', cl((u - 0.8) / 0.4, 0, 1).toFixed(2)); $('#t4').setAttribute('opacity', cl((u - 1.3) / 0.4, 0, 1).toFixed(2));
+    $('#t2').setAttribute('transform', `translate(${((rnd(fr, 5) - 0.5) * (u < 0.6 ? 10 : 2)).toFixed(1)} 0)`); }
+  // fade de entrada e saída, piscada de luz nos cortes
+  $('#preto').setAttribute('opacity', (t < 0.12 ? 1 - t / 0.12 : t > DUR - 0.8 ? (t - (DUR - 0.8)) / 0.8 : 0).toFixed(2));
+  const corte = [...P.map(p => p.a), ...RAP.map(r => r.a), TIT].some(a => t >= a && t < a + 0.07);
+  $('#pisca').setAttribute('opacity', (corte ? 0.5 : rnd(fr, 3) * 0.09).toFixed(2));
+  $('#turb').setAttribute('seed', fr % 97);
+  // riscos de película e poeira
+  let r = ''; for (let i = 0; i < 3; i++) if (rnd(fr, 10 + i) < 0.45) { const x = rnd(fr, 20 + i) * 1080; r += `<path d="M${x.toFixed(0)} 0 L${(x + (rnd(fr, 30 + i) - 0.5) * 30).toFixed(0)} 1920" stroke="#E8E2D0" stroke-width="${(1 + rnd(fr, 40 + i) * 2).toFixed(1)}" opacity="${(0.15 + rnd(fr, 50 + i) * 0.3).toFixed(2)}"/>`; }
+  for (let i = 0; i < 10; i++) if (rnd(fr, 60 + i) < 0.5) r += `<circle cx="${(rnd(fr, 70 + i) * 1080).toFixed(0)}" cy="${(rnd(fr, 80 + i) * 1920).toFixed(0)}" r="${(1 + rnd(fr, 90 + i) * 4).toFixed(1)}" fill="${rnd(fr, 95 + i) < 0.5 ? '#000' : '#E8E2D0'}" opacity=".6"/>`;
+  $('#riscos').innerHTML = r;
+};
+window.__seek(0);
+</script>
+</body>
+</html>

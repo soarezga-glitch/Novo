@@ -24,7 +24,7 @@
     const PICHO = ['FIM', 'SOS', 'FUJAM', 'NÃO ENTRE', '3 VIVOS'];
 
     // ---------- PRÉDIO detalhado (de frente) ----------
-    let CZ_predio, CZ_onibus, CZ_carroFrente, CZ_carroLado, CZ_avenida, CZ_avenidaLado, CZ_ponte, CZ_ponteFrente, CZ_proj;
+    let CZ_ruinas, CZ_rodovia, CZ_predio, CZ_onibus, CZ_carroFrente, CZ_carroLado, CZ_avenida, CZ_avenidaLado, CZ_ponte, CZ_ponteFrente, CZ_proj;
     CZ_predio = (x, base, w, h, { cor = pick(['#B8A88A', '#9AA4A8', '#C8B898', '#A88A7A', '#8A9A88']), andares = Math.max(2, Math.round(h / 150)), loja = true, letreiro = pick(LETREIROS), picho = rnd(0, 1) < 0.5, sombra = 0 } = {}) => {
       const top = base - h, hand = (h - (loja ? 170 : 0)) / andares;
       let s = `<rect x="${f(x)}" y="${f(top)}" width="${f(w)}" height="${f(h)}" fill="${cor}" stroke="${L}" stroke-width="4"/>`;
@@ -217,7 +217,57 @@
     };
     // guarda-corpo da FRENTE: desenhe DEPOIS dos vultos para eles ficarem "dentro" da ponte
     CZ_ponteFrente = ({ x = 0, w = 1080, deck = 1180 } = {}) => `<rect x="${x - 20}" y="${deck - 120}" width="${w + 40}" height="16" fill="#6A6A70" stroke="${L}" stroke-width="4"/>` + [...Array(Math.ceil(w / 60) + 1)].map((_, i) => `<rect x="${x + i * 60}" y="${deck - 106}" width="10" height="${i % 7 === 3 ? 60 : 110}" fill="#6A6A70" stroke="${L}" stroke-width="3" transform="rotate(${i % 7 === 3 ? 25 : 0} ${x + i * 60} ${deck})"/>`).join('');
-    return { get predio() { return CZ_predio; }, get onibus() { return CZ_onibus; }, get carroFrente() { return CZ_carroFrente; }, get avenida() { return CZ_avenida; }, get avenidaLado() { return CZ_avenidaLado; }, get ponte() { return CZ_ponte; }, get ponteFrente() { return CZ_ponteFrente; }, get carroLado() { return CZ_carroLado; }, get proj() { return CZ_proj; } };
+    // ---------- RUÍNAS: prédio partido ao meio, outro inclinado, laje pendurada com ferragem, entulho, carro queimado, fogo ----------
+    CZ_ruinas = ({ x = 0, y = 0, w = 1080, h = 1920, chao = 1520 } = {}) => {
+      const [gid, gd] = grad(['#1A1420', '#4A2A30', '#A8482A', '#D87A3A']);
+      let s = gd + `<rect x="${x}" y="${y}" width="${w}" height="${chao}" fill="url(#${gid})"/>`;
+      s += `<ellipse cx="${x + w * 0.6}" cy="${chao - 300}" rx="520" ry="240" fill="#FF7A2A" opacity=".25"/>`;   // clarão de incêndio
+      for (let i = 0; i < 14; i++) { const bx = x + i * 80 - 20, bh = rnd(200, 520); s += `<path d="M${f(bx)} ${chao - 240} V${f(chao - 240 - bh)} l${f(rnd(10, 30))} ${f(rnd(-30, 20))} l${f(rnd(10, 30))} ${f(rnd(10, 60))} V${chao - 240}Z" fill="#2A2028" opacity=".9"/>`; }   // silhueta quebrada no fundo
+      s += fumaca(x + w * 0.2, chao - 760, 2.0) + fumaca(x + w * 0.75, chao - 620, 1.6);
+      // prédio da esquerda: partido, sem o canto de cima (laje pendurada e ferragem aparente)
+      const pA = CZ_predio(x - 60, chao - 80, 420, 1150, { cor: '#9AA4A8', loja: true, letreiro: 'FARMÁCIA' }), cid = uid('cr');
+      s += `<clipPath id="${cid}"><path d="M${x - 60} ${chao} V${chao - 1230} L${x + 80} ${chao - 1180} L${x + 140} ${chao - 960} L${x + 230} ${chao - 900} L${x + 270} ${chao - 640} L${x + 360} ${chao - 600} V${chao}Z"/></clipPath><g clip-path="url(#${cid})">${pA}</g>`;
+      [[x + 140, chao - 960, -18], [x + 230, chao - 900, 22], [x + 270, chao - 640, 34]].forEach(([lx, ly, r]) => { s += `<g transform="translate(${lx} ${ly}) rotate(${r})"><rect x="-10" y="-14" width="190" height="28" fill="#8A8A88" stroke="${L}" stroke-width="5"/>${[0, 1, 2, 3, 4].map(k => `<path d="M${20 + k * 34} 14 q${f(rnd(-10, 10))} 40 ${f(rnd(-20, 20))} ${f(rnd(40, 90))}" stroke="#6A3A2A" stroke-width="4" fill="none"/>`).join('')}</g>`; });
+      for (let k = 0; k < 6; k++) s += `<path d="M${x + 230 + k * 8} ${chao - 900} l${f(rnd(-30, 40))} ${f(rnd(-90, -40))}" stroke="#6A3A2A" stroke-width="5"/>`;   // ferragem saindo
+      // prédio do meio: inclinado, encostado no outro, janelas com fogo
+      s += `<g transform="rotate(7 ${x + 560} ${chao - 80})">${CZ_predio(x + 420, chao - 80, 300, 1300, { cor: '#C8B898', loja: true, letreiro: 'BAR DO ZÉ' })}</g>`;
+      [[x + 520, chao - 820], [x + 600, chao - 1060], [x + 480, chao - 560]].forEach(([fx, fy]) => { s += `<path d="M${fx} ${fy} q-20 -40 0 -80 q10 30 24 10 q14 -40 4 -70 q40 40 30 110 q-4 30 -58 30Z" fill="#FFB03A" stroke="#E84A1A" stroke-width="5"/><ellipse cx="${fx + 10}" cy="${fy - 40}" rx="90" ry="70" fill="#FF8A2A" opacity=".3"/>`; });
+      // prédio da direita: só o esqueleto (pilares e lajes)
+      for (let a = 0; a < 7; a++) s += `<rect x="${x + 780}" y="${chao - 140 - a * 160}" width="${300 - (a > 4 ? (a - 4) * 90 : 0)}" height="26" fill="#8A8A88" stroke="${L}" stroke-width="5"/>`;
+      [800, 900, 1000].forEach((px, i) => { s += `<rect x="${x + px}" y="${chao - 140 - (i === 2 ? 640 : 1100)}" width="30" height="${i === 2 ? 640 : 1100}" fill="#7A7A78" stroke="${L}" stroke-width="5"/>`; });
+      // rua com entulho, poste caído, carro queimado
+      s += `<rect x="${x}" y="${chao - 80}" width="${w}" height="${y + h - chao + 80}" fill="#34343A"/><rect x="${x}" y="${chao - 80}" width="${w}" height="40" fill="#6A6458"/>`;
+      s += `<path d="M${x - 40} ${chao + 60} Q${x + 120} ${chao - 220} ${x + 340} ${chao - 60} Q${x + 420} ${chao + 20} ${x + 520} ${chao + 80}Z" fill="#7A7468" stroke="${L}" stroke-width="5"/>`;   // monte de entulho
+      for (let i = 0; i < 28; i++) { const ex = x + rnd(-20, 540), ey = chao + rnd(-140, 70), r = rnd(14, 46); s += `<path d="M${f(ex)} ${f(ey)} l${f(r)} ${f(-r * 0.4)} l${f(r * 0.3)} ${f(r * 0.7)} l${f(-r)} ${f(r * 0.3)}Z" fill="${pick(['#8A847A', '#9A948A', '#6A645A', '#A8483A'])}" stroke="${L}" stroke-width="3"/>`; }
+      s += `<g transform="translate(${x + 520} ${chao + 70}) rotate(-58)"><rect x="-10" y="-900" width="22" height="900" fill="#5A5A60" stroke="${L}" stroke-width="4"/><path d="M-60 -880 h130" stroke="#4A4A50" stroke-width="10"/></g><path d="M${x + 500} ${chao - 640} Q${x + 700} ${chao - 200} ${x + 1100} ${chao - 500}" stroke="#141418" stroke-width="3" fill="none"/>`;
+      s += `<g opacity=".95">${CZ_carroLado(x + 820, chao + 160, 0.75, { cor: '#2A2224', dir: -1, batido: true, rot: 4 })}</g><path d="M${x + 640} ${chao + 40} Q${x + 820} ${chao - 60} ${x + 1000} ${chao + 40}" fill="#000" opacity=".25"/>`;
+      s += fumaca(x + 820, chao - 60, 1.0);
+      for (let i = 0; i < 50; i++) { const lx = x + rnd(0, w), ly = chao + rnd(-40, y + h - chao); s += `<path d="M${f(lx)} ${f(ly)} l${f(rnd(10, 26))} -4 l6 10Z" fill="${pick(['#E8E2D0', '#8A847A'])}" opacity=".7"/>`; }
+      return clip(x, y, w, h, s + C.atmosfera({ grao: 0.3, vinheta: false }));
+    };
+    // ---------- RODOVIA ENGARRAFADA: todo mundo tentou fugir; carros largados nas duas pistas, portas abertas, malas no asfalto ----------
+    CZ_rodovia = ({ x = 0, y = 0, w = 1080, h = 1920, hz = 820, fx = 540 } = {}) => {
+      const P = CZ_proj({ hz, fx, h, y }), pt = (X, z, Y) => P(X, z, Y).map(f).join(' ');
+      const quad = (a, b, c, d, fill, extra = '') => `<path d="M${a} L${b} L${c} L${d}Z" fill="${fill}" ${extra}/>`;
+      let s = ceu(x, y, w, hz + 40);
+      s += fumaca(fx - 260, hz - 40, 1.6) + fumaca(fx + 300, hz - 90, 1.2) + `<ellipse cx="${fx - 260}" cy="${hz}" rx="160" ry="40" fill="#FF7A2A" opacity=".35"/>`;
+      for (let i = 0; i < 18; i++) { const bx = x + i * 64, bh = rnd(30, 120); s += `<rect x="${f(bx)}" y="${f(hz + 6 - bh)}" width="${f(rnd(30, 60))}" height="${f(bh)}" fill="#3A3040" opacity=".7"/>`; }   // cidade lá longe
+      s += `<rect x="${x}" y="${hz}" width="${w}" height="${y + h - hz}" fill="#3A4A2A"/>`;
+      s += quad(pt(-1300, 40), pt(1300, 40), pt(1300, 0.6), pt(-1300, 0.6), '#34343A');
+      s += quad(pt(-60, 40), pt(60, 40), pt(60, 0.6), pt(-60, 0.6), '#4A5A34');   // canteiro do meio
+      [-1300, 1300].forEach(X => { s += `<path d="M${pt(X, 40, 40)} L${pt(X, 0.6, 40)}" stroke="#A8A8A0" stroke-width="10"/>`; for (let z = 0.8; z < 30; z *= 1.3) s += `<path d="M${pt(X, z)} L${pt(X, z, 40)}" stroke="#7A7A78" stroke-width="${f(Math.max(1, 6 / z))}"/>`; });   // guard-rail
+      [-700, 700].forEach(X => { for (let z = 0.8; z < 40; z += 2.2) s += quad(pt(X - 8, z + 1), pt(X + 8, z + 1), pt(X + 8, z), pt(X - 8, z), '#D8D2C0', 'opacity=".6"'); });
+      // placa verde da rodovia
+      { const [ax, ay] = P(-900, 7, 0), [bx, by] = P(-900, 7, 900), k = 1 / 7; s += `<path d="M${f(ax)} ${f(ay)} V${f(by)}" stroke="#6A6A70" stroke-width="${f(30 * k)}"/><g transform="translate(${f(bx)} ${f(by)}) scale(${f(k)})"><rect x="-20" y="-300" width="900" height="300" rx="20" fill="#1E6A3A" stroke="#F2F2F2" stroke-width="14"/><text x="430" y="-170" font-family="'Anton', sans-serif" font-size="110" text-anchor="middle" fill="#F2F2F2">SAÍDA</text><text x="430" y="-50" font-family="'Anton', sans-serif" font-size="90" text-anchor="middle" fill="#F2F2F2">INTERIOR  120 km</text></g>`; }
+      // os carros: do fundo para a frente, as duas pistas cheias (indo embora = de costas)
+      const carros = [];
+      for (let z = 22; z > 1.7; z /= 1.22) [-1100, -760, -420, 420, 760, 1100].forEach(X => { if (rnd(0, 1) < 0.72) carros.push([X + rnd(-60, 60), z * rnd(0.94, 1.06), X > 0]); });
+      carros.sort((a, b) => b[1] - a[1]).forEach(([X, z, contra]) => { const [cx, cy] = P(X, z); s += CZ_carroFrente(cx, cy, 2.4 / z, { costas: !contra, rot: rnd(-10, 10) });
+        if (rnd(0, 1) < 0.25 && z < 8) s += `<g transform="translate(${f(cx + 130 / z)} ${f(cy - 20 / z)}) scale(${f(2 / z)})"><rect x="0" y="-60" width="70" height="60" rx="8" fill="${pick(['#4A3A6A', '#8A2A2A', '#2A4A6A'])}" stroke="${L}" stroke-width="5"/><path d="M20 -60 v-14 h30 v14" stroke="${L}" stroke-width="5" fill="none"/></g>`; });   // malas largadas
+      for (let i = 0; i < 40; i++) { const z = 1 + rnd(0, 1) ** 1.5 * 12, X = rnd(-1200, 1200), [cx, cy] = P(X, z); s += `<path d="M${f(cx)} ${f(cy)} l${f(30 / z)} ${f(-6 / z)} l${f(10 / z)} ${f(12 / z)}Z" fill="${pick(['#E8E2D0', '#C8C0A8'])}" opacity=".8"/>`; }
+      return clip(x, y, w, h, s + C.atmosfera({ grao: 0.3, vinheta: false }));
+    };
+    return { get predio() { return CZ_predio; }, get onibus() { return CZ_onibus; }, get carroFrente() { return CZ_carroFrente; }, get avenida() { return CZ_avenida; }, get avenidaLado() { return CZ_avenidaLado; }, get ponte() { return CZ_ponte; }, get ponteFrente() { return CZ_ponteFrente; }, get carroLado() { return CZ_carroLado; }, get proj() { return CZ_proj; }, get ruinas() { return CZ_ruinas; }, get rodovia() { return CZ_rodovia; } };
   }
   global.CidadeZumbi = CidadeZumbi;
 })(typeof window !== 'undefined' ? window : globalThis);
