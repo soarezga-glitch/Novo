@@ -1,0 +1,26 @@
+<!doctype html><html><head><meta charset="utf-8"><style>html,body{margin:0;background:#000}@font-face{font-family:Anton;src:url(fontes/anton.woff2)}</style>
+<script src="boneco.js"></script><script src="volume.js"></script><script src="cenario.js"></script><script src="sitio.js"></script><script src="armas.js"></script></head><body>
+<svg id="s" width="1080" height="1920" viewBox="0 0 1080 1920" xmlns="http://www.w3.org/2000/svg"><defs><filter id="outline" x="-20%" y="-20%" width="140%" height="140%"><feMorphology in="SourceAlpha" operator="dilate" radius="5" result="d"/><feFlood flood-color="#0A0A0E"/><feComposite in2="d" operator="in" result="o"/><feMerge><feMergeNode in="o"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+<radialGradient id="luzR" cx=".5" cy=".3" r=".8"><stop offset="0" stop-color="#FF6AC8" stop-opacity=".35"/><stop offset="1" stop-color="#2A0A3A" stop-opacity=".55"/></radialGradient></defs>
+<g id="bg"></g><rect width="1080" height="1920" fill="url(#luzR)" style="mix-blend-mode:multiply"/><g id="velho"></g><g id="novo"></g>
+<rect x="538" y="0" width="4" height="1920" fill="#F2EEE2"/>
+<text x="270" y="140" font-family="Anton" font-size="70" text-anchor="middle" fill="#F2EEE2" stroke="#000" stroke-width="6" paint-order="stroke">ANTES</text>
+<text x="810" y="140" font-family="Anton" font-size="70" text-anchor="middle" fill="#E8B23A" stroke="#000" stroke-width="6" paint-order="stroke">ESTILO NOVO</text></svg>
+<script>
+const NS='http://www.w3.org/2000/svg', $=s=>document.querySelector(s);
+$('#bg').innerHTML=Sitio(Cenario({seed:72,luz:-1,hora:'amanhecer',prefixo:'c'})).curral({chao:1400,porta:{x:120,w:300}});
+const mk=pai=>{const g=document.createElementNS(NS,'g');$(pai).appendChild(g);return g;};
+const boca=t=>'smile';
+const D={figurino:'dimas',seed:90}, A={figurino:{preset:'neta',cor:'#C97A9A'},seed:62};
+const pares=[];
+function par(x, y, k, opts, look, ex, xNovo){
+  const b1=new Boneco(mk('#velho'),{escala:k,...opts}); b1.base(0,5,'parado',{x,y,vista:'frente'}); b1.expressao(0,5,ex);
+  const gN=mk('#novo'), hide=mk('#novo'); hide.style.display='none';
+  const b2=new Boneco(hide,{escala:k,...opts}); b2.base(0,5,'parado',{x:xNovo,y,vista:'frente'}); b2.expressao(0,5,ex);
+  const v=Volume(b2, look, {borda:'#FF8AD8'}); pares.push({b1,b2,v,gN});
+}
+par(170,1500,1.0,D,Volume.LOOK.dimas,'serio',710);
+par(400,1520,0.72,A,Volume.LOOK.aninha,'medo',940);
+window.__duration=1; window.__seek=t=>{ for(const p of pares){p.b1.desenhar(t+0.5);p.b2.desenhar(t+0.5);p.gN.innerHTML=p.v.svg(t+0.5);} };
+window.__seek(0);
+</script></body></html>

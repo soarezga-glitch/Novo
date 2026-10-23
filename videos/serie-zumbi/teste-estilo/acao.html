@@ -1,0 +1,21 @@
+<!doctype html><html><head><meta charset="utf-8"><style>html,body{margin:0;background:#000}@font-face{font-family:Anton;src:url(fontes/anton.woff2)}</style>
+<script src="boneco.js"></script><script src="volume.js"></script><script src="cenario.js"></script><script src="sitio.js"></script><script src="armas.js"></script></head><body>
+<svg id="s" width="1080" height="1920" viewBox="0 0 1080 1920" xmlns="http://www.w3.org/2000/svg"><defs>
+<radialGradient id="luzR" cx=".5" cy=".25" r=".85"><stop offset="0" stop-color="#FF7AD0" stop-opacity=".3"/><stop offset="1" stop-color="#2A0A3A" stop-opacity=".6"/></radialGradient></defs>
+<g id="cam"><g id="bg"></g><rect width="1080" height="1920" fill="url(#luzR)" style="mix-blend-mode:multiply"/><g id="hide" style="display:none"></g><g id="atores"></g></g></svg>
+<script>
+const NS='http://www.w3.org/2000/svg', $=s=>document.querySelector(s);
+$('#bg').innerHTML=Sitio(Cenario({seed:72,luz:-1,hora:'amanhecer',prefixo:'c'})).curral({chao:1400,porta:{x:120,w:300}});
+const mk=()=>{const g=document.createElementNS(NS,'g');$('#atores').appendChild(g);return g;};
+const fala=t=>'0123'[Math.floor(Math.abs(Math.sin(t*9.3)*3.9))];
+const atores=[];
+function ator(k, opts, look, armas){ const h=document.createElementNS(NS,'g'); $('#hide').appendChild(h); const b=new Boneco(h,{escala:k,...opts}); const g=mk(); const v=Volume(b,look,{borda:'#FF8AD8'}); atores.push({b,g,v,armas}); return b; }
+const D=ator(1.0,{figurino:'dimas',seed:90,boca:t=>t>2.2&&t<3.4?fala(t):'smile'},Volume.LOOK.dimas,(b)=>{const m=b.mao('d'),q=b.ombros();return `<g transform="translate(${m[0]} ${m[1]}) rotate(${Math.atan2(m[1]-q[1],m[0]-q[0])*57.3-10})">${Armas.facao(0.8)}</g>`;});
+D.base(0,1.8,'andar',{de:[120,1640],ate:[470,1640],passo:96}); D.base(1.8,4,'parado',{x:470,y:1640,vista:'perfil',dir:1}); D.expressao(0,4,'serio'); D.braco('d',0,4,'pose',{o:30,c:30}); D.cabeca(2,4,{baixar:-4});
+const A=ator(0.72,{figurino:{preset:'neta'},seed:62,boca:t=>t>0.4&&t<1.6?fala(t):'smile'},Volume.LOOK.aninha);
+A.base(0,4,'parado',{x:740,y:1660,vista:'frente'}); A.expressao(0,4,'medo'); A.braco('ambos',0,4,'pose',{o:30,c:115}); A.cabeca(0,4,{virar:-0.3});
+const T=ator(1.05,{figurino:'tiao',seed:60,boca:t=>'smile'},Volume.LOOK.tiao);
+T.base(0,4,'agachar',{x:990,y:1860,vista:'perfil',dir:-1,quanto:150,inclina:20}); T.expressao(0,4,'medo'); T.cabeca(0,4,{baixar:-10});
+window.__duration=4; window.__seek=t=>{ for(const a of atores){ a.b.desenhar(t); a.g.innerHTML=a.v.svg(t)+(a.armas?a.armas(a.b):''); } };
+window.__seek(0);
+</script></body></html>

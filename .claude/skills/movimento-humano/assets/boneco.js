@@ -726,6 +726,7 @@
           sp.setAttribute('cx', ((Math.min(...xs) + Math.max(...xs)) / 2).toFixed(1)); sp.setAttribute('cy', (chaoY + 3).toFixed(1));
           sp.setAttribute('rx', ((Math.abs(xs[0] - xs[1]) / 2 + 58 * s) * k).toFixed(1)); sp.setAttribute('ry', (12 * s * k).toFixed(1)); sp.setAttribute('opacity', (0.22 * k).toFixed(2)); } }
       this._giroR = giro ? `rotate(${giro.toFixed(2)} ${R[0].toFixed(1)} ${R[1].toFixed(1)})` : '';
+      this._esq = { pernas, bracos, perto, longe, top, H, inc, vista, dir, rot, s, pescoco, cab, cabeca, costas: !!P.costas, t };   // esqueleto do quadro (para o estilo 'volume')
       this.desenharFigurino({ pernas, bracos, perto, longe, top, H, inc, vista, dir, f, rot, s });
       const mL = rot(maos[longe.braco]), mP = rot(maos[perto.braco]);
       this.el.maoLonge.setAttribute('cx', mL[0]); this.el.maoLonge.setAttribute('cy', mL[1]);
