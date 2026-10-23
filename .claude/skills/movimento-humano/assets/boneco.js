@@ -298,21 +298,41 @@
         if (vista === 'frente') { pose.bracos.e = { o: 20 + dy / s * 1.6, c: 20 }; pose.bracos.d = { o: 20 + dy / s * 1.6, c: 20 }; }
         return pose;
       }
-      if (a.tipo === 'andarFrente') {
-        // andando DE FRENTE para a câmera (ou de costas, indo embora): o quadril vai de p.de até p.ate, os pés alternam
-        // (um apoia, o outro sobe e passa), o quadril sobe e desce a cada passo e os braços balançam opostos às pernas.
-        // A perspectiva (ficar maior chegando perto) é feita fora, escalando o grupo em volta do pé (skill fisica-de-cena).
+      if (a.tipo === 'andarFrente' || a.tipo === 'andarCostas' || a.tipo === 'correrFrente') {
+        // ANDAR EM PROFUNDIDADE (de frente para a câmera, ou de costas indo embora). Como um passo de verdade visto de frente:
+        //  · o pé de apoio fica PLANTADO no chão (no ponto onde pisou) enquanto o corpo passa por cima dele;
+        //  · o outro pé sai de trás, sobe (joelho dobra) e pousa à frente — "à frente" = mais perto da câmera = mais embaixo
+        //    na tela (o passo encolhe pela profundidade: p.prof, padrão 0,32 do passo);
+        //  · o quadril balança para o lado do pé de apoio e desce no meio do passo; ombros e braços balançam opostos às pernas;
+        //  · p.perspectiva {horizonte, yRef}: o boneco cresce ao chegar perto (e diminui indo embora), escalado em volta do pé.
+        const costas = a.tipo === 'andarCostas', corre = a.tipo === 'correrFrente';
         const u = clamp((t - a.t0) / Math.max(0.01, a.t1 - a.t0), 0, 1);
+        const sy = Math.sign(p.ate[1] - p.de[1]) || (costas ? -1 : 1);
+        const dist = Math.hypot(p.ate[0] - p.de[0], p.ate[1] - p.de[1]);
+        const prof = p.prof ?? 0.32, passoTela = (p.passo ?? (corre ? 150 : 110) * s) * prof;   // quanto o pé avança na tela a cada passo
+        const nPassos = Math.max(1, dist / passoTela), fase = u * nPassos / 2;
         const x = lerp(p.de[0], p.ate[0], u), y = lerp(p.de[1], p.ate[1], u);
-        const dist = Math.hypot(p.ate[0] - p.de[0], p.ate[1] - p.de[1]), passo = p.passo ?? 90 * s;
-        const fase = u * dist / (2 * passo), abre = (p.abertura ?? 20) * s, tz = M.tornozelo * s;
-        const pes = [0, 1].map(i => { const q = frac(fase + i * 0.5), voo = q >= 0.5 ? Math.sin((q - 0.5) / 0.5 * Math.PI) : 0;
-          return { tz: [x + (i ? abre : -abre), y - tz - voo * (p.elevar ?? 36) * s], inc: 0 }; });
-        const bob = Math.abs(Math.sin(2 * Math.PI * fase)) * 6 * s;
-        const hq = M.alturaQuadril * s - 6 * s;
-        const bal = Math.sin(2 * Math.PI * fase) * 14;
-        return { vista: 'frente', dir: 1, R: [x, y], giro: 0, inclina: 0, quadril: [x, y - hq + bob], respira, pes,
-          bracos: { e: { o: 12 + bal, c: 14 + Math.max(0, bal) }, d: { o: 12 - bal, c: 14 + Math.max(0, -bal) } } };
+        const abre = (p.abertura ?? 16) * s, tz = M.tornozelo * s, apoio = corre ? 0.4 : 0.6;
+        const pes = [0, 1].map(i => {
+          const q = frac(fase + i * 0.5), k = Math.floor(fase + i * 0.5);
+          const yPlant = n => lerp(p.de[1], p.ate[1], clamp((2 * n - i + 1) / nPassos, 0, 1));   // onde esse pé pisa na passada n
+          let fy, voo = 0;
+          if (q < apoio) fy = yPlant(k);                                  // apoiado: parado no chão
+          else { const w = (q - apoio) / (1 - apoio), e = w * w * (3 - 2 * w); fy = lerp(yPlant(k), yPlant(k + 1), e); voo = Math.sin(w * Math.PI); }
+          const lado = i ? 1 : -1;
+          return { tz: [x + lado * abre + lado * voo * 3 * s, fy - tz - voo * (p.elevar ?? (corre ? 46 : 26)) * s], inc: 0, voo };
+        });
+        const qA = frac(fase), apoiaEsq = qA < 0.5;                      // qual pé está carregando o peso
+        const ginga = Math.sin(2 * Math.PI * fase) * (corre ? 5 : 9) * s; // quadril vai para o lado do pé de apoio
+        const desce = Math.abs(Math.sin(2 * Math.PI * fase)) * (corre ? 10 : 6) * s;
+        const hq = M.alturaQuadril * s - (corre ? 26 : 8) * s;
+        const bal = Math.sin(2 * Math.PI * fase);
+        const P2 = { vista: 'frente', dir: 1, R: [x, y], giro: 0, inclina: 0, quadril: [x - ginga, y - hq + desce], respira, pes,
+          bracos: corre ? { e: { o: 18 + bal * 10, c: 70 + bal * 30 }, d: { o: 18 - bal * 10, c: 70 - bal * 30 } }
+                        : { e: { o: 8 + Math.max(0, bal) * 10, c: 12 + Math.max(0, bal) * 40 }, d: { o: 8 + Math.max(0, -bal) * 10, c: 12 + Math.max(0, -bal) * 40 } },
+          costas, joelhoFrente: true };
+        if (p.perspectiva) { const { horizonte, yRef } = p.perspectiva; P2.persp = Math.max(0.05, (y - horizonte) / (yRef - horizonte)); }
+        return P2;
       }
       // locomoção: andar / correr / subir (escada) — pés plantados via IK
       const G = { ...GAIT[a.tipo], ...(p.gait || {}) };
@@ -608,10 +628,13 @@
     desenhar(t) {
       const s = this.s;
       const P = this.pose(t);
-      this._t = t; { const a = this.acaoEm(this.acoes, t).atual; this._rapido = a ? ({ correr: 1, pular: 0.8, andar: 0.35, andarFrente: 0.35, montar: 0.7 }[a.tipo] || 0) : 0; }
+      this._t = t; { const a = this.acaoEm(this.acoes, t).atual; this._rapido = a ? ({ correr: 1, pular: 0.8, andar: 0.35, andarFrente: 0.35, andarCostas: 0.35, correrFrente: 1, montar: 0.7 }[a.tipo] || 0) : 0; }
       if (!P) { this.g.style.display = 'none'; this.el.extras.style.display = 'none'; this.el.sombraPe.style.display = 'none'; return; }
       this.el.sombraPe.style.display = '';
       this.g.style.display = ''; this.el.extras.style.display = '';
+      { const T = P.persp ? `translate(${P.R[0].toFixed(1)} ${P.R[1].toFixed(1)}) scale(${P.persp.toFixed(4)}) translate(${(-P.R[0]).toFixed(1)} ${(-P.R[1]).toFixed(1)})` : '';
+        this.g.setAttribute('transform', T); this.el.extras.setAttribute('transform', T); this.el.sombraPe.setAttribute('transform', T); }
+      this._costas = !!P.costas;
       const { vista, dir } = P;
       const ZB = this.fig.zumbi && !P.giro && P.vista !== undefined;
       if (ZB) {   // zumbi: corcunda, joelhos dobrados, ombro caído
@@ -635,6 +658,8 @@
       const pernas = P.pes.map((f, i) => {
         const sx = vista === 'frente' ? (i === 0 ? -1 : 1) : dir;
         const r = ik2(quadris[i], f.tz, M.coxa * s, M.canela * s, sx, 1);
+        // andando em profundidade: o joelho dobra PARA A CÂMERA (encurta a perna na tela), não para o lado
+        if (P.joelhoFrente) { const q0 = quadris[i]; r.meio = [lerp(q0[0], f.tz[0], 0.5) + sx * 3 * s, lerp(q0[1], f.tz[1], 0.5) + (f.voo || 0) * 6 * s]; }
         const L = M.pe * s;
         let ponta;
         if (vista === 'frente') ponta = add(r.fim, [sx * L * 0.55, 4 * s]);
@@ -779,6 +804,9 @@
       const rotRosto = (giro || 0) - sxCab * inclCab;
       this.desenharCabeca(C, cabeca.yaw, rotRosto, s);
       this.desenharRosto(t, C, cabeca, P, rotRosto);
+      // de costas: some o rosto e a nuca fica com a cor do cabelo
+      this.el.rosto.style.display = this._costas ? 'none' : '';
+      if (this._costas && this.fig.cabelo && this.fig.cabelo !== 'careca' && this.fig.cabelo !== 'nenhum') this.el.cabelo.setAttribute('d', `M${C[0] - M.cabeca * s * 1.04} ${C[1]} a${M.cabeca * s * 1.04} ${M.cabeca * s * 1.04} 0 1 1 ${M.cabeca * s * 2.08} 0 a${M.cabeca * s * 1.04} ${M.cabeca * s * 1.04} 0 1 1 ${-M.cabeca * s * 2.08} 0Z`);
     }
 
 

@@ -129,3 +129,15 @@ Pontos prontos: `DT.ponto('moto'|'bicicleta', nome, k)` e `Z.carro.pontos`. Regr
 **Gestos novos** (guia de mãos do Sobrevivente): `explicar`, `parar`, `levantar`, `joinha`, `chamar`, `contar` (`{ n }`),
 `cruzar`, `cabeca`, `testa`. Personagens com `luvas: true` desenham **mãos em forma** (aberta, punho, apontar, joinha,
 paz, ok, palma, n1…n5) que seguem o gesto; `b.formaMao(lado, t0, t1, forma)` força uma forma. Detalhes: skill `personagem-sobrevivente`.
+
+## Andar em profundidade (de frente para a câmera / de costas indo embora) — pedido do usuário
+```js
+b.base(t0, t1, 'andarFrente', { de: [x, yLonge], ate: [x, yPerto], perspectiva: { horizonte: 900, yRef: 1700 } });   // vem chegando
+b.base(t0, t1, 'andarCostas', { de: [x, yPerto], ate: [x, yLonge], perspectiva: { horizonte: 900, yRef: 1700 } });   // vai embora (sem rosto, nuca com cabelo)
+b.base(t0, t1, 'correrFrente', { ... });                                                                              // correndo na direção da câmera
+```
+- Pé de apoio PLANTADO no chão enquanto o corpo passa; o outro sai de trás, sobe e pousa mais perto da câmera (mais embaixo na tela).
+- Joelho dobra para a câmera (a perna encurta na tela), quadril balança para o lado do pé de apoio e desce no meio do passo.
+- `perspectiva`: o boneco cresce chegando perto e encolhe indo embora (escala pela distância ao horizonte) — nunca andar
+  "de lado" quando a cena pede alguém vindo na direção da câmera.
+- Corpo: `b.ombros()`, `b.quadril()`, `b.cabecaPos()` dão pontos para prender coisas (criança nas costas, chapéu, mochila).
