@@ -635,6 +635,7 @@
       this.g.style.display = ''; this.el.extras.style.display = '';
       { const T = P.persp ? `translate(${P.R[0].toFixed(1)} ${P.R[1].toFixed(1)}) scale(${P.persp.toFixed(4)}) translate(${(-P.R[0]).toFixed(1)} ${(-P.R[1]).toFixed(1)})` : '';
         this.g.setAttribute('transform', T); this.el.extras.setAttribute('transform', T); this.el.sombraPe.setAttribute('transform', T); }
+      { const ac = this.acaoEm(this.acoes, t).atual; if (ac && ac.p && ac.p.costas) P.costas = true; }   // qualquer pose pode ser vista de costas (p.costas)
       this._costas = !!P.costas;
       const { vista, dir } = P;
       const ZB = this.fig.zumbi && !P.giro && P.vista !== undefined;
@@ -768,7 +769,8 @@
         const temAvental = (this.fig.extras || []).includes('avental');
         this.el.avental.setAttribute('d', temAvental ? `M${f(P_(c0, c1, 0.18))} L${f(P_(c0, c1, 0.82))} L${f(P_(b0, b1, 0.86))} L${f(P_(b0, b1, 0.14))}Z` : '');
         // colete aberto (sem camisa por baixo): um "V" de peito à mostra do pescoço até a cintura, com as bordas do couro
-        if (this.fig.colete) { const v0 = P_(o0, o1, 0.36), v1 = P_(o0, o1, 0.64), vb = P_(c0, c1, 0.5), w = vista === 'frente' ? 1 : 0.45;
+        if (this.fig.colete && this._costas) { this.el.avental.setAttribute('d', ''); this.el.detalhe.setAttribute('d', ''); }
+        else if (this.fig.colete) { const v0 = P_(o0, o1, 0.36), v1 = P_(o0, o1, 0.64), vb = P_(c0, c1, 0.5), w = vista === 'frente' ? 1 : 0.45;
           this.el.avental.setAttribute('d', `M${f(P_(top, v0, w))} L${f(P_(top, v1, w))} L${f(P_(H, vb, 0.6))}Z`); this.el.avental.setAttribute('fill', this.cor);
           this.el.detalhe.setAttribute('d', `M${f(P_(top, v0, w))} L${f(P_(H, vb, 0.6))} L${f(P_(top, v1, w))}`); this.el.detalhe.setAttribute('stroke', this.fig.cor2 || '#3A3A42'); this.el.detalhe.setAttribute('stroke-width', 6 * s); }
         // zumbi: roupa em farrapos — tiras penduradas na barra da camisa, na manga e na boca da calça
@@ -811,6 +813,7 @@
       this.desenharRosto(t, C, cabeca, P, rotRosto);
       // de costas: some o rosto e a nuca fica com a cor do cabelo
       this.el.rosto.style.display = this._costas ? 'none' : '';
+      this.el.barba.style.display = this._costas ? 'none' : '';
       if (this._costas && this.fig.cabelo && this.fig.cabelo !== 'careca' && this.fig.cabelo !== 'nenhum') this.el.cabelo.setAttribute('d', `M${C[0] - M.cabeca * s * 1.04} ${C[1]} a${M.cabeca * s * 1.04} ${M.cabeca * s * 1.04} 0 1 1 ${M.cabeca * s * 2.08} 0 a${M.cabeca * s * 1.04} ${M.cabeca * s * 1.04} 0 1 1 ${-M.cabeca * s * 2.08} 0Z`);
     }
 
