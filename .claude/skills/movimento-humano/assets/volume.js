@@ -24,6 +24,8 @@
       tronco: { cor: '#D9789E', vestido: true, gola: '#F2E8EE' }, braco: { pele: true, manga: '#D9789E' }, perna: 'pele', meia: '#F2F2F2', bota: '#F4F4F4', largura: 1.15 },
     tiao: { pele: '#C98E6A', cabelo: { tipo: 'curto', cor: '#4A4640', brilho: '#6A665E' }, barba: '#5A544C', olhos: 'normal', cabeca: 1.3, queixo: 'quadrado', chapeu: '#C8A860',
       tronco: { cor: '#6A5238', cinto: '#2A1E14' }, braco: { manga: '#6A5238' }, calca: '#3A4458', bota: '#3A2618', largura: 1.35 },
+    seuze: { pele: '#E2B89A', cabelo: { tipo: 'curto', cor: '#E8E6DE', brilho: '#FFFFFF' }, olhos: 'normal', cabeca: 1.25, queixo: 'quadrado',
+      tronco: { cor: '#7A8A9A', cinto: '#2A1E14' }, braco: { pele: true, manga: '#7A8A9A' }, calca: '#4A3A2A', bota: '#2A1E14', largura: 1.15 },
   };
 
   function Volume(b, look, { luz = [-0.75, -0.55], borda = '#FF8AD8', sombra = '#3A2058', contorno = 7, id = 'v' + Math.floor(Math.random() * 1e6) } = {}) {

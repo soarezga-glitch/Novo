@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Abertura Apocalipse Zumbi</title>
+<!-- ABERTURA da série (protótipo): cortes lentos pelos lugares da história com imagem envelhecida (granulado, riscos, poeira,
+     tremido de projetor), os nomes dos personagens como créditos, e o título no fim. Música original (musica.py). -->
+<style>
+  html, body { margin: 0; background: #000; overflow: hidden; }
+  #stage { width: 1080px; height: 1920px; display: block; filter: saturate(0.55) contrast(1.12) brightness(1.12); }
+  @font-face { font-family: 'Anton'; src: url(fontes/anton.woff2); }
+  text { font-family: 'Anton', sans-serif; }
+</style>
+<script src="boneco.js"></script>
+<script src="volume.js"></script>
+<script src="cenario.js"></script>
+<script src="sitio.js"></script>
+<script src="cidade-zumbi.js"></script>
+<script src="armas.js"></script>
+<script src="moto.js"></script>
+</head>
+<body>
+<svg id="stage" viewBox="0 0 1080 1920" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="grao" x="0" y="0" width="100%" height="100%"><feTurbulence id="turb" type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="1"/><feColorMatrix type="matrix" values="0 0 0 0 0.5  0 0 0 0 0.5  0 0 0 0 0.5  0 0 0 1.4 -0.55"/></filter>
+    <filter id="gasto" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency="0.035 0.09" numOctaves="3" seed="4" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -2.4 1.75" result="m"/><feComposite in="SourceGraphic" in2="m" operator="in"/></filter>
+    <radialGradient id="vin" cx=".5" cy=".5" r=".75"><stop offset=".4" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".7"/></radialGradient>
+  </defs>
+  <g id="cam"><g id="planos"></g></g>
+  <rect width="1080" height="1920" fill="#4A6A5A" opacity=".18" style="mix-blend-mode:multiply"/>
+  <rect width="1080" height="1920" fill="url(#vin)"/>
+  <g id="creditos"></g>
+  <g id="titulo"></g>
+  <rect id="pisca" width="1080" height="1920" fill="#000" opacity="0"/>
+  <rect width="1080" height="1920" filter="url(#grao)" opacity=".22" style="mix-blend-mode:overlay"/>
+  <g id="riscos"></g>
+  <rect id="preto" width="1080" height="1920" fill="#000"/>
+</svg>
+<script>
+const NS = 'http://www.w3.org/2000/svg', $ = s => document.querySelector(s);
+const BPM = 76, B = 60 / BPM, T0 = 2.4, CORTE = 3 * B, TIT = 20.0, DUR = 25.0;
+const Si = (n, hora = 'amanhecer') => Sitio(Cenario({ seed: n, luz: -1, hora, prefixo: 's' + n }));
+const Cz = n => CidadeZumbi(Cenario({ seed: n, luz: -1, hora: 'amanhecer', prefixo: 'z' + n }));
+const sm = u => u * u * (3 - 2 * u), cl = (v, a, b) => Math.min(b, Math.max(a, v)), lerp = (a, b, u) => a + (b - a) * u;
+// aleatório determinístico por quadro (o render tem que dar sempre igual)
+const rnd = (i, k = 0) => { const x = Math.sin(i * 12.9898 + k * 78.233) * 43758.5453; return x - Math.floor(x); };
+
+// ===== planos: [início, fim, cenário, câmera (zoom e centro no início → fim), crédito] =====
+const FESTA = Si(66), CID = Cz(11), LADO = Cz(12), PONTE = Cz(14);
+const P = [
+  { a: 0, b: T0, svg: Si(60, 'noite').estrada({}) + '<rect width="1080" height="1920" fill="#8AA0C8" opacity=".12" style="mix-blend-mode:screen"/>', cam: [1.0, 540, 960, 1.18, 540, 1020] },
+  { a: T0, b: T0 + CORTE, svg: FESTA.festa({ chao: 1300, abandonada: true }) + FESTA.chapeuFesta(620, 1420, 1.4, -30) + FESTA.sapatinho(470, 1500, 1.4, -18), cam: [1.25, 640, 1250, 1.12, 500, 1200] },
+  { a: T0 + CORTE, b: T0 + 2 * CORTE, svg: Si(69).porteira({ chao: 1440, aberta: false }), cam: [1.0, 540, 1000, 1.2, 540, 1180], nome: 'TIÃO', ator: 'tiao' },
+  { a: T0 + 2 * CORTE, b: T0 + 3 * CORTE, svg: Si(61).quartoRoca({ chao: 1420, escuro: true }), cam: [1.1, 520, 1100, 1.3, 560, 1150], nome: 'SEU ZÉ', ator: 'ze' },
+  { a: T0 + 3 * CORTE, b: T0 + 4 * CORTE, svg: Si(68).corredor({ chao: 1460, mochila: true, arrombada: true }), cam: [1.3, 360, 700, 1.1, 460, 900], nome: 'ANINHA', ator: 'aninha' },
+  { a: T0 + 4 * CORTE, b: T0 + 5 * CORTE, svg: CID.avenida({}), cam: [1.0, 540, 900, 1.25, 540, 950] },
+  { a: T0 + 5 * CORTE, b: T0 + 6 * CORTE, svg: LADO.avenidaLado({ chao: 1500 }), cam: [1.05, 540, 1250, 1.2, 520, 1300], nome: 'DIMAS', ator: 'dimas' },
+  { a: T0 + 6 * CORTE, b: 18.6, svg: PONTE.ponte({ deck: 1180 }) + PONTE.ponteFrente({ deck: 1180 }), cam: [1.0, 540, 960, 1.12, 600, 1000], ator: 'horda' },
+];
+// 18,6 → 20: cortes rápidos (memória) antes do título
+const RAP = [1, 3, 4, 6, 2, 0].map((k, i) => ({ k, a: 18.6 + i * 0.23, b: 18.6 + (i + 1) * 0.23 }));
+$('#planos').innerHTML = P.map((p, i) => `<g class="plano" id="p${i}" style="display:none">${p.svg}<g id="a${i}"></g></g>`).join('');
+
+// ===== personagens no estilo novo (aparecem parados, como numa foto viva) =====
+const ATS = [];
+function personagem(i, k, fig, look, base, extra) { const h = document.createElementNS(NS, 'g'); h.style.display = 'none'; $('#a' + i).appendChild(h);
+  const g = document.createElementNS(NS, 'g'); $('#a' + i).appendChild(g); const b = new Boneco(h, { escala: k, seed: 9, ...fig }); base(b);
+  ATS.push({ i, b, g, v: Volume(b, look, { borda: '#9AE8C8', sombra: '#16263A' }), extra }); }
+const D = 99;
+personagem(2, 0.62, { figurino: 'tiao' }, Volume.LOOK.tiao, b => { b.base(0, D, 'parado', { x: 470, y: 1520, vista: 'frente' }); b.expressao(0, D, 'serio'); b.braco('d', 0, D, 'pose', { o: 20, c: 40, mao: 'punho' }); });
+personagem(3, 1.0, { figurino: 'seuze' }, Volume.LOOK.seuze, b => { b.base(0, D, 'sentar', { x: 600, y: 1240, chao: 1420, dir: -1 }); b.expressao(0, D, 'cansado'); b.cabeca(0, D, { baixar: 22 }); b.braco('ambos', 0, D, 'pose', { o: 14, c: 40 }); });
+personagem(4, 0.9, { figurino: { preset: 'neta' } }, Volume.LOOK.aninha, b => { b.base(0, D, 'parado', { x: 720, y: 1560, vista: 'frente' }); b.expressao(0, D, 'triste'); b.braco('ambos', 0, D, 'pose', { o: 30, c: 115 }); b.cabeca(0, D, { baixar: 8, virar: -0.2 }); });
+personagem(6, 1.0, { figurino: 'dimas' }, Volume.LOOK.dimas, b => { b.base(0, D, 'parado', { x: 330, y: 1660, vista: 'frente' }); b.expressao(0, D, 'serio'); b.braco('d', 0, D, 'pose', { o: 18, c: 30, mao: 'punho' }); b.cabeca(0, D, { virar: 0.3 }); },
+  b => Armas.bestaNasCostas(b, 'frente', 1));
+const motoLado = `<g transform="translate(720 1670) scale(-1 1)">${Moto.lado(0.9, { roda: 20 })}</g>`;
+$('#a6').insertAdjacentHTML('afterbegin', motoLado);
+// a horda na ponte (silhuetas)
+for (let j = 0; j < 14; j++) { const h = document.createElementNS(NS, 'g'); $('#a7').appendChild(h); const b = new Boneco(h, { escala: 0.42, figurino: 'vulto', cor: '#101016', corLonge: '#0A0A0E', bochecha: '#101016', seed: 30 + j });
+  b.base(0, D, 'andar', { de: [60 + j * 72, 1176 - (j % 3) * 3], ate: [-60 + j * 72, 1176 - (j % 3) * 3], passo: 24 }); b.braco('ambos', 0, D, 'estender'); b.expressao(0, D, 'zumbi'); ATS.push({ i: 7, b, g: null }); }
+
+// ===== créditos e título =====
+$('#creditos').innerHTML = P.map((p, i) => p.nome ? `<g id="c${i}" opacity="0"><text x="540" y="1640" font-size="86" text-anchor="middle" fill="#E8E6DA" letter-spacing="22" style="filter:drop-shadow(0 4px 8px #000)">${p.nome}</text><rect x="400" y="1672" width="280" height="4" fill="#B8342A"/></g>` : '').join('');
+$('#titulo').innerHTML = `<g id="tit" opacity="0"><rect width="1080" height="1920" fill="#0A0E0C"/>
+  <g filter="url(#gasto)"><text id="t1" x="540" y="860" font-size="150" text-anchor="middle" fill="#E8E2D2" letter-spacing="14">APOCALIPSE</text>
+  <text id="t2" x="540" y="1110" font-size="290" text-anchor="middle" fill="#B8342A" letter-spacing="10">ZUMBI</text></g>
+  <path d="M220 1170 H860" stroke="#E8E2D2" stroke-width="5" opacity=".7"/>
+  <g id="t3" opacity="0"><text x="540" y="1290" font-size="70" text-anchor="middle" fill="#E8E2D2" letter-spacing="16">EPISÓDIO 6</text></g>
+  <g id="t4" opacity="0"><text x="540" y="1400" font-size="84" text-anchor="middle" fill="#E8B23A" letter-spacing="6">DIMAS, O MOTOQUEIRO</text></g></g>`;
+
+// ===== quadro a quadro =====
+function planoEm(t) { if (t >= 18.6 && t < TIT) { const r = RAP.find(r => t >= r.a && t < r.b); return r ? r.k : 7; } return P.findIndex(p => t >= p.a && t < p.b); }
+window.__duration = DUR;
+window.__seek = t => {
+  const fr = Math.round(t * 30), k = planoEm(t);
+  document.querySelectorAll('.plano').forEach((g, i) => g.style.display = i === k ? '' : 'none');
+  if (k >= 0) { const p = P[k], u = t >= 18.6 ? 0.5 : sm(cl((t - p.a) / (p.b - p.a), 0, 1)), c = p.cam, z = lerp(c[0], c[3], u); let cx = lerp(c[1], c[4], u), cy = lerp(c[2], c[5], u);
+    cx = cl(cx, 540 / z + 20, 1080 - 540 / z - 20); cy = cl(cy, 960 / z + 20, 1920 - 960 / z - 20);
+    const jx = (rnd(fr, 1) - 0.5) * 3, jy = (rnd(fr, 2) - 0.5) * 4;   // tremido de projetor
+    $('#cam').setAttribute('transform', `translate(${540 + jx} ${960 + jy}) scale(${z.toFixed(4)}) translate(${-cx} ${-cy})`); }
+  for (const A of ATS) if (A.i === k) { A.b.desenhar(t); if (A.g) A.g.innerHTML = A.v.svg(t) + (A.extra ? A.extra(A.b) : ''); }
+  // créditos: entram meio segundo depois do corte e somem antes do próximo
+  P.forEach((p, i) => { const el = $('#c' + i); if (!el) return; const o = t < 18.6 ? cl(Math.min((t - p.a - 0.4) / 0.5, (p.b - 0.25 - t) / 0.35), 0, 1) : 0; el.setAttribute('opacity', o.toFixed(2)); });
+  // título: batida forte, letras com tremido, depois episódio e nome
+  const ti = t >= TIT ? 1 : 0; $('#tit').setAttribute('opacity', ti);
+  if (ti) { const u = t - TIT, esc = 1.25 - 0.25 * sm(cl(u / 0.35, 0, 1)) + u * 0.012; $('#tit').setAttribute('transform', `translate(540 1000) scale(${esc.toFixed(4)}) translate(-540 -1000)`);
+    $('#t3').setAttribute('opacity', cl((u - 1.2) / 0.5, 0, 1).toFixed(2)); $('#t4').setAttribute('opacity', cl((u - 1.8) / 0.5, 0, 1).toFixed(2));
+    $('#t2').setAttribute('transform', `translate(${((rnd(fr, 5) - 0.5) * (u < 0.6 ? 10 : 2)).toFixed(1)} 0)`); }
+  // fade de entrada e saída, piscada de luz nos cortes
+  $('#preto').setAttribute('opacity', (t < 0.9 ? 1 - t / 0.9 : t > DUR - 1.2 ? (t - (DUR - 1.2)) / 1.2 : 0).toFixed(2));
+  const corte = [...P.map(p => p.a), ...RAP.map(r => r.a), TIT].some(a => t >= a && t < a + 0.07);
+  $('#pisca').setAttribute('opacity', (corte ? 0.5 : rnd(fr, 3) * 0.09).toFixed(2));
+  $('#turb').setAttribute('seed', fr % 97);
+  // riscos de película e poeira
+  let r = ''; for (let i = 0; i < 3; i++) if (rnd(fr, 10 + i) < 0.45) { const x = rnd(fr, 20 + i) * 1080; r += `<path d="M${x.toFixed(0)} 0 L${(x + (rnd(fr, 30 + i) - 0.5) * 30).toFixed(0)} 1920" stroke="#E8E2D0" stroke-width="${(1 + rnd(fr, 40 + i) * 2).toFixed(1)}" opacity="${(0.15 + rnd(fr, 50 + i) * 0.3).toFixed(2)}"/>`; }
+  for (let i = 0; i < 10; i++) if (rnd(fr, 60 + i) < 0.5) r += `<circle cx="${(rnd(fr, 70 + i) * 1080).toFixed(0)}" cy="${(rnd(fr, 80 + i) * 1920).toFixed(0)}" r="${(1 + rnd(fr, 90 + i) * 4).toFixed(1)}" fill="${rnd(fr, 95 + i) < 0.5 ? '#000' : '#E8E2D0'}" opacity=".6"/>`;
+  $('#riscos').innerHTML = r;
+};
+window.__seek(0);
+</script>
+</body>
+</html>
