@@ -314,7 +314,14 @@ plano(10.4, 12.25, { foco: [400, 760], zoom: [1.06, 1.16], dx: 160, dy: 20 }, p 
 
 // desempenho: tudo que é parado vira textura uma vez só (nuvens, reflexos, silhuetas e o cervo continuam vivos)
 const temAnim = o => o.__anim || (o.children || []).some(temAnim);
-const cachear = o => { if (temAnim(o)) { (o.children || []).forEach(cachear); return; } if (o.__vel) return; if ((o.children || []).some(c => c.__vel)) { o.children.forEach(cachear); return; } o.cacheAsTexture({ resolution: 1.3, antialias: true }); };
+// (Graphics solto não pode virar textura: embrulha num Container e cacheia o embrulho)
+const embrulhar = o => { const pai = o.parent, i = pai.getChildIndex(o), w = new PIXI.Container(); pai.addChildAt(w, i); w.addChild(o); w.filters = o.filters; o.filters = null; w.cacheAsTexture({ resolution: 1.3, antialias: true }); };
+const cachear = o => { const filhos = [...(o.children || [])], folha = o instanceof PIXI.Graphics || o instanceof PIXI.Sprite || o instanceof PIXI.Text;
+  if (o.__anim || o.__vel || o.filters) return;   // camadas com desfoque ficam fora do cache (o cache corta o desfoque)
+  if (folha) { embrulhar(o); return; }
+  const temFiltro = x => x.filters || (x.children || []).some(temFiltro);
+  if (temAnim(o) || filhos.some(c => c.__vel) || filhos.some(temFiltro)) { filhos.forEach(cachear); return; }
+  o.cacheAsTexture({ resolution: 1.3, antialias: true }); };
 PLANOS.forEach(p => p.camadas.forEach(cachear));
 // ---------------- 7. LOGO ----------------
 const LOGO = 12.25;
