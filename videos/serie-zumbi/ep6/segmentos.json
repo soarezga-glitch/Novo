@@ -2,197 +2,197 @@
  {
   "id": "N01",
   "quem": "narrador",
-  "texto": "Terceiro dia do apocalipse zumbi. Parte quatro. E a Aninha está andando sozinha... direto pro curral.",
+  "texto": "Os Sobreviventes. Episódio seis: Dimas, o motoqueiro. E a Aninha está andando sozinha... direto pro curral.",
   "de": 0.3,
-  "ate": 7.552
+  "ate": 9.171
  },
  {
   "id": "P01",
   "quem": "aninha",
   "texto": "Vovô? É você?",
-  "de": 8.052,
-  "ate": 10.186
+  "de": 9.671,
+  "ate": 11.805
  },
  {
   "id": "N02",
   "quem": "narrador",
   "texto": "Ela não vê o Tião. E o Tião não vê ela. Porque ele não consegue tirar os olhos do que está levantando do feno.",
-  "de": 10.686,
-  "ate": 17.159
+  "de": 12.305,
+  "ate": 19.162
  },
  {
   "id": "N03",
   "quem": "narrador",
   "texto": "Enquanto isso, a vinte quilômetros dali... na cidade.",
-  "de": 18.159,
-  "ate": 21.904
+  "de": 20.162,
+  "ate": 24.242
  },
  {
   "id": "N04",
   "quem": "narrador",
   "texto": "Uma moto velha corta a avenida principal, desviando de carro batido. No guidão, um homem de jaqueta de couro rasgada.",
-  "de": 22.204,
-  "ate": 30.697
+  "de": 24.542,
+  "ate": 32.668
  },
  {
   "id": "N05",
   "quem": "narrador",
-  "texto": "Facão de cana nas costas. Machadinha no cinto. E uma lança feita de vergalhão presa do lado da moto.",
-  "de": 30.997,
-  "ate": 38.009
+  "texto": "Facão de cana nas costas. Machadinha no cinto. E uma besta de caça presa nas costas, carregada com vergalhão.",
+  "de": 32.968,
+  "ate": 40.557
  },
  {
   "id": "N06",
   "quem": "narrador",
   "texto": "O nome dele é Dimas. E ele não para pra ninguém.",
-  "de": 38.309,
-  "ate": 41.563
+  "de": 40.857,
+  "ate": 44.103
  },
  {
   "id": "P02",
   "quem": "dimas",
   "texto": "Vira pra cá... isso.",
-  "de": 42.363,
-  "ate": 45.429
+  "de": 44.903,
+  "ate": 47.969
  },
  {
   "id": "N07",
   "quem": "narrador",
-  "texto": "Um infectado sai de trás de um ônibus. Dimas nem desce da moto. Um golpe só.",
-  "de": 45.929,
-  "ate": 51.946
+  "texto": "Um infectado sai de trás de um ônibus. Dimas nem desce da moto. Resolve com um movimento só.",
+  "de": 48.469,
+  "ate": 54.611
  },
  {
   "id": "N08",
   "quem": "narrador",
   "texto": "Mas o tanque está quase vazio. E a ponte que sai da cidade... está tomada.",
-  "de": 52.246,
-  "ate": 57.378
+  "de": 54.911,
+  "ate": 59.531
  },
  {
   "id": "P03",
   "quem": "dimas",
   "texto": "Então vai ser pela terra.",
-  "de": 57.878,
-  "ate": 59.714
+  "de": 60.031,
+  "ate": 61.867
  },
  {
   "id": "N09",
   "quem": "narrador",
   "texto": "Ele pega a estrada de chão. A mesma que os vultos usaram na noite da festa.",
-  "de": 60.214,
-  "ate": 65.09
+  "de": 62.367,
+  "ate": 67.444
  },
  {
   "id": "N10",
   "quem": "narrador",
   "texto": "De volta ao curral. O Seu Zé está de pé. Os olhos brancos. A boca aberta.",
-  "de": 66.19,
-  "ate": 72.032
+  "de": 68.544,
+  "ate": 74.308
  },
  {
   "id": "P04",
   "quem": "tiao",
   "texto": "Seu Zé... sou eu. O Tião.",
-  "de": 72.532,
-  "ate": 77.566
+  "de": 74.808,
+  "ate": 79.841
  },
  {
   "id": "N11",
   "quem": "narrador",
   "texto": "Ele levanta a enxada. Mas o braço não obedece. Esse homem segurou ele no colo quando era criança.",
-  "de": 78.066,
-  "ate": 84.808
+  "de": 80.341,
+  "ate": 86.876
  },
  {
   "id": "N12",
   "quem": "narrador",
   "texto": "E o Seu Zé não olha pro Tião. Ele olha pra porteira do curral. Onde uma menina acabou de aparecer.",
-  "de": 85.108,
-  "ate": 91.488
+  "de": 87.176,
+  "ate": 93.376
  },
  {
   "id": "P05",
   "quem": "aninha",
   "texto": "Vovô?",
-  "de": 91.988,
-  "ate": 92.494
+  "de": 93.876,
+  "ate": 94.382
  },
  {
   "id": "P06",
   "quem": "tiao",
   "texto": "Aninha, corre!",
-  "de": 92.994,
-  "ate": 94.727
+  "de": 94.882,
+  "ate": 96.615
  },
  {
   "id": "N13",
   "quem": "narrador",
   "texto": "Tarde demais. O Seu Zé avança. Rápido. Muito mais rápido do que um velho devia andar.",
-  "de": 95.227,
-  "ate": 101.615
+  "de": 97.115,
+  "ate": 102.966
  },
  {
   "id": "N14",
   "quem": "narrador",
   "texto": "E na estrada lá embaixo, o Dimas escuta um grito de criança.",
-  "de": 102.315,
-  "ate": 106.109
+  "de": 103.666,
+  "ate": 107.38
  },
  {
   "id": "N15",
   "quem": "narrador",
   "texto": "Ele acelera. A moto voa por cima do mata-burro. E entra no sítio derrubando a porteira.",
-  "de": 106.409,
-  "ate": 111.894
+  "de": 107.68,
+  "ate": 113.776
  },
  {
   "id": "N16",
   "quem": "narrador",
-  "texto": "O Seu Zé está a dois passos da menina. A mão já esticada. Quando um vergalhão atravessa o ar.",
-  "de": 112.194,
-  "ate": 118.445
+  "texto": "O Seu Zé está a dois passos da menina. A mão já esticada. Quando alguma coisa corta o ar.",
+  "de": 114.076,
+  "ate": 120.381
  },
  {
   "id": "N17",
   "quem": "narrador",
   "texto": "Silêncio. O Seu Zé cai no feno. E não levanta mais.",
-  "de": 119.845,
-  "ate": 124.054
+  "de": 121.781,
+  "ate": 126.411
  },
  {
   "id": "N18",
   "quem": "narrador",
   "texto": "A Aninha está paralisada. O Tião, de joelhos. E o estranho desce da moto, puxando o facão.",
-  "de": 124.354,
-  "ate": 131.327
+  "de": 126.711,
+  "ate": 133.91
  },
  {
   "id": "P07",
   "quem": "dimas",
   "texto": "Quem mais tá aqui?",
-  "de": 131.827,
-  "ate": 133.199
+  "de": 134.41,
+  "ate": 135.781
  },
  {
   "id": "P08",
   "quem": "tiao",
   "texto": "Só nós dois. Ninguém foi mordido.",
-  "de": 133.699,
-  "ate": 137.593
+  "de": 136.281,
+  "ate": 140.176
  },
  {
   "id": "N19",
   "quem": "narrador",
-  "texto": "O Dimas não responde. Ele olha pra perna do Tião. A calça rasgada. O sangue escorrendo.",
-  "de": 138.093,
-  "ate": 144.476
+  "texto": "O Dimas não responde. Ele olha pra perna do Tião. A calça rasgada. E uma mancha escura que não estava ali de manhã.",
+  "de": 140.676,
+  "ate": 148.88
  },
  {
   "id": "P09",
   "quem": "dimas",
-  "texto": "Então me explica esse sangue aí.",
-  "de": 144.976,
-  "ate": 147.51
+  "texto": "Então me explica essa perna aí.",
+  "de": 149.38,
+  "ate": 152.985
  }
 ]
