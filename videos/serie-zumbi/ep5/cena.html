@@ -204,7 +204,7 @@ const armasLado = (M, { facao = true, machad = true } = {}) => { const q = M.b.o
 [[300, 1300, 0.9], [760, 1320, 1.0], [540, 1400, 1.2], [140, 1520, 1.45], [920, 1560, 1.55], [520, 1900, 2.2]].forEach(([x, y, k], i) => { const v = ator(k, J('abre'), VULTO(50 + i));
   v.base(0, S.abre[1], 'parado', { x, y, vista: 'frente' }); v.braco('ambos', 0, S.abre[1], 'estender'); v.expressao(0, S.abre[1], 'zumbi'); v.cabeca(0, S.abre[1], { inclinar: (i % 2 ? 1 : -1) * 14, baixar: -6 }); });
 // ===== a Aninha andando pro curral, e chamando =====
-const aA = ator(1.0, J('aninha'), ANINHA); aA.base(S.aninha[0], S.aninha[1], 'andarCostas', { de: [505, 1860], ate: [505, 1520], passo: 60, perspectiva: { horizonte: 900, yRef: 1860 } }); aA.expressao(S.aninha[0], S.aninha[1], 'triste');
+const aA = ator(1.0, J('aninha'), ANINHA); aA.base(S.aninha[0], S.aninha[1], 'andarFrente', { de: [505, 1330], ate: [505, 1760], passo: 60, perspectiva: { horizonte: 900, yRef: 1860 } });   // vem do lado da casa na direção da câmera (o curral fica pra cá) aA.expressao(S.aninha[0], S.aninha[1], 'triste');
 const aV1 = ator(2.1, J('vovo1'), ANINHA); aV1.base(S.vovo1[0], S.vovo1[1], 'parado', { x: 540, y: 2160, vista: 'frente' }); aV1.expressao(S.vovo1[0], S.vovo1[1], 'triste');
 aV1.braco('ambos', S.vovo1[0] + 0.2, S.vovo1[1], 'pose', { o: 30, c: 115 }); aV1.cabeca(S.vovo1[0], S.vovo1[1], { baixar: -6, virar: 0.25 });
 
