@@ -6,7 +6,7 @@ W = lambda i, n: [p for p in P if p['seg'] == i][n]['start']
 a0 = round(W('N01', 7) - 0.1, 3)            # "E a Aninha está andando..."
 corte = round(SEG['N03']['de'] - 0.1, 3)     # "Enquanto isso..." (cidade)
 v0, v1 = 0.2, round(W('N01', 7) - 0.12, 3)    # "Os Sobreviventes. Episódio seis: Dimas, o motoqueiro."
-AB = '../abertura/abertura-os-sobreviventes.mp4'; TV = 11.85   # a voz entra quando o título aparece
+AB = '../abertura3/abertura-os-sobreviventes.mp4'; TV = 12.45   # a voz entra quando o título aparece
 ENC = ['-c:v', 'libx264', '-crf', '21', '-preset', 'medium', '-pix_fmt', 'yuv420p', '-r', '30', '-c:a', 'aac', '-b:a', '192k', '-ar', '48000', '-ac', '2']
 ff = lambda *a: subprocess.run(['ffmpeg', '-loglevel', 'error', '-y', *a], check=True)
 ff('-ss', str(a0), '-to', str(corte), '-i', 'video.mp4', '-af', f'afade=t=out:st={corte - a0 - 0.25}:d=0.25', *ENC, 'parteA.mp4')
