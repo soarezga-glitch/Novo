@@ -5,7 +5,7 @@
   Origem de TODAS as vistas = chão, no meio da moto.
     Moto.lado(k, { roda, farol, lanca })  vista de lado, frente para +x (espelhe com scale(-1,1)); roda = ângulo dos raios
     Moto.lado.pontos(k)                   { assento, pe, guidao } para o boneco 'montar' (skill fisica-de-cena)
-    Moto.frente(k, { farol })             vindo na direção da câmera (farol aceso, garfo, pneu fino, guidão largo, motor em V dos dois lados)
+    Moto.frente(k, { farol, camada })     vindo na direção da câmera; camada 'fundo' (atrás do piloto) e 'frente' (farol, pneu, garfo, guidão NA FRENTE dele)
     Moto.frente.pontos(k)                 { assento, pe: [esq, dir], guidao: [esq, dir] } para o piloto de frente
     Moto.tras(k, { freio })               indo embora (lanterna, para-lama cortado, escapamentos, pneu traseiro largo)
     Moto.tras.pontos(k)
@@ -24,7 +24,7 @@
     s += [...Array(14)].map((_, i) => { const a = i / 14 * Math.PI * 2 + ang * Math.PI / 180; return `<path d="M${f(cx + Math.cos(a) * (R - 4))} ${f(cy + Math.sin(a) * (R - 4))} L${f(cx + Math.cos(a) * (R - 13))} ${f(cy + Math.sin(a) * (R - 13))}" stroke="#2E2E34" stroke-width="5"/>`; }).join('');
     return s; };
   // ---------------- DE LADO ----------------
-  Moto.lado = (k = 1, { roda: ang = 0, farol = true, lanca = true } = {}) => {
+  Moto.lado = (k = 1, { roda: ang = 0, farol = true, lanca = false } = {}) => {
     const R = 108, rx0 = -250, rx1 = 260, ry = -R;
     let s = `<g transform="scale(${k})"><ellipse cx="0" cy="6" rx="340" ry="22" fill="#000" opacity=".35"/>`;
     // para-lama traseiro cortado e alforje de couro
@@ -62,19 +62,20 @@
     return s + '</g>'; };
   Moto.lado.pontos = (k = 1) => ({ assento: [-100 * k, -296 * k], pe: [8 * k, -96 * k], guidao: [92 * k, -448 * k] });
   // ---------------- DE FRENTE (vindo para a câmera) ----------------
-  Moto.frente = (k = 1, { farol = true } = {}) => {
-    let s = `<g transform="scale(${k})"><ellipse cx="0" cy="6" rx="140" ry="20" fill="#000" opacity=".35"/>`;
-    s += `<path d="M-60 -110 L-118 -70 M60 -110 L118 -70" stroke="${L}" stroke-width="20" stroke-linecap="round"/><path d="M-60 -110 L-118 -70 M60 -110 L118 -70" stroke="${CR}" stroke-width="12" stroke-linecap="round"/>`;   // escapamentos saindo dos dois cilindros
-    s += `<path d="M-70 -110 L-100 -200 L-60 -230 L-30 -130Z M70 -110 L100 -200 L60 -230 L30 -130Z" fill="${CR2}" stroke="${L}" stroke-width="5"/>${[0, 1, 2, 3, 4].map(i => `<path d="M${-104 + i * 3} ${-186 + i * 12} h34 M${70 - i * 3} ${-186 + i * 12} h34" stroke="${CR}" stroke-width="5"/>`).join('')}`;   // cilindros do V2
-    s += `<path d="M-46 -170 Q0 -250 46 -170 L36 -120 L-36 -120Z" fill="#5A1A16" stroke="${L}" stroke-width="5"/><path d="M0 -236 V-130" stroke="#E8D8B0" stroke-width="8"/>`;   // tanque visto de frente
-    s += `<path d="M-14 -40 L-24 -250 M14 -40 L24 -250" stroke="${L}" stroke-width="18"/><path d="M-14 -40 L-24 -250 M14 -40 L24 -250" stroke="${CR}" stroke-width="11"/>`;   // garfo
-    s += `<rect x="-22" y="-216" width="44" height="216" rx="20" fill="#16161A" stroke="${L}" stroke-width="5"/><path d="M-10 -200 V-16 M10 -200 V-16" stroke="#2E2E34" stroke-width="4"/>`;   // pneu gordo de frente
-    s += `<path d="M-40 -232 Q0 -262 40 -232 L34 -206 Q0 -226 -34 -206Z" fill="${PRETO}" stroke="${L}" stroke-width="4"/>`;   // para-lama
-    s += `<path d="M-30 -316 Q-110 -322 -150 -346 L-176 -350 M30 -316 Q110 -322 150 -346 L176 -350" stroke="${L}" stroke-width="16" fill="none" stroke-linecap="round"/><path d="M-30 -316 Q-110 -322 -150 -346 L-176 -350 M30 -316 Q110 -322 150 -346 L176 -350" stroke="${CR}" stroke-width="9" fill="none" stroke-linecap="round"/>`;   // guidão alto e largo
-    s += `<path d="M-130 -340 l-20 -60 M130 -340 l20 -60" stroke="${CR2}" stroke-width="4"/><ellipse cx="-152" cy="-410" rx="16" ry="12" fill="${CR}" stroke="${L}" stroke-width="3"/><ellipse cx="152" cy="-410" rx="16" ry="12" fill="${CR}" stroke="${L}" stroke-width="3"/>`;
-    s += `<circle cx="0" cy="-290" r="46" fill="${CR2}" stroke="${L}" stroke-width="6"/><circle cx="0" cy="-290" r="34" fill="${farol ? '#FFF6D0' : '#9AA0A8'}" stroke="${L}" stroke-width="3"/><circle cx="-10" cy="-300" r="10" fill="#FFFFFF" opacity=".8"/>`;   // farol
-    s += `<path d="M-120 -96 h50 M70 -96 h50" stroke="${L}" stroke-width="12" stroke-linecap="round"/>`;   // pedaleiras
-    return s + '</g>'; };
+  Moto.frente = (k = 1, { farol = true, camada = 'tudo' } = {}) => {
+    let fundo = `<ellipse cx="0" cy="6" rx="140" ry="20" fill="#000" opacity=".35"/>`;
+    fundo += `<path d="M-60 -110 L-118 -70 M60 -110 L118 -70" stroke="${L}" stroke-width="20" stroke-linecap="round"/><path d="M-60 -110 L-118 -70 M60 -110 L118 -70" stroke="${CR}" stroke-width="12" stroke-linecap="round"/>`;
+    fundo += `<path d="M-70 -110 L-100 -200 L-60 -230 L-30 -130Z M70 -110 L100 -200 L60 -230 L30 -130Z" fill="${CR2}" stroke="${L}" stroke-width="5"/>${[0, 1, 2, 3, 4].map(i => `<path d="M${-104 + i * 3} ${-186 + i * 12} h34 M${70 - i * 3} ${-186 + i * 12} h34" stroke="${CR}" stroke-width="5"/>`).join('')}`;
+    fundo += `<path d="M-46 -170 Q0 -250 46 -170 L36 -120 L-36 -120Z" fill="#5A1A16" stroke="${L}" stroke-width="5"/><path d="M0 -236 V-130" stroke="#E8D8B0" stroke-width="8"/>`;
+    fundo += `<path d="M-120 -96 h50 M70 -96 h50" stroke="${L}" stroke-width="12" stroke-linecap="round"/>`;
+    let frente = `<path d="M-14 -40 L-24 -250 M14 -40 L24 -250" stroke="${L}" stroke-width="18"/><path d="M-14 -40 L-24 -250 M14 -40 L24 -250" stroke="${CR}" stroke-width="11"/>`;
+    frente += `<rect x="-24" y="-218" width="48" height="218" rx="22" fill="#16161A" stroke="${L}" stroke-width="5"/><path d="M-10 -200 V-16 M10 -200 V-16" stroke="#2E2E34" stroke-width="4"/>${[0, 1, 2, 3, 4, 5].map(i => `<path d="M-20 ${-196 + i * 34} h40" stroke="#26262C" stroke-width="5"/>`).join('')}`;
+    frente += `<path d="M-40 -232 Q0 -262 40 -232 L34 -206 Q0 -226 -34 -206Z" fill="${PRETO}" stroke="${L}" stroke-width="4"/>`;
+    frente += `<path d="M-30 -316 Q-110 -322 -150 -346 L-176 -350 M30 -316 Q110 -322 150 -346 L176 -350" stroke="${L}" stroke-width="16" fill="none" stroke-linecap="round"/><path d="M-30 -316 Q-110 -322 -150 -346 L-176 -350 M30 -316 Q110 -322 150 -346 L176 -350" stroke="${CR}" stroke-width="9" fill="none" stroke-linecap="round"/>`;
+    frente += `<path d="M-130 -340 l-20 -60 M130 -340 l20 -60" stroke="${CR2}" stroke-width="4"/><ellipse cx="-152" cy="-410" rx="16" ry="12" fill="${CR}" stroke="${L}" stroke-width="3"/><ellipse cx="152" cy="-410" rx="16" ry="12" fill="${CR}" stroke="${L}" stroke-width="3"/>`;
+    frente += `<g transform="translate(0 -276)"><circle r="50" fill="${CR2}" stroke="${L}" stroke-width="6"/><circle r="38" fill="${farol ? '#FFF6D0' : '#9AA0A8'}" stroke="${L}" stroke-width="3"/><circle cx="-12" cy="-12" r="11" fill="#FFFFFF" opacity=".85"/>${farol ? '<circle r="120" fill="#FFF2B0" opacity=".18"/>' : ''}</g>`;
+    const g = c => `<g transform="scale(${k})">${c}</g>`;
+    return camada === 'fundo' ? g(fundo) : camada === 'frente' ? g(frente) : g(fundo + frente); };
   Moto.frente.pontos = (k = 1) => ({ assento: [0, -300 * k], pe: [[-96 * k, -96 * k], [96 * k, -96 * k]], guidao: [[-166 * k, -350 * k], [166 * k, -350 * k]] });
   // ---------------- DE TRÁS (indo embora) ----------------
   Moto.tras = (k = 1, { freio = false } = {}) => {

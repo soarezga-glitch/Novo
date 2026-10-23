@@ -831,7 +831,7 @@
         // Linha do cabelo h(lon): latitude (rad) onde o cabelo começa; lon 0 = testa, ±π = nuca.
         // Parte visível = arco da silhueta (por cima da cabeça) + linha do cabelo no lado visível.
         const R = r * 1.05;
-        const H = { curto: [0.02, 0.5], cacheado: [0.12, 0.52], coque: [0.0, 0.52], longo: [-0.05, 0.5], militar: [0.62, 0.3], zumbi: [0.45, 0.35] }[est] || [0.02, 0.5];
+        const H = { curto: [0.02, 0.5], cacheado: [0.12, 0.52], coque: [0.0, 0.52], longo: [-0.05, 0.5], militar: [0.62, 0.3], zumbi: [0.45, 0.35], medio: [0.3, 0.32] }[est] || [0.02, 0.5];
         const h = lon => H[0] + H[1] * Math.cos(lon);
         const pt = (lon, lat) => [C[0] + R * Math.cos(lat) * Math.sin(lon + TH), C[1] - R * Math.sin(lat)];
         const lonD = Math.PI / 2 - TH, lonE = -Math.PI / 2 - TH;          // longitudes na borda direita/esquerda da tela
@@ -852,6 +852,16 @@
             const tip = [bx + n[0] * comp + tg[0] * comp * lado, by + n[1] * comp + tg[1] * comp * lado];
             d += `M${p1[0].toFixed(1)} ${p1[1].toFixed(1)} L${tip[0].toFixed(1)} ${tip[1].toFixed(1)} L${p2[0].toFixed(1)} ${p2[1].toFixed(1)}Z`;
           }
+        }
+        if (est === 'medio') {               // cabelo MÉDIO até o pescoço (tipo motoqueiro): mechas caindo dos lados e atrás, franja desfiada na testa
+          const dx = -giroX * r * 0.35, zv = this.zv, pz = (x, y) => x.toFixed(1) + ' ' + y.toFixed(1);
+          let b = `M${pz(C[0] - r * 1.04 + dx, C[1] - r * 0.3)} Q${pz(C[0] - r * 1.14 + dx, C[1] + r * 0.5)} ${pz(C[0] - r * 0.92 + dx, C[1] + r * 0.98)}`;
+          for (let q = 1; q <= 8; q++) { const u = q / 8, x = C[0] + dx + (-0.92 + 1.84 * u) * r, y = C[1] + r * (q % 2 ? 0.8 + zv[q % 12] * 0.1 : 0.98); b += ` L${pz(x, y)}`; }
+          b += ` Q${pz(C[0] + r * 1.14 + dx, C[1] + r * 0.5)} ${pz(C[0] + r * 1.04 + dx, C[1] - r * 0.3)}Z`;
+          dT = b;
+          for (let q = -2; q <= 2; q++) { const lon = q * 0.32, cz = Math.cos(lon + TH); if (cz < 0.15) continue;   // franja: mechas pontudas na testa
+            const a0 = pt(lon - 0.16, h(lon - 0.16)), a1 = pt(lon + 0.16, h(lon + 0.16)), tip = pt(lon + 0.08 * (zv[(q + 6) % 12] - 0.5), h(lon) - 0.16 - 0.1 * zv[(q + 3) % 12]);
+            d += `M${pz(a0[0], a0[1])} L${pz(tip[0], tip[1])} L${pz(a1[0], a1[1])}Z`; }
         }
         if (est === 'zumbi') {               // zumbi: tufos ralos e arrepiados, de tamanhos diferentes, com falhas
           const zv = this.zv, nS = 9;
@@ -1197,7 +1207,7 @@
     'seuze':         { tronco: 'camiseta', cor: '#7A8A9A', mangas: 'curta', pernas: 'calca', corPernas: '#4A3A2A', pes: 'sapato', corPes: '#2A1E14', cabelo: 'curto', corCabelo: '#E8E8E2', cinto: '#2A1E14', semBochecha: true },
     'neta':          { tronco: 'vestido', cor: '#C97A9A', mangas: 'curta', pes: 'sapato', corPes: '#F2F2F2', cabelo: 'longo', corCabelo: '#3A2418', chapeu: 'tiara', corChapeu: '#F2E26A', semBochecha: true },
     'vulto':         { tronco: 'camiseta', cor: '#15161C', mangas: 'curta', pernas: 'calca', corPernas: '#101116', pes: 'descalco', cabelo: 'zumbi', corCabelo: '#0C0C10', semBochecha: true, zumbi: true },   // zumbi no escuro: silhueta curvada, farrapos, braços tortos
-    'dimas':         { tronco: 'camiseta', cor: '#16161A', cor2: '#3A3A42', mangas: 'nenhuma', pernas: 'calca', corPernas: '#1C1C22', pes: 'bota', corPes: '#0E0E10', cabelo: 'zumbi', corCabelo: '#1E1A16', cinto: '#2A2A30', rasgos: true, barba: true, colete: true, semBochecha: true },   // o sobrevivente da moto: colete preto de couro sem manga (roqueiro), braços de fora, calça e bota pretas
+    'dimas':         { tronco: 'camiseta', cor: '#16161A', cor2: '#3A3A42', mangas: 'nenhuma', pernas: 'calca', corPernas: '#1C1C22', pes: 'bota', corPes: '#0E0E10', cabelo: 'medio', corCabelo: '#2A2018', cinto: '#2A2A30', rasgos: true, barba: true, colete: true, semBochecha: true },   // o sobrevivente da moto: colete preto de couro sem manga (roqueiro), braços de fora, calça e bota pretas
     'aluno':         { tronco: 'camiseta', cor: '#5A7A9A', mangas: 'curta', pernas: 'calca', corPernas: '#2E3A4A', pes: 'tenis', corPes: '#F2F2F2', corPes2: '#5A5A60', cabelo: 'curto', corCabelo: '#2A1E16', semBochecha: true },
     // --- SOBREVIVENTE: personagem oficial (skill personagem-sobrevivente) ---
     'sobrevivente':  { tronco: 'camiseta', cor: '#FFFFFF', mangas: 'curta', pernas: 'calca', corPernas: '#26262B', cargo: true, pes: 'tenis', corPes: '#FF7A00', corPes2: '#111111', cabelo: 'militar', corCabelo: '#111111', extras: ['cachecol', 'mochila'], luvas: true, semBochecha: true, cinto: 'none' }
