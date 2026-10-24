@@ -15,6 +15,9 @@ ap.add_argument('duration', type=float)
 ap.add_argument('--seg', action='append', default=[])
 ap.add_argument('--zoom', type=float, default=1.05)
 ap.add_argument('--fast', action='store_true', help='short sketch/color times (text cards)')
+ap.add_argument('--focus', default=None, help='X,Y the slow push-in drifts toward')
+ap.add_argument('--panzoom', type=float, default=1.12, help='zoom on the panel being drawn')
+ap.add_argument('--nofade', action='store_true')
 args = ap.parse_args()
 
 W, H, FPS, CELL = 1920, 1080, 30, 16
@@ -97,9 +100,31 @@ ff = subprocess.Popen(['ffmpeg', '-y', '-loglevel', 'error', '-f', 'rawvideo', '
                        '-s', f'{W}x{H}', '-r', str(FPS), '-i', '-', '-c:v', 'libx264', '-preset', 'medium',
                        '-crf', '18', '-pix_fmt', 'yuv420p', args.out], stdin=subprocess.PIPE)
 nframes = 0
+TOTAL = int(round(D * FPS))
+FX, FY = [float(v) for v in args.focus.split(',')] if args.focus else (W / 2, H / 2)
+# camera: mode 'panel' frames one panel, mode 'push' slowly pushes in over the whole clip
+cam = np.array([W / 2, H / 2, 1.0]); cam_mode = ['push']; cam_panel = [W / 2]
+def cam_goal():
+    if cam_mode[0] == 'panel':
+        return np.array([cam_panel[0], H / 2, args.panzoom])
+    p = nframes / max(1, TOTAL)
+    z = 1 + (args.zoom - 1) * p
+    return np.array([W / 2 + (FX - W / 2) * p, H / 2 + (FY - H / 2) * p, z])
 def emit(f):
-    global nframes; nframes += 1
-    ff.stdin.write(np.clip(f, 0, 255).astype(np.uint8).tobytes())
+    global nframes, cam
+    g = cam_goal(); cam = cam + (g - cam) * (0.035 if cam_mode[0] == 'panel' else 0.08)
+    cx, cy, z = cam
+    hw, hh = W / (2 * z), H / (2 * z)
+    cx = min(max(cx, hw), W - hw); cy = min(max(cy, hh), H - hh)
+    M = np.float32([[z, 0, W / 2 - z * cx], [0, z, H / 2 - z * cy]])
+    f = cv2.warpAffine(np.clip(f, 0, 255).astype(np.uint8), M, (W, H), flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_REFLECT)
+    left = TOTAL - nframes
+    if not args.nofade and left <= 14:
+        k = (14 - left) / 14
+        pz = cv2.warpAffine(paper_img.astype(np.uint8), M, (W, H), borderMode=cv2.BORDER_REFLECT)
+        f = cv2.addWeighted(f, 1 - k, pz, k, 0)
+    nframes += 1
+    ff.stdin.write(f.tobytes())
 
 canvas = paper_img.copy()
 OFF = np.array([W + 300.0, H + 200.0]); tip = None
@@ -159,6 +184,8 @@ for idx, (x0, x1, t0) in enumerate(segs):
         t_sk = float(np.clip(window * 0.45, 2.0, 6.0))
         t_col = float(np.clip(window * 0.17, 1.2, 2.5))
     hold_until(t0)
+    if len(segs) > 1:
+        cam_mode[0] = 'panel'; cam_panel[0] = (x0 + x1) / 2
     cells = seg_cells(x0, x1)
     if not cells: continue
     pts = np.array(cells, np.float32)
@@ -175,12 +202,9 @@ for idx, (x0, x1, t0) in enumerate(segs):
     canvas[sub] = sketch[sub]
     color_region(x0, x1, t_col)
 
-# slow push-in on the finished image until the end
-t_done = nframes; target = int(round(D * FPS)); remain = max(1, target - t_done)
+# after the last panel: open up to the full image and keep a slow push-in
+cam_mode[0] = 'push'
 final = canvas.copy()
-for i in range(target - t_done):
-    z = 1 + (args.zoom - 1) * ease((i + 1) / remain)
-    M = cv2.getRotationMatrix2D((W / 2, H / 2), 0, z)
-    emit(cv2.warpAffine(final, M, (W, H), flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_REFLECT))
+while nframes < TOTAL: emit(final)
 ff.stdin.close(); ff.wait()
 print(f'{args.out}: {nframes / FPS:.2f}s')
