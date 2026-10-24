@@ -5,3 +5,6 @@ videos/**/video_novo.mp4
 videos/**/fim.flag
 videos/**/mix.wav
 videos/serie-zumbi/ep4/completo/video.mp4
+
+# WAV da narração editada passa do limite de 100 MB do GitHub
+audios/**/*.wav
