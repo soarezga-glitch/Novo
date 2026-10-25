@@ -4,7 +4,7 @@ C=json.load(open('cortes-narrador.json'))
 ordem=[l.rstrip('\n').split('\t') for l in open('ordem.tsv',encoding='utf-8') if l.strip()]
 dur=lambda f: float(subprocess.check_output(['ffprobe','-v','error','-show_entries','format=duration','-of','csv=p=0',f]))
 TRIM="silenceremove=start_periods=1:start_threshold=-45dB:start_silence=0.04,areverse,silenceremove=start_periods=1:start_threshold=-45dB:start_silence=0.08,areverse"
-extra={'N01':0.5,'P01':0.2,'N02':0.4,'N03':0.6,'N04':0.7,'P04':0.3,'N05':0.4,'N06':0.5,'N07':1.0}
+extra={'T00':0.3,'P01':0.3,'N02':0.4,'N03':0.6,'N04':0.7,'P04':0.3,'N05':0.4,'N06':0.5,'N07':1.0}
 segs=[];t=0.3;prev=None   # abre com o título (titulo.wav, gravado pelo criador)
 for id_,quem,texto in ordem:
     out=f'falas-final/{id_}.wav'

@@ -1,100 +1,100 @@
 [
  {
-  "id": "T00",
-  "quem": "titulo",
-  "texto": "Os Sobreviventes. Episódio 7. A Perna do Tião.",
-  "de": 0.3,
-  "ate": 4.475
- },
- {
   "id": "N01",
   "quem": "narrador",
   "texto": "A besta do Dimas está apontada pra cabeça do Tião. Ele tem três segundos pra explicar essa perna.",
-  "de": 5.475,
-  "ate": 11.791
+  "de": 0.3,
+  "ate": 6.616
+ },
+ {
+  "id": "T00",
+  "quem": "titulo",
+  "texto": "Os Sobreviventes. Episódio 7. A Perna do Tião.",
+  "de": 7.416,
+  "ate": 11.591
  },
  {
   "id": "P01",
   "quem": "tiao",
   "texto": "Foi o arame da porteira! Eu juro!",
-  "de": 12.491,
-  "ate": 17.831
+  "de": 12.391,
+  "ate": 17.731
  },
  {
   "id": "P02",
   "quem": "aninha",
   "texto": "Não atira! Ele é tudo que eu tenho.",
-  "de": 18.331,
-  "ate": 23.181
+  "de": 18.231,
+  "ate": 23.081
  },
  {
   "id": "N02",
   "quem": "narrador",
   "texto": "O Dimas não abaixa a arma. Só acende o farol da moto.",
-  "de": 24.081,
-  "ate": 27.45
+  "de": 23.981,
+  "ate": 27.35
  },
  {
   "id": "P03",
   "quem": "dimas",
   "texto": "Puxa a calça. Devagar.",
-  "de": 27.95,
-  "ate": 30.54
+  "de": 27.85,
+  "ate": 30.44
  },
  {
   "id": "N03",
   "quem": "narrador",
   "texto": "O tecido gruda no sangue seco. A Aninha fecha os olhos.",
-  "de": 31.64,
-  "ate": 35.36
+  "de": 31.54,
+  "ate": 35.26
  },
  {
   "id": "N04",
   "quem": "narrador",
   "texto": "Corte reto. Fundo. Sem marca de dente.",
-  "de": 36.36,
-  "ate": 39.393
+  "de": 36.26,
+  "ate": 39.293
  },
  {
   "id": "P04",
   "quem": "dimas",
   "texto": "Arame. Tu teve sorte, velho.",
-  "de": 40.193,
-  "ate": 42.922
+  "de": 40.093,
+  "ate": 42.822
  },
  {
   "id": "N05",
   "quem": "narrador",
   "texto": "Ele abaixa a besta e olha em volta. A porteira no chão. A cerca podre. A casa sem tranca.",
-  "de": 43.822,
-  "ate": 50.464
+  "de": 43.722,
+  "ate": 50.364
  },
  {
   "id": "P05",
   "quem": "dimas",
   "texto": "Desse jeito, ninguém aqui passa do inverno. Se for pra ficar, vai ser do meu jeito.",
-  "de": 50.964,
-  "ate": 56.266
+  "de": 50.864,
+  "ate": 56.166
  },
  {
   "id": "N06",
   "quem": "narrador",
   "texto": "O Tião olha pra menina. E pela primeira vez desde a festa, alguém sabe o que fazer.",
-  "de": 57.266,
-  "ate": 62.717
+  "de": 57.166,
+  "ate": 62.617
  },
  {
   "id": "P06",
   "quem": "dimas",
   "texto": "Amanhã a gente começa a cerca.",
-  "de": 63.217,
-  "ate": 65.523
+  "de": 63.117,
+  "ate": 65.423
  },
  {
   "id": "N07",
   "quem": "narrador",
   "texto": "Mas, enquanto os três dormem, alguma coisa segue o rastro de sangue... até a porteira.",
-  "de": 67.023,
-  "ate": 72.807
+  "de": 66.923,
+  "ate": 72.707
  }
 ]

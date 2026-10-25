@@ -8,18 +8,18 @@ de=lambda i: SEG[i]['de']; ate=lambda i: SEG[i]['ate']
 FIM=ate('N07')+0.6; CART=FIM+0.5; END=CART+3.6
 T_FAROL=W('N02',9)-0.15; T_BAIXA=de('P04')+0.2
 # inícios dos planos (iguais aos da cena)
-besta=de('N01')-0.1; tres=W('N01',10)-0.1; farol=W('N02',6)-0.1; calca=de('N03')-0.1; corte=de('N04')-0.1; olhaV=de('N05')-0.1
+besta=de('N01')-0.1; ab=de('T00')-0.25; tres=W('N01',10)-0.1; farol=W('N02',6)-0.1; calca=de('N03')-0.1; corte=de('N04')-0.1; olhaV=de('N05')-0.1
 portC=W('N05',8)-0.1; cerca=W('N05',12)-0.1; casa=W('N05',15)-0.1; juntos=W('N06',5)-0.1; dormem=de('N07')-0.1; rastro=W('N07',5)-0.1; chega=W('N07',12)-0.1
 B='../../../.claude/skills/sons-de-ambiente/biblioteca/'
 A=lambda s,a,b,db,fade=0.4: dict(som=s,de=round(a,2),ate=round(b,2),db=db,fade=fade)
 E=lambda s,t,db: dict(som=s,em=round(t,2),db=db)
-amb=[A('amb_tensao_grave',0,besta,-8,0.1),
+amb=[
  A('amb_sitio_noite',besta,dormem,-19),A('amb_tensao_grave',besta,T_BAIXA,-10,0.5),A('sfx_coracao',tres,de('N02'),-6,0.3),A('sfx_coracao',calca,corte+3.0,-9,0.4),
  A('sfx_moto_lenta',T_FAROL,olhaV,-24,0.6),
  A('amb_noite_fria',portC,de('P05')-0.2,-16,0.3),A('trilha_rock',de('P05')-0.2,dormem,-17,1.0),
  A('amb_sitio_noite',dormem,rastro,-17,0.4),A('amb_noite_fria',rastro,FIM,-14,0.4),A('amb_tensao_grave',rastro-0.4,FIM,-6,0.4),A('sfx_coracao',chega,FIM,-5,0.2),
  A('amb_tensao_grave',CART,END,-16)]
-ef=[E('whoosh-cinematic',0.05,-6),E('sfx_impacto_cinema',0.12,-1),E('impact-bass-1',0.55,-3),E('sfx_moto_acelera',0.3,-12),E('whoosh-short',W('T00',2)-0.1,-10),E('pop',W('T00',2),-12),E('impact-bass-2',W('T00',4),-8),E('impact-bass-2',besta,-6),
+ef=[E('whoosh-cinematic',ab-0.15,-6),E('sfx_impacto_cinema',ab,-1),E('impact-bass-1',ab+0.4,-3),E('whoosh-short',W('T00',2)-0.1,-10),E('pop',W('T00',2),-12),E('impact-bass-2',W('T00',4),-8),E('impact-bass-2',besta,-6),
  E('sfx_clique_grave',W('N01',1),-4),E('sfx_estalo',W('N01',5),-12),E('sfx_relogio_contagem',W('N01',12),-8),
  E('sfx_taque',W('N01',12),-6),E('sfx_taque',de('P01')+0.5,-6),E('sfx_taque',de('P02')-0.3,-4),E('sfx_grito_menina',de('P02')-0.45,-14),E('impact-bass-2',de('P02'),-6),
  E('sfx_passo_capim_2',de('P02')-0.4,-8),E('sfx_passo_capim_3',de('P02')-0.15,-8),
