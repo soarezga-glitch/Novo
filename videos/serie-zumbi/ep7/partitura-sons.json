@@ -1,0 +1,404 @@
+{
+ "duracao": 73.8,
+ "voz": "fala_master.wav",
+ "biblioteca": [
+  "../../../.claude/skills/sons-de-ambiente/biblioteca/apocalipse",
+  "../../../.claude/skills/sons-de-ambiente/biblioteca/hoje",
+  "../../../.claude/skills/sons-de-ambiente/biblioteca/ui"
+ ],
+ "ambientes": [
+  {
+   "som": "amb_tensao_grave",
+   "de": 0,
+   "ate": 3.1,
+   "db": -8,
+   "fade": 0.1
+  },
+  {
+   "som": "amb_sitio_noite",
+   "de": 3.1,
+   "ate": 63.21,
+   "db": -19,
+   "fade": 0.4
+  },
+  {
+   "som": "amb_tensao_grave",
+   "de": 3.1,
+   "ate": 36.68,
+   "db": -10,
+   "fade": 0.5
+  },
+  {
+   "som": "sfx_coracao",
+   "de": 6.39,
+   "ate": 20.37,
+   "db": -6,
+   "fade": 0.3
+  },
+  {
+   "som": "sfx_coracao",
+   "de": 27.83,
+   "ate": 35.55,
+   "db": -9,
+   "fade": 0.4
+  },
+  {
+   "som": "sfx_moto_lenta",
+   "de": 22.68,
+   "ate": 40.01,
+   "db": -24,
+   "fade": 0.6
+  },
+  {
+   "som": "amb_noite_fria",
+   "de": 42.53,
+   "ate": 47.05,
+   "db": -16,
+   "fade": 0.3
+  },
+  {
+   "som": "trilha_rock",
+   "de": 47.05,
+   "ate": 63.21,
+   "db": -17,
+   "fade": 1.0
+  },
+  {
+   "som": "amb_sitio_noite",
+   "de": 63.21,
+   "ate": 65.22,
+   "db": -17,
+   "fade": 0.4
+  },
+  {
+   "som": "amb_noite_fria",
+   "de": 65.22,
+   "ate": 69.7,
+   "db": -14,
+   "fade": 0.4
+  },
+  {
+   "som": "amb_tensao_grave",
+   "de": 64.82,
+   "ate": 69.7,
+   "db": -6,
+   "fade": 0.4
+  },
+  {
+   "som": "sfx_coracao",
+   "de": 67.94,
+   "ate": 69.7,
+   "db": -5,
+   "fade": 0.2
+  },
+  {
+   "som": "amb_tensao_grave",
+   "de": 70.2,
+   "ate": 73.8,
+   "db": -16,
+   "fade": 0.4
+  }
+ ],
+ "efeitos": [
+  {
+   "som": "whoosh-cinematic",
+   "em": 0.05,
+   "db": -6
+  },
+  {
+   "som": "sfx_impacto_cinema",
+   "em": 0.12,
+   "db": -1
+  },
+  {
+   "som": "impact-bass-1",
+   "em": 0.55,
+   "db": -3
+  },
+  {
+   "som": "sfx_moto_acelera",
+   "em": 0.3,
+   "db": -12
+  },
+  {
+   "som": "whoosh-short",
+   "em": 1.1,
+   "db": -10
+  },
+  {
+   "som": "pop",
+   "em": 1.15,
+   "db": -12
+  },
+  {
+   "som": "impact-bass-2",
+   "em": 3.1,
+   "db": -6
+  },
+  {
+   "som": "sfx_clique_grave",
+   "em": 3.33,
+   "db": -4
+  },
+  {
+   "som": "sfx_estalo",
+   "em": 4.65,
+   "db": -12
+  },
+  {
+   "som": "sfx_relogio_contagem",
+   "em": 7.02,
+   "db": -8
+  },
+  {
+   "som": "sfx_taque",
+   "em": 7.02,
+   "db": -6
+  },
+  {
+   "som": "sfx_taque",
+   "em": 10.72,
+   "db": -6
+  },
+  {
+   "som": "sfx_taque",
+   "em": 15.75,
+   "db": -4
+  },
+  {
+   "som": "sfx_grito_menina",
+   "em": 15.61,
+   "db": -14
+  },
+  {
+   "som": "impact-bass-2",
+   "em": 16.05,
+   "db": -6
+  },
+  {
+   "som": "sfx_passo_capim_2",
+   "em": 15.65,
+   "db": -8
+  },
+  {
+   "som": "sfx_passo_capim_3",
+   "em": 15.9,
+   "db": -8
+  },
+  {
+   "som": "sfx_clique",
+   "em": 22.63,
+   "db": -2
+  },
+  {
+   "som": "sfx_clique_grave",
+   "em": 22.68,
+   "db": -6
+  },
+  {
+   "som": "impact-bass-1",
+   "em": 22.7,
+   "db": -8
+  },
+  {
+   "som": "sfx_estatica",
+   "em": 22.68,
+   "db": -22
+  },
+  {
+   "som": "sfx_pano",
+   "em": 28.13,
+   "db": -4
+  },
+  {
+   "som": "sfx_pano",
+   "em": 29.43,
+   "db": -6
+  },
+  {
+   "som": "sfx_pano",
+   "em": 30.63,
+   "db": -8
+  },
+  {
+   "som": "sfx_sopro_reverso",
+   "em": 29.7,
+   "db": -10
+  },
+  {
+   "som": "whoosh-short",
+   "em": 32.55,
+   "db": -10
+  },
+  {
+   "som": "pop",
+   "em": 32.65,
+   "db": -10
+  },
+  {
+   "som": "pop",
+   "em": 33.58,
+   "db": -10
+  },
+  {
+   "som": "chime",
+   "em": 34.08,
+   "db": -12
+  },
+  {
+   "som": "sfx_estalo",
+   "em": 36.68,
+   "db": -10
+  },
+  {
+   "som": "sfx_clique",
+   "em": 37.28,
+   "db": -10
+  },
+  {
+   "som": "sfx_capim_mexe",
+   "em": 37.38,
+   "db": -12
+  },
+  {
+   "som": "whoosh-short",
+   "em": 42.53,
+   "db": -10
+  },
+  {
+   "som": "sfx_porteira_range",
+   "em": 42.63,
+   "db": -12
+  },
+  {
+   "som": "pop",
+   "em": 42.71,
+   "db": -12
+  },
+  {
+   "som": "whoosh-short",
+   "em": 43.98,
+   "db": -10
+  },
+  {
+   "som": "pop",
+   "em": 44.18,
+   "db": -12
+  },
+  {
+   "som": "whoosh-short",
+   "em": 45.3,
+   "db": -10
+  },
+  {
+   "som": "sfx_porta_range",
+   "em": 45.45,
+   "db": -12
+  },
+  {
+   "som": "pop",
+   "em": 45.49,
+   "db": -12
+  },
+  {
+   "som": "impact-bass-2",
+   "em": 51.69,
+   "db": -8
+  },
+  {
+   "som": "pop",
+   "em": 51.69,
+   "db": -12
+  },
+  {
+   "som": "whoosh-cinematic",
+   "em": 55.0,
+   "db": -12
+  },
+  {
+   "som": "impact-bass-1",
+   "em": 57.39,
+   "db": -8
+  },
+  {
+   "som": "sfx_martelada",
+   "em": 59.71,
+   "db": -16
+  },
+  {
+   "som": "sfx_coruja",
+   "em": 63.61,
+   "db": -12
+  },
+  {
+   "som": "sfx_cachorro_longe",
+   "em": 64.81,
+   "db": -20
+  },
+  {
+   "som": "sfx_sopro_reverso",
+   "em": 64.92,
+   "db": -6
+  },
+  {
+   "som": "sfx_gemido_perto",
+   "em": 66.02,
+   "db": -10
+  },
+  {
+   "som": "sfx_farejar",
+   "em": 66.64,
+   "db": -8
+  },
+  {
+   "som": "sfx_gemido_perto",
+   "em": 68.54,
+   "db": -6
+  },
+  {
+   "som": "sfx_porteira_range",
+   "em": 68.12,
+   "db": -6
+  },
+  {
+   "som": "impact-bass-1",
+   "em": 69.55,
+   "db": -2
+  },
+  {
+   "som": "sfx_impacto_cinema",
+   "em": 69.6,
+   "db": -4
+  },
+  {
+   "som": "whoosh-cinematic",
+   "em": 70.2,
+   "db": -8
+  },
+  {
+   "som": "pop",
+   "em": 71.2,
+   "db": -12
+  }
+ ],
+ "passos": [
+  {
+   "som": "sfx_passo_capim",
+   "de": 65.42,
+   "ate": 68.04,
+   "intervalo": 0.62,
+   "db": -10
+  },
+  {
+   "som": "sfx_passo_capim",
+   "de": 67.94000000000001,
+   "ate": 68.32000000000001,
+   "intervalo": 0.55,
+   "db": -8
+  }
+ ],
+ "ducking": {
+  "db": 6
+ },
+ "volume_final_lufs": -10
+}

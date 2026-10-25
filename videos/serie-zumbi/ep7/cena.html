@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Os Sobreviventes: Episódio 7</title>
+<!-- OS SOBREVIVENTES — EP. 7 "A PERNA DO TIÃO": noite no curral, a besta do Dimas na cabeça do Tião; a Aninha entra na frente;
+     o farol da moto acende, a perna mostra só um corte reto (sem dente); o Dimas vira o chefe; no fim algo segue o rastro até a porteira. -->
+<style>
+  html, body { margin: 0; background: #000; overflow: hidden; }
+  #stage { width: 1080px; height: 1920px; display: block; }
+  @font-face { font-family: 'Anton'; src: url(fontes/anton.woff2); }
+  @font-face { font-family: 'Luckiest Guy'; src: url(fontes/luckiest-guy.woff2); }
+  text:not([font-family]) { font-family: 'Anton', sans-serif; }
+</style>
+<script src="gsap.min.js"></script>
+<script src="boneco.js"></script>
+<script src="volume.js"></script>
+<script src="paletas.js"></script>
+<script src="cenario.js"></script>
+<script src="sitio.js"></script>
+<script src="cidade-zumbi.js"></script>
+<script src="armas.js"></script>
+<script src="moto.js"></script>
+<script src="palco.js"></script>
+<script src="legenda.js"></script>
+<script src="legenda-dados.js"></script>
+<script src="bocas.js"></script>
+</head>
+<body>
+<svg id="stage" viewBox="0 0 1080 1920" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="outline" x="-20%" y="-20%" width="140%" height="140%">
+      <feMorphology in="SourceAlpha" operator="dilate" radius="5" result="d"/>
+      <feFlood flood-color="#0A0A0E"/>
+      <feComposite in2="d" operator="in" result="o"/>
+      <feMerge><feMergeNode in="o"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="sombraTxt" x="-10%" y="-30%" width="120%" height="160%"><feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#000" flood-opacity=".8"/></filter>
+    <radialGradient id="vin" cx=".5" cy=".5" r=".72"><stop offset=".45" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".7"/></radialGradient>
+  </defs>
+  <g id="cam"><g id="scenes"></g><g id="atores"></g><g id="props"></g><g id="luzes"></g></g>
+  <rect width="1080" height="1920" fill="url(#vin)"/>
+  <g id="escuro"><rect width="1080" height="1920" fill="#05070E"/></g>
+  <g id="topo"></g>
+  <g id="legenda"></g>
+</svg>
+
+<script>
+const NS = 'http://www.w3.org/2000/svg';
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const AMBAR = '#E8B23A', BRANCO = '#F2EEE2', VERMELHO = '#C8342A', L = '#0E0E14';
+const Si = (n, hora = 'amanhecer') => Sitio(Cenario({ seed: n, luz: -1, hora, prefixo: 's' + n }));
+const Cz = n => CidadeZumbi(Cenario({ seed: n, luz: -1, hora: 'amanhecer', prefixo: 'z' + n }));
+const f1 = v => v.toFixed(1);
+// ---- tempos vindos das falas ----
+const SEG = Object.fromEntries((window.SEGMENTOS || []).map(s => [s.id, s]));
+const SG = id => SEG[id];
+const W = (id, n) => { const ws = (window.PALAVRAS || []).filter(p => p.seg === id); return (ws[Math.min(n, ws.length - 1)] || { start: SG(id).de }).start; };
+const FIM_FALA = SG('N07').ate + 0.6, CARTAO = FIM_FALA + 0.5, END = CARTAO + 3.6;
+const PISO_LEG = 1560;
+
+
+// ===================== PLANOS =====================
+const ORDEM = [
+  ['abre', 0], ['besta', SG('N01').de - 0.1], ['mira', W('N01', 4) - 0.1], ['tres', W('N01', 10) - 0.1], ['tiaoFala', SG('P01').de - 0.2], ['aninha', SG('P02').de - 0.2],
+  ['naoabaixa', SG('N02').de - 0.1], ['farol', W('N02', 6) - 0.1], ['ordem', SG('P03').de - 0.2],
+  ['calca', SG('N03').de - 0.1], ['olhosA', W('N03', 6) - 0.1], ['corte', SG('N04').de - 0.1], ['arame', SG('P04').de - 0.2],
+  ['olhaVolta', SG('N05').de - 0.1], ['portChao', W('N05', 8) - 0.1], ['cerca', W('N05', 12) - 0.1], ['casa', W('N05', 15) - 0.1], ['regras', SG('P05').de - 0.2],
+  ['olhaMenina', SG('N06').de - 0.1], ['juntos', W('N06', 5) - 0.1], ['amanha', SG('P06').de - 0.2],
+  ['dormem', SG('N07').de - 0.1], ['rastro', W('N07', 5) - 0.1], ['chega', W('N07', 12) - 0.1], ['_fim', FIM_FALA],
+];
+const S = {}; ORDEM.forEach(([k, t], i) => { if (i < ORDEM.length - 1) S[k] = [t, ORDEM[i + 1][1]]; });
+const T_FAROL = W('N02', 9) - 0.15, T_BAIXA = SG('P04').de + 0.2, T_OLHOS = W('N03', 8);
+
+// ===================== CENÁRIOS =====================
+const scenes = [];
+let GLID = 0; const brilhoSuave = (cx, cy, rx, ry, cor, op) => { const id = 'gl' + (GLID++); return `<defs><radialGradient id="${id}"><stop offset="0" stop-color="${cor}" stop-opacity="${op}"/><stop offset=".55" stop-color="${cor}" stop-opacity="${op * 0.45}"/><stop offset="1" stop-color="${cor}" stop-opacity="0"/></radialGradient></defs><ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="url(#${id})" style="mix-blend-mode:screen"/>`; };
+const NOITE = (op = .55) => `<rect width="1080" height="1920" fill="#0A1236" opacity="${op}" style="mix-blend-mode:multiply"/>`;
+// luz de cada cenário: [borda dos bonecos, sombra, camada sobre o cenário]
+const LUZ = {
+  'c-intro': ['#FFD89A', '#0A0C18', ''],
+  'c-curral': ['#9FB3FF', '#0A1028', NOITE(.62) + brilhoSuave(820, 380, 300, 300, '#9FB3FF', .14)],
+  'c-perna': ['#FFE8B0', '#2A1C14', ''],
+  'c-mb': ['#9FB3FF', '#0A1028', NOITE(.6)], 'c-cerca': ['#9FB3FF', '#0A1028', NOITE(.6)], 'c-casa': ['#9FB3FF', '#0A1028', NOITE(.6)],
+  'c-estrada': ['#9FB3FF', '#0A1028', NOITE(.25)],
+};
+const LUZ_FAROL = ['#FFE2A0', '#141428'];
+const cena = (id, corpo) => scenes.push(`<g id="${id}" class="scene">${corpo}${(LUZ[id] || [])[2] || ''}</g>`);
+const txt = (id, y, partes, fs = 110) => `<g id="${id}" filter="url(#sombraTxt)"><text x="540" y="${y}" font-size="${fs}" text-anchor="middle" stroke="#000" stroke-width="${fs * 0.08}" paint-order="stroke">${partes.map(([t, c]) => `<tspan fill="${c || BRANCO}">${t}</tspan>`).join('')}</text></g>`;
+const etiqueta = (id, x, y, t, cor = AMBAR, corTxt = '#16120A', rot = 0) => `<g id="${id}" transform="translate(${x} ${y}) rotate(${rot})"><rect x="${-t.length * 13 - 30}" y="-34" width="${t.length * 26 + 60}" height="68" rx="34" fill="${cor}" stroke="#000" stroke-width="4"/><text y="14" font-size="40" text-anchor="middle" fill="${corTxt}">${t}</text></g>`;
+const onoma = (id, x, y, t, rot = -8, cor = BRANCO, fs = 120) => `<g id="${id}" transform="translate(${x} ${y}) rotate(${rot})" filter="url(#sombraTxt)"><text font-size="${fs}" text-anchor="middle" fill="${cor}" stroke="#000" stroke-width="${fs / 10}" paint-order="stroke" font-family="'Luckiest Guy', sans-serif">${t}</text></g>`;
+
+const CURRAL = Si(72, 'noite'), MB = Si(75, 'noite');
+// abertura: fundo escuro com neblina e o farol estourando atrás do Dimas (contraluz)
+cena('c-intro', `<rect width="1080" height="1920" fill="#07080F"/>${brilhoSuave(540, 900, 760, 900, '#FFE2A0', .55)}${brilhoSuave(540, 900, 300, 360, '#FFF6DA', .5)}
+  ${[...Array(7)].map((_, i) => `<ellipse class="nevoa" cx="${(i * 233) % 1080}" cy="${1300 + (i % 3) * 140}" rx="${380 + (i % 3) * 120}" ry="${70 + (i % 2) * 30}" fill="#8A90A8" opacity=".12"/>`).join('')}
+  <rect y="1560" width="1080" height="360" fill="#05060A"/>`);
+cena('c-curral', CURRAL.curral({ chao: 1400, porta: { x: 120, w: 300 } }));
+// close da perna: a barra da calça sobe e mostra um corte reto (só uma marca escura, nada de sangue)
+cena('c-perna', `<rect width="1080" height="1920" fill="#1C1812"/>${[...Array(50)].map((_, i) => `<path d="M${(i * 137) % 1080} ${(i * 251) % 1920} l${(i % 7) * 8 - 24} ${(i % 3) * 4 - 4}" stroke="#6A5A34" stroke-width="5" opacity=".5"/>`).join('')}
+  <path d="M330 -40 L750 -40 L735 1500 L345 1500Z" fill="#B88A6C" stroke="${L}" stroke-width="10"/>
+  <path d="M370 -40 Q360 700 380 1480 M712 -40 Q730 700 700 1480" stroke="#9A6E54" stroke-width="18" fill="none" opacity=".6"/>
+  <path d="M600 -40 Q640 600 620 1480" stroke="#D4A888" stroke-width="22" fill="none" opacity=".5"/>
+  <g id="corteMarca"><path d="M430 1010 L660 940" stroke="#5A3428" stroke-width="30" stroke-linecap="round" opacity=".45"/><path d="M432 1008 L658 942" stroke="#2A1612" stroke-width="10" stroke-linecap="round"/>
+    <path d="M440 1022 L650 958" stroke="#E8C4A8" stroke-width="4" stroke-linecap="round" opacity=".7"/></g>
+  <path id="regua" d="M380 1040 L720 935" stroke="${AMBAR}" stroke-width="6" stroke-dasharray="22 14" fill="none"/>
+  <g id="calcaPano"><path d="M300 -900 L780 -900 L770 1440 L310 1440Z" fill="#3A4250" stroke="${L}" stroke-width="10"/>
+    <path d="M360 -900 Q380 300 350 1440 M720 -900 Q700 300 740 1440" stroke="#2A3240" stroke-width="8" fill="none"/><path d="M540 -900 V1440" stroke="#4A5466" stroke-width="5" stroke-dasharray="16 10"/>
+    <path d="M296 1360 Q540 1400 784 1360 L780 1460 Q540 1500 300 1460Z" fill="#4A5466" stroke="${L}" stroke-width="8"/><path d="M310 1410 Q540 1450 770 1410" stroke="#2A3240" stroke-width="6" fill="none"/>
+    ${[0, 1].map(i => { const x = i ? 760 : 320, sx = i ? -1 : 1; return `<g transform="translate(${x} 1400) scale(${sx} 1)"><path d="M-60 30 Q-80 -40 -20 -60 L60 -50 Q90 -40 80 -10 L60 40 Q20 70 -30 60Z" fill="#C49478" stroke="${L}" stroke-width="6"/>${[0, 1, 2, 3].map(j => `<path d="M${40 + j * 4} ${-40 + j * 22} q40 -6 46 10" stroke="${L}" stroke-width="5" fill="none"/>`).join('')}</g>`; }).join('')}</g>
+  <path d="M300 1500 L330 1400 L760 1400 L790 1500 L830 1700 Q810 1760 690 1760 L290 1760 Q260 1700 300 1500Z" fill="#3A2618" stroke="${L}" stroke-width="10"/><path d="M300 1720 H810" stroke="#1A120C" stroke-width="20"/>
+  ${brilhoSuave(160, 700, 700, 900, '#FFE8A8', .3)}`);
+cena('c-mb', MB.mataBurro({ chao: 1420, mbX: 430, ptX: 900 }));
+cena('c-cerca', Si(76, 'noite').cercaArrebentada({ chao: 1380 }));
+cena('c-casa', Si(77, 'noite').casaDestruida({ chao: 1400 }));
+cena('c-estrada', Si(60, 'noite').estrada({}) + `<g id="gotasEstrada">${[...Array(16)].map((_, i) => { const u = i / 15, y = 1000 + u * u * 880, x = 540 + Math.sin(i * 1.7) * (10 + u * 60), r = 3 + u * 16; return `<ellipse cx="${f1(x)}" cy="${f1(y)}" rx="${f1(r * 1.6)}" ry="${f1(r * 0.7)}" fill="#3A1216" opacity=".95"/>`; }).join('')}</g>`);
+scenes.push(`<g id="fim" class="scene"><rect width="1080" height="1920" fill="#08090E"/>${Si(20, 'noite').estrada({})}<rect width="1080" height="1920" fill="#000" opacity=".6"/>
+  <g id="fim-t">${txt('fim-a', 760, [['EPISÓDIO ', BRANCO], ['7', AMBAR]], 120) + txt('fim-n', 860, [['A PERNA DO TIÃO', VERMELHO]], 76)}${txt('fim-b', 990, [['CONTINUA...', BRANCO]], 96)}</g>
+  <g id="fim-c" transform="translate(540 1110)"><rect x="-300" y="-56" width="600" height="112" rx="56" fill="${AMBAR}" stroke="#000" stroke-width="5"/><text y="22" font-size="54" text-anchor="middle" fill="#16120A">EP. 8: A CERCA ↓</text></g></g>`);
+$('#scenes').innerHTML = scenes.join('');
+// tábuas da porteira já no chão (o Dimas derrubou no Ep. 6)
+$$('#c-mb .porteiraTabua').forEach(tb => { const i = +tb.dataset.i; tb.setAttribute('transform', `translate(${180 + i * 40} ${120 - i * 52 + 40}) rotate(${i % 2 ? 84 : 96} ${tb.dataset.cx} ${tb.dataset.cy})`); });
+
+const INTRO = `<g id="intro"><image href="img/logo.png" x="250" y="170" width="580" height="232" id="i-logo"/>` + txt('i-nome', 1300, [['DIMAS', AMBAR]], 230) +
+  `<g transform="translate(540 1420)"><g id="i-ep"><rect x="-370" y="-50" width="740" height="96" rx="48" fill="#0B0D14" fill-opacity=".88" stroke="${VERMELHO}" stroke-width="4"/><text y="18" font-size="52" text-anchor="middle" fill="${BRANCO}" letter-spacing="2">EP. 7 · A PERNA DO TIÃO</text></g></g><rect id="i-flash" width="1080" height="1920" fill="#FFF6E0"/></g>`;
+const TOPO = [INTRO,
+  `<g id="conta">${['3', '2', '1'].map((n, i) => `<g id="c${n}" transform="translate(540 420)" filter="url(#sombraTxt)"><text font-size="260" text-anchor="middle" fill="${i === 2 ? VERMELHO : BRANCO}" stroke="#000" stroke-width="20" paint-order="stroke">${n}</text></g>`).join('')}</g>`,
+  etiqueta('t-3s', 540, 520, '3 SEGUNDOS', VERMELHO, BRANCO), onoma('o-clic', 760, 560, 'CLIC!', 8, AMBAR, 120),
+  etiqueta('t-reto', 540, 1180, 'CORTE RETO', AMBAR), etiqueta('t-fundo', 540, 1280, 'FUNDO', '#2A241A', AMBAR), etiqueta('t-dente', 540, 1380, 'SEM MARCA DE DENTE ✓', '#3A8A4A', BRANCO),
+  txt('t-arame', 380, [['ARAME', AMBAR]], 150),
+  etiqueta('x-port', 540, 380, '✗ PORTEIRA NO CHÃO', VERMELHO, BRANCO), etiqueta('x-cerca', 540, 380, '✗ CERCA PODRE', VERMELHO, BRANCO), etiqueta('x-casa', 540, 380, '✗ CASA SEM TRANCA', VERMELHO, BRANCO),
+  txt('t-jeito', 360, [['DO MEU ', BRANCO], ['JEITO', AMBAR]], 120), txt('t-chefe', 380, [['O ', BRANCO], ['CHEFE', AMBAR]], 130),
+  onoma('o-zzz', 800, 900, 'zzz...', -8, '#C8D0F0', 90), etiqueta('t-rastro', 540, 380, 'O RASTRO', '#2A0E10', '#F2C8C0'),
+  `<g id="quem" transform="translate(540 1452)"><rect id="quem-r" x="-120" y="-30" width="240" height="60" rx="30" fill="#0B0D14" fill-opacity=".85" stroke="${AMBAR}" stroke-width="3"/><text id="quem-t" y="14" font-size="40" text-anchor="middle" fill="${AMBAR}" letter-spacing="2"></text></g>`,
+  `<rect id="clarao" width="1080" height="1920" fill="#FFF6E0"/>`, `<rect id="preto" width="1080" height="1920" fill="#000"/>`];
+$('#topo').innerHTML = TOPO.join('');
+// ===================== ELENCO =====================
+const BOCA = q => t => { const c = (window.BOCAS || {})[q] ? window.BOCAS[q][Math.floor(t * 30)] : '-'; return c && c !== '-' ? c : 'smile'; };
+const LK = Volume.LOOK;
+const TIAO = { figurino: 'tiao', seed: 60, boca: BOCA('tiao'), look: LK.tiao };
+const ANINHA = { figurino: { preset: 'neta', cor: '#C97A9A' }, seed: 62, boca: BOCA('aninha'), look: LK.aninha };
+const DIMAS = { figurino: 'dimas', seed: 90, boca: BOCA('dimas'), look: LK.dimas };
+const VULTO = i => ({ figurino: 'vulto', cor: '#17181E', corLonge: '#101116', bochecha: '#17181E', seed: 70 + i, look: LK.vulto });
+const ATORES = [], ITENS = [], SEGURA = [];
+function ator(escala, janelas, opts = {}, pai = '#atores') { const w = document.createElementNS(NS, 'g'), g = document.createElementNS(NS, 'g'), vg = document.createElementNS(NS, 'g'); g.style.display = 'none'; const tg = document.createElementNS(NS, 'g'); w.appendChild(g); w.appendChild(tg); w.appendChild(vg); $(pai).appendChild(w);
+  const b = new Boneco(g, { escala, seed: 4, ...opts }); b.grupo = w; b.atras = tg; const v = opts.look ? Volume(b, opts.look) : null; if (!v) g.style.display = ''; ATORES.push({ b, g: w, janelas, v, vg }); return b; }
+function item(svg, janelas, pai = '#atores') { const g = document.createElementNS(NS, 'g'); $(pai).appendChild(g); g.innerHTML = svg; ITENS.push({ g, janelas }); return g; }
+const J = n => [[S[n][0], S[n][1]]];
+const JJ = (...ns) => ns.map(n => [S[n][0], S[n][1]]);
+const ATE = (a, b) => [[S[a][0], S[b][1]]];
+const dentro = (t, janelas) => janelas.some(([a, b]) => t >= a && t < b);
+const sm = u => u * u * (3 - 2 * u), cl = (v, a, b) => Math.min(b, Math.max(a, v)), lerp = (a, b, u) => a + (b - a) * u;
+const ang = (a, b) => Math.atan2(b[1] - a[1], b[0] - a[0]) * 180 / Math.PI;
+// interpola uma lista de chaves [[t, v], ...] (suave entre elas)
+const chave = (K, t) => { if (t <= K[0][0]) return K[0][1]; for (let i = 1; i < K.length; i++) if (t <= K[i][0]) { const u = sm((t - K[i - 1][0]) / (K[i][0] - K[i - 1][0])); return Array.isArray(K[i][1]) ? K[i][1].map((v, j) => lerp(K[i - 1][1][j], v, u)) : lerp(K[i - 1][1], K[i][1], u); } return K[K.length - 1][1]; };
+
+// besta na mão (o cabo fica na mão; rot em graus; esp = -1 quando o boneco olha pra esquerda)
+const BESTA = c => `<g transform="translate(15 -45)">${Armas.besta(1, { carregada: c })}</g>`;
+function bestaNa(b, janelas, { k = 1, lado = 'd', rot = () => -4, esp = 1, pai = '#props' } = {}) { const el = item(BESTA(true), janelas, pai); SEGURA.push({ el, b, lado, k, rot, esp, janelas }); return el; }
+const EXTRA = [];   // desenhos que seguem o boneco a cada quadro: { el, janelas, fn(t) → svg }
+
+// ===== abertura: o Dimas de frente, em contraluz, com a besta =====
+const dI = ator(2.0, J('abre'), DIMAS); dI.base(0, S.abre[1], 'parado', { x: 540, y: 1880, vista: 'frente' }); dI.expressao(0, S.abre[1], 'determinado');
+dI.braco('d', 0, S.abre[1], 'pose', { o: 40, c: 125, mao: 'punho' }); dI.cabeca(0, S.abre[1], { baixar: -6 });
+bestaNa(dI, J('abre'), { k: 1.25, rot: () => -95 });
+
+// ===== no curral: a besta apontada pro Tião (ajoelhado, mãos pra cima) =====
+const MIRA = ['besta', 'mira', 'naoabaixa'];
+const dM = ator(1.25, JJ(...MIRA), DIMAS); dM.base(S.besta[0], S.naoabaixa[1], 'parado', { x: 250, y: 1700, vista: 'perfil', dir: 1 });
+dM.braco('d', S.besta[0], S.naoabaixa[1], 'pose', { o: 92, c: 8 }); dM.braco('e', S.besta[0], S.naoabaixa[1], 'pose', { o: 80, c: 30 });
+dM.expressao(S.besta[0], S.naoabaixa[1], 'serio'); dM.cabeca(S.besta[0], S.naoabaixa[1], { inclinar: 6 });
+bestaNa(dM, JJ(...MIRA), { k: 0.95 });
+const tM = ator(1.25, JJ(...MIRA), TIAO); tM.base(S.besta[0], S.naoabaixa[1], 'agachar', { x: 830, y: 1720, vista: 'perfil', dir: -1, quanto: 150, inclina: 10 });
+tM.expressao(S.besta[0], S.naoabaixa[1], 'medo'); tM.braco('ambos', S.besta[0], S.naoabaixa[1], 'pose', { o: 160, c: 25, mao: 'aberta' });
+const aM = ator(1.0, J('naoabaixa'), ANINHA); aM.base(S.naoabaixa[0], S.naoabaixa[1], 'parado', { x: 650, y: 1740, vista: 'frente' });
+aM.expressao(S.naoabaixa[0], S.naoabaixa[1], 'medo'); aM.braco('ambos', S.naoabaixa[0], S.naoabaixa[1], 'pose', { o: 85, c: 5, mao: 'aberta' });
+// close do Tião suando (3 segundos) e implorando
+const tF = ator(2.1, ATE('tres', 'tiaoFala'), TIAO); tF.base(S.tres[0], S.tiaoFala[1], 'parado', { x: 540, y: 2120, vista: 'frente' });
+tF.expressao(S.tres[0], S.tiaoFala[1], 'medo'); tF.braco('ambos', S.tres[0], SG('P01').de, 'pose', { o: 150, c: 40, mao: 'aberta' }); tF.braco('d', SG('P01').de, S.tiaoFala[1], 'explicar');
+tF.cabeca(S.tres[0], S.tiaoFala[1], { baixar: -4 });
+// a Aninha entra na frente: "Não atira!"
+const aA = ator(2.1, J('aninha'), ANINHA); aA.base(S.aninha[0], S.aninha[1], 'parado', { x: 540, y: 2160, vista: 'frente' });
+aA.expressao(S.aninha[0], S.aninha[1], 'gritando'); aA.braco('ambos', S.aninha[0], S.aninha[1], 'pose', { o: 88, c: 6, mao: 'aberta', entrada: 0.25 });
+// o farol da moto acende
+const MK = 1.5, MX = 120, MY = 1700, FX = MX + 224 * MK, FY = MY - 316 * MK;
+item(Moto.lado(MK, { farol: false }), [[S.farol[0], T_FAROL]]).setAttribute('transform', `translate(${MX} ${MY})`);
+item(Moto.lado(MK, { farol: true }), [[T_FAROL, S.farol[1]]]).setAttribute('transform', `translate(${MX} ${MY})`);
+item(CURRAL.facho(FX, FY, 8, 1300, 20, .55) + brilhoSuave(FX, FY, 140, 140, '#FFF6D0', .9), [[T_FAROL, S.farol[1]]], '#luzes');
+const FAROLP = ['ordem', 'arame', 'olhaVolta', 'regras', 'olhaMenina', 'juntos', 'olhosA'];
+item(CURRAL.facho(-60, 1250, 6, 1500, 24, .32) + brilhoSuave(120, 1300, 700, 520, '#FFE2A0', .28), JJ(...FAROLP), '#scenes');
+// "Puxa a calça. Devagar." — close de perfil, mirando
+const dO = ator(2.0, J('ordem'), DIMAS); dO.base(S.ordem[0], S.ordem[1], 'parado', { x: 330, y: 1960, vista: 'perfil', dir: 1 });
+dO.braco('d', S.ordem[0], S.ordem[1], 'pose', { o: 92, c: 8 }); dO.braco('e', S.ordem[0], S.ordem[1], 'pose', { o: 80, c: 30 }); dO.expressao(S.ordem[0], S.ordem[1], 'serio');
+bestaNa(dO, J('ordem'), { k: 1.5 });
+// a Aninha fecha os olhos
+const aO = ator(2.1, J('olhosA'), ANINHA); aO.base(S.olhosA[0], S.olhosA[1], 'parado', { x: 540, y: 2160, vista: 'frente' });
+aO.expressao(S.olhosA[0], T_OLHOS, 'medo'); aO.expressao(T_OLHOS, S.olhosA[1], 'chorando'); aO.braco('ambos', S.olhosA[0], S.olhosA[1], 'pose', { o: 30, c: 120 }); aO.cabeca(T_OLHOS, S.olhosA[1], { baixar: 8, virar: -0.3 });
+// "Arame. Tu teve sorte, velho." — ele abaixa a besta
+const dA = ator(1.6, J('arame'), DIMAS); dA.base(S.arame[0], S.arame[1], 'parado', { x: 300, y: 1830, vista: 'perfil', dir: 1 });
+dA.braco('d', S.arame[0], T_BAIXA, 'pose', { o: 92, c: 8 }); dA.braco('d', T_BAIXA, S.arame[1], 'pose', { o: 22, c: 12, entrada: 0.7 });
+dA.braco('e', S.arame[0], T_BAIXA, 'pose', { o: 80, c: 30 }); dA.braco('e', T_BAIXA, S.arame[1], 'pose', { o: 8, c: 10, entrada: 0.6 }); dA.expressao(S.arame[0], S.arame[1], 'serio');
+bestaNa(dA, J('arame'), { k: 1.2, rot: t => lerp(-4, 78, sm(cl((t - T_BAIXA) / 0.7, 0, 1))) });
+const tA = ator(1.5, J('arame'), TIAO); tA.base(S.arame[0], S.arame[1], 'agachar', { x: 840, y: 1840, vista: 'perfil', dir: -1, quanto: 150, inclina: 18 });
+tA.expressao(S.arame[0], T_BAIXA + 0.4, 'medo'); tA.expressao(T_BAIXA + 0.4, S.arame[1], 'aliviado'); tA.braco('ambos', S.arame[0], S.arame[1], 'pose', { o: 20, c: 40 });
+// ele olha em volta
+const dV = ator(1.25, J('olhaVolta'), DIMAS); dV.base(S.olhaVolta[0], S.olhaVolta[1], 'parado', { x: 560, y: 1680, vista: 'frente' }); dV.expressao(S.olhaVolta[0], S.olhaVolta[1], 'desconfiado');
+const mOV = (S.olhaVolta[0] + S.olhaVolta[1]) / 2; dV.cabeca(S.olhaVolta[0] + 0.3, mOV, { virar: -0.8 }); dV.cabeca(mOV, S.olhaVolta[1], { virar: 0.8 });
+bestaNa(dV, J('olhaVolta'), { k: 0.95, rot: () => 95 });
+// "Desse jeito, ninguém aqui passa do inverno."
+const dR = ator(2.0, J('regras'), DIMAS); dR.base(S.regras[0], S.regras[1], 'parado', { x: 540, y: 1840, vista: 'frente' });
+dR.expressao(S.regras[0], W('P05', 9), 'serio'); dR.expressao(W('P05', 9), S.regras[1], 'determinado'); dR.braco('d', W('P05', 9), S.regras[1], 'apontar');
+// o Tião olha pra menina; depois os três juntos na luz do farol
+const tMe = ator(1.5, J('olhaMenina'), TIAO); tMe.base(S.olhaMenina[0], S.olhaMenina[1], 'agachar', { x: 420, y: 1820, vista: 'perfil', dir: 1, quanto: 150, inclina: 10 });
+tMe.expressao(S.olhaMenina[0], S.olhaMenina[1], 'triste'); tMe.cabeca(S.olhaMenina[0], S.olhaMenina[1], { baixar: -6 }); tMe.braco('d', S.olhaMenina[0] + 0.4, S.olhaMenina[1], 'pose', { o: 70, c: 30, mao: 'aberta', entrada: 0.5 });
+const aMe = ator(1.15, J('olhaMenina'), ANINHA); aMe.base(S.olhaMenina[0], S.olhaMenina[1], 'parado', { x: 690, y: 1830, vista: 'frente' });
+aMe.expressao(S.olhaMenina[0], S.olhaMenina[1], 'triste'); aMe.cabeca(S.olhaMenina[0], S.olhaMenina[1], { inclinar: -10, virar: -0.4 }); aMe.braco('d', S.olhaMenina[0] + 0.4, S.olhaMenina[1], 'pose', { o: 40, c: 20, entrada: 0.5 });
+const dJ = ator(1.2, J('juntos'), DIMAS); dJ.base(S.juntos[0], S.juntos[1], 'parado', { x: 560, y: 1660, vista: 'frente' }); dJ.expressao(S.juntos[0], S.juntos[1], 'determinado');
+bestaNa(dJ, J('juntos'), { k: 0.9, rot: () => 95 });
+const tJ = ator(1.2, J('juntos'), TIAO); tJ.base(S.juntos[0], S.juntos[1], 'parado', { x: 320, y: 1720, vista: 'frente' }); tJ.expressao(S.juntos[0], S.juntos[1], 'cansado'); tJ.cabeca(S.juntos[0], S.juntos[1], { virar: 0.4 });
+const aJ = ator(0.95, J('juntos'), ANINHA); aJ.base(S.juntos[0], S.juntos[1], 'parado', { x: 780, y: 1740, vista: 'frente' }); aJ.expressao(S.juntos[0], S.juntos[1], 'triste'); aJ.cabeca(S.juntos[0], S.juntos[1], { virar: -0.4, baixar: -8 });
+// "Amanhã a gente começa a cerca." — de frente pra cerca podre, besta nas costas
+const dC = ator(1.5, J('amanha'), DIMAS); dC.base(S.amanha[0], S.amanha[1], 'parado', { x: 330, y: 1780, vista: 'perfil', dir: 1 }); dC.expressao(S.amanha[0], S.amanha[1], 'determinado');
+dC.cabeca(S.amanha[0], S.amanha[1], { baixar: -4 }); EXTRA.push({ el: dC.atras, janelas: J('amanha'), fn: () => Armas.bestaNasCostas(dC, 'lado', 1.5, 1) });
+// os três dormem no feno
+const DORM = [[TIAO, 1.1, 760, 1120], [ANINHA, 0.85, 900, 1230], [DIMAS, 1.1, 1120, 1360]].map(([P, k, x, y]) => { const b = ator(k, J('dormem'), P); b.base(S.dormem[0], S.dormem[1], 'parado', { x, y, vista: 'frente' }); b.grupo.setAttribute('transform', `rotate(-90 ${x} ${y})`); b.expressao(S.dormem[0], S.dormem[1], 'dormindo'); return b; });
+item(brilhoSuave(560, 1100, 460, 300, '#FFB060', .35), J('dormem'), '#luzes');
+item(`<path d="M40 1150 Q560 1060 1080 1200 L1080 1400 L40 1400Z" fill="#8A7238" stroke="${L}" stroke-width="5"/>` + [...Array(40)].map((_, i) => `<path d="M${60 + i * 26} ${1190 + (i % 4) * 40} l${(i % 5) * 8 - 16} -22" stroke="#B89A50" stroke-width="4"/>`).join(''), J('dormem'), '#scenes');   // a cama de feno
+// alguma coisa segue o rastro de sangue... até a porteira
+const VZ = { ...VULTO(9), boca: () => '1' };
+const zR = ator(1.0, J('rastro'), VZ); zR.base(S.rastro[0], S.rastro[1], 'andarFrente', { de: [540, 1040], ate: [560, 1360], passo: 36, perspectiva: { horizonte: 960, yRef: 1860 } });
+zR.expressao(S.rastro[0], S.rastro[1], 'zumbi'); zR.braco('e', S.rastro[0], S.rastro[1], 'estender'); zR.cabeca(S.rastro[0], S.rastro[1], { inclinar: 22, baixar: 14, gesto: 'balancar' });
+const T_PARA = W('N07', 14) + 0.2;
+const zC = ator(1.0, J('chega'), VZ); zC.base(S.chega[0], T_PARA, 'andar', { de: [-60, 1450], ate: [690, 1450], passo: 40 }); zC.base(T_PARA, S.chega[1], 'parado', { x: 690, y: 1450, vista: 'perfil', dir: 1, inclina: 12 });
+zC.expressao(S.chega[0], S.chega[1], 'zumbi'); zC.braco('d', S.chega[0], S.chega[1], 'estender'); zC.cabeca(S.chega[0], T_PARA, { inclinar: 20, baixar: 16 }); zC.cabeca(T_PARA, S.chega[1], { inclinar: 8, baixar: -12 });
+item([...Array(12)].map((_, i) => `<ellipse cx="${60 + i * 62}" cy="${1462 + (i % 3) * 6}" rx="${7 + (i % 3) * 2}" ry="4" fill="#2A0E10" opacity=".9"/>`).join(''), J('chega'), '#scenes');
+
+// ===================== CÂMERA =====================
+const CAMP = {
+  abre: [1.05, 540, 1000, 1.15, 540, 980], besta: [2.2, 430, 1260, 2.4, 440, 1250], mira: [1.0, 540, 1150, 1.2, 600, 1250], tres: [1.0, 540, 1000, 1.15, 540, 960], tiaoFala: [1.15, 540, 960, 1.2, 540, 980],
+  aninha: [1.0, 540, 1000, 1.12, 540, 980], naoabaixa: [1.15, 400, 1250, 1.3, 330, 1230], farol: [1.4, 520, 1250, 1.2, 640, 1250], ordem: [1.0, 540, 1100, 1.12, 500, 1080],
+  calca: [1.0, 540, 1100, 1.1, 540, 1150], olhosA: [1.0, 540, 1000, 1.18, 540, 960], corte: [1.15, 545, 1000, 1.6, 545, 975], arame: [1.0, 540, 1150, 1.12, 500, 1150],
+  olhaVolta: [1.1, 560, 1250, 1.0, 540, 1150], portChao: [1.15, 700, 1150, 1.05, 760, 1150], cerca: [1.1, 450, 1100, 1.0, 600, 1100], casa: [1.1, 600, 1050, 1.0, 480, 1050],
+  regras: [1.0, 540, 1000, 1.2, 540, 950], olhaMenina: [1.05, 560, 1300, 1.15, 560, 1280], juntos: [1.25, 540, 1250, 1.0, 540, 1150], amanha: [1.0, 540, 1150, 1.12, 500, 1150],
+  dormem: [1.0, 540, 1250, 1.08, 560, 1260], rastro: [1.0, 540, 1100, 1.15, 540, 1150], chega: [1.0, 540, 1150, 1.25, 680, 1250],
+};
+const tenso = t => (t >= S.tres[0] && t < S.aninha[1]) || (t >= S.rastro[0] && t < FIM_FALA);
+function camEm(t) {
+  let k = 1, cx = 540, cy = 960;
+  for (const [nome, [a, b]] of Object.entries(S)) if (t >= a && t < b && CAMP[nome]) { const c = CAMP[nome], u = sm((t - a) / (b - a)); k = c[0] + (c[3] - c[0]) * u; cx = c[1] + (c[4] - c[1]) * u; cy = c[2] + (c[5] - c[2]) * u; }
+  cx = cl(cx, 540 / k + 28, 1080 - 540 / k - 28); cy = cl(cy, 960 / k + 28, 1920 - 960 / k - 28);
+  const choque = tt => (t > tt && t < tt + 0.5) ? (1 - (t - tt) / 0.5) * 18 : 0;
+  const sh = (tenso(t) ? 2.2 : 1) + choque(0.12) + choque(W('N01', 1)) * 0.6 + choque(SG('P02').de) * 0.6 + choque(T_FAROL) * 0.4;
+  const bx = (Math.sin(t * 1.3) * 3 + Math.sin(t * 3.1) * 1.2 + (sh > 3 ? Math.sin(t * 61) * 1.4 : 0)) * sh, by = (Math.cos(t * 1.1) * 2.5 + Math.sin(t * 5.7) * (sh > 1 ? 2 : 0.6) + (sh > 3 ? Math.cos(t * 53) * 1.4 : 0)) * sh, rot = Math.sin(t * 0.9) * 0.3;
+  return `translate(${540 + bx} ${960 + by}) rotate(${rot.toFixed(3)}) scale(${k.toFixed(4)}) translate(${-cx} ${-cy})`;
+}
+
+// ===================== TIMELINE =====================
+const rendering = navigator.webdriver;
+const tl = gsap.timeline({ paused: true, defaults: { ease: 'power2.inOut' } });
+$$('.scene').forEach(s => gsap.set(s, { autoAlpha: 0 }));
+const show = (sel, t0, t1) => { tl.fromTo(sel, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.01, ease: 'none', immediateRender: false }, t0); if (t1 != null) tl.to(sel, { autoAlpha: 0, duration: 0.01, ease: 'none' }, t1); };
+const fade = (sel, t0, t1, d = 0.35) => { gsap.set(sel, { autoAlpha: 0 }); tl.to(sel, { autoAlpha: 1, duration: d }, t0); if (t1 != null) tl.to(sel, { autoAlpha: 0, duration: d }, t1); };
+const pop = (sel, t, t1 = null, d = 0.35) => { gsap.set(sel, { autoAlpha: 0, scale: 0.6, transformOrigin: '50% 50%' }); tl.fromTo(sel, { autoAlpha: 0, scale: 0.6 }, { autoAlpha: 1, scale: 1, duration: d, ease: 'back.out(2)', immediateRender: false }, t); if (t1 != null) tl.to(sel, { autoAlpha: 0, duration: 0.15 }, t1 - 0.12); };
+const USO = { 'c-intro': ['abre'], 'c-curral': ['besta', 'mira', 'tres', 'tiaoFala', 'aninha', 'naoabaixa', 'farol', 'ordem', 'olhosA', 'arame', 'olhaVolta', 'regras', 'olhaMenina', 'juntos', 'dormem'],
+  'c-perna': ['calca', 'corte'], 'c-mb': ['portChao', 'chega'], 'c-cerca': ['cerca', 'amanha'], 'c-casa': ['casa'], 'c-estrada': ['rastro'] };
+Object.entries(USO).forEach(([id, planos]) => { const iv = planos.map(k => [...S[k]]).sort((a, b) => a[0] - b[0]), m = [];
+  iv.forEach(([a, b]) => { if (m.length && a <= m[m.length - 1][1] + 0.001) m[m.length - 1][1] = Math.max(m[m.length - 1][1], b); else m.push([a, b]); }); m.forEach(([a, b]) => show('#' + id, a, b)); });
+gsap.set('#escuro', { autoAlpha: 1 }); tl.to('#escuro', { autoAlpha: 0, duration: 0.2 }, 0.05);
+gsap.set('#preto', { autoAlpha: 0 }); tl.set('#preto', { autoAlpha: 1 }, FIM_FALA); tl.set('#preto', { autoAlpha: 0 }, CARTAO);
+gsap.set('#clarao', { opacity: 0 }); tl.to('#clarao', { opacity: 0.35, duration: 0.03 }, T_FAROL).to('#clarao', { opacity: 0, duration: 0.3 }, T_FAROL + 0.04);
+// abertura (3 s): clarão → logo → DIMAS → nome do episódio
+gsap.set('#intro', { autoAlpha: 1 }); tl.to('#intro', { autoAlpha: 0, duration: 0.2 }, S.abre[1] - 0.2);
+gsap.set('#i-flash', { opacity: 0 }); tl.to('#i-flash', { opacity: 0.9, duration: 0.03 }, 0.1).to('#i-flash', { opacity: 0, duration: 0.4 }, 0.14);
+gsap.set('#i-logo', { autoAlpha: 0, y: -30 }); tl.to('#i-logo', { autoAlpha: 1, y: 0, duration: 0.4, ease: 'power3.out' }, 0.15);
+gsap.set('#i-nome', { autoAlpha: 0, scale: 2.4, transformOrigin: '540px 1220px' }); tl.to('#i-nome', { autoAlpha: 1, scale: 1, duration: 0.22, ease: 'power4.in' }, 0.55);
+gsap.set('#i-ep', { autoAlpha: 0, y: 30 }); tl.to('#i-ep', { autoAlpha: 1, y: 0, duration: 0.3, ease: 'power3.out' }, 1.1);
+// contagem 3, 2, 1
+pop('#t-3s', W('N01', 12), SG('N01').ate + 0.3); pop('#c3', W('N01', 12), SG('P01').de + 0.5, 0.25); pop('#c2', SG('P01').de + 0.5, SG('P02').de - 0.3, 0.25); pop('#c1', SG('P02').de - 0.3, SG('P02').de + 0.7, 0.25);
+pop('#o-clic', T_FAROL, T_FAROL + 0.8, 0.2);
+pop('#t-reto', W('N04', 0), S.corte[1]); pop('#t-fundo', W('N04', 2), S.corte[1]); pop('#t-dente', W('N04', 3), S.corte[1]);
+gsap.set('#regua', { strokeDashoffset: 0, autoAlpha: 0 }); tl.to('#regua', { autoAlpha: 1, duration: 0.2 }, W('N04', 0)); tl.to('#regua', { autoAlpha: 0, duration: 0.2 }, W('N04', 3));
+pop('#t-arame', W('P04', 0), W('P04', 2));
+pop('#x-port', W('N05', 9), S.portChao[1]); pop('#x-cerca', W('N05', 13), S.cerca[1]); pop('#x-casa', W('N05', 16), S.casa[1]);
+pop('#t-jeito', W('P05', 13), S.regras[1]); pop('#t-chefe', W('N06', 12), S.juntos[1]);
+pop('#o-zzz', S.dormem[0] + 0.4, S.dormem[1]); tl.to('#o-zzz', { y: -40, duration: 2, ease: 'none' }, S.dormem[0] + 0.4);
+pop('#t-rastro', W('N07', 9), S.rastro[1]);
+show('#fim', CARTAO); pop('#fim-t', CARTAO + 0.3); pop('#fim-c', CARTAO + 1.0);
+tl.to('#fim-c', { scale: 1.05, duration: 0.45, repeat: 4, yoyo: true, ease: 'sine.inOut' }, CARTAO + 1.6);
+tl.set({}, {}, END);
+
+// ===================== LEGENDA =====================
+const leg = Legenda($('#legenda'), window.PALAVRAS || [], { y: PISO_LEG, fs: 76, fonte: "'Anton', sans-serif", destaque: AMBAR, cor: BRANCO, contorno: '#000',
+  enfase: ['BESTA', 'TIÃO.', 'PERNA.', 'ARAME', 'JURO!', 'ATIRA!', 'FAROL', 'DEVAGAR.', 'SANGUE', 'DENTE.', 'SORTE,', 'PODRE.', 'TRANCA.', 'INVERNO.', 'JEITO.', 'CERCA.', 'RASTRO', 'PORTEIRA.'] }).esconder([[0, S.abre[1]], [FIM_FALA, 999]]);
+const NOMES = { tiao: 'TIÃO', aninha: 'ANINHA', dimas: 'DIMAS' };
+
+// ===================== RENDER =====================
+const naMao = (el, b, lado, dx, dy, rot, k = 1) => { const m = b.mao(lado); el.setAttribute('transform', `translate(${f1(m[0] + dx)} ${f1(m[1] + dy)}) rotate(${rot}) scale(${k})`); };
+const CEN_DO_PLANO = {}; Object.entries(USO).forEach(([id, ps]) => ps.forEach(p => CEN_DO_PLANO[p] = id));
+const luzEm = t => { for (const [nome, [a, b]] of Object.entries(S)) if (t >= a && t < b) { if (FAROLP.includes(nome)) return LUZ_FAROL; const L2 = LUZ[CEN_DO_PLANO[nome]]; if (L2) return [L2[0], L2[1]]; } return ['#9FB3FF', '#0A1028']; };
+function desenhar(t) {
+  $('#cam').setAttribute('transform', camEm(t));
+  const LZ = luzEm(t);
+  for (const A of ATORES) { const o = dentro(t, A.janelas); A.g.style.display = o ? '' : 'none'; if (o) { A.b.desenhar(t); if (A.v) { A.v.luz(...LZ); A.vg.innerHTML = A.v.svg(t); } } }
+  for (const I of ITENS) I.g.style.display = dentro(t, I.janelas) ? '' : 'none';
+  for (const B of SEGURA) if (dentro(t, B.janelas)) naMao(B.el, B.b, B.lado, 0, 0, B.rot(t), B.k);
+  for (const E of EXTRA) E.el.innerHTML = dentro(t, E.janelas) ? E.fn(t) : '';
+  const sg = (window.SEGMENTOS || []).find(s => t >= s.de && t <= s.ate + 0.15 && NOMES[s.quem]);
+  const qn = sg && t >= S.abre[1] && t < FIM_FALA ? NOMES[sg.quem] : '';
+  $('#quem-t').textContent = qn; $('#quem').style.display = qn ? '' : 'none'; $('#quem-r').setAttribute('x', -(qn.length * 13 + 40)); $('#quem-r').setAttribute('width', qn.length * 26 + 80);
+  // a calça sobe devagar (as mãos do Tião puxam a barra)
+  const uc = sm(cl((t - S.calca[0] - 0.3) / Math.max(0.5, S.calca[1] - S.calca[0] - 0.4), 0, 1));
+  $('#calcaPano').setAttribute('transform', `translate(${f1(Math.sin(t * 9) * 2 * (uc > 0 && uc < 1))} ${f1(-760 * (t >= S.corte[0] ? 1 : uc))})`);
+  // neblina andando na abertura
+  if (t < S.abre[1]) $$('.nevoa').forEach((n, i) => n.setAttribute('transform', `translate(${f1((i % 2 ? 1 : -1) * t * 40)} 0)`));
+}
+window.__timeline = tl;
+window.__duration = tl.duration();
+window.__seek = t => { tl.seek(t, false); desenhar(t); leg.seek(t); };
+document.fonts.ready.then(() => Palco.caberTextos(document));
+window.__seek(0);
+if (!rendering) { tl.eventCallback('onUpdate', () => { const t = tl.time(); desenhar(t); leg.seek(t); }); document.addEventListener('click', () => tl.paused() ? tl.play() : tl.pause()); }
+</script>
+</body>
+</html>
