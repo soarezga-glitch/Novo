@@ -5,3 +5,9 @@ videos/**/video_novo.mp4
 videos/**/fim.flag
 videos/**/mix.wav
 videos/serie-zumbi/ep4/completo/video.mp4
+
+# WAV da narração editada passa do limite de 100 MB do GitHub
+audios/**/*.wav
+
+# vídeo final do Salmo 91 passa do limite de 100 MB do GitHub
+videos/salmo-91/salmo91-completo*.mp4

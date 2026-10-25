@@ -138,6 +138,12 @@
       "sourceType": "github",
       "skillPath": "voice-changer/SKILL.md",
       "computedHash": "06b15aa9d95574dc280151e936bdcd505c9c6d8b46de064bb209e7d301fd01aa"
+    },
+    "youtube-analytics": {
+      "source": "openclaudia/openclaudia-skills",
+      "sourceType": "github",
+      "skillPath": "skills/youtube-analytics/SKILL.md",
+      "computedHash": "17551b784880978c1508cfdfd511b071d0f312ebf41943b68476176f15aefcc5"
     }
   }
 }
