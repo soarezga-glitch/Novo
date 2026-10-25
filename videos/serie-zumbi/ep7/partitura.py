@@ -19,7 +19,7 @@ amb=[A('amb_tensao_grave',0,besta,-8,0.1),
  A('amb_noite_fria',portC,de('P05')-0.2,-16,0.3),A('trilha_rock',de('P05')-0.2,dormem,-17,1.0),
  A('amb_sitio_noite',dormem,rastro,-17,0.4),A('amb_noite_fria',rastro,FIM,-14,0.4),A('amb_tensao_grave',rastro-0.4,FIM,-6,0.4),A('sfx_coracao',chega,FIM,-5,0.2),
  A('amb_tensao_grave',CART,END,-16)]
-ef=[E('whoosh-cinematic',0.05,-6),E('sfx_impacto_cinema',0.12,-1),E('impact-bass-1',0.55,-3),E('sfx_moto_acelera',0.3,-12),E('whoosh-short',1.1,-10),E('pop',1.15,-12),E('impact-bass-2',besta,-6),
+ef=[E('whoosh-cinematic',0.05,-6),E('sfx_impacto_cinema',0.12,-1),E('impact-bass-1',0.55,-3),E('sfx_moto_acelera',0.3,-12),E('whoosh-short',W('T00',2)-0.1,-10),E('pop',W('T00',2),-12),E('impact-bass-2',W('T00',4),-8),E('impact-bass-2',besta,-6),
  E('sfx_clique_grave',W('N01',1),-4),E('sfx_estalo',W('N01',5),-12),E('sfx_relogio_contagem',W('N01',12),-8),
  E('sfx_taque',W('N01',12),-6),E('sfx_taque',de('P01')+0.5,-6),E('sfx_taque',de('P02')-0.3,-4),E('sfx_grito_menina',de('P02')-0.45,-14),E('impact-bass-2',de('P02'),-6),
  E('sfx_passo_capim_2',de('P02')-0.4,-8),E('sfx_passo_capim_3',de('P02')-0.15,-8),
@@ -33,5 +33,7 @@ ef=[E('whoosh-cinematic',0.05,-6),E('sfx_impacto_cinema',0.12,-1),E('impact-bass
  E('sfx_sopro_reverso',rastro-0.3,-6),E('sfx_gemido_perto',rastro+0.8,-10),E('sfx_farejar',W('N07',9),-8),E('sfx_gemido_perto',chega+0.6,-6),
  E('sfx_porteira_range',W('N07',14),-6),E('impact-bass-1',FIM-0.15,-2),E('sfx_impacto_cinema',FIM-0.1,-4),E('whoosh-cinematic',CART,-8),E('pop',CART+1.0,-12)]
 passos=[dict(som='sfx_passo_capim',de=rastro+0.2,ate=W('N07',12),intervalo=0.62,db=-10),dict(som='sfx_passo_capim',de=chega,ate=W('N07',14)+0.2,intervalo=0.55,db=-8)]
-json.dump(dict(duracao=round(END,2),voz='fala_master.wav',biblioteca=[B+x for x in ['apocalipse','hoje','ui']],ambientes=amb,efeitos=ef,passos=passos,ducking=dict(db=6),volume_final_lufs=-10),open('partitura-sons.json','w'),indent=1,ensure_ascii=False)
+# efeitos mais baixos que as vozes (pedido do criador)
+for x in amb+ef+passos: x['db']-=5
+json.dump(dict(duracao=round(END,2),voz='fala_master.wav',biblioteca=[B+x for x in ['apocalipse','hoje','ui']],ambientes=amb,efeitos=ef,passos=passos,ducking=dict(db=9),volume_final_lufs=-10),open('partitura-sons.json','w'),indent=1,ensure_ascii=False)
 print('fim',round(END,1))

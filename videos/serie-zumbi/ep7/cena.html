@@ -122,8 +122,8 @@ $('#scenes').innerHTML = scenes.join('');
 // tábuas da porteira já no chão (o Dimas derrubou no Ep. 6)
 $$('#c-mb .porteiraTabua').forEach(tb => { const i = +tb.dataset.i; tb.setAttribute('transform', `translate(${180 + i * 40} ${120 - i * 52 + 40}) rotate(${i % 2 ? 84 : 96} ${tb.dataset.cx} ${tb.dataset.cy})`); });
 
-const INTRO = `<g id="intro"><image href="img/logo.png" x="250" y="170" width="580" height="232" id="i-logo"/>` + txt('i-nome', 1300, [['DIMAS', AMBAR]], 230) +
-  `<g transform="translate(540 1420)"><g id="i-ep"><rect x="-370" y="-50" width="740" height="96" rx="48" fill="#0B0D14" fill-opacity=".88" stroke="${VERMELHO}" stroke-width="4"/><text y="18" font-size="52" text-anchor="middle" fill="${BRANCO}" letter-spacing="2">EP. 7 · A PERNA DO TIÃO</text></g></g><rect id="i-flash" width="1080" height="1920" fill="#FFF6E0"/></g>`;
+const INTRO = `<g id="intro"><image href="img/logo.png" x="90" y="560" width="900" height="360" id="i-logo"/>` + txt('i-nome', 1130, [['EPISÓDIO ', BRANCO], ['7', AMBAR]], 130) +
+  `<g transform="translate(540 1250)"><g id="i-ep"><rect x="-330" y="-56" width="660" height="108" rx="54" fill="#0B0D14" fill-opacity=".88" stroke="${VERMELHO}" stroke-width="4"/><text y="22" font-size="64" text-anchor="middle" fill="${BRANCO}" letter-spacing="2">A PERNA DO TIÃO</text></g></g><rect id="i-flash" width="1080" height="1920" fill="#FFF6E0"/></g>`;
 const TOPO = [INTRO,
   `<g id="conta">${['3', '2', '1'].map((n, i) => `<g id="c${n}" transform="translate(540 420)" filter="url(#sombraTxt)"><text font-size="260" text-anchor="middle" fill="${i === 2 ? VERMELHO : BRANCO}" stroke="#000" stroke-width="20" paint-order="stroke">${n}</text></g>`).join('')}</g>`,
   etiqueta('t-3s', 540, 520, '3 SEGUNDOS', VERMELHO, BRANCO), onoma('o-clic', 760, 560, 'CLIC!', 8, AMBAR, 120),
@@ -159,11 +159,6 @@ const chave = (K, t) => { if (t <= K[0][0]) return K[0][1]; for (let i = 1; i < 
 const BESTA = c => `<g transform="translate(15 -45)">${Armas.besta(1, { carregada: c })}</g>`;
 function bestaNa(b, janelas, { k = 1, lado = 'd', rot = () => -4, esp = 1, pai = '#props' } = {}) { const el = item(BESTA(true), janelas, pai); SEGURA.push({ el, b, lado, k, rot, esp, janelas }); return el; }
 const EXTRA = [];   // desenhos que seguem o boneco a cada quadro: { el, janelas, fn(t) → svg }
-
-// ===== abertura: o Dimas de frente, em contraluz, com a besta =====
-const dI = ator(2.0, J('abre'), DIMAS); dI.base(0, S.abre[1], 'parado', { x: 540, y: 1880, vista: 'frente' }); dI.expressao(0, S.abre[1], 'determinado');
-dI.braco('d', 0, S.abre[1], 'pose', { o: 40, c: 125, mao: 'punho' }); dI.cabeca(0, S.abre[1], { baixar: -6 });
-bestaNa(dI, J('abre'), { k: 1.25, rot: () => -95 });
 
 // ===== no curral: a besta apontada pro Tião (ajoelhado, mãos pra cima) =====
 const MIRA = ['besta', 'mira', 'naoabaixa'];
@@ -272,9 +267,9 @@ gsap.set('#clarao', { opacity: 0 }); tl.to('#clarao', { opacity: 0.35, duration:
 // abertura (3 s): clarão → logo → DIMAS → nome do episódio
 gsap.set('#intro', { autoAlpha: 1 }); tl.to('#intro', { autoAlpha: 0, duration: 0.2 }, S.abre[1] - 0.2);
 gsap.set('#i-flash', { opacity: 0 }); tl.to('#i-flash', { opacity: 0.9, duration: 0.03 }, 0.1).to('#i-flash', { opacity: 0, duration: 0.4 }, 0.14);
-gsap.set('#i-logo', { autoAlpha: 0, y: -30 }); tl.to('#i-logo', { autoAlpha: 1, y: 0, duration: 0.4, ease: 'power3.out' }, 0.15);
-gsap.set('#i-nome', { autoAlpha: 0, scale: 2.4, transformOrigin: '540px 1220px' }); tl.to('#i-nome', { autoAlpha: 1, scale: 1, duration: 0.22, ease: 'power4.in' }, 0.55);
-gsap.set('#i-ep', { autoAlpha: 0, y: 30 }); tl.to('#i-ep', { autoAlpha: 1, y: 0, duration: 0.3, ease: 'power3.out' }, 1.1);
+gsap.set('#i-logo', { autoAlpha: 0, scale: 1.3, transformOrigin: '540px 740px' }); tl.to('#i-logo', { autoAlpha: 1, scale: 1, duration: 0.35, ease: 'power3.out' }, 0.12); tl.to('#i-logo', { scale: 1.05, duration: 3, ease: 'none' }, 0.5);
+gsap.set('#i-nome', { autoAlpha: 0, scale: 2.2, transformOrigin: '540px 1090px' }); tl.to('#i-nome', { autoAlpha: 1, scale: 1, duration: 0.2, ease: 'power4.in' }, W('T00', 2) - 0.1);
+gsap.set('#i-ep', { autoAlpha: 0, y: 30 }); tl.to('#i-ep', { autoAlpha: 1, y: 0, duration: 0.3, ease: 'power3.out' }, W('T00', 4) - 0.1);
 // contagem 3, 2, 1
 pop('#t-3s', W('N01', 12), SG('N01').ate + 0.3); pop('#c3', W('N01', 12), SG('P01').de + 0.5, 0.25); pop('#c2', SG('P01').de + 0.5, SG('P02').de - 0.3, 0.25); pop('#c1', SG('P02').de - 0.3, SG('P02').de + 0.7, 0.25);
 pop('#o-clic', T_FAROL, T_FAROL + 0.8, 0.2);
@@ -291,7 +286,7 @@ tl.set({}, {}, END);
 
 // ===================== LEGENDA =====================
 const leg = Legenda($('#legenda'), window.PALAVRAS || [], { y: PISO_LEG, fs: 76, fonte: "'Anton', sans-serif", destaque: AMBAR, cor: BRANCO, contorno: '#000',
-  enfase: ['BESTA', 'TIÃO.', 'PERNA.', 'ARAME', 'JURO!', 'ATIRA!', 'FAROL', 'DEVAGAR.', 'SANGUE', 'DENTE.', 'SORTE,', 'PODRE.', 'TRANCA.', 'INVERNO.', 'JEITO.', 'CERCA.', 'RASTRO', 'PORTEIRA.'] }).esconder([[0, S.abre[1]], [FIM_FALA, 999]]);
+  enfase: ['BESTA', 'SOBREVIVENTES.', 'TIÃO.', 'PERNA.', 'ARAME', 'JURO!', 'ATIRA!', 'FAROL', 'DEVAGAR.', 'SANGUE', 'DENTE.', 'SORTE,', 'PODRE.', 'TRANCA.', 'INVERNO.', 'JEITO.', 'CERCA.', 'RASTRO', 'PORTEIRA.'] }).esconder([[0, S.abre[1]], [FIM_FALA, 999]]);
 const NOMES = { tiao: 'TIÃO', aninha: 'ANINHA', dimas: 'DIMAS' };
 
 // ===================== RENDER =====================
