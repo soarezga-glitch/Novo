@@ -29,10 +29,10 @@ Gente, eu sou mineira. Se eu errar esse pão de queijo, tomam meu título de ele
 
 ### RECEITA — narração gravada depois
 **[B1: ingredientes na bancada]**
-E pra fazer pão de queijo cê precisa de quê? De quê? De quêêê?...
+Separa aí: polvilho, água, leite, óleo, ovo e queijo.
 
 **[B2: queijo sendo mostrado]**
-De QUEIJO, uai! E de polvilho, senão é só queijo.
+Muito queijo. Pão de queijo com pouco queijo é só pão, e pão eu compro na padaria.
 
 **[B3: água, leite e óleo indo pra panela]**
 Um copo de água, um copo de leite e um copo de óleo, mas não enche muito não, que pão de queijo não é pra boiar.
@@ -44,13 +44,13 @@ Sal a gosto. Qual gosto? O seu, uai. A receita é sua.
 Leva pro fogo até levantar fervura.
 
 **[B6: líquido quente caindo no polvilho, com vapor]**
-Aí joga tudo no polvilho e mexe. Vai ficar empelotado e cê vai achar que estragou. Estragou nada, sô. É assim mesmo.
+Aí joga tudo no polvilho e mexe. Vai ficar empelotado e cê vai achar que estragou. Estragou nada, sô. Confia na mineira.
 
 **[B7: ovo quebrando na massa]**
 Espera amornar e coloca os três ovos, aos pouquim.
 
-**[B8: ela pegando um copinho e rindo pra câmera]**
-Aí cê coloca um golinho de cachaça... Mentira! Essa é pra mim.
+**[B8: ela beliscando um pouco de queijo ralado, olhando pros lados]**
+E um pouquim pra cozinheira, que ninguém é de ferro.
 
 **[B9: queijo ralado caindo na massa]**
 Agora trezentos gramas de queijo. Pode pôr mais, que queijo é igual fofoca: nunca é demais.
@@ -66,13 +66,13 @@ Faz as bolinhas...
 
 ### FINAL — ela falando (som direto)
 **[C1: abre o pão e assopra]**
-Agora espera esfriar... Mentira, ninguém espera.
+Diz que tem que esperar esfriar. Quem falou isso nunca comeu pão de queijo quente.
 
-**[C2: morde]**
-Queima a língua mesmo.
+**[C2: morde, cara de quem queimou]**
+Ai, queimei. Valeu a pena.
 
 **[C3: mastiga, pausa]**
-Ficou bão? Ficou não... Ficou bão DEMAIS da conta!
+Nó... trem bão demais da conta!
 
 **[C4: olhando pra câmera]**
 Comenta aí "trem bão" que eu sei que cê vai fazer. E manda pro primo que só aparece na hora do café.
