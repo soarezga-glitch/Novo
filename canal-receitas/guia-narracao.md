@@ -1,0 +1,74 @@
+# Guia de narração do canal de receitas
+
+Jeito de falar: mineira, descontraída, rindo de si mesma, como quem ensina uma amiga na cozinha.
+Inspiração: o vídeo do molho de tomate (`referencia-molho-transcricao.txt`). Pegamos a **estrutura**, não as piadas dela.
+
+## A fórmula (vídeo de 60 a 75 segundos)
+
+| Tempo | Parte | O que fazer |
+|---|---|---|
+| 0–5s | Gancho | Uma frase absurda ou exagerada, antes de dizer qual é a receita |
+| 5–12s | Pergunta com suspense | "Cê precisa de quê? De quê? De quêêê?..." e a resposta óbvia gritada |
+| 12–55s | Passo a passo | Um passo, uma piada. Algo engraçado a cada 5 a 8 segundos |
+| no meio e no fim | Bordão repetido | Uma piada de identificação que aparece 2 vezes no vídeo |
+| 55–75s | Fechamento | Prova do prato + chamada para comentar ou seguir, no mesmo tom |
+
+## Bordões fixos do canal
+
+Estes se repetem em **todo** vídeo para virar a marca dela.
+
+- **Abertura:** "Ô, gente, chega mais que hoje o trem é bão!"
+- **Pergunta:** "E pra fazer isso aqui cê precisa de quê? De quê? De quêêê?... De [INGREDIENTE], uai!"
+- **Medida:** "Um tiquim... não, um tantim... não, um cadim. Mede no coração, igual vó mede."
+- **Ingrediente falso:** "Aí cê coloca um golinho de cachaça... Mentira! Essa é pra mim."
+- **Prova:** "Ficou bão? Ficou não... ficou bão DEMAIS da conta!"
+- **Fechamento:** "Comenta aí 'trem bão' que eu sei que cê vai fazer."
+
+## Bordões para variar (usar 1 ou 2 por vídeo)
+
+- "Esse queijo é igual fofoca: nunca é demais."
+- "Cozinha devagarim, que mineiro não tem pressa nem pra fazer arroz."
+- "Isso aqui vai ficar mais cheiroso que a casa da vó no domingo."
+- "Mexe, mexe, mexe... igual o marido mexendo no celular quando eu chamo pra lavar a louça."
+- "Panela de pressão apitou: é o trem ficando pronto ou é o vizinho reclamando."
+- "Rende pra família toda, até pro primo que só aparece na hora de comer."
+- "Agora espera esfriar... mentira, ninguém espera. Queima a língua mesmo."
+
+## Jeito de narrar
+
+- **Ritmo:** fala rápida, mas com pausa curta **antes** de cada piada. A pausa é o que faz rir.
+- **Sotaque:** não forçar. "Cê", "uai", "trem", "sô", "nó", "-im" (pouquim, cadim) do jeito que ela já fala.
+- **Gravação:** usar o roteiro como base, mas deixar ela improvisar. Gravar 2 ou 3 versões da narração e escolher a melhor.
+- **Ingredientes:** sempre dizer o nome em voz alta. Ajuda quem assiste sem olhar e ajuda o vídeo a aparecer na busca.
+- **Rir de si mesma:** se algo der errado na gravação, mantém e faz piada. É isso que dá personalidade.
+
+---
+
+## Roteiro de exemplo: frango com quiabo (cerca de 70s)
+
+**[0s] Gancho**
+Gente, eu já errei muita coisa na vida. Já casei, já cortei franja sozinha... mas frango com quiabo eu NUNCA errei.
+
+**[5s] Pergunta**
+E pra fazer frango com quiabo cê precisa de quê? De quê? De quêêê?... De FRANGO, uai! E de quiabo, né, senão é só frango.
+
+**[12s] Tempero**
+Coxa e sobrecoxa, que peito de frango é pra quem tá de dieta, e aqui nós tamo é feliz.
+Alho, cebola, sal, um tiquim de pimenta-do-reino... não, um tantim... não, um cadim. Mede no coração, igual vó mede.
+
+**[22s] Fogo**
+Deixa o frango dourar bem, devagarim, que mineiro não tem pressa nem pra fazer arroz.
+Aí cê coloca um golinho de cachaça... Mentira! Essa é pra mim.
+
+**[32s] Quiabo**
+Agora o quiabo. "Ai, mas quiabo baba." Baba nada, sô! Frita ele separado com um fio de óleo que a baba vai embora igual visita quando cê começa a lavar a louça.
+
+**[44s] Junta tudo**
+Junta o quiabo no frango, joga um cheiro-verde por cima e deixa pegar gosto. Isso aqui vai ficar mais cheiroso que a casa da vó no domingo.
+
+**[54s] Prova**
+Serve com angu ou com arroz. Agora espera esfriar... mentira, ninguém espera, queima a língua mesmo.
+Ficou bão? Ficou não... ficou bão DEMAIS da conta!
+
+**[65s] Fechamento**
+Comenta aí "trem bão" que eu sei que cê vai fazer. E manda pro primo que só aparece na hora de comer.
