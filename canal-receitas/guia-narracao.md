@@ -50,8 +50,8 @@ Estes se repetem em **todo** vídeo para virar a marca dela.
 **[0s] Gancho**
 Gente, eu já errei muita coisa na vida. Já casei, já cortei franja sozinha... mas frango com quiabo eu NUNCA errei.
 
-**[5s] Pergunta**
-Separa aí: frango, quiabo, alho, cebola e cheiro-verde. E fome, que essa receita não é pra quem tá de dieta.
+**[5s] Separa aí**
+Separa aí: frango, quiabo, alho, cebola e cheiro-verde. E fome. Muita fome.
 
 **[12s] Tempero**
 Coxa e sobrecoxa, que peito de frango é pra quem tá de dieta, e aqui nós tamo é feliz.
