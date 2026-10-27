@@ -21,21 +21,21 @@ Vídeo em pé (vertical). Cada take com 5 a 10 segundos. Segurar 2 segundos para
 | 11 | Queijo ralado caindo na massa | De cima |
 | 12 | Untando a mão com óleo | De perto |
 | 13 | Enrolando bolinhas | De perto |
-| 14 | Assadeira cheia de bolinhas | De cima |
-| 15 | Assadeira entrando no forno | De lado |
-| 16 | Pães crescendo pelo vidro do forno | De frente pro vidro |
-| 17 | Assadeira saindo do forno, dourada e com fumaça | De lado, softbox atrás |
+| 14 | Assadeira cheia de bolinhas cruas, no centro da mesa | De cima |
+| 15 | Mesma assadeira, já assada e dourada, **no mesmo lugar** da 14 (com fumaça, se der) | De cima, mesmo enquadramento |
 
-## PARTE 2 — Ela falando (gravar logo que o pão sair do forno, ainda quente)
+Transição 14 → 15: deixar o celular parado no tripé. Grava a 14, tira a assadeira, leva pro forno. Quando sair, coloca no **mesmo lugar** e grava a 15. Na edição, um corte seco faz o pão "assar" na hora.
+
+## PARTE 2 — Ela falando (gravar logo depois do take 15, com o pão ainda quente)
 
 | Ordem | Take | Fala |
 |---|---|---|
-| 18 | Mão abrindo um pão, queijo puxando (bem de perto) | Sem fala — imagem de capa |
-| 19 | Segurando a assadeira, cara séria (gravar 3 ou 4 vezes) | "Gente, eu sou mineira. Se eu errar esse pão de queijo, tomam meu título de eleitor e me mandam morar em São Paulo." |
-| 20 | Abre um pão e assopra | "Diz que tem que esperar esfriar. Quem falou isso nunca comeu pão de queijo quente." |
-| 21 | Morde, cara de quem queimou | "Ai, queimei. Valeu a pena." |
-| 22 | Mastiga, pausa, reação | "Nó... trem bão demais da conta!" |
-| 23 | Olhando pra câmera | "Comenta aí 'trem bão' que eu sei que cê vai fazer. E manda pro primo que só aparece na hora do café." |
+| 16 | Mão abrindo um pão, queijo puxando (bem de perto) | Sem fala — imagem de capa |
+| 17 | Segurando a assadeira, cara séria (gravar 3 ou 4 vezes) | "Gente, eu sou mineira. Se eu errar esse pão de queijo, tomam meu título de eleitor e me mandam morar em São Paulo." |
+| 18 | Abre um pão e assopra | "Diz que tem que esperar esfriar. Quem falou isso nunca comeu pão de queijo quente." |
+| 19 | Morde, cara de quem queimou | "Ai, queimei. Valeu a pena." |
+| 20 | Mastiga, pausa, reação | "Nó... trem bão demais da conta!" |
+| 21 | Olhando pra câmera | "Comenta aí 'trem bão' que eu sei que cê vai fazer. E manda pro primo que só aparece na hora do café." |
 
 Som: celular a até 1 metro dela, exaustor, TV e geladeira barulhenta desligados. Se der, um segundo celular gravando áudio no bolso do avental (bater palma no início pra sincronizar).
 
@@ -61,4 +61,4 @@ Ler de uma vez, com calma. Pausa curta antes de cada piada. Gravar 2 ou 3 vezes.
 
 ## Ordem na edição
 
-19 (abertura) → 1 a 17 com a narração por cima → 18 (queijo puxando) → 20 a 23 (final).
+17 (abertura) → 1 a 15 com a narração por cima → 16 (queijo puxando) → 18 a 21 (final).
