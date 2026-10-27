@@ -11,3 +11,4 @@ audios/**/*.wav
 
 # vídeo final do Salmo 91 passa do limite de 100 MB do GitHub
 videos/salmo-91/salmo91-completo*.mp4
+canal-receitas/videos/
