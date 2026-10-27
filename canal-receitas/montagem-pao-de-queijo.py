@@ -13,7 +13,7 @@ def nt(t):
 Z_QUEIJO="crop=560:996:290:900,"
 Z_FOGO="crop=920:1636:80:284,"
 cuts=[(1.9,9.0,2616,3.0,""),
- (9.0,12.0,2618,2.0,""),
+ (9.0,12.0,2618,2.2,""),
  (12.0,16.6,2616,10.0,Z_QUEIJO),
  (16.6,18.3,2619,1.7,""),
  (18.3,19.6,2619,12.6,""),
@@ -32,7 +32,8 @@ cuts=[(1.9,9.0,2616,3.0,""),
  (55.5,57.7,2632,0.5,""),
  (57.7,62.4,2634,0.3,""),
  (62.4,64.4,2635,6.0,""),
- (64.4,67.7,2637,0.3,"")]
+ (64.4,65.2,2637,0.3,""),
+ (65.2,67.7,2639,0.0,"")]
 LOOK="eq=contrast=1.07:brightness=0.015:saturation=1.12,colorbalance=rs=0.04:gs=0.01:bs=-0.05:rm=0.03:bm=-0.04"
 os.makedirs("seg",exist_ok=True); lst=open("seg/list.txt","w")
 for i,(a,b,n,t0,ex) in enumerate(cuts):
@@ -45,4 +46,4 @@ lst.close()
 subprocess.run("ffmpeg -v error -y -f concat -safe 0 -i seg/list.txt -c copy video_mudo.mp4",shell=True,check=True)
 subprocess.run(["ffmpeg","-v","error","-y","-i","video_mudo.mp4","-i","narr_tight.wav",
   "-af","highpass=f=80,afftdn=nf=-25,loudnorm=I=-14:TP=-1.5:LRA=11",
-  "-map","0:v","-map","1:a","-c:v","copy","-c:a","aac","-b:a","192k","-ar","48000","-shortest","montagem_v2.mp4"],check=True)
+  "-map","0:v","-map","1:a","-c:v","copy","-c:a","aac","-b:a","192k","-ar","48000","-shortest","receita.mp4"],check=True)
