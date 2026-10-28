@@ -2,7 +2,7 @@
 
 > ⚠️ Confirmar: o frango vai **cozido e desfiado**? (o roteiro considera que sim)
 
-Meta: 35 a 45 segundos. Começo com o resultado, ganchos a cada 8–10s, chamada pra seguir no meio.
+Meta: 45 a 55 segundos (com piadas; se ficar longo, corta as piadas mais fracas). Começo com o resultado, ganchos a cada 8–10s, chamada pra seguir no meio.
 
 ## Texto na tela (0 a 3s)
 **Torta de frango que cê faz no liquidificador 🐔**
@@ -10,30 +10,34 @@ Meta: 35 a 45 segundos. Começo com o resultado, ganchos a cada 8–10s, chamada
 ## Narração (copiar e colar)
 
 ```
-Cê só precisa de um liquidificador pra fazer essa torta aqui, uai.
+Cê só precisa de um liquidificador e coragem pra fazer essa torta. Coragem pra não comer ela inteira sozinha.
 
-Três ovos, uma xícara de óleo, sem encher muito, duas de leite, três de farinha e uma colherzinha de sal. Bate tudo.
+Três ovos. Se cair casca, finge que é crocância.
 
-Mas o fermento, ó... só no finalzim, batendo pouquim. Senão sua torta não cresce, sô.
+Uma xícara de óleo, sem encher muito, que eu tô de dieta... desde segunda passada.
 
-Agora o recheio: frango desfiado, milho, ervilha... e segura aí que o segredo vem agora. Um copo inteirim de requeijão. Nó!
+Duas de leite, três de farinha, uma colherzinha de sal, e bate até ficar lisinho igual desculpa de marido.
 
-Já segue aí que amanhã tem mais trem bão desse.
+Mas o fermento, ó... só no finalzim. Fermento é igual sogra: chega por último e muda tudo. Se bater demais, cê ganha uma panqueca de luxo.
 
-Metade da massa na forma untada, o recheio por cima, e o resto da massa cobrindo tudo.
+Agora o recheio. Frango desfiado, que desfiar frango é a terapia mais barata que existe. Milho, ervilha... e segura aí que o segredo vem agora: um copo inteirim de requeijão. Aqui é cozinha de mineira, não é consultório de nutricionista.
 
-Forno a cento e oitenta graus, uns trinta e cinco minutos, até dourar.
+Já segue aí que amanhã tem mais trem bão. E seguir é de graça, diferente do requeijão.
 
-E fica até o final pra ver esse recheio na hora que eu cortar...
+Metade da massa, o recheio, e o resto da massa cobrindo tudo, igual edredom em dia de frio.
+
+Forno a cento e oitenta graus, uns trinta e cinco minutos. E não fica abrindo o forno toda hora não, que torta também tem vergonha.
+
+Fica até o final, que é agora que essa torta mostra quem ela é...
 ```
 
 ## Falas dela na câmera (som direto)
 
 | Momento | Fala |
 |---|---|
-| Logo depois do corte | "Ó o tanto de recheio, sô!" |
+| Logo depois do corte | "Ó o tanto de recheio, sô! Isso aqui não é torta, é abraço de vó." |
 | Prova | "Nó... trem bão demais da conta!" |
-| Final | "Comenta 'trem bão' e marca quem vai comer com cê no domingo." |
+| Final | "Comenta 'trem bão' e marca aquela amiga que diz que tá de dieta." |
 
 ## Takes na ordem de gravação
 
