@@ -7,39 +7,35 @@ Meta: 45 a 55 segundos (com piadas; se ficar longo, corta as piadas mais fracas)
 ## Texto na tela (0 a 3s)
 **Torta de frango que cê faz no liquidificador 🐔**
 
-## Narração (copiar e colar)
+## Narração em looping (copiar e colar)
+
+O resultado (corte e mordida) abre o vídeo. A última frase termina puxando a primeira, então quando o vídeo recomeça a fala continua sem emenda.
 
 ```
-Cê só precisa de um liquidificador e coragem pra fazer essa torta. Coragem pra não comer ela inteira sozinha.
+Nó... trem bão demais da conta! Essa é a torta de frango mais fácil do mundo, e cê só precisa de um liquidificador. Ó:
 
 Três ovos. Se cair casca, finge que é crocância.
 
 Uma xícara de óleo, sem encher muito, que eu tô de dieta... desde segunda passada.
 
-Duas de leite, três de farinha, uma colherzinha de sal, e bate até ficar lisinho igual desculpa de marido.
+Duas de leite, três de farinha, uma colherzinha de sal... e bate até ficar lisinho igual desculpa de marido.
 
-Mas o fermento, ó... só no finalzim. Fermento é igual sogra: chega por último e muda tudo. Se bater demais, cê ganha uma panqueca de luxo.
+O fermento, ó, só no finalzim. Fermento é igual sogra: chega por último e muda tudo.
 
-Agora o recheio. Frango desfiado, que desfiar frango é a terapia mais barata que existe. Milho, ervilha... e segura aí que o segredo vem agora: um copo inteirim de requeijão. Aqui é cozinha de mineira, não é consultório de nutricionista.
+Agora o recheio: frango desfiado, milho e ervilha... e segura aí que vem o segredo: um copo inteirim de requeijão. Aqui é cozinha de mineira, não é consultório de nutricionista.
 
-Já segue aí que amanhã tem mais trem bão. E seguir é de graça, diferente do requeijão.
+Já segue aí e comenta "trem bão", que seguir é de graça, diferente do requeijão.
 
-Metade da massa, o recheio, e o resto da massa cobrindo tudo, igual edredom em dia de frio.
+Metade da massa na forma untada, o recheio por cima, e o resto da massa cobrindo tudo, igual edredom em dia de frio.
 
-Forno a cento e oitenta graus, uns trinta e cinco minutos. E não fica abrindo o forno toda hora não, que torta também tem vergonha.
+Forno a cento e oitenta graus, uns trinta e cinco minutos... e não fica abrindo o forno toda hora não, que torta também tem vergonha.
 
-Fica até o final, que é agora que essa torta mostra quem ela é...
-
-Ó o tanto de recheio, sô! Isso aqui não é torta, é abraço de vó.
-
-Diz que tem que esperar esfriar... mas eu sou mineira, eu não espero nem o ônibus.
-
-Nó... trem bão demais da conta!
-
-Comenta "trem bão" e marca aquela amiga que diz que tá de dieta.
+Aí é só tirar, cortar um pedação e falar comigo...
 ```
 
-Vídeo **todo narrado**: ela aparece provando, mas sem falar na câmera. Nada de som direto.
+Na gravação: a última frase termina **sem cair o tom**, como quem vai continuar falando. A primeira começa já com energia de quem acabou de provar.
+
+Vídeo **todo narrado**, sem som direto.
 
 ## Deixar separado antes de gravar (fora do quadro, ao lado da mesa)
 
@@ -94,8 +90,20 @@ Sem take de ingredientes parados: a mão já entra pegando e fazendo. Cada ingre
 | 19 | Ela mordendo e fechando o olho de prazer (boca fechada mastigando) |
 | 20 | Ela mostrando o pedaço pra câmera, sorrindo ou fazendo joinha |
 
-## Ordem na edição
-16 (corte, com o texto na tela) → 1 a 15 → 17 a 20. A narração corre por cima do vídeo inteiro.
+## Ordem na edição (looping)
+16 (corte) → 19 (mordida) → 1 a 15 → **fim no 15 (forma assada)**, que emenda no 16 quando o vídeo recomeça.
+
+| Narração | Imagem |
+|---|---|
+| "Nó... trem bão demais da conta!" | 19 — mordida |
+| "Essa é a torta de frango mais fácil do mundo..." | 16 — corte com recheio (texto na tela) |
+| Três ovos → requeijão | 1 a 10 |
+| "Já segue aí..." | 10 — misturando o recheio |
+| Massa, recheio, cobrir | 11 a 14 |
+| "Forno a cento e oitenta..." | 14 → 15 (transição crua → pronta) |
+| "Aí é só tirar, cortar um pedação e falar comigo..." | 15 — forma assada (último quadro) |
+
+Takes 17, 18 e 20 ficam de reserva.
 
 ## Descrição
 
