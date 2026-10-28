@@ -41,7 +41,7 @@ Comenta "trem bão" e marca aquela amiga que diz que tá de dieta.
 
 Vídeo **todo narrado**: ela aparece provando, mas sem falar na câmera. Nada de som direto.
 
-## Deixar separado antes de gravar
+## Deixar separado antes de gravar (fora do quadro, ao lado da mesa)
 
 **Massa** (cada um no seu recipiente, de preferência vidro)
 - 3 ovos inteiros, com casca, numa tigelinha
@@ -65,36 +65,37 @@ Vídeo **todo narrado**: ela aparece provando, mas sem falar na câmera. Nada de
 ## Takes na ordem de gravação
 
 ### Parte 1 — Preparo (sem fala, câmera de cima no tripé)
+
+Sem take de ingredientes parados: a mão já entra pegando e fazendo. Cada ingrediente entra no quadro **na mão dela**, já indo pro liquidificador ou pra vasilha. Os recipientes ficam fora do quadro, do lado.
 | # | Take |
 |---|---|
-| 1 | Todos os ingredientes separados na mesa, recheio no centro |
-| 2 | Ovos quebrando no copo do liquidificador |
-| 3 | Óleo caindo |
-| 4 | Leite caindo |
-| 5 | Farinha caindo, devagar |
-| 6 | Pitada de sal |
-| 7 | Liquidificador batendo (de lado, bem de perto) |
-| 8 | Fermento caindo + batida rápida |
-| 9 | Colher levantando o recheio de frango, mostrando o milho e a ervilha (de perto) |
-| 10 | **Requeijão caindo devagar no recheio** (gravar 2 vezes) |
-| 11 | Misturando o recheio, cremoso |
-| 12 | Untando e enfarinhando a forma |
-| 13 | Metade da massa escorrendo na forma |
-| 14 | Recheio espalhado por cima |
-| 15 | Resto da massa cobrindo (forma no centro da mesa, câmera parada) |
-| 16 | **Mesma forma, assada e dourada, no mesmo lugar do 15** (transição crua → pronta) |
+| 1 | Ovos quebrando no copo do liquidificador |
+| 2 | Óleo caindo |
+| 3 | Leite caindo |
+| 4 | Farinha caindo, devagar |
+| 5 | Pitada de sal |
+| 6 | Liquidificador batendo (de lado, bem de perto) |
+| 7 | Fermento caindo + batida rápida |
+| 8 | Colher levantando o recheio de frango, mostrando o milho e a ervilha (de perto) |
+| 9 | **Requeijão caindo devagar no recheio** (gravar 2 vezes) |
+| 10 | Misturando o recheio, cremoso |
+| 11 | Untando e enfarinhando a forma |
+| 12 | Metade da massa escorrendo na forma |
+| 13 | Recheio espalhado por cima |
+| 14 | Resto da massa cobrindo (forma no centro da mesa, câmera parada) |
+| 15 | **Mesma forma, assada e dourada, no mesmo lugar do 14** (transição crua → pronta) |
 
 ### Parte 2 — Resultado (com a torta quente, ela não fala, só reage)
 | # | Take |
 |---|---|
-| 17 | **Faca cortando e pedaço saindo com recheio cremoso** (bem de perto, gravar 3 vezes — é o primeiro quadro do vídeo) |
-| 18 | Pedaço no prato, de cima, mostrando o recheio |
-| 19 | Ela assoprando o garfo, impaciente, olhando pra câmera |
-| 20 | Ela mordendo e fechando o olho de prazer (boca fechada mastigando) |
-| 21 | Ela mostrando o pedaço pra câmera, sorrindo ou fazendo joinha |
+| 16 | **Faca cortando e pedaço saindo com recheio cremoso** (bem de perto, gravar 3 vezes — é o primeiro quadro do vídeo) |
+| 17 | Pedaço no prato, de cima, mostrando o recheio |
+| 18 | Ela assoprando o garfo, impaciente, olhando pra câmera |
+| 19 | Ela mordendo e fechando o olho de prazer (boca fechada mastigando) |
+| 20 | Ela mostrando o pedaço pra câmera, sorrindo ou fazendo joinha |
 
 ## Ordem na edição
-17 (corte, com o texto na tela) → 1 a 16 → 18 a 21. A narração corre por cima do vídeo inteiro.
+16 (corte, com o texto na tela) → 1 a 15 → 17 a 20. A narração corre por cima do vídeo inteiro.
 
 ## Descrição
 
