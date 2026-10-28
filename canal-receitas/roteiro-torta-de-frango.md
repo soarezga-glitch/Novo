@@ -5,7 +5,10 @@
 Meta: 45 a 55 segundos (com piadas; se ficar longo, corta as piadas mais fracas). Começo com o resultado, ganchos a cada 8–10s, chamada pra seguir no meio.
 
 ## Texto na tela (0 a 3s)
-**Torta de frango que cê faz no liquidificador 🐔**
+**TORTA DE FRANGO NO LIQUIDIFICADOR**
+**o segredo do recheio cremoso 👀**
+
+Reforço na hora do requeijão: **"O SEGREDO 👇"**
 
 ## Narração em looping (copiar e colar)
 
