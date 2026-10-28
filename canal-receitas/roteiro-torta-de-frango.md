@@ -29,15 +29,17 @@ Metade da massa, o recheio, e o resto da massa cobrindo tudo, igual edredom em d
 Forno a cento e oitenta graus, uns trinta e cinco minutos. E não fica abrindo o forno toda hora não, que torta também tem vergonha.
 
 Fica até o final, que é agora que essa torta mostra quem ela é...
+
+Ó o tanto de recheio, sô! Isso aqui não é torta, é abraço de vó.
+
+Diz que tem que esperar esfriar... mas eu sou mineira, eu não espero nem o ônibus.
+
+Nó... trem bão demais da conta!
+
+Comenta "trem bão" e marca aquela amiga que diz que tá de dieta.
 ```
 
-## Falas dela na câmera (som direto)
-
-| Momento | Fala |
-|---|---|
-| Logo depois do corte | "Ó o tanto de recheio, sô! Isso aqui não é torta, é abraço de vó." |
-| Prova | "Nó... trem bão demais da conta!" |
-| Final | "Comenta 'trem bão' e marca aquela amiga que diz que tá de dieta." |
+Vídeo **todo narrado**: ela aparece provando, mas sem falar na câmera. Nada de som direto.
 
 ## Takes na ordem de gravação
 
@@ -62,16 +64,17 @@ Fica até o final, que é agora que essa torta mostra quem ela é...
 | 16 | Resto da massa cobrindo (forma no centro da mesa, câmera parada) |
 | 17 | **Mesma forma, assada e dourada, no mesmo lugar do 16** (transição crua → pronta) |
 
-### Parte 2 — Resultado (com a torta quente)
+### Parte 2 — Resultado (com a torta quente, ela não fala, só reage)
 | # | Take |
 |---|---|
 | 18 | **Faca cortando e pedaço saindo com recheio cremoso** (bem de perto, gravar 3 vezes — é o primeiro quadro do vídeo) |
-| 19 | Ela com o pedaço no prato: "Ó o tanto de recheio, sô!" |
-| 20 | Ela provando: "Nó... trem bão demais da conta!" |
-| 21 | Ela olhando pra câmera: chamada final |
+| 19 | Pedaço no prato, de cima, mostrando o recheio |
+| 20 | Ela assoprando o garfo, impaciente, olhando pra câmera |
+| 21 | Ela mordendo e fechando o olho de prazer (sem falar, boca fechada mastigando) |
+| 22 | Ela fazendo "joinha" ou mostrando o pedaço pra câmera, sorrindo |
 
 ## Ordem na edição
-18 (corte, com o texto na tela e a primeira frase da narração) → 1 a 17 com a narração → 19 → 20 → 21
+18 (corte, com o texto na tela) → 1 a 17 → 19 a 22. A narração corre por cima do vídeo inteiro.
 
 ## Descrição
 
