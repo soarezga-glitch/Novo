@@ -1,0 +1,493 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Hábito é uma trilha</title>
+<style>
+  @font-face { font-family: 'Luckiest Guy'; src: url(fontes/luckiest-guy.woff2); }
+  html, body { margin: 0; padding: 0; background: transparent; width: 1080px; height: 1920px; overflow: hidden; }
+  body.preview { background: #444; }
+  svg { display: block; }
+  text { font-family: 'Luckiest Guy', 'DejaVu Sans', sans-serif; paint-order: stroke fill; stroke-linejoin: round; }
+</style>
+</head>
+<body>
+<svg id="v" width="1080" height="1920" viewBox="0 0 1080 1920" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="62%" r="75%">
+      <stop offset="0" stop-color="#3a2410"/>
+      <stop offset="0.55" stop-color="#1c140d"/>
+      <stop offset="1" stop-color="#0d0d0d"/>
+    </radialGradient>
+    <linearGradient id="topo" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#000" stop-opacity="0.75"/>
+      <stop offset="1" stop-color="#000" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="ceu" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2b1640"/>
+      <stop offset="0.55" stop-color="#C95A00"/>
+      <stop offset="1" stop-color="#FFB25C"/>
+    </linearGradient>
+    <linearGradient id="terra" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#7a5232"/>
+      <stop offset="1" stop-color="#b9875a"/>
+    </linearGradient>
+    <clipPath id="clipPainel"><rect x="0" y="0" width="1080" height="960"/></clipPath>
+    <pattern id="grao" width="6" height="6" patternUnits="userSpaceOnUse">
+      <rect width="6" height="6" fill="none"/><circle cx="1" cy="1" r="0.8" fill="#fff" opacity="0.05"/><circle cx="4" cy="4" r="0.7" fill="#000" opacity="0.18"/>
+    </pattern>
+  </defs>
+
+  <!-- textos do rosto em tela cheia (gancho e conclusão) -->
+  <g id="cheia">
+    <rect id="sombraTopo" x="0" y="180" width="1080" height="560" fill="url(#topo)" opacity="0"/>
+    <g id="gancho"></g>
+    <g id="conclusao"></g>
+  </g>
+
+  <!-- painel de cima (tela dividida) -->
+  <g id="painelWrap" clip-path="url(#clipPainel)">
+    <g id="painel">
+      <rect width="1080" height="960" fill="url(#bg)"/>
+      <circle id="brilho" cx="540" cy="660" r="300" fill="#FF7A00" opacity="0.10"/>
+      <g id="cenas"></g>
+      <rect width="1080" height="960" fill="url(#grao)"/>
+    </g>
+  </g>
+  <rect id="costura" x="0" y="954" width="1080" height="12" fill="#FF7A00" opacity="0"/>
+
+  <!-- legenda dinâmica -->
+  <g id="legenda"><text id="legTxt" x="540" y="990" text-anchor="middle" font-size="76" stroke="#111" stroke-width="16"></text></g>
+</svg>
+
+<script src="gsap.min.js"></script>
+<script>
+const NS = 'http://www.w3.org/2000/svg';
+const $ = s => document.querySelector(s);
+function el(tag, attrs = {}, parent) {
+  const e = document.createElementNS(NS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(e);
+  return e;
+}
+function g(parent, attrs = {}) { return el('g', attrs, parent); }
+function svgIn(parent, markup) {
+  const wrap = el('g', {}, parent);
+  wrap.innerHTML = markup;
+  return wrap;
+}
+
+// ---------- estilos da marca ----------
+function impacto(parent, x, y, txt, size = 130, rot = -4) {
+  const t = el('text', { x, y, 'text-anchor': 'middle', 'font-size': size, fill: '#FF7A00', stroke: '#111', 'stroke-width': size * 0.2,
+    transform: `rotate(${rot} ${x} ${y})`, filter: '' }, parent);
+  t.textContent = txt;
+  const sh = t.cloneNode(true); sh.setAttribute('fill', '#111'); sh.setAttribute('transform', `translate(8 10) rotate(${rot} ${x} ${y})`);
+  const grp = g(parent); grp.appendChild(sh); grp.appendChild(t);
+  return grp;
+}
+function apoio(parent, x, y, txt, size = 70) {
+  const t = el('text', { x, y, 'text-anchor': 'middle', 'font-size': size, fill: '#fff', stroke: '#111', 'stroke-width': size * 0.22 }, parent);
+  t.textContent = txt; return t;
+}
+function faixa(parent, x, y, txt, size = 84, numero) {
+  const grp = g(parent);
+  const w = txt.length * size * 0.62 + 90 + (numero ? size * 1.1 : 0);
+  el('rect', { x: x - w / 2, y: y - size * 0.95, width: w, height: size * 1.3, rx: 14, fill: '#111' }, grp);
+  el('rect', { x: x - w / 2, y: y + size * 0.35 - 8, width: w, height: 8, fill: '#FF7A00' }, grp);
+  let tx = x;
+  if (numero) {
+    const cx = x - w / 2 + size * 0.85;
+    el('circle', { cx, cy: y - size * 0.3, r: size * 0.5, fill: '#FF7A00' }, grp);
+    const n = el('text', { x: cx, y: y - size * 0.3 + size * 0.24, 'text-anchor': 'middle', 'font-size': size * 0.7, fill: '#111' }, grp); n.textContent = numero;
+    tx = x + size * 0.5;
+  }
+  const t = el('text', { x: tx, y: y + size * 0.05, 'text-anchor': 'middle', 'font-size': size, fill: '#FF7A00' }, grp);
+  t.textContent = txt; return grp;
+}
+function carimbo(parent, x, y, txt, size = 120, rot = -5) {
+  const grp = g(parent, { transform: `rotate(${rot} ${x} ${y})` });
+  const w = txt.length * size * 0.62 + 80;
+  el('rect', { x: x - w / 2 + 10, y: y - size * 0.95 + 12, width: w, height: size * 1.35, rx: 18, fill: '#111' }, grp);
+  el('rect', { x: x - w / 2, y: y - size * 0.95, width: w, height: size * 1.35, rx: 18, fill: '#FF7A00', stroke: '#111', 'stroke-width': 10 }, grp);
+  const t = el('text', { x, y: y + size * 0.12, 'text-anchor': 'middle', 'font-size': size, fill: '#111' }, grp); t.textContent = txt;
+  return grp;
+}
+
+// ---------- desenhos reutilizáveis ----------
+const OL = 'stroke="#111" stroke-width="10" stroke-linejoin="round" stroke-linecap="round"';
+function cerebro(cx, cy, s = 1) {
+  return `<g transform="translate(${cx} ${cy}) scale(${s})">
+    <path d="M-30,-150 C-120,-175 -215,-130 -230,-55 C-285,-20 -270,80 -205,105 C-190,165 -110,185 -60,150 C-30,175 0,170 0,150 L0,-140 Z" fill="#F29BB0" ${OL}/>
+    <path d="M30,-150 C120,-175 215,-130 230,-55 C285,-20 270,80 205,105 C190,165 110,185 60,150 C30,175 0,170 0,150 L0,-140 Z" fill="#F29BB0" ${OL}/>
+    <g fill="none" stroke="#C9677F" stroke-width="9" stroke-linecap="round">
+      <path d="M-180,-60 C-140,-90 -100,-40 -60,-80 S-20,-40 -20,-20"/>
+      <path d="M-210,30 C-160,0 -120,60 -80,20 S-40,60 -25,40"/>
+      <path d="M-150,110 C-110,80 -80,120 -45,95"/>
+      <path d="M180,-60 C140,-90 100,-40 60,-80 S20,-40 20,-20"/>
+      <path d="M210,30 C160,0 120,60 80,20 S40,60 25,40"/>
+      <path d="M150,110 C110,80 80,120 45,95"/>
+    </g>
+  </g>`;
+}
+function sino(cx, cy, s = 1, id = '') {
+  return `<g ${id ? `id="${id}"` : ''} transform="translate(${cx} ${cy}) scale(${s})">
+    <g class="balanco">
+      <circle cx="0" cy="-150" r="22" fill="#FFB000" ${OL}/>
+      <path d="M-120,90 C-120,-40 -95,-130 0,-135 C95,-130 120,-40 120,90 L150,120 L-150,120 Z" fill="#FFB000" ${OL}/>
+      <path d="M-60,-80 C-80,-40 -85,20 -85,70" fill="none" stroke="#FFE08A" stroke-width="14" stroke-linecap="round"/>
+      <circle cx="0" cy="140" r="30" fill="#C98A00" ${OL}/>
+    </g>
+  </g>`;
+}
+function boneco(cx, cy, s = 1, pose = 'parado', cor = '#fff') {
+  const P = {
+    parado: 'M0,-60 L0,60 M0,-30 L-55,20 M0,-30 L55,20 M0,60 L-40,150 M0,60 L40,150',
+    empurra: 'M0,-60 L0,60 M0,-30 L-60,-110 M0,-30 L60,-110 M0,60 L-45,150 M0,60 L35,150',
+    corre1: 'M10,-60 L0,60 M5,-30 L-50,10 M5,-30 L60,-20 M0,60 L-55,120 L-75,165 M0,60 L60,100 L50,160',
+    corre2: 'M10,-60 L0,60 M5,-30 L55,15 M5,-30 L-45,-25 M0,60 L50,130 L40,170 M0,60 L-50,100 L-80,140',
+  };
+  return `<g transform="translate(${cx} ${cy}) scale(${s})">
+    <path d="${P[pose]}" fill="none" stroke="#111" stroke-width="30" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="${P[pose]}" fill="none" stroke="${cor}" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="${pose.startsWith('corre') ? 12 : 0}" cy="-100" r="42" fill="${cor}" ${OL}/>
+  </g>`;
+}
+function celular(cx, cy, s = 1) {
+  return `<g transform="translate(${cx} ${cy}) scale(${s})">
+    <rect x="-85" y="-160" width="170" height="320" rx="28" fill="#222" ${OL}/>
+    <rect x="-68" y="-128" width="136" height="250" rx="8" fill="#3b82f6"/>
+    <rect x="-68" y="-128" width="136" height="80" fill="#f43f5e"/>
+    <polygon points="-15,-110 -15,-66 22,-88" fill="#fff"/>
+    <rect x="-55" y="-30" width="110" height="14" rx="7" fill="#fff" opacity=".8"/>
+    <rect x="-55" y="0" width="80" height="14" rx="7" fill="#fff" opacity=".6"/>
+    <rect x="-55" y="30" width="96" height="14" rx="7" fill="#fff" opacity=".6"/>
+    <circle cx="0" cy="140" r="9" fill="#555"/>
+  </g>`;
+}
+function presente(cx, cy, s = 1, tampaId = '') {
+  return `<g transform="translate(${cx} ${cy}) scale(${s})">
+    <rect x="-140" y="-40" width="280" height="200" rx="10" fill="#FF7A00" ${OL}/>
+    <rect x="-25" y="-40" width="50" height="200" fill="#111"/>
+    <g ${tampaId ? `id="${tampaId}"` : ''}>
+      <rect x="-165" y="-100" width="330" height="70" rx="10" fill="#FF9A3C" ${OL}/>
+      <rect x="-25" y="-100" width="50" height="70" fill="#111"/>
+      <path d="M0,-100 C-60,-170 -120,-120 -70,-100 Z M0,-100 C60,-170 120,-120 70,-100 Z" fill="#111"/>
+    </g>
+  </g>`;
+}
+function estrela(cx, cy, r, cor = '#FFD23F') {
+  const pts = []; for (let i = 0; i < 10; i++) { const a = -Math.PI / 2 + i * Math.PI / 5, rr = i % 2 ? r * 0.45 : r; pts.push((cx + rr * Math.cos(a)).toFixed(1) + ',' + (cy + rr * Math.sin(a)).toFixed(1)); }
+  return `<polygon points="${pts.join(' ')}" fill="${cor}" stroke="#111" stroke-width="6" stroke-linejoin="round"/>`;
+}
+function capim(x, base, h, cor, lean = 0) {
+  return `<path d="M${x - 14},${base} Q${x + lean * 0.5},${base - h * 0.6} ${x + lean},${base - h} Q${x + 6 + lean * 0.3},${base - h * 0.5} ${x + 14},${base} Z" fill="${cor}" stroke="#0b2a0b" stroke-width="4"/>`;
+}
+function salva(cx, cy, s = 1) {
+  return `<g transform="translate(${cx} ${cy}) scale(${s})">
+    <path d="M-110,-150 L110,-150 L110,170 L0,90 L-110,170 Z" fill="#fff" stroke="#111" stroke-width="16" stroke-linejoin="round"/>
+    <path d="M-60,-100 L60,-100" stroke="#FF7A00" stroke-width="22" stroke-linecap="round"/>
+  </g>`;
+}
+function luva(cx, cy, s = 1) {
+  return `<g transform="translate(${cx} ${cy}) scale(${s})">
+    <rect x="-150" y="-40" width="70" height="80" rx="10" fill="#fff" ${OL}/>
+    <path d="M-85,-70 C-85,-110 60,-115 85,-60 C110,-10 95,70 40,80 L-85,70 Z" fill="#E23D3D" ${OL}/>
+    <path d="M-40,-10 C-10,-40 30,-30 40,0" fill="none" stroke="#8f1d1d" stroke-width="9" stroke-linecap="round"/>
+  </g>`;
+}
+function proibido(cx, cy, r) {
+  return `<g><circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#111" stroke-width="56"/><circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#FF7A00" stroke-width="34"/>
+    <line x1="${cx - r * 0.7}" y1="${cy - r * 0.7}" x2="${cx + r * 0.7}" y2="${cy + r * 0.7}" stroke="#111" stroke-width="56" stroke-linecap="round"/>
+    <line x1="${cx - r * 0.7}" y1="${cy - r * 0.7}" x2="${cx + r * 0.7}" y2="${cy + r * 0.7}" stroke="#FF7A00" stroke-width="34" stroke-linecap="round"/></g>`;
+}
+function xis(cx, cy, r) {
+  return `<g><path d="M${cx - r},${cy - r} L${cx + r},${cy + r} M${cx + r},${cy - r} L${cx - r},${cy + r}" stroke="#111" stroke-width="50" stroke-linecap="round"/>
+    <path d="M${cx - r},${cy - r} L${cx + r},${cy + r} M${cx + r},${cy - r} L${cx - r},${cy + r}" stroke="#FF7A00" stroke-width="30" stroke-linecap="round"/></g>`;
+}
+function check(cx, cy, r) {
+  return `<g><circle cx="${cx}" cy="${cy}" r="${r}" fill="#FF7A00" stroke="#111" stroke-width="12"/>
+    <path d="M${cx - r * 0.45},${cy} L${cx - r * 0.1},${cy + r * 0.35} L${cx + r * 0.5},${cy - r * 0.35}" fill="none" stroke="#111" stroke-width="${r * 0.22}" stroke-linecap="round" stroke-linejoin="round"/></g>`;
+}
+
+// ---------- timeline ----------
+const tl = gsap.timeline({ paused: true });
+const cenas = $('#cenas');
+const DUR = 36.47;
+const POP = { scale: 0.2, opacity: 0, transformOrigin: '50% 50%' };
+function pop(target, t, extra = {}) {
+  tl.fromTo(target, { ...POP, ...extra.from }, { scale: 1, opacity: 1, duration: 0.28, ease: 'back.out(2)', ...extra.to }, t);
+}
+function cena(t0, t1) {
+  const c = g(cenas, { opacity: 0 });
+  tl.set(c, { opacity: 1 }, t0);
+  tl.fromTo(c, { y: 40 }, { y: 0, duration: 0.25, ease: 'power3.out' }, t0);
+  tl.set(c, { opacity: 0 }, t1);
+  return c;
+}
+function some(target, t) { tl.to(target, { opacity: 0, duration: 0.12 }, t); }
+
+// painel entra/sai (tela dividida)
+const painel = $('#painelWrap');
+tl.set(painel, { y: -960 }, 0);
+tl.to(painel, { y: 0, duration: 0.25, ease: 'power3.out' }, 2.0);
+tl.set('#costura', { opacity: 1 }, 2.0);
+tl.to(painel, { y: -960, duration: 0.22, ease: 'power3.in' }, 32.45);
+tl.set('#costura', { opacity: 0 }, 32.62);
+tl.to(painel, { y: 0, duration: 0.25, ease: 'power3.out' }, 34.4);
+tl.set('#costura', { opacity: 1 }, 34.4);
+tl.to('#brilho', { scale: 1.12, transformOrigin: '50% 50%', duration: 1.2, yoyo: true, repeat: 30, ease: 'sine.inOut' }, 0);
+
+// GANCHO 0–2s (rosto em tela cheia)
+tl.set('#sombraTopo', { opacity: 1 }, 0);
+const gA = apoio($('#gancho'), 540, 430, 'FORÇA DE VONTADE', 92);
+pop(gA, 0.05);
+const gB = impacto($('#gancho'), 540, 600, 'NÃO FUNCIONA', 150);
+pop(gB, 1.12);
+tl.to(gB, { x: '+=10', duration: 0.05, yoyo: true, repeat: 5 }, 1.42);
+some('#gancho', 1.95);
+tl.set('#sombraTopo', { opacity: 0 }, 2.0);
+
+// A — cérebro = trilha (2.0–4.0)
+{
+  const c = cena(2.0, 4.0);
+  faixa(c, 540, 330, 'SEU CÉREBRO');
+  const b = svgIn(c, cerebro(540, 690, 0.95));
+  const trilha = el('path', { d: 'M300,800 C380,720 360,640 470,640 S620,720 640,620 S700,520 790,540', fill: 'none', stroke: '#FF7A00', 'stroke-width': 20, 'stroke-linecap': 'round', 'stroke-dasharray': '30 22' }, c);
+  const m = el('path', { d: 'M300,800 C380,720 360,640 470,640 S620,720 640,620 S700,520 790,540', fill: 'none', stroke: '#F29BB0', 'stroke-width': 30, 'stroke-dasharray': '900', 'stroke-dashoffset': '0' }, c);
+  tl.fromTo(m, { attr: { 'stroke-dashoffset': 0 } }, { attr: { 'stroke-dashoffset': -900 }, duration: 1.0, ease: 'power1.inOut' }, 2.3);
+  const t2 = impacto(c, 540, 450, '= UMA TRILHA', 104);
+  pop(t2, 3.15);
+}
+
+// B — mato alto, difícil (4.0–6.2)
+{
+  const c = cena(4.0, 6.2);
+  apoio(c, 540, 330, 'NA PRIMEIRA VEZ...', 76);
+  let fundo = '', frente = '';
+  for (let i = 0; i < 26; i++) { const x = 20 + i * 42, h = 300 + ((i * 37) % 110); fundo += capim(x, 900, h, i % 2 ? '#2f7a33' : '#3c9440', (i % 3 - 1) * 30); }
+  for (let i = 0; i < 18; i++) { const x = 10 + i * 62, h = 220 + ((i * 53) % 120); frente += capim(x, 920, h, i % 2 ? '#4caf50' : '#3f9d44', (i % 3 - 1) * 40); }
+  const gf = svgIn(c, fundo);
+  svgIn(c, boneco(540, 730, 1.0, 'empurra'));
+  svgIn(c, `<g><path d="M630,610 q12,22 0,32 q-12,-10 0,-32Z" fill="#7fd3ff" stroke="#111" stroke-width="4"/><path d="M455,600 q12,22 0,32 q-12,-10 0,-32Z" fill="#7fd3ff" stroke="#111" stroke-width="4"/></g>`);
+  const gfr = svgIn(c, frente);
+  tl.to(gf, { x: 14, duration: 0.35, yoyo: true, repeat: 6, ease: 'sine.inOut' }, 4.0);
+  tl.to(gfr, { x: -18, duration: 0.3, yoyo: true, repeat: 7, ease: 'sine.inOut' }, 4.0);
+  const d = impacto(c, 540, 450, 'É DIFÍCIL', 120);
+  pop(d, 5.95);
+}
+
+// C — de tanto passar, vira trilha (6.2–10.0)
+{
+  const c = cena(6.2, 10.0);
+  svgIn(c, `<circle cx="540" cy="520" r="90" fill="#FF9A3C" opacity=".9"/><rect x="0" y="520" width="1080" height="440" fill="#2c6b30"/>`);
+  svgIn(c, `<polygon points="520,520 560,520 800,960 280,960" fill="url(#terra)" stroke="#111" stroke-width="6"/>`);
+  let mato = ''; for (let i = 0; i < 16; i++) { const t = i / 15, y = 540 + t * 380, half = 20 + t * 230; for (let k = -1; k <= 1; k++) mato += capim(540 + k * half * 0.6, y + 20, 70 + t * 160, k ? '#3c9440' : '#4caf50', k * 18); }
+  const gm = svgIn(c, mato);
+  let lados = ''; for (let i = 0; i < 12; i++) { const t = i / 11, y = 540 + t * 400; lados += capim(500 - t * 260 - 40, y + 10, 60 + t * 200, '#3c9440', -20) + capim(580 + t * 260 + 40, y + 10, 60 + t * 200, '#3c9440', 20); }
+  svgIn(c, lados);
+  // pegadas
+  const peg = g(c);
+  for (let i = 0; i < 8; i++) { const t = 1 - i / 8, y = 560 + t * 360, sx = 540 + (i % 2 ? 1 : -1) * (8 + t * 40), r = 6 + t * 16;
+    const p = el('ellipse', { cx: sx, cy: y, rx: r * 0.7, ry: r, fill: '#5a3a20', opacity: 0 }, peg); tl.to(p, { opacity: 1, duration: 0.05 }, 8.3 + i * 0.16); }
+  tl.to(gm, { opacity: 0, scaleY: 0.2, transformOrigin: '50% 100%', duration: 1.6, ease: 'power2.in' }, 6.4);
+  const cont = g(c);
+  const vezes = ['1ª VEZ', '10ª VEZ', '50ª VEZ', '100ª VEZ'];
+  vezes.forEach((v, i) => { const e = g(cont, { opacity: 0 }); el('rect', { x: 760, y: 560, width: 280, height: 90, rx: 45, fill: '#111' }, e); const tx = el('text', { x: 900, y: 625, 'text-anchor': 'middle', 'font-size': 52, fill: '#FF7A00' }, e); tx.textContent = v;
+    tl.set(e, { opacity: 1 }, 6.3 + i * 0.45); if (i < 3) tl.set(e, { opacity: 0 }, 6.3 + (i + 1) * 0.45); });
+  const t1 = apoio(c, 540, 330, 'DE TANTO PASSAR...', 76);
+  tl.set(t1, { opacity: 0 }, 7.95);
+  const t2 = impacto(c, 540, 340, 'VIRA AUTOMÁTICO', 108);
+  pop(t2, 7.98);
+  const t3 = apoio(c, 540, 450, 'AS PERNAS VÃO SOZINHAS', 58);
+  pop(t3, 9.1);
+}
+
+// D — isso é um hábito (10.0–12.0)
+{
+  const c = cena(10.0, 12.0);
+  apoio(c, 540, 330, 'ISSO É UM...', 80);
+  const path = 'M220,880 C220,760 860,780 860,680 S240,620 300,560 S700,520 760,470';
+  el('path', { d: path, fill: 'none', stroke: '#111', 'stroke-width': 70, 'stroke-linecap': 'round' }, c);
+  const tr = el('path', { d: path, fill: 'none', stroke: '#b9875a', 'stroke-width': 50, 'stroke-linecap': 'round', 'stroke-dasharray': 2200, 'stroke-dashoffset': 2200 }, c);
+  tl.to(tr, { attr: { 'stroke-dashoffset': 0 }, duration: 1.0, ease: 'power2.out' }, 10.05);
+  svgIn(c, boneco(760, 380, 0.55, 'corre1'));
+  const ca = carimbo(c, 540, 700, 'HÁBITO!', 150);
+  pop(ca, 11.3);
+}
+
+// E — três partes (12.0–14.0)
+{
+  const c = cena(12.0, 14.0);
+  apoio(c, 540, 330, 'TODO HÁBITO TEM', 72);
+  const n3 = impacto(c, 540, 450, '3 PARTES', 110); pop(n3, 13.1);
+  const nomes = ['GATILHO', 'AÇÃO', 'RECOMPENSA'];
+  [230, 540, 850].forEach((x, i) => {
+    const b = g(c);
+    el('circle', { cx: x, cy: 680, r: 120, fill: '#FF7A00', stroke: '#111', 'stroke-width': 12 }, b);
+    const t = el('text', { x, y: 725, 'text-anchor': 'middle', 'font-size': 130, fill: '#111' }, b); t.textContent = i + 1;
+    const r = el('text', { x, y: 870, 'text-anchor': 'middle', 'font-size': 46, fill: '#fff', stroke: '#111', 'stroke-width': 10 }, b); r.textContent = nomes[i];
+    pop(b, 13.2 + i * 0.18);
+  });
+}
+
+// F — gatilho (14.0–16.0)
+{
+  const c = cena(14.0, 16.0);
+  faixa(c, 540, 330, 'GATILHO', 84, '1');
+  svgIn(c, sino(540, 660, 1.05, 'sinoF'));
+  const ondas = svgIn(c, `<g fill="none" stroke="#FF7A00" stroke-width="14" stroke-linecap="round">
+    <path d="M300,560 q-40,90 0,180"/><path d="M240,520 q-60,130 0,260"/><path d="M780,560 q40,90 0,180"/><path d="M840,520 q60,130 0,260"/></g>`);
+  tl.fromTo('#sinoF .balanco', { rotation: -14, svgOrigin: '0 -150' }, { rotation: 14, svgOrigin: '0 -150', duration: 0.18, yoyo: true, repeat: 10, ease: 'sine.inOut' }, 14.0);
+  tl.fromTo(ondas, { opacity: 0.2 }, { opacity: 1, duration: 0.18, yoyo: true, repeat: 10 }, 14.0);
+  const l = apoio(c, 540, 450, 'LIGA O HÁBITO', 64); pop(l, 15.45);
+}
+
+// G — ação (16.0–17.98)
+{
+  const c = cena(16.0, 17.98);
+  faixa(c, 540, 330, 'AÇÃO', 84, '2');
+  const r1 = svgIn(c, boneco(560, 690, 1.25, 'corre1'));
+  const r2 = svgIn(c, boneco(560, 690, 1.25, 'corre2'));
+  svgIn(c, `<g stroke="#FF7A00" stroke-width="14" stroke-linecap="round"><line x1="250" y1="620" x2="380" y2="620"/><line x1="220" y1="690" x2="370" y2="690"/><line x1="260" y1="760" x2="380" y2="760"/></g>`);
+  for (let i = 0; i < 10; i++) { tl.set(r1, { opacity: i % 2 ? 0 : 1 }, 16.0 + i * 0.2); tl.set(r2, { opacity: i % 2 ? 1 : 0 }, 16.0 + i * 0.2); }
+  const l = apoio(c, 540, 450, 'VOCÊ FAZ', 64); pop(l, 16.45);
+}
+
+// H — recompensa (17.98–19.13)
+{
+  const c = cena(17.98, 19.13);
+  faixa(c, 540, 330, 'RECOMPENSA', 80, '3');
+  const est = g(c);
+  [[300, 560, 50], [780, 540, 60], [380, 470, 34], [700, 450, 40], [540, 430, 46]].forEach(([x, y, r], i) => { const s = svgIn(est, estrela(x, y, r)); pop(s, 18.35 + i * 0.06); });
+  svgIn(c, presente(540, 720, 1.1, 'tampaH'));
+  tl.to('#tampaH', { y: -45, rotation: -12, svgOrigin: '0 -60', duration: 0.25, ease: 'back.out(3)' }, 18.25);
+  const l = apoio(c, 540, 450, 'VOCÊ GANHA', 64); pop(l, 18.4);
+}
+
+// I — salva esse vídeo (19.13–22.2)
+{
+  const c = cena(19.13, 22.2);
+  const t = impacto(c, 540, 340, 'SALVA ESSE VÍDEO!', 100); pop(t, 19.13);
+  const s = svgIn(c, salva(470, 680, 1.15)); pop(s, 19.25);
+  tl.to(s, { y: -30, duration: 0.3, yoyo: true, repeat: 7, ease: 'sine.inOut' }, 19.6);
+  const seta = svgIn(c, `<g transform="translate(800 700) rotate(35)"><path d="M-90,0 L60,0 M20,-50 L80,0 L20,50" fill="none" stroke="#111" stroke-width="56" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M-90,0 L60,0 M20,-50 L80,0 L20,50" fill="none" stroke="#FF7A00" stroke-width="32" stroke-linecap="round" stroke-linejoin="round"/></g>`);
+  tl.fromTo(seta, { x: 0 }, { x: 30, duration: 0.25, yoyo: true, repeat: 10 }, 19.4);
+  const l = apoio(c, 540, 450, 'A PARTE QUE MUDA TUDO', 60); pop(l, 20.0);
+}
+
+// J — não lute contra o gatilho (22.2–25.15)
+{
+  const c = cena(22.2, 25.15);
+  const a = apoio(c, 540, 330, 'O SEGREDO...', 84);
+  tl.set(a, { opacity: 0 }, 23.95);
+  svgIn(c, sino(680, 670, 0.85, 'sinoJ'));
+  const lv = svgIn(c, luva(330, 650, 1.0));
+  tl.fromTo(lv, { x: -60 }, { x: 60, duration: 0.22, yoyo: true, repeat: 7, ease: 'power2.in' }, 22.3);
+  tl.fromTo('#sinoJ .balanco', { rotation: 0, svgOrigin: '0 -150' }, { rotation: 10, svgOrigin: '0 -150', duration: 0.22, yoyo: true, repeat: 7 }, 22.3);
+  const pr = svgIn(c, proibido(520, 660, 230)); pop(pr, 24.0);
+  const t = impacto(c, 540, 340, 'NÃO LUTE CONTRA', 96); pop(t, 24.0);
+  const t2 = apoio(c, 540, 450, 'O GATILHO', 70); pop(t2, 24.2);
+}
+
+// K — troque o caminho, mantenha o prêmio (25.15–27.13)
+{
+  const c = cena(25.15, 27.13);
+  const t = impacto(c, 540, 340, 'TROQUE O CAMINHO', 100); pop(t, 25.15);
+  const t2 = apoio(c, 540, 450, 'MANTENHA O PRÊMIO', 66); pop(t2, 26.4);
+  const cima = 'M230,700 C330,560 460,560 540,580 S760,600 850,700';
+  const baixo = 'M230,700 C330,840 460,850 540,830 S760,800 850,700';
+  el('path', { d: cima, fill: 'none', stroke: '#666', 'stroke-width': 18, 'stroke-dasharray': '24 20', 'stroke-linecap': 'round' }, c);
+  el('path', { d: baixo, fill: 'none', stroke: '#111', 'stroke-width': 34, 'stroke-linecap': 'round' }, c);
+  const nb = el('path', { d: baixo, fill: 'none', stroke: '#FF7A00', 'stroke-width': 20, 'stroke-linecap': 'round', 'stroke-dasharray': 900, 'stroke-dashoffset': 900 }, c);
+  tl.to(nb, { attr: { 'stroke-dashoffset': 0 }, duration: 0.8, ease: 'power2.out' }, 25.6);
+  svgIn(c, sino(170, 710, 0.45));
+  svgIn(c, presente(920, 720, 0.45));
+  svgIn(c, `<g opacity=".55">${celular(540, 575, 0.42)}</g>`);
+  const x1 = svgIn(c, xis(540, 575, 50)); pop(x1, 25.7);
+  const w = svgIn(c, boneco(540, 815, 0.5, 'corre1', '#FF7A00')); pop(w, 25.9);
+}
+
+// L — tédio? em vez do celular, caminhada (27.13–30.03)
+{
+  const c = cena(27.13, 30.03);
+  const t = impacto(c, 540, 350, 'TÉDIO?', 140, -6); pop(t, 27.13);
+  const cel = svgIn(c, celular(540, 680, 1.15)); pop(cel, 27.45);
+  const x = svgIn(c, xis(540, 680, 110)); pop(x, 28.55);
+  tl.to([cel, x], { x: -700, duration: 0.35, ease: 'power3.in' }, 28.95);
+  const w = svgIn(c, boneco(540, 690, 1.25, 'corre1', '#FF7A00'));
+  tl.fromTo(w, { x: 700, opacity: 1 }, { x: 0, duration: 0.35, ease: 'power3.out' }, 29.1);
+  tl.set(w, { opacity: 0 }, 0);
+  tl.set(w, { opacity: 1 }, 29.1);
+  const l = apoio(c, 540, 470, 'UMA CAMINHADA', 66); pop(l, 29.13);
+  tl.set(t, { opacity: 0 }, 29.1);
+}
+
+// M — o cérebro aceita (30.03–32.6)
+{
+  const c = cena(30.03, 32.6);
+  const t = impacto(c, 540, 340, 'O CÉREBRO ACEITA', 100); pop(t, 30.03);
+  const b = svgIn(c, cerebro(500, 700, 0.85) + `<g><path d="M410,690 q20,-25 40,0 M550,690 q20,-25 40,0" fill="none" stroke="#111" stroke-width="10" stroke-linecap="round"/><path d="M450,740 q50,40 100,0" fill="none" stroke="#111" stroke-width="10" stroke-linecap="round"/></g>`);
+  tl.to(b, { y: -12, duration: 0.3, yoyo: true, repeat: 7, ease: 'sine.inOut' }, 30.3);
+  const ck = svgIn(c, check(790, 560, 90)); pop(ck, 30.6);
+  const l = apoio(c, 540, 450, 'CONTINUA GANHANDO', 62); pop(l, 31.95);
+}
+
+// CONCLUSÃO 32.6–34.5 (rosto em tela cheia)
+tl.set('#sombraTopo', { opacity: 1 }, 32.6);
+const cA = apoio($('#conclusao'), 540, 430, 'NÃO É NA FORÇA...', 92);
+tl.set('#conclusao', { opacity: 0 }, 0);
+tl.set('#conclusao', { opacity: 1 }, 32.6);
+pop(cA, 32.62);
+some('#conclusao', 34.35);
+tl.set('#sombraTopo', { opacity: 0 }, 34.45);
+
+// O — abra uma trilha nova (34.5–fim)
+{
+  const c = cena(34.4, 99);
+  svgIn(c, `<rect x="0" y="0" width="1080" height="960" fill="url(#ceu)"/>`);
+  const sol = svgIn(c, `<circle cx="540" cy="600" r="120" fill="#FFD23F" stroke="#111" stroke-width="8"/>`);
+  tl.fromTo(sol, { y: 120 }, { y: 0, duration: 2.0, ease: 'power2.out' }, 34.4);
+  svgIn(c, `<rect x="0" y="600" width="1080" height="360" fill="#2c6b30"/><polygon points="525,600 555,600 820,960 260,960" fill="url(#terra)" stroke="#111" stroke-width="6"/>`);
+  let lados = ''; for (let i = 0; i < 10; i++) { const t = i / 9, y = 620 + t * 320; lados += capim(500 - t * 260 - 40, y + 10, 50 + t * 170, '#3c9440', -20) + capim(580 + t * 260 + 40, y + 10, 50 + t * 170, '#3c9440', 20); }
+  svgIn(c, lados);
+  svgIn(c, boneco(540, 800, 0.7, 'corre1', '#FF7A00'));
+  const t = impacto(c, 540, 330, 'ABRA UMA', 120); pop(t, 35.1);
+  const t2 = impacto(c, 540, 470, 'TRILHA NOVA!', 130); pop(t2, 35.9);
+}
+
+// ---------- legenda dinâmica ----------
+let LEG = [];
+const legTxt = $('#legTxt');
+function legenda(t) {
+  const grp = LEG.find(gr => t >= gr.start && t < gr.end);
+  legTxt.textContent = '';
+  if (!grp) return;
+  grp.words.forEach((w, i) => {
+    const ts = el('tspan', {}, legTxt);
+    ts.textContent = (i ? ' ' : '') + w.t;
+    const next = grp.words[i + 1];
+    const atual = t >= w.s && (!next || t < next.s);
+    ts.setAttribute('fill', atual ? '#FF7A00' : '#fff');
+    ts.setAttribute('fill-opacity', t < w.s ? 0.55 : 1);
+  });
+  const k = Math.min(1, (t - grp.start) / 0.12);
+  const s = 0.8 + 0.2 * (1 - Math.pow(1 - k, 3));
+  // rosto em tela cheia (gancho e conclusão): legenda desce para o peito, longe do queixo
+  const cheia = t < 2.05 || (t >= 32.55 && t < 34.45);
+  const dy = cheia ? 380 : 0;
+  legTxt.setAttribute('transform', `translate(0 ${dy}) translate(540 965) scale(${s}) translate(-540 -965)`);
+}
+
+window.__ready = (async () => {
+  await document.fonts.load('80px "Luckiest Guy"');
+  LEG = await (await fetch('legenda.json')).json();
+  window.__seek = t => { tl.seek(t, false); legenda(t); };
+  window.__seek(0);
+  return true;
+})();
+if (location.hash === '#preview') { document.body.classList.add('preview'); }
+</script>
+</body>
+</html>
