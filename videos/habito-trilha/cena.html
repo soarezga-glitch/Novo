@@ -47,6 +47,7 @@
 
   <!-- painel de cima (tela dividida) -->
   <g id="painelWrap" clip-path="url(#clipPainel)">
+    <rect x="-40" y="-40" width="1160" height="1040" fill="#0d0d0d"/>
     <g id="painel">
       <rect width="1080" height="960" fill="url(#bg)"/>
       <circle id="brilho" cx="540" cy="660" r="300" fill="#FF7A00" opacity="0.10"/>
@@ -55,6 +56,7 @@
     </g>
   </g>
   <rect id="costura" x="0" y="954" width="1080" height="12" fill="#FF7A00" opacity="0"/>
+  <rect id="flash" x="0" y="0" width="1080" height="1920" fill="#fff" opacity="0"/>
 
   <!-- legenda dinâmica -->
   <g id="legenda"><text id="legTxt" x="540" y="990" text-anchor="middle" font-size="76" stroke="#111" stroke-width="16"></text></g>
@@ -223,6 +225,8 @@ function cena(t0, t1) {
   tl.set(c, { opacity: 1 }, t0);
   tl.fromTo(c, { y: 40 }, { y: 0, duration: 0.25, ease: 'power3.out' }, t0);
   tl.set(c, { opacity: 0 }, t1);
+  // zoom lento (Ken Burns) enquanto a cena está na tela
+  tl.fromTo(c, { scale: 1 }, { scale: 1.07, svgOrigin: '540 640', duration: Math.min(t1, DUR) - t0, ease: 'none', immediateRender: false }, t0);
   return c;
 }
 function some(target, t) { tl.to(target, { opacity: 0, duration: 0.12 }, t); }
@@ -456,6 +460,13 @@ tl.set('#sombraTopo', { opacity: 0 }, 34.45);
   const t = impacto(c, 540, 330, 'ABRA UMA', 120); pop(t, 35.1);
   const t2 = impacto(c, 540, 470, 'TRILHA NOVA!', 130); pop(t2, 35.9);
 }
+
+// ---------- impactos: flash + tela tremendo ----------
+const IMPACTOS = [1.12, 5.95, 11.3, 22.2, 24.0, 27.13, 35.9];
+IMPACTOS.forEach(t => {
+  tl.fromTo('#flash', { opacity: 0.5 }, { opacity: 0, duration: 0.18, immediateRender: false }, t);
+  tl.to(['#painel', '#cheia'], { keyframes: [{ x: 16, y: -9, duration: 0.05 }, { x: -13, y: 7, duration: 0.05 }, { x: 9, y: -5, duration: 0.05 }, { x: -5, y: 3, duration: 0.05 }, { x: 0, y: 0, duration: 0.05 }] }, t);
+});
 
 // ---------- legenda dinâmica ----------
 let LEG = [];
