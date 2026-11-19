@@ -145,3 +145,16 @@ CENAS = [
     (667.22, 'ts_ora_so', 'final', 'out'),
 ]
 FIM = 671.5
+
+# Pinturas em pé: a tela horizontal mostra só uma faixa delas.
+# chave: (centro inicial, centro final) da faixa, em fração da altura da pintura (0 = topo).
+# Terceiro valor opcional: fração a cortar embaixo (legenda impressa).
+FOCO = {
+    'dore_cruz': (0.22, 0.34), 'dore_eden': (0.30, 0.58), 'dore_elias_pao': (0.40, 0.58, 0.10),
+    'dore_espias': (0.40, 0.52), 'dore_gado': (0.45, 0.55, 0.10), 'dore_praga': (0.32, 0.50),
+    'dore_serpente': (0.32, 0.46), 'ts_cruz_viu': (0.40, 0.60), 'ts_descida': (0.20, 0.40),
+    'ts_fariseu': (0.38, 0.50), 'ts_mana': (0.35, 0.50), 'ts_moises': (0.15, 0.22),
+    'ts_moises_monte': (0.20, 0.32), 'ts_ora_so': (0.13, 0.12), 'ts_rei_templo': (0.25, 0.40),
+    'ts_rocha': (0.30, 0.45), 'ts_sermao': (0.20, 0.35), 'ts_serpente': (0.18, 0.26),
+    'ts_sinagoga': (0.35, 0.50), 'ts_tabuas': (0.28, 0.40), 'ts_terra_longe': (0.20, 0.22),
+}

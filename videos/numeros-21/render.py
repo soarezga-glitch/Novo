@@ -10,7 +10,7 @@ import numpy as np, cv2
 
 AQUI = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, AQUI)
-from cenas import CENAS, FIM
+from cenas import CENAS, FIM, FOCO
 
 W, H, FPS = 1920, 1080, 30
 XF = 1.0            # duração do cruzamento entre imagens (s)
@@ -72,6 +72,9 @@ def imagem(chave):
         if img is None:
             raise SystemExit('falta arte/' + chave + '.jpg')
         img = recorta_bordas(img)
+        foco = FOCO.get(chave, ())
+        if len(foco) > 2:
+            img = img[:int(img.shape[0] * (1 - foco[2]))]
         img = tom_gravura(img) if chave.startswith(GRAVURA) else tom_pintura(img)
         if len(_cache) > 6:
             _cache.pop(next(iter(_cache)))
@@ -110,19 +113,17 @@ def quadro_imagem(chave, mov, p):
     img = imagem(chave)
     ih, iw = img.shape[:2]
     cobre = max(W / iw, H / ih)          # escala que cobre a tela
-    alta = iw / ih < 1.15                 # pintura em pé: mostra inteira sobre fundo desfocado
+    alta = iw / ih < 1.15                 # pintura em pé: a câmera passeia pela faixa que importa
     e = ease(p)
     if alta:
-        fundo, mask = fundo_desfocado(chave)
-        z0, z1 = {'out': (1.16, 1.02)}.get(mov, (1.02, 1.16))
-        s = H / ih * (z0 + (z1 - z0) * e)
-        dy = {'cima': (0.06, -0.06), 'baixo': (-0.06, 0.06)}.get(mov, (0.0, -0.05 if mov == 'in' else 0.0))
+        f0, f1 = FOCO.get(chave, (0.3, 0.45))[:2]
+        if mov == 'cima':
+            f0, f1 = f1, f0
+        z0, z1 = {'in': (1.0, 1.10), 'out': (1.10, 1.0)}.get(mov, (1.04, 1.04))
+        s = cobre * (z0 + (z1 - z0) * e)
+        vis_h, vis_w = H / s, W / s
+        cy = min(max(ih * (f0 + (f1 - f0) * e), vis_h / 2), ih - vis_h / 2)
         cx = iw / 2
-        cy = ih / 2 + ih * (dy[0] + (dy[1] - dy[0]) * e)
-        M = np.array([[s, 0, W / 2 - s * cx], [0, s, H / 2 - s * cy]], np.float32)
-        fg = cv2.warpAffine(img, M, (W, H), flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT)
-        a = cv2.warpAffine(mask, M, (W, H), flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT)[..., None]
-        return (fg * a + fundo * (1 - a)).astype(np.uint8)
     else:
         z0, z1 = {'in': (1.06, 1.20), 'out': (1.20, 1.06)}.get(mov, (1.14, 1.14))
         s = cobre * (z0 + (z1 - z0) * e)
