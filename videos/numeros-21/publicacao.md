@@ -46,3 +46,21 @@ serpente de bronze, números 21, joão 3:14, nicodemos, bíblia explicada, estud
 - Público: não é conteúdo para crianças
 - Tela final (últimos 15 s): vídeo de João 3 + botão de inscrição
 - Horário: à noite (19h–21h), combinando com o nome do canal
+
+---
+
+# Reel do Facebook (57 s, vertical)
+
+Arquivo: `render/reel-facebook-numeros21.mp4` (gerado por `cenas_curto.py`, fora do Git por ser grande)
+
+## Legenda do post
+Por que Jesus se comparou a uma serpente? 🐍✝️
+
+No deserto, o povo pediu: "tira as serpentes". E Deus não tirou. Ele mandou levantar uma serpente de bronze numa haste, e quem olhasse, vivia.
+
+Séculos depois, Jesus disse a Nicodemos: "como Moisés levantou a serpente no deserto, assim importa que o Filho do Homem seja levantado."
+
+Comente "eu olho para Jesus" 🙏
+O vídeo completo está no YouTube: Noites Bíblicas.
+
+#Bíblia #Jesus #FéCristã #ReflexãoBíblica #NoitesBíblicas

@@ -10,9 +10,14 @@ import numpy as np, cv2
 
 AQUI = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, AQUI)
-from cenas import CENAS, FIM, FOCO
+import importlib
+M = importlib.import_module(os.environ.get('CENAS', 'cenas'))   # CENAS=cenas_curto para o Reel vertical
+CENAS, FIM, FOCO = M.CENAS, M.FIM, getattr(M, 'FOCO', {})
+SOBREPOR = getattr(M, 'sobrepor', None)     # legenda/textos desenhados por cima (opcional)
+ABRE = getattr(M, 'ABRE', 1.5)              # duração do fade de entrada
 
-W, H, FPS = 1920, 1080, 30
+W, H = getattr(M, 'TAMANHO', (1920, 1080))
+FPS = 30
 XF = 1.0            # duração do cruzamento entre imagens (s)
 CARD_IN, CARD_OUT = 0.7, 0.6
 GRAVURA = ('dore_', 'wel_', 'luyken', 'lebrun', 'hoet', 'schenck', 'hayman', 'rubens', 'masson')
@@ -230,7 +235,7 @@ def quadro(t, tomadas, cards):
             soma += peso
         f /= max(soma, 1e-6)
     # entrada do vídeo e saída
-    abre = min(1.0, t / 1.5); fecha = min(1.0, (FIM - t) / 2.5)
+    abre = min(1.0, t / ABRE) if ABRE else 1.0; fecha = min(1.0, (FIM - t) / 2.5)
     # cartão ativo
     for c in cards:
         if c['ini'] - 0.01 <= t < c['fim'] + CARD_OUT:
@@ -247,6 +252,8 @@ def quadro(t, tomadas, cards):
     f = f * VINHETA * chama(t)
     f += poeira(t)
     f += GRAOS[int(t * FPS) % len(GRAOS)]
+    if SOBREPOR:
+        f = SOBREPOR(t, f)
     f *= min(abre, fecha)
     return np.clip(f, 0, 255).astype(np.uint8)
 
@@ -277,14 +284,18 @@ if __name__ == '__main__':
     elif modo == 'parte':  # parte INI FIM NOME  (para renderizar em paralelo)
         gerar(R(sys.argv[4]), float(sys.argv[2]), float(sys.argv[3]))
     elif modo == 'final':
-        partes = sorted(p for p in os.listdir(R('')) if p.startswith('parte_'))
+        pref = getattr(M, 'PREFIXO_PARTES', 'parte_')
+        partes = sorted(p for p in os.listdir(R('')) if p.startswith(pref))
         open(R('lista.txt'), 'w').write(''.join(f"file '{p}'\n" for p in partes))
         subprocess.run(['ffmpeg', '-y', '-v', 'error', '-f', 'concat', '-safe', '0', '-i', R('lista.txt'), '-c', 'copy', R('video.mp4')], check=True)
+        narr = getattr(M, 'NARRACAO', os.path.join(AQUI, 'audio', 'narracao.mp3'))
+        vol_m = getattr(M, 'VOLUME_MUSICA', 0.16)
+        nome = getattr(M, 'SAIDA', 'numeros21-final.mp4')
         subprocess.run(['ffmpeg', '-y', '-v', 'error', '-i', R('video.mp4'),
-                        '-i', os.path.join(AQUI, 'audio', 'narracao.mp3'), '-i', os.path.join(AQUI, 'audio', 'musica.wav'),
+                        '-i', narr, '-i', os.path.join(AQUI, 'audio', 'musica.wav'),
                         '-filter_complex',
-                        '[1:a]aresample=48000,volume=1.0[v];[2:a]aresample=48000,volume=0.16[m];'
-                        '[v][m]amix=inputs=2:duration=first:normalize=0,alimiter=limit=0.95[a]',
+                        f'[1:a]aresample=48000,apad,volume=1.0[v];[2:a]aresample=48000,volume={vol_m}[m];'
+                        '[v][m]amix=inputs=2:duration=shortest:normalize=0,alimiter=limit=0.95[a]',
                         '-map', '0:v', '-map', '[a]', '-c:v', 'copy', '-c:a', 'aac', '-b:a', '192k',
-                        '-t', str(FIM), '-movflags', '+faststart', R('numeros21-final.mp4')], check=True)
-        print('ok', R('numeros21-final.mp4'))
+                        '-t', str(FIM), '-movflags', '+faststart', R(nome)], check=True)
+        print('ok', R(nome))
