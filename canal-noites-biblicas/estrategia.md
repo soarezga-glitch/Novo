@@ -17,6 +17,23 @@ Canal: youtube.com/@noitesbiblicassono · dados do YouTube Studio em 19/11/2026 
 | Se Você Entender 1 Coríntios 13 | 163 |
 | Se Você Entender o Salmo 91 | 26 (em 25 dias) |
 
+## Todos os vídeos (views totais, página pública em 19/11/2026)
+| Vídeo | Views | Quando |
+|---|---|---|
+| Se Você Entender João 3, Entende a Bíblia Toda | 5,6 mil | há 1 mês |
+| Se Você Entender Levítico 16, Entende Jesus | 3,5 mil | há 4 sem. |
+| Se Você Entender MELQUISEDEQUE, Entende Jesus | 1,3 mil | há 1 mês |
+| Se Você Entender Eclesiastes, Você Entende a Vida | 815 | há 4 sem. |
+| Como Era a Vida na Época de Jesus? (para dormir) | 579 | há 1 mês |
+| Parábolas de Jesus para Dormir | 267 | há 1 mês |
+| Um Dia Inteiro com Jesus na Galileia (para dormir) | 171 | há 1 mês |
+| Se Você Entender 1 Coríntios 13 | 163 | há 3 sem. |
+| O Chocante Aviso de Jesus: Você Está Perdendo Tempo… | 69 | há 1 mês |
+| Se Você Entender o Salmo 91, Nunca Mais Vai Ter Medo | 26 | há 3 sem. |
+
+Os vídeos "para dormir" (formato original do canal) renderam bem menos que a série "Se Você Entender…".
+A série virou o carro-chefe; "para dormir" fica como formato secundário, para horas assistidas.
+
 ## O que funciona
 - Tema "mistério escondido / o Antigo Testamento apontando para Jesus" (Levítico 16 = bode expiatório; João 3 = nascer de novo + serpente).
 - Thumbnail escura, dramática, 1 elemento forte (cordeiro + fogo; cruz). As amarelas de pergaminho rendem menos.
