@@ -1,0 +1,374 @@
+# Roteiro: Se Você Entender a Serpente de Bronze, Entende a Cruz
+
+- **Canal:** Noites Bíblicas · série "Se Você Entender..." · 16:9 · vídeo longo
+- **Base:** Números 21:4-9 · João 3:1-15 · 2 Reis 18:4
+- **Duração:** ~15 min (cerca de 2.000 palavras em ritmo calmo)
+- **Tom:** calmo, noturno, com mistério revelado aos poucos. Cada capítulo deixa uma pergunta para o próximo.
+- **Texto bíblico:** Almeida Revista e Corrigida (ARC)
+- **Ligação com o canal:** continuação direta do vídeo de João 3 (o mais visto)
+- **Narração:** o texto limpo, pronto para o gerador de voz, está em `se-voce-entender-numeros-21-narracao.txt`
+
+## Títulos (escolha 1)
+
+1. **Se Você Entender a Serpente de Bronze, Entende a Cruz** *(recomendado)*
+2. Se Você Entender Números 21, Entende João 3:16
+3. Por Que Jesus Se Comparou a Uma Serpente?
+
+## Thumbnail
+
+Fundo noturno escuro. No centro, a **serpente de bronze numa haste**, brilhando dourada como fogo.
+Embaixo, silhuetas de pessoas olhando para cima.
+Texto: **POR QUE UMA SERPENTE?**
+
+## Visuais (todos gratuitos)
+
+- Pinturas em domínio público: James Tissot (aquarelas), Gustave Doré (gravuras, com tom sépia/dourado), mestres clássicos
+- Vídeos reais do Pexels: deserto, noite estrelada, fogo, tochas, ovelhas
+- Feitos em código: versículos no pergaminho, mapa animado, títulos de capítulo
+
+`[VISUAL: ...]` indica o que aparece na tela naquele trecho.
+
+---
+
+## 0:00 · Gancho
+
+[VISUAL: Jerusalém à noite, lamparinas acesas · Tissot, "Nicodemos visita Jesus"]
+
+Era noite em Jerusalém.
+Um homem importante subiu as escadas de uma casa, escondido, para conversar com Jesus.
+O nome dele era Nicodemos.
+
+Ele queria entender como alguém pode nascer de novo.
+E Jesus respondeu com a comparação mais estranha de toda a Bíblia.
+
+[VISUAL: versículo no pergaminho · João 3:14]
+
+"E, como Moisés levantou a serpente no deserto, assim importa que o Filho do Homem seja levantado."
+
+Uma serpente.
+O mesmo animal que enganou Eva no jardim.
+O símbolo do mal, desde a primeira página da Bíblia.
+E Jesus olha para Nicodemos e diz: "É assim que eu vou salvar o mundo."
+
+Por quê?
+
+Hoje a gente vai voltar mil e quinhentos anos antes daquela noite, para o meio do deserto.
+Você vai descobrir por que Deus mandou fazer uma serpente.
+Por que bastava olhar para ela.
+O que aconteceu com essa serpente centenas de anos depois.
+E o que Nicodemos fez quando finalmente entendeu.
+
+Aqui no Noites Bíblicas, a gente abre a Bíblia devagar.
+Então se ajeite, respire fundo, e vem comigo.
+
+## 1:30 · Capítulo 1 · Quase chegando
+
+[VISUAL: deserto ao entardecer (Pexels) · mapa animado: monte Hor, a volta por Edom]
+
+O povo de Israel estava no deserto havia quase quarenta anos.
+Uma geração inteira tinha nascido ali, entre tendas e areia.
+
+E agora eles estavam perto.
+A terra prometida estava logo ali.
+
+Só que, no caminho, havia um reino chamado Edom.
+Moisés pediu licença para passar pelas terras deles.
+Edom disse não.
+
+Então o povo teve que dar a volta.
+Voltar em direção ao mar Vermelho.
+Andar para trás, quando tudo o que eles queriam era andar para frente.
+
+[VISUAL: versículo · Números 21:4]
+
+A Bíblia diz assim:
+"Porém a alma do povo angustiou-se neste caminho."
+
+Você já sentiu isso?
+Quando você está quase chegando, e a vida manda você dar a volta?
+Esse é o lugar mais perigoso.
+Não é o começo da caminhada. É o desvio perto do fim.
+
+E foi ali, no desvio, que o povo abriu a boca.
+
+## 3:00 · Capítulo 2 · O pão que eles desprezaram
+
+[VISUAL: Doré, o povo murmurando no deserto · tons sépia]
+
+"Por que nos fizestes subir do Egito, para que morrêssemos neste deserto? Pois aqui nem pão nem água há; e a nossa alma tem fastio deste pão tão vil."
+
+Repare numa coisa.
+Eles dizem que não tem pão.
+E, na mesma frase, reclamam do pão.
+
+Que pão era esse?
+Era o maná.
+O pão que caía do céu todas as manhãs, havia quarenta anos.
+Nem um dia sequer tinha faltado.
+
+E eles chamaram esse pão de vil.
+De desprezível.
+
+[VISUAL: orvalho na areia ao amanhecer (Pexels) · luz dourada]
+
+Guarde esse detalhe, porque ele volta.
+Muitos séculos depois, Jesus ia dizer: "Eu sou o pão da vida."
+O pão que desceu do céu.
+E, mais uma vez, muita gente ia olhar para Ele e não dar valor.
+
+Naquela noite no deserto, o povo desprezou o pão do céu.
+E o que veio em seguida foi terrível.
+
+## 4:30 · Capítulo 3 · Serpentes ardentes
+
+[VISUAL: Doré, "A Serpente de Bronze" (detalhe das pessoas caídas) · fogo e sombras]
+
+"Então o Senhor mandou entre o povo serpentes ardentes, que morderam o povo; e morreu muito povo de Israel."
+
+Ardentes.
+Talvez por causa da queimação que o veneno causava.
+Talvez pelo brilho da pele delas na areia.
+
+E aqui existe um detalhe que pouca gente percebe.
+A palavra hebraica para "ardente" é *saraf*.
+É a mesma palavra que, no livro de Isaías, aparece para os serafins.
+Os seres de fogo que ficam diante do trono de Deus.
+
+[VISUAL: tochas na noite, gritos silenciosos · tendas]
+
+Imagine o acampamento naquela noite.
+Gente gritando entre as tendas.
+Mães procurando os filhos no escuro.
+Homens fortes caindo na areia.
+
+E aí, pela primeira vez naquele caminho, o povo parou de reclamar.
+Eles foram até Moisés e disseram:
+
+[VISUAL: versículo · Números 21:7]
+
+"Havemos pecado, porquanto temos falado contra o Senhor e contra ti; ora ao Senhor que tire de nós estas serpentes."
+
+E Moisés orou.
+
+Agora preste atenção.
+O povo pediu uma coisa muito clara: "Tira as serpentes."
+E Deus não tirou.
+
+Ele fez uma coisa muito mais estranha.
+
+## 6:00 · Capítulo 4 · A ordem mais estranha
+
+[VISUAL: Moisés de pé no acampamento, olhando o céu · pintura clássica]
+
+"E disse o Senhor a Moisés: Faze-te uma serpente ardente e põe-na sobre uma haste; e será que viverá todo mordido que olhar para ela."
+
+Pense no Moisés ouvindo isso.
+O povo está morrendo de picada de serpente.
+E Deus manda fazer... uma serpente.
+
+[VISUAL: fogo de forja, metal derretido brilhando (Pexels)]
+
+Moisés obedeceu.
+A Bíblia diz que ele fez uma serpente de metal.
+No hebraico, esse metal é o *nechoshet*, o bronze, o cobre.
+E aqui há um jogo de palavras bonito: serpente, em hebraico, é *nachash*.
+*Nachash* de *nechoshet*.
+Uma serpente de bronze, brilhando como fogo ao sol.
+
+Ele colocou a serpente no alto de uma haste, no meio do acampamento.
+Bem alto. Para que todo mundo pudesse ver.
+
+[VISUAL: Doré, "A Serpente de Bronze" (quadro inteiro) · zoom lento até a serpente]
+
+"E era que, mordendo alguma serpente a alguém, olhava para a serpente de metal e ficava vivo."
+
+Mas por que olhar?
+Por que não um remédio?
+Um sacrifício?
+Uma lista de coisas para fazer?
+
+## 7:30 · Capítulo 5 · Bastava olhar
+
+[VISUAL: rosto de um homem caído na areia, levantando os olhos · luz vindo de cima]
+
+Imagine um homem mordido, caído no chão.
+O veneno já subindo pelo braço.
+Ele não consegue andar até Moisés.
+Não consegue oferecer um cordeiro.
+Não consegue fazer nada.
+
+Só uma coisa ainda está ao alcance dele.
+Levantar os olhos.
+
+E é isso.
+Deus escolheu uma cura que até o mais fraco consegue alcançar.
+Não depende da força do braço.
+Depende para onde você olha.
+
+[VISUAL: versículo · Isaías 45:22]
+
+Séculos depois, o profeta Isaías escreveu:
+"Olhai para mim e sereis salvos, vós, todos os termos da terra; porque eu sou Deus, e não há outro."
+
+Talvez alguém no acampamento tenha achado aquilo bobo.
+"Olhar para uma cobra de metal? Isso não cura ninguém."
+E ficou deitado, olhando para a própria ferida.
+
+Esse é o perigo, até hoje.
+A gente olha para a ferida.
+Para o tamanho do problema.
+Para o veneno subindo.
+E não levanta os olhos.
+
+Mas ainda falta a pergunta principal.
+Se a cura era olhar para cima...
+por que tinha que ser justamente uma serpente?
+
+## 9:00 · Capítulo 6 · Por que uma serpente?
+
+[VISUAL: Jardim do Éden, a serpente na árvore · pintura clássica, escura]
+
+Desde o Éden, a serpente representa o problema.
+O pecado. A queda. O veneno que entrou na humanidade.
+
+E Deus pega exatamente o símbolo do problema...
+e levanta numa haste, feito de bronze.
+
+[VISUAL: altar de bronze do tabernáculo · ilustração antiga]
+
+Repare no bronze.
+No tabernáculo, o altar onde os sacrifícios eram queimados era de bronze.
+O bronze era o metal do lugar do juízo, do lugar onde o pecado era tratado.
+
+Uma serpente, a imagem do pecado.
+Feita de bronze, o metal do juízo.
+Levantada no alto, para todos verem.
+
+[VISUAL: versículo · 2 Coríntios 5:21]
+
+Agora escute o que o apóstolo Paulo escreveu sobre Jesus:
+"Àquele que não conheceu pecado, o fez pecado por nós; para que, nele, fôssemos feitos justiça de Deus."
+
+E em Gálatas:
+
+[VISUAL: versículo · Gálatas 3:13]
+
+"Cristo nos resgatou da maldição da lei, fazendo-se maldição por nós, porque está escrito: Maldito todo aquele que for pendurado no madeiro."
+
+Entendeu?
+Na cruz, Jesus não parecia um herói.
+Ele tomou o lugar do problema.
+Carregou a forma da maldição.
+Foi levantado num madeiro, como a serpente na haste.
+
+[VISUAL: Tissot, Jesus na cruz visto de longe · céu escuro]
+
+E Ele mesmo disse, em João 12:
+"E eu, quando for levantado da terra, todos atrairei a mim."
+E João explica: "E dizia isso significando de que morte havia de morrer."
+
+Levantado.
+Toda vez que Jesus fala em ser levantado, Ele está falando da cruz.
+
+É por isso que, naquela noite, Jesus falou da serpente para Nicodemos.
+Mas o mais bonito dessa história ainda não aconteceu.
+
+## 11:00 · Capítulo 7 · O homem que veio de noite
+
+[VISUAL: Tissot, Nicodemos · lamparina]
+
+Volte para aquela noite em Jerusalém.
+Nicodemos ouviu tudo.
+A serpente. O deserto. O Filho do Homem levantado.
+
+E logo depois vem o versículo mais conhecido da Bíblia:
+
+[VISUAL: versículo · João 3:16, letra por letra]
+
+"Porque Deus amou o mundo de tal maneira que deu o seu Filho unigênito, para que todo aquele que nele crê não pereça, mas tenha a vida eterna."
+
+Nicodemos foi embora naquela noite sem dizer nada.
+A Bíblia não conta o que ele pensou.
+
+Passaram-se uns três anos.
+
+[VISUAL: Tissot, a descida da cruz · luz do fim de tarde]
+
+Jesus foi preso.
+Foi julgado.
+E foi levantado numa cruz, do lado de fora de Jerusalém.
+
+Os discípulos, quase todos, fugiram.
+E aí aparece, no fim do evangelho de João, um homem que ninguém esperava.
+
+[VISUAL: versículo · João 19:39]
+
+"E foi também Nicodemos (aquele que, anteriormente, se dirigira de noite a Jesus), levando quase cem arráteis de um composto de mirra e aloés."
+
+O homem que veio de noite, escondido...
+agora estava ali, à luz do dia, na frente de todo mundo.
+Diante do Filho do Homem levantado.
+
+Ele viu a serpente na haste.
+E entendeu.
+
+## 13:00 · Capítulo 8 · O que aconteceu com a serpente
+
+[VISUAL: templo antigo, fumaça de incenso · tons escuros]
+
+E a serpente de bronze de Moisés?
+O que aconteceu com ela?
+
+O povo guardou.
+Levou para a terra prometida.
+E ela ficou lá por mais de quinhentos anos.
+
+Até que um rei chamado Ezequias descobriu uma coisa triste.
+
+[VISUAL: versículo · 2 Reis 18:4]
+
+"Fez em pedaços a serpente de metal que Moisés fizera, porquanto até àquele dia os filhos de Israel lhe queimavam incenso; e lhe chamaram Neustã."
+
+Neustã.
+Quer dizer algo como "um pedaço de bronze".
+
+O povo começou a adorar a serpente.
+Esqueceram que quem curava nunca foi o metal.
+Era Deus, que cumpria a palavra d'Ele.
+
+Isso também é um aviso para nós.
+O sinal aponta para Deus. Ele não toma o lugar de Deus.
+Nem a igreja, nem o objeto, nem a tradição.
+Tudo isso é a haste.
+Quem salva é Aquele que foi levantado.
+
+## 14:00 · Encerramento · Olhe para cima
+
+[VISUAL: céu estrelado sobre o deserto (Pexels) · movimento lento]
+
+Lembra que o povo pediu para Deus tirar as serpentes?
+E Ele não tirou?
+
+Talvez você também tenha pedido para Deus tirar alguma coisa.
+Uma dor. Uma preocupação. Uma culpa que pica de noite, quando a casa fica em silêncio.
+
+Às vezes Deus tira.
+Mas muitas vezes Ele faz o que fez no deserto.
+Levanta uma cura no meio do caminho.
+E diz: "Olhe para cá."
+
+Não para a ferida.
+Não para o tamanho do deserto.
+Para Ele.
+
+[VISUAL: Jerusalém à noite, uma lamparina acesa]
+
+Hoje, antes de dormir, faça só isso.
+Levante os olhos.
+
+Se esse vídeo falou com você, deixe um "eu olho para Jesus" nos comentários.
+Se inscreva aqui no Noites Bíblicas.
+E, se você ainda não viu, assista ao vídeo de João 3, que aparece aqui na tela.
+
+Fica em paz.
+E até a próxima noite.
