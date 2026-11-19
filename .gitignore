@@ -17,3 +17,4 @@ canal-receitas/videos/
 videos/numeros-21/render/
 videos/numeros-21/audio/musica.wav
 __pycache__/
+videos/numeros-21/*.mp4

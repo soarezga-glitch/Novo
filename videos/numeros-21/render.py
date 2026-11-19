@@ -25,7 +25,7 @@ def tom_gravura(img):
     g = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY).astype(np.float32) / 255
     g = np.clip((g - 0.04) / 0.92, 0, 1) ** 1.1
     pts = np.array([0, 0.45, 1.0])
-    cores = np.array([[6, 9, 14], [52, 98, 150], [180, 222, 245]], np.float32)  # BGR
+    cores = np.array([[5, 7, 11], [40, 78, 125], [165, 208, 238]], np.float32)  # BGR
     out = np.stack([np.interp(g, pts, cores[:, c]) for c in range(3)], -1)
     return out.astype(np.uint8)
 
@@ -39,12 +39,39 @@ def tom_pintura(img):
     return np.clip(f, 0, 255).astype(np.uint8)
 
 
+def maior_trecho(mask):
+    melhor, ini, a = (0, 0, len(mask)), None, 0
+    for i, v in enumerate(list(mask) + [False]):
+        if v and ini is None:
+            ini = i
+        elif not v and ini is not None:
+            if i - ini > melhor[0]:
+                melhor = (i - ini, ini, i)
+            ini = None
+    return melhor[1], melhor[2]
+
+
+def recorta_bordas(img):
+    """tira moldura branca, legenda impressa e marca d'água das bordas"""
+    claro = (img.min(-1) > 215)
+    linhas = (~claro).mean(1) > 0.55
+    y0, y1 = maior_trecho(linhas)
+    colunas = (~claro[y0:y1]).mean(0) > 0.55
+    x0, x1 = maior_trecho(colunas)
+    h, w = y1 - y0, x1 - x0
+    if h < img.shape[0] * 0.4 or w < img.shape[1] * 0.4:
+        return img
+    my, mx = int(h * 0.015), int(w * 0.015)
+    return img[y0 + my:y1 - my, x0 + mx:x1 - mx]
+
+
 _cache = {}
 def imagem(chave):
     if chave not in _cache:
         img = cv2.imread(os.path.join(AQUI, 'arte', chave + '.jpg'), cv2.IMREAD_COLOR)
         if img is None:
             raise SystemExit('falta arte/' + chave + '.jpg')
+        img = recorta_bordas(img)
         img = tom_gravura(img) if chave.startswith(GRAVURA) else tom_pintura(img)
         if len(_cache) > 6:
             _cache.pop(next(iter(_cache)))
@@ -57,22 +84,45 @@ def ease(x):
     return 0.5 - 0.5 * math.cos(math.pi * x)
 
 
+_fundos = {}
+def fundo_desfocado(chave):
+    """fundo para pintura em pé: a própria pintura ampliada, desfocada e escura + máscara de borda suave"""
+    if chave not in _fundos:
+        img = imagem(chave); ih, iw = img.shape[:2]
+        s = max(W / iw, H / ih) * 1.1
+        f = cv2.resize(img, (int(iw * s), int(ih * s)))
+        y0, x0 = (f.shape[0] - H) // 2, (f.shape[1] - W) // 2
+        f = f[y0:y0 + H, x0:x0 + W]
+        f = cv2.GaussianBlur(cv2.resize(f, (W // 8, H // 8)), (0, 0), 3)
+        f = cv2.resize(f, (W, H)).astype(np.float32) * 0.38
+        m = np.zeros((ih, iw), np.float32)
+        b = max(4, int(min(ih, iw) * 0.012))
+        m[b:-b, b:-b] = 1
+        m = cv2.GaussianBlur(m, (0, 0), b)
+        if len(_fundos) > 4:
+            _fundos.pop(next(iter(_fundos)))
+        _fundos[chave] = (f, m)
+    return _fundos[chave]
+
+
 def quadro_imagem(chave, mov, p):
     """recorte animado da pintura no progresso p (0..1)"""
     img = imagem(chave)
     ih, iw = img.shape[:2]
     cobre = max(W / iw, H / ih)          # escala que cobre a tela
-    alta = iw / ih < 0.78                 # pintura em pé: passeia na vertical
+    alta = iw / ih < 1.15                 # pintura em pé: mostra inteira sobre fundo desfocado
     e = ease(p)
     if alta:
-        s = cobre * 1.04
-        vis_h = H / s                     # altura da pintura visível
-        sobra = ih - vis_h
-        a, b = (0.05, 0.55) if mov != 'baixo' else (0.55, 0.05)
-        if mov in ('in', 'out', 'esq', 'dir'):
-            a, b = 0.12, 0.42
-        cy = vis_h / 2 + sobra * (a + (b - a) * e)
+        fundo, mask = fundo_desfocado(chave)
+        z0, z1 = {'out': (1.16, 1.02)}.get(mov, (1.02, 1.16))
+        s = H / ih * (z0 + (z1 - z0) * e)
+        dy = {'cima': (0.06, -0.06), 'baixo': (-0.06, 0.06)}.get(mov, (0.0, -0.05 if mov == 'in' else 0.0))
         cx = iw / 2
+        cy = ih / 2 + ih * (dy[0] + (dy[1] - dy[0]) * e)
+        M = np.array([[s, 0, W / 2 - s * cx], [0, s, H / 2 - s * cy]], np.float32)
+        fg = cv2.warpAffine(img, M, (W, H), flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT)
+        a = cv2.warpAffine(mask, M, (W, H), flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT)[..., None]
+        return (fg * a + fundo * (1 - a)).astype(np.uint8)
     else:
         z0, z1 = {'in': (1.06, 1.20), 'out': (1.20, 1.06)}.get(mov, (1.14, 1.14))
         s = cobre * (z0 + (z1 - z0) * e)
