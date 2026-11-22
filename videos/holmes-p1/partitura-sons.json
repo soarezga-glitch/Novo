@@ -1,6 +1,7 @@
 {
   "duracao": 60.9,
   "voz": "fala_master.wav",
+  "_obs": "fala_master.wav = fala.mp3 masterizada em -10 LUFS (ver skill sons-de-ambiente); não versionada",
   "biblioteca": ["../../.claude/skills/sons-de-ambiente/biblioteca/hoje", "../../.claude/skills/sons-de-ambiente/biblioteca/roma", "../../.claude/skills/sons-de-ambiente/biblioteca/apocalipse", "../../.claude/skills/sons-de-ambiente/biblioteca/coliseu", "../../.claude/skills/sons-de-ambiente/biblioteca/ui"],
   "ambientes": [
     { "som": "amb_tensao_grave", "de": 0, "ate": 60.9, "db": -24, "fade": 1.0 },
