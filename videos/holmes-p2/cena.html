@@ -1,0 +1,690 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Holmes Parte 2</title>
+<!--
+  Vídeo vertical (1080x1920) — página de crimes reais com bonecos de palito.
+  Caso 1: H. H. Holmes, o "Castelo" de Chicago (1893) — PARTE 2 (narração em fala.mp3, 62,2 s).
+  Identidade da página: noite azul-escura, luz de lampião âmbar, vermelho-sangue de destaque,
+  papel de ficha policial; fontes Anton (títulos/legenda) e Special Elite (máquina de escrever).
+  Motores: boneco.js (movimento-humano + figurinos anos 1890), legenda.js (legenda-dinamica).
+-->
+<style>
+  html, body { margin: 0; background: #000; overflow: hidden; }
+  #stage { width: 1080px; height: 1920px; display: block; }
+  @font-face { font-family: 'Anton'; src: url(fontes/Anton-Regular.ttf); }
+  @font-face { font-family: 'Special Elite'; src: url(fontes/SpecialElite-Regular.ttf); }
+  text { font-family: 'Anton', 'DejaVu Sans', sans-serif; }
+  .maq { font-family: 'Special Elite', 'Courier 10 Pitch', monospace; }
+</style>
+<script src="gsap.min.js"></script>
+<script src="boneco.js"></script>
+<script src="legenda.js"></script>
+<script src="legenda-dados.js"></script>
+</head>
+<body>
+<svg id="stage" viewBox="0 0 1080 1920" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="outline" x="-20%" y="-20%" width="140%" height="140%">
+      <feMorphology in="SourceAlpha" operator="dilate" radius="5" result="d"/>
+      <feFlood flood-color="#1D1D2B"/>
+      <feComposite in2="d" operator="in" result="o"/>
+      <feMerge><feMergeNode in="o"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="grao" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="3" result="n"/>
+      <feColorMatrix type="saturate" values="0"/>
+      <feComponentTransfer><feFuncA type="table" tableValues="0 .09"/></feComponentTransfer>
+    </filter>
+    <filter id="borra"><feGaussianBlur stdDeviation="14"/></filter>
+    <filter id="borra2"><feGaussianBlur stdDeviation="4"/></filter>
+    <radialGradient id="vinheta" cx=".5" cy=".5" r=".75"><stop offset=".55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".78"/></radialGradient>
+    <radialGradient id="brilho" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#FFD58A" stop-opacity=".75"/><stop offset=".4" stop-color="#F2A54A" stop-opacity=".25"/><stop offset="1" stop-color="#F2A54A" stop-opacity="0"/></radialGradient>
+    <radialGradient id="brilhoVerm" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#FF2A2A" stop-opacity=".6"/><stop offset="1" stop-color="#B3121F" stop-opacity="0"/></radialGradient>
+    <radialGradient id="lua" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#E8EEF8" stop-opacity=".55"/><stop offset="1" stop-color="#8FA3C8" stop-opacity="0"/></radialGradient>
+    <linearGradient id="ceuNoite" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#070A14"/><stop offset=".6" stop-color="#162036"/><stop offset="1" stop-color="#2A3550"/></linearGradient>
+    <linearGradient id="nevoa" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8EA0C0" stop-opacity="0"/><stop offset="1" stop-color="#8EA0C0" stop-opacity=".35"/></linearGradient>
+    <linearGradient id="escuroBaixo" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".6"/></linearGradient>
+    <linearGradient id="capaFundo" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#000" stop-opacity=".75"/><stop offset=".7" stop-color="#000" stop-opacity=".5"/><stop offset="1" stop-color="#000" stop-opacity="0"/></linearGradient>
+    <pattern id="tijolo" width="64" height="32" patternUnits="userSpaceOnUse">
+      <rect width="64" height="32" fill="#6E3A2E"/>
+      <rect x="1" y="1" width="62" height="14" fill="#7C4536"/><rect x="-31" y="17" width="62" height="14" fill="#74402F"/><rect x="33" y="17" width="62" height="14" fill="#80493A"/>
+      <path d="M0 16H64M0 0H64M32 16V32M0 0V16M64 0V16" stroke="#3E2018" stroke-width="2"/>
+    </pattern>
+    <pattern id="pedra" width="120" height="70" patternUnits="userSpaceOnUse">
+      <rect width="120" height="70" fill="#4A4C56"/>
+      <rect x="2" y="2" width="70" height="31" rx="4" fill="#565A66"/><rect x="74" y="2" width="44" height="31" rx="4" fill="#50535E"/>
+      <rect x="2" y="37" width="40" height="31" rx="4" fill="#5C606C"/><rect x="44" y="37" width="74" height="31" rx="4" fill="#52555F"/>
+    </pattern>
+    <pattern id="papelParede" width="80" height="110" patternUnits="userSpaceOnUse">
+      <rect width="80" height="110" fill="#4E2E34"/>
+      <rect x="0" width="6" height="110" fill="#5C3840"/>
+      <path d="M40 18 L52 40 L40 62 L28 40Z M40 70 l6 12 l-6 12 l-6 -12Z" fill="#62404A"/>
+    </pattern>
+    <pattern id="papelVerde" width="80" height="110" patternUnits="userSpaceOnUse">
+      <rect width="80" height="110" fill="#2E3E36"/>
+      <rect x="0" width="6" height="110" fill="#384A40"/>
+      <path d="M40 18 L52 40 L40 62 L28 40Z" fill="#3A4C44"/>
+    </pattern>
+    <pattern id="tabua" width="220" height="40" patternUnits="userSpaceOnUse">
+      <rect width="220" height="40" fill="#4A2E1E"/><rect y="1" width="220" height="18" fill="#56362A"/><rect y="21" width="220" height="18" fill="#4E3022"/>
+      <path d="M0 20H220M0 0H220M140 0V20M60 20V40" stroke="#2A1A12" stroke-width="2"/>
+    </pattern>
+    <pattern id="parale" width="70" height="36" patternUnits="userSpaceOnUse">
+      <rect width="70" height="36" fill="#2C2E36"/><rect x="2" y="2" width="31" height="14" rx="6" fill="#383A44"/><rect x="36" y="2" width="32" height="14" rx="6" fill="#34363F"/>
+      <rect x="-16" y="20" width="32" height="14" rx="6" fill="#363842"/><rect x="19" y="20" width="32" height="14" rx="6" fill="#3A3C46"/><rect x="54" y="20" width="32" height="14" rx="6" fill="#363842"/>
+    </pattern>
+    <clipPath id="obraClip"><rect id="obraRect" x="0" y="1360" width="1080" height="1000"/></clipPath>
+  </defs>
+  <g id="cam"><g id="mundo" transform="translate(0 -320)">
+    <g id="scenes"></g>
+    <g id="atoresFundo"></g>
+    <g id="meio"></g>
+    <g id="atores"></g>
+    <g id="props"></g>
+    <g id="fgs"></g>
+  </g></g>
+  <g id="textos"></g>
+  <rect id="apagao" width="1080" height="1920" fill="#000" opacity="0"/>
+  <rect width="1080" height="1920" fill="url(#vinheta)" pointer-events="none"/>
+  <rect width="1080" height="1920" filter="url(#grao)" pointer-events="none"/>
+  <g id="legenda"></g>
+  <rect id="flash" width="1080" height="1920" fill="#E8F0FF" opacity="0"/>
+</svg>
+
+<script>
+// ===================== CONFIG =====================
+const NS = 'http://www.w3.org/2000/svg';
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const T = '#14141C';                              // tinta (contorno)
+const VERM = '#C8102E', PAPEL = '#E8DCC0', AMBAR = '#F2B65A', NOITE = '#0E1420';
+const END = 64.4;
+function mulberry32(a) { return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+
+// ===================== TEXTOS DA PÁGINA (identidade "crimes reais") =====================
+const larg = (txt, fs, maq) => txt.length * fs * (maq ? 0.6 : 0.47);
+// etiqueta de papel (ficha policial) com fita adesiva — máquina de escrever
+function etiqueta(id, x, y, txt, { fs = 46, rot = -2, cor = T, fundo = PAPEL } = {}) {
+  const w = larg(txt, fs, true) + fs * 1.1, h = fs * 1.7;
+  return `<g id="${id}" transform="translate(${x} ${y})"><g transform="rotate(${rot})">
+    <rect x="${-w / 2 + 6}" y="${-h / 2 + 8}" width="${w}" height="${h}" fill="#000" opacity=".35"/>
+    <rect x="${-w / 2}" y="${-h / 2}" width="${w}" height="${h}" fill="${fundo}" stroke="#B9A882" stroke-width="2"/>
+    <rect x="${-w / 2 - 14}" y="${-h / 2 - 12}" width="70" height="26" fill="#F4EAC8" opacity=".75" transform="rotate(-24 ${-w / 2} ${-h / 2})"/>
+    <text class="maq" x="0" y="${fs * 0.34}" font-size="${fs}" fill="${cor}" text-anchor="middle">${txt}</text></g></g>`;
+}
+// carimbo vermelho torto
+function carimbo(id, x, y, txt, { fs = 80, rot = -8 } = {}) {
+  const w = larg(txt, fs) + fs * 0.8, h = fs * 1.45;
+  return `<g id="${id}" transform="translate(${x} ${y})"><g transform="rotate(${rot})" opacity=".92">
+    <rect x="${-w / 2}" y="${-h / 2}" width="${w}" height="${h}" rx="10" fill="none" stroke="${VERM}" stroke-width="${fs * 0.09}"/>
+    <rect x="${-w / 2 + fs * 0.14}" y="${-h / 2 + fs * 0.14}" width="${w - fs * 0.28}" height="${h - fs * 0.28}" rx="6" fill="none" stroke="${VERM}" stroke-width="${fs * 0.035}"/>
+    <text x="0" y="${fs * 0.36}" font-size="${fs}" fill="${VERM}" text-anchor="middle" letter-spacing="2">${txt}</text></g></g>`;
+}
+// título grande (Anton) — branco ou vermelho com contorno escuro e sombra
+function titulo(id, x, y, txt, { fs = 150, cor = '#FFFFFF', rot = 0, sub } = {}) {
+  return `<g id="${id}" transform="translate(${x} ${y})"><g transform="rotate(${rot})">
+    <text x="6" y="${fs * 0.36 + 10}" font-size="${fs}" fill="#000" opacity=".55" text-anchor="middle">${txt}</text>
+    <text x="0" y="${fs * 0.36}" font-size="${fs}" fill="${cor}" stroke="${T}" stroke-width="${fs * 0.1}" paint-order="stroke" stroke-linejoin="round" text-anchor="middle">${txt}</text>
+    ${sub ? `<text class="maq" x="0" y="${fs * 0.36 + fs * 0.5}" font-size="${fs * 0.3}" fill="${PAPEL}" text-anchor="middle">${sub}</text>` : ''}</g></g>`;
+}
+// balão de fala branco
+function balao(id, x, y, linhas, { fs = 56, ponta = [-60, 140] } = {}) {
+  const w = Math.max(...linhas.map(l => larg(l, fs))) + fs * 1.4, h = linhas.length * fs * 1.15 + fs * 0.9;
+  const px = ponta[0], py = ponta[1];
+  return `<g id="${id}" transform="translate(${x} ${y})">
+    <path d="M${-w / 2 + 30} ${-h / 2} H${w / 2 - 30} Q${w / 2} ${-h / 2} ${w / 2} ${-h / 2 + 30} V${h / 2 - 30} Q${w / 2} ${h / 2} ${w / 2 - 30} ${h / 2} H${Math.min(w / 2 - 40, px + 40)} L${px} ${py} L${Math.min(w / 2 - 80, px + 8)} ${h / 2} H${-w / 2 + 30} Q${-w / 2} ${h / 2} ${-w / 2} ${h / 2 - 30} V${-h / 2 + 30} Q${-w / 2} ${-h / 2} ${-w / 2 + 30} ${-h / 2}Z" fill="#FFFDF4" stroke="${T}" stroke-width="8" stroke-linejoin="round"/>
+    ${linhas.map((l, i) => `<text x="0" y="${-h / 2 + fs * 0.45 + fs * 1.15 * (i + 0.5) + fs * 0.32}" font-size="${fs}" fill="${T}" text-anchor="middle">${l}</text>`).join('')}</g>`;
+}
+
+// ===================== PEÇAS DE CENÁRIO (Chicago, 1893) =====================
+function ceuNoite({ lua = [820, 330], estrelas = 40, seed = 1 } = {}) {
+  const r = mulberry32(seed);
+  let s = `<rect width="2200" height="1920" fill="url(#ceuNoite)"/>`;
+  s += [...Array(estrelas)].map(() => `<circle cx="${(r() * 2200).toFixed(0)}" cy="${(r() * 900).toFixed(0)}" r="${(1 + r() * 2.2).toFixed(1)}" fill="#DDE6FF" opacity="${(0.3 + r() * 0.6).toFixed(2)}"/>`).join('');
+  if (lua) s += `<circle cx="${lua[0]}" cy="${lua[1]}" r="220" fill="url(#lua)"/><circle cx="${lua[0]}" cy="${lua[1]}" r="62" fill="#E9EEF6"/><circle cx="${lua[0] - 18}" cy="${lua[1] - 12}" r="12" fill="#CBD3E2"/><circle cx="${lua[0] + 20}" cy="${lua[1] + 18}" r="8" fill="#CBD3E2"/>`;
+  s += [[120, 520, 1.2], [700, 620, 1], [1400, 480, 1.3]].map(([x, y, k]) => `<g opacity=".55" transform="translate(${x} ${y}) scale(${k})"><ellipse cx="0" cy="0" rx="200" ry="34" fill="#232D44"/><ellipse cx="80" cy="-20" rx="120" ry="34" fill="#232D44"/><ellipse cx="-90" cy="-10" rx="90" ry="26" fill="#283350"/></g>`).join('');
+  return s;
+}
+function silhuetaCidade(y, cor = '#121A2A', seed = 2, w = 2200) {
+  const r = mulberry32(seed); let x = 0, d = `M0 ${y + 400}`;
+  while (x < w) { const bw = 60 + r() * 120, bh = 80 + r() * 260; d += ` V${y - bh} H${x + bw}`; if (r() < 0.25) d += ` V${y - bh - 60} H${x + bw + 10} V${y - bh}`; x += bw; }
+  d += ` V${y + 400}Z`;
+  let jan = ''; const r2 = mulberry32(seed + 9);
+  for (let k = 0; k < w / 25; k++) if (r2() < 0.35) jan += `<rect x="${(r2() * w).toFixed(0)}" y="${(y - r2() * 220).toFixed(0)}" width="6" height="9" fill="#F2C060" opacity="${(0.3 + r2() * 0.5).toFixed(2)}"/>`;
+  return `<path d="${d}" fill="${cor}"/>${jan}`;
+}
+function janela(x, y, w, h, { acesa = true, id = '', cortina = true } = {}) {
+  return `<g ${id ? `id="${id}"` : ''}>
+    <rect x="${x - 6}" y="${y - 10}" width="${w + 12}" height="12" fill="#B9A890" stroke="${T}" stroke-width="3"/>
+    <rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#141A28" stroke="${T}" stroke-width="4"/>
+    <rect class="luz" x="${x + 4}" y="${y + 4}" width="${w - 8}" height="${h - 8}" fill="#F2C266" opacity="${acesa ? 1 : 0}"/>
+    ${cortina ? `<path class="luz" d="M${x + 4} ${y + 4} H${x + w * 0.32} Q${x + w * 0.2} ${y + h * 0.5} ${x + w * 0.1} ${y + h - 4} H${x + 4}Z M${x + w - 4} ${y + 4} H${x + w * 0.68} Q${x + w * 0.8} ${y + h * 0.5} ${x + w * 0.9} ${y + h - 4} H${x + w - 4}Z" fill="#A8442E" opacity="${acesa ? 0.85 : 0}"/>` : ''}
+    <path d="M${x + w / 2} ${y} V${y + h} M${x} ${y + h * 0.45} H${x + w}" stroke="${T}" stroke-width="4"/>
+    <rect x="${x - 8}" y="${y + h}" width="${w + 16}" height="12" fill="#B9A890" stroke="${T}" stroke-width="3"/></g>`;
+}
+// o "Castelo": prédio de 3 andares com torreões de canto (bay windows), lojas embaixo e placa HOTEL
+function castelo({ x = 90, base = 1600, w = 900, h = 1100, id = 'cas', placa = true, luzes = true } = {}) {
+  const top = base - h, andar = (h - 240) / 3;
+  let s = `<g id="${id}">`;
+  s += `<rect x="${x + 16}" y="${top + 16}" width="${w}" height="${h}" fill="#000" opacity=".35"/>`;
+  s += `<rect x="${x}" y="${top}" width="${w}" height="${h}" fill="url(#tijolo)" stroke="${T}" stroke-width="6"/>`;
+  s += `<rect x="${x}" y="${top}" width="${w * 0.5}" height="${h}" fill="#000" opacity=".18"/>`;   // lado da sombra
+  // torreões (sacadas salientes)
+  [x - 20, x + w - 150].forEach((tx, i) => {
+    s += `<rect x="${tx}" y="${top + 120}" width="170" height="${h - 360}" fill="url(#tijolo)" stroke="${T}" stroke-width="6"/><rect x="${tx}" y="${top + 120}" width="170" height="${h - 360}" fill="${i ? '#FFD9A0' : '#000'}" opacity="${i ? 0.06 : 0.22}"/>`;
+    s += `<path d="M${tx - 10} ${top + 124} L${tx + 85} ${top - 70} L${tx + 180} ${top + 124}Z" fill="#2A2E3A" stroke="${T}" stroke-width="6"/><path d="M${tx + 85} ${top - 70} V${top - 120}" stroke="${T}" stroke-width="6"/><circle cx="${tx + 85}" cy="${top - 124}" r="9" fill="#8A8A90" stroke="${T}" stroke-width="3"/>`;
+  });
+  // cornija
+  s += `<rect x="${x - 26}" y="${top - 10}" width="${w + 52}" height="40" fill="#5A5048" stroke="${T}" stroke-width="5"/>` + [...Array(Math.floor(w / 40))].map((_, k) => `<rect x="${x - 14 + k * 40}" y="${top + 30}" width="18" height="18" fill="#4A4038" stroke="${T}" stroke-width="2"/>`).join('');
+  // janelas por andar
+  let k = 0;
+  for (let a = 0; a < 3; a++) {
+    const y = top + 90 + a * andar, jw = 78, jh = andar * 0.58;
+    const xs = [x + 45, x + 175, x + 310, x + 445, x + 580, x + 715, x + w - 105].filter(v => v < x + w - 60);
+    xs.forEach((jx, j) => { const acesa = luzes && ((a * 7 + j * 3) % 5 !== 0); s += janela(jx, y, jw, jh, { acesa, id: `${id}-j${k++}` }); });
+    s += `<rect x="${x}" y="${y + andar - 26}" width="${w}" height="12" fill="#5A5048" opacity=".9"/>`;
+  }
+  // térreo: lojas com toldos e a porta do hotel
+  const yt = base - 240;
+  s += `<rect x="${x}" y="${yt}" width="${w}" height="240" fill="#3A2A24" stroke="${T}" stroke-width="5"/>`;
+  [x + 40, x + w - 300].forEach(lx => { s += `<rect x="${lx}" y="${yt + 50}" width="260" height="150" fill="#E8B865" opacity="${luzes ? 0.75 : 0.15}" stroke="${T}" stroke-width="5"/><path d="M${lx - 10} ${yt + 50} l20 -46 h240 l20 46z" fill="#5E1E22" stroke="${T}" stroke-width="5"/>${[0, 1, 2, 3, 4, 5].map(q => `<path d="M${lx + 10 + q * 46} ${yt + 4} l-8 46" stroke="#7A2A2E" stroke-width="14"/>`).join('')}`; });
+  const px = x + w / 2 - 70;
+  s += `<rect x="${px - 14}" y="${yt + 20}" width="168" height="220" fill="#2A1A14" stroke="${T}" stroke-width="5"/><rect id="${id}-porta" x="${px}" y="${yt + 36}" width="140" height="204" fill="#120C0A"/><path d="M${px + 70} ${yt + 36} V${base}" stroke="#2A1A14" stroke-width="4"/>`;
+  s += `<rect x="${px + 10}" y="${yt + 40}" width="56" height="196" fill="#4A2A1E" stroke="${T}" stroke-width="3" id="${id}-folha"/>`;
+  if (placa) s += `<g><rect x="${x + w / 2 - 130}" y="${top + 4}" width="260" height="70" fill="#1A1410" stroke="${T}" stroke-width="5"/><text x="${x + w / 2}" y="${top + 60}" font-size="58" fill="#F2C266" text-anchor="middle" letter-spacing="10">HOTEL</text></g>`;
+  return s + `</g>`;
+}
+function poste(x, base, k = 1, id = '') {
+  return `<g ${id ? `id="${id}"` : ''} transform="translate(${x} ${base}) scale(${k})">
+    <circle cx="0" cy="-470" r="210" fill="url(#brilho)"/>
+    <rect x="-8" y="-430" width="16" height="430" fill="#1E2028" stroke="${T}" stroke-width="4"/><rect x="-22" y="-30" width="44" height="30" fill="#1E2028" stroke="${T}" stroke-width="4"/>
+    <path d="M-34 -500 H34 L24 -430 H-24Z" fill="#FFE2A0" stroke="${T}" stroke-width="5"/><path d="M-42 -500 L0 -540 L42 -500Z" fill="#1E2028" stroke="${T}" stroke-width="5"/>
+    <path d="M0 -500 V-430" stroke="${T}" stroke-width="3"/></g>`;
+}
+function rua(y, h = 400, w = 2200) {
+  return `<rect x="0" y="${y}" width="${w}" height="${h}" fill="url(#parale)"/><rect x="0" y="${y}" width="${w}" height="${h}" fill="url(#escuroBaixo)"/><rect x="0" y="${y}" width="${w}" height="14" fill="#5A5C64" stroke="${T}" stroke-width="3"/>`;
+}
+function nevoa(y, w = 2200) { return `<rect x="0" y="${y - 260}" width="${w}" height="320" fill="url(#nevoa)"/>`; }
+function interior({ papel = 'papelParede', piso = 1640, rodape = 1380 } = {}) {
+  return `<rect width="1080" height="${piso}" fill="url(#${papel})"/>
+    <rect y="${rodape}" width="1080" height="${piso - rodape}" fill="#3A2216"/>${[...Array(8)].map((_, k) => `<rect x="${20 + k * 135}" y="${rodape + 30}" width="105" height="${piso - rodape - 60}" fill="none" stroke="#24140C" stroke-width="5"/>`).join('')}
+    <rect y="${rodape - 14}" width="1080" height="18" fill="#5A3A26" stroke="${T}" stroke-width="3"/>
+    <rect y="${piso}" width="1080" height="${1920 - piso}" fill="url(#tabua)"/><rect y="${piso}" width="1080" height="${1920 - piso}" fill="url(#escuroBaixo)"/>
+    <rect y="0" width="1080" height="70" fill="#24140E"/><rect y="66" width="1080" height="14" fill="#4A2E1E"/>`;
+}
+function arandela(x, y, id = '') {   // luminária a gás de parede
+  return `<g ${id ? `id="${id}"` : ''}><circle cx="${x}" cy="${y}" r="190" fill="url(#brilho)"/><path d="M${x - 6} ${y + 50} V${y + 10} M${x - 30} ${y + 30} H${x + 18}" stroke="#8A6A3A" stroke-width="8"/><path d="M${x - 22} ${y + 12} Q${x - 6} ${y - 40} ${x + 10} ${y + 12}Z" fill="#FFE6B0" stroke="${T}" stroke-width="4"/></g>`;
+}
+function relogio(x, y, r, id) {
+  return `<g><circle cx="${x}" cy="${y}" r="${r + 14}" fill="#5A3A22" stroke="${T}" stroke-width="5"/><circle cx="${x}" cy="${y}" r="${r}" fill="#F2E8D0" stroke="${T}" stroke-width="4"/>
+    ${[...Array(12)].map((_, k) => { const a = k * Math.PI / 6; return `<path d="M${x + Math.sin(a) * r * 0.8} ${y - Math.cos(a) * r * 0.8} L${x + Math.sin(a) * r * 0.92} ${y - Math.cos(a) * r * 0.92}" stroke="${T}" stroke-width="4"/>`; }).join('')}
+    <path id="${id}-h" d="M${x} ${y} V${y - r * 0.5}" stroke="${T}" stroke-width="8" stroke-linecap="round"/><path id="${id}-m" d="M${x} ${y} V${y - r * 0.78}" stroke="${T}" stroke-width="5" stroke-linecap="round"/><circle cx="${x}" cy="${y}" r="6" fill="${T}"/></g>`;
+}
+function frasco(x, y, k, cor) {
+  return `<g transform="translate(${x} ${y}) scale(${k})"><rect x="-16" y="-62" width="32" height="14" fill="#5A3A22" stroke="${T}" stroke-width="3"/><path d="M-12 -48 V-38 Q-30 -30 -30 -10 V0 H30 V-10 Q30 -30 12 -38 V-48Z" fill="${cor}" stroke="${T}" stroke-width="4"/><rect x="-20" y="-24" width="40" height="16" fill="${PAPEL}" stroke="${T}" stroke-width="2"/><path d="M-22 -30 Q-24 -16 -20 -6" stroke="#fff" stroke-opacity=".4" stroke-width="4" fill="none"/></g>`;
+}
+function mala(x, y, k = 1) {
+  return `<g transform="translate(${x} ${y}) scale(${k})"><path d="M-22 -86 V-104 H22 V-86" fill="none" stroke="${T}" stroke-width="7"/><rect x="-62" y="-88" width="124" height="88" rx="10" fill="#7A4A2A" stroke="${T}" stroke-width="5"/><rect x="-62" y="-60" width="124" height="10" fill="#4A2A18"/><rect x="-46" y="-88" width="10" height="88" fill="#5A341E"/><rect x="36" y="-88" width="10" height="88" fill="#5A341E"/><rect x="-8" y="-64" width="16" height="18" fill="#C9A24A" stroke="${T}" stroke-width="2"/></g>`;
+}
+function cartaz(x, y, w, h, n, nome, id, rot) {   // cartaz de desaparecida (silhuetas)
+  const cab = n === 1 ? [[0, 1]] : [[-0.28, 0.9], [0.3, n === 2 && nome.includes('FILHA') ? 0.68 : 0.9]];
+  return `<g id="${id}" transform="translate(${x} ${y}) rotate(${rot})">
+    <rect x="${-w / 2 + 8}" y="${-h / 2 + 10}" width="${w}" height="${h}" fill="#000" opacity=".4"/>
+    <rect x="${-w / 2}" y="${-h / 2}" width="${w}" height="${h}" fill="#E4D6B4" stroke="#9A8A66" stroke-width="3"/>
+    <path d="M${-w / 2} ${h / 2 - 40} L${-w / 2 + 30} ${h / 2} H${-w / 2}Z" fill="#C8B892"/>
+    <text x="0" y="${-h / 2 + 74}" font-size="62" fill="${T}" text-anchor="middle">${n > 1 ? 'DESAPARECIDAS' : 'DESAPARECIDA'}</text>
+    <rect x="${-w / 2 + 34}" y="${-h / 2 + 100}" width="${w - 68}" height="${h * 0.5}" fill="#B8A884" stroke="${T}" stroke-width="4"/>
+    ${cab.map(([dx, k]) => `<g transform="translate(${dx * w} ${-h / 2 + 100 + h * 0.5})"><path d="M${-70 * k} 0 Q${-70 * k} ${-90 * k} 0 ${-90 * k} Q${70 * k} ${-90 * k} ${70 * k} 0Z" fill="#2A2420"/><circle cx="0" cy="${-140 * k}" r="${48 * k}" fill="#2A2420"/><circle cx="${-30 * k}" cy="${-176 * k}" r="${26 * k}" fill="#2A2420"/><text x="0" y="${-120 * k}" font-size="${70 * k}" fill="#E4D6B4" text-anchor="middle">?</text></g>`).join('')}
+    <text class="maq" x="0" y="${h / 2 - 56}" font-size="40" fill="${T}" text-anchor="middle">${nome}</text>
+    <circle cx="0" cy="${-h / 2 + 18}" r="9" fill="${VERM}" stroke="${T}" stroke-width="3"/></g>`;
+}
+function grade(x, y, w, h, n = 7) {
+  return `<g>${[...Array(n)].map((_, k) => { const bx = x + (k + 0.5) * w / n; return `<rect x="${bx - 11}" y="${y}" width="22" height="${h}" fill="#2A2C34" stroke="${T}" stroke-width="4"/><rect x="${bx - 7}" y="${y}" width="5" height="${h}" fill="#5A5E6A"/>`; }).join('')}
+    ${[0.08, 0.5, 0.92].map(u => `<rect x="${x}" y="${y + u * h - 14}" width="${w}" height="28" fill="#2A2C34" stroke="${T}" stroke-width="4"/>`).join('')}</g>`;
+}
+function rodaGigante(cx, cy, r, id) {
+  let s = `<g><path d="M${cx - 150} ${cy + r + 140} L${cx} ${cy} L${cx + 150} ${cy + r + 140}" fill="none" stroke="#C8CCD8" stroke-width="16"/><path d="M${cx - 150} ${cy + r + 140} L${cx} ${cy} L${cx + 150} ${cy + r + 140}" fill="none" stroke="${T}" stroke-width="4"/>`;
+  s += `<g id="${id}"><circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#D8DCE8" stroke-width="10"/><circle cx="${cx}" cy="${cy}" r="${r - 30}" fill="none" stroke="#B8BCC8" stroke-width="4"/>`;
+  for (let k = 0; k < 36; k++) { const a = k * Math.PI / 18; s += `<path d="M${cx} ${cy} L${cx + Math.cos(a) * r} ${cy + Math.sin(a) * r}" stroke="#B8BCC8" stroke-width="2.5"/>`; }
+  for (let k = 0; k < 36; k++) { const a = k * Math.PI / 18; s += `<circle cx="${cx + Math.cos(a) * r}" cy="${cy + Math.sin(a) * r}" r="5" fill="#FFE6A0"/>`; }
+  s += `</g>`;
+  for (let k = 0; k < 12; k++) s += `<g class="${id}-cab" data-a="${k * 30}"><rect x="-22" y="0" width="44" height="30" rx="5" fill="#B3121F" stroke="${T}" stroke-width="3"/><rect x="-16" y="5" width="32" height="12" fill="#FFE2A0"/></g>`;
+  s += `<circle cx="${cx}" cy="${cy}" r="22" fill="#8A8E9A" stroke="${T}" stroke-width="4"/></g>`;
+  return s;
+}
+function palacio(x, base, w, h) {   // prédios brancos da "Cidade Branca" da feira
+  let s = `<g><rect x="${x}" y="${base - h}" width="${w}" height="${h}" fill="#C9CCD6" stroke="${T}" stroke-width="5"/><rect x="${x}" y="${base - h}" width="${w * 0.45}" height="${h}" fill="#8A90A8" opacity=".35"/>`;
+  s += `<path d="M${x - 20} ${base - h} L${x + w / 2} ${base - h - h * 0.35} L${x + w + 20} ${base - h}Z" fill="#DADDE6" stroke="${T}" stroke-width="5"/>`;
+  for (let k = 0; k < Math.floor(w / 46); k++) s += `<rect x="${x + 16 + k * 46}" y="${base - h + 30}" width="16" height="${h - 50}" fill="#E8EAF0" stroke="${T}" stroke-width="2"/>`;
+  s += [...Array(Math.floor(w / 30))].map((_, k) => `<circle cx="${x + 15 + k * 30}" cy="${base - h - 6}" r="5" fill="#FFE6A0"/>`).join('');
+  return s + `</g>`;
+}
+function fogos(id, x, y, cor) {
+  return `<g id="${id}" transform="translate(${x} ${y})">${[...Array(16)].map((_, k) => { const a = k * Math.PI / 8; return `<path class="raio" d="M${Math.cos(a) * 20} ${Math.sin(a) * 20} L${Math.cos(a) * 120} ${Math.sin(a) * 120}" stroke="${cor}" stroke-width="7" stroke-linecap="round"/><circle cx="${Math.cos(a) * 135}" cy="${Math.sin(a) * 135}" r="6" fill="#FFF4D0"/>`; }).join('')}</g>`;
+}
+function multidao(y, w, seed, n = 60) {
+  const r = mulberry32(seed); let s = '';
+  for (let k = 0; k < n; k++) { const x = r() * w, k2 = 0.7 + r() * 0.5, yy = y + r() * 60, cor = ['#1A1E2A', '#22283A', '#2A2230'][k % 3];
+    s += `<g class="pessoa" transform="translate(${x.toFixed(0)} ${yy.toFixed(0)}) scale(${k2.toFixed(2)})"><path d="M-26 0 Q-26 -70 0 -76 Q26 -70 26 0Z" fill="${cor}"/><circle cx="0" cy="-96" r="22" fill="${cor}"/>${r() < 0.5 ? `<path d="M-28 -110 H28 M-16 -110 V-134 H16 V-110" stroke="${cor}" stroke-width="10" fill="${cor}"/>` : `<ellipse cx="0" cy="-114" rx="34" ry="8" fill="${cor}"/>`}</g>`; }
+  return s;
+}
+function planta(id) {   // a planta do prédio rasgada em 4 pedaços
+  const peca = (k, d) => `<g class="peca" id="${id}-${k}"><path d="${d}" fill="#2C4A7A" stroke="#E8F0FF" stroke-width="4"/></g>`;
+  const ln = `<g stroke="#CFE0FF" stroke-width="5" fill="none"><rect x="-200" y="-140" width="400" height="280"/><path d="M-200 -40 H-60 V140 M-60 20 H90 V-140 M90 60 H200 M-130 -140 V-40 M20 20 V140 M140 -140 V-60 H90"/><path d="M-170 100 h40 M30 -100 h40 M110 100 h50" stroke-dasharray="8 6"/></g>`;
+  return `<g id="${id}"><clipPath id="${id}-c1"><path d="M-240 -180 H10 L-20 0 H-240Z"/></clipPath><clipPath id="${id}-c2"><path d="M10 -180 H240 V20 H-20Z"/></clipPath><clipPath id="${id}-c3"><path d="M-240 0 H-20 L30 180 H-240Z"/></clipPath><clipPath id="${id}-c4"><path d="M-20 0 L240 20 V180 H30Z"/></clipPath>
+    ${[1, 2, 3, 4].map(k => `<g class="peca" id="${id}-${k}" clip-path="url(#${id}-c${k})"><rect x="-240" y="-180" width="480" height="360" fill="#24467A" stroke="#E8F0FF" stroke-width="6"/>${ln}<text class="maq" x="-215" y="-150" font-size="22" fill="#E8F0FF">PLANTA — 63rd St.</text></g>`).join('')}</g>`;
+}
+
+// ===================== PEÇAS NOVAS DA PARTE 2 =====================
+function fachada(x, base, w, h, { cor = '#5A4A40', placa = '', placaCor = '#F2C266', luz = true, id = '' } = {}) {
+  let s = `<g ${id ? `id="${id}"` : ''}><rect x="${x}" y="${base - h}" width="${w}" height="${h}" fill="${cor}" stroke="${T}" stroke-width="6"/><rect x="${x}" y="${base - h}" width="${w * 0.4}" height="${h}" fill="#000" opacity=".18"/>`;
+  s += `<rect x="${x - 12}" y="${base - h - 16}" width="${w + 24}" height="26" fill="#3A302A" stroke="${T}" stroke-width="4"/>`;
+  const n = Math.max(1, Math.floor((w - 40) / 120));
+  for (let a = 0; a < Math.floor((h - 300) / 230); a++) for (let k = 0; k < n; k++) s += janela(x + 30 + k * ((w - 60) / n) + ((w - 60) / n - 70) / 2, base - h + 60 + a * 230, 70, 140, { acesa: luz && (a + k) % 3 !== 1 });
+  s += `<rect x="${x + w / 2 - 55}" y="${base - 200}" width="110" height="200" fill="#2A1A12" stroke="${T}" stroke-width="5"/><circle cx="${x + w / 2 + 35}" cy="${base - 100}" r="7" fill="#C9A24A"/>`;
+  if (placa) s += `<rect x="${x + w / 2 - placa.length * 17 - 24}" y="${base - 290}" width="${placa.length * 34 + 48}" height="66" fill="#1A1410" stroke="${T}" stroke-width="4"/><text x="${x + w / 2}" y="${base - 240}" font-size="46" fill="${placaCor}" text-anchor="middle" letter-spacing="4">${placa}</text>`;
+  return s + `</g>`;
+}
+function trem(x, base) {
+  let s = `<g><rect x="${x}" y="${base - 420}" width="900" height="360" rx="20" fill="#2A3A2E" stroke="${T}" stroke-width="7"/><rect x="${x}" y="${base - 420}" width="900" height="40" rx="14" fill="#1A2620"/>`;
+  for (let k = 0; k < 5; k++) s += `<rect x="${x + 40 + k * 170}" y="${base - 350}" width="120" height="120" rx="8" fill="#F2C266" stroke="${T}" stroke-width="5"/>`;
+  s += `<rect x="${x}" y="${base - 170}" width="900" height="26" fill="#C9A24A" stroke="${T}" stroke-width="3"/>`;
+  [x + 120, x + 300, x + 600, x + 780].forEach(cx => s += `<circle cx="${cx}" cy="${base - 40}" r="46" fill="#1A1A20" stroke="${T}" stroke-width="6"/><circle cx="${cx}" cy="${base - 40}" r="14" fill="#8A8A90"/>`);
+  return s + `</g>`;
+}
+function jornal(id, x, y, rot, manchete, sub, { w = 620, h = 760 } = {}) {
+  const linhas = manchete.split('|');
+  return `<g id="${id}" transform="translate(${x} ${y}) rotate(${rot})">
+    <rect x="${-w / 2 + 10}" y="${-h / 2 + 14}" width="${w}" height="${h}" fill="#000" opacity=".45"/>
+    <rect x="${-w / 2}" y="${-h / 2}" width="${w}" height="${h}" fill="#E6DFCC" stroke="#9A9078" stroke-width="3"/>
+    <text class="maq" x="0" y="${-h / 2 + 62}" font-size="40" fill="${T}" text-anchor="middle">GAZETA DE CHICAGO</text>
+    <path d="M${-w / 2 + 24} ${-h / 2 + 84} H${w / 2 - 24} M${-w / 2 + 24} ${-h / 2 + 94} H${w / 2 - 24}" stroke="${T}" stroke-width="3"/>
+    ${linhas.map((l, i) => `<text x="0" y="${-h / 2 + 180 + i * 86}" font-size="84" fill="${T}" text-anchor="middle">${l}</text>`).join('')}
+    <text class="maq" x="0" y="${-h / 2 + 200 + linhas.length * 86}" font-size="30" fill="#4A4438" text-anchor="middle">${sub}</text>
+    <rect x="${-w / 2 + 34}" y="${-h / 2 + 240 + linhas.length * 86}" width="${w * 0.48}" height="${h * 0.3}" fill="#4A4438"/>
+    ${[...Array(9)].map((_, k) => `<path d="M${w * 0.04} ${-h / 2 + 250 + linhas.length * 86 + k * 24} H${w / 2 - 34}" stroke="#8A8270" stroke-width="7"/>`).join('')}</g>`;
+}
+function fogo(id, x, base, k = 1) {
+  return `<g id="${id}" transform="translate(${x} ${base}) scale(${k})"><g class="chama">
+    <path d="M-80 0 Q-110 -120 -40 -200 Q-50 -120 0 -110 Q-20 -220 40 -300 Q50 -180 90 -150 Q120 -90 80 0Z" fill="#E8461E"/>
+    <path d="M-50 0 Q-70 -90 -20 -140 Q-20 -80 10 -80 Q0 -160 40 -210 Q50 -120 70 -90 Q80 -40 50 0Z" fill="#F29A2A"/>
+    <path d="M-20 0 Q-30 -50 0 -80 Q10 -40 20 -50 Q40 -20 20 0Z" fill="#FFE27A"/></g></g>`;
+}
+function fumaca(id, x, y) {
+  return `<g id="${id}">${[0, 1, 2, 3, 4].map(k => `<circle class="fum" cx="${x + (k % 2 ? 40 : -40)}" cy="${y - k * 120}" r="${90 + k * 30}" fill="#2A2A30" opacity="${0.55 - k * 0.08}"/>`).join('')}</g>`;
+}
+function silhueta(x, y, k, cor = '#2A2420') {
+  return `<g transform="translate(${x} ${y}) scale(${k})"><path d="M-30 0 Q-30 -46 0 -50 Q30 -46 30 0Z" fill="${cor}"/><circle cx="0" cy="-66" r="18" fill="${cor}"/></g>`;
+}
+function foto(id, x, y, rot, nome, n = 1) {
+  return `<g id="${id}" transform="translate(${x} ${y}) rotate(${rot})"><rect x="-120" y="-150" width="240" height="300" fill="#E4D6B4" stroke="#9A8A66" stroke-width="3"/><rect x="-100" y="-130" width="200" height="200" fill="#B8A884"/>
+    ${n === 1 ? silhueta(0, 70, 2.2) : silhueta(-40, 70, 1.5) + silhueta(45, 70, 1.25)}
+    <text class="maq" x="0" y="118" font-size="${nome.length > 12 ? 22 : 28}" fill="${T}" text-anchor="middle">${nome}</text><circle cx="0" cy="-138" r="9" fill="${VERM}" stroke="${T}" stroke-width="3"/></g>`;
+}
+
+// ===================== CENAS =====================
+const scenes = [];
+const fg = [];
+const EXT = fill => `<rect x="-200" y="1910" width="2600" height="420" fill="${fill}"/><rect x="-200" y="1910" width="2600" height="420" fill="#000" opacity=".45"/>`;
+// S0 — recapitulação: o Castelo à noite (0–4.7)
+{ let v = `<g id="s0" class="scene">` + ceuNoite({ lua: [860, 420], seed: 3 }) + silhuetaCidade(1250, '#0E1524', 4) + nevoa(1300);
+  v += castelo({ x: 90, base: 1640, w: 900, h: 1080, id: 's0c' }) + rua(1640, 300) + poste(70, 1720, 0.95) + poste(1010, 1720, 0.95) + nevoa(1900) + EXT('url(#parale)') + `</g>`;
+  scenes.push(v); }
+// S1 — St. Louis, preso por um golpe pequeno (4.7–8.4)
+{ let v = `<g id="s1" class="scene">` + ceuNoite({ lua: null, seed: 21 }) + silhuetaCidade(1200, '#0E1524', 22);
+  v += fachada(-40, 1660, 420, 1100, { cor: '#4E4038' }) + fachada(380, 1660, 360, 1000, { cor: '#5A4A3E', placa: 'BANCO' }) + fachada(740, 1660, 400, 1150, { cor: '#4A3E36', placa: 'DELEGACIA', placaCor: '#9AC8FF' });
+  v += `<circle cx="940" cy="1330" r="40" fill="#5A8AFF" opacity=".5"/>` + rua(1660, 300) + poste(330, 1740, 0.9) + nevoa(1900) + EXT('url(#parale)') + `</g>`;
+  scenes.push(v); }
+// S2 — a cela: o plano contado ao bandido (8.4–19.1)
+{ let v = `<g id="s2" class="scene"><rect width="1080" height="2300" fill="url(#pedra)"/><rect width="1080" height="2300" fill="#0A1020" opacity=".35"/>`;
+  v += `<rect x="400" y="560" width="280" height="200" fill="#0A0E1A" stroke="${T}" stroke-width="8"/><circle cx="600" cy="630" r="34" fill="#DDE6F2"/>` + grade(400, 560, 280, 200, 5);
+  v += `<path d="M400 760 L120 1660 H960 L680 760Z" fill="#B8C8E8" opacity=".08"/>`;
+  v += `<rect x="0" y="1660" width="1080" height="660" fill="#2E3038"/><rect x="0" y="1660" width="1080" height="12" fill="#4A4C56"/>`;
+  v += `<rect x="120" y="1420" width="680" height="40" fill="#5A3A22" stroke="${T}" stroke-width="5"/><rect x="150" y="1460" width="26" height="200" fill="#3A2414" stroke="${T}" stroke-width="4"/><rect x="744" y="1460" width="26" height="200" fill="#3A2414" stroke="${T}" stroke-width="4"/>`;
+  v += `<rect x="880" y="760" width="200" height="900" fill="#1A1C24" stroke="${T}" stroke-width="6"/>` + grade(880, 760, 200, 900, 3);
+  v += `<rect id="s2-verm" width="1080" height="2300" fill="#B3121F" opacity="0" style="mix-blend-mode:multiply"/></g>`;
+  scenes.push(v); }
+// S3 — o jornal: Pitezel achado morto (19.1–23.5)
+{ let v = `<g id="s3" class="scene"><rect width="1080" height="2300" fill="url(#tabua)"/><rect width="1080" height="2300" fill="#000" opacity=".4"/>` + arandela(540, 420) + `</g>`;
+  scenes.push(v); }
+// S4 — a estação de trem: Holmes e as três crianças (23.5–26.9)
+{ let v = `<g id="s4" class="scene">` + ceuNoite({ lua: [180, 520], seed: 25 }) + silhuetaCidade(1300, '#0E1524', 26);
+  v += `<rect x="0" y="560" width="1080" height="70" fill="#3A2A22" stroke="${T}" stroke-width="5"/>` + [90, 400, 710, 1020].map(x => `<rect x="${x - 14}" y="630" width="28" height="1050" fill="#2A1E18" stroke="${T}" stroke-width="4"/>`).join('');
+  v += `<rect x="380" y="640" width="320" height="80" fill="#1A1410" stroke="${T}" stroke-width="4"/><text class="maq" x="540" y="694" font-size="42" fill="#F2C266" text-anchor="middle">ESTAÇÃO</text>`;
+  v += `<g id="s4-trem">` + trem(560, 1600) + `</g><g id="s4-vapor">${[0, 1, 2].map(k => `<circle class="vap" cx="${700 + k * 60}" cy="${1120 - k * 60}" r="${60 + k * 20}" fill="#C8CCD8" opacity=".35"/>`).join('')}</g>`;
+  v += `<rect x="0" y="1600" width="1080" height="40" fill="#5A5048" stroke="${T}" stroke-width="4"/><rect x="0" y="1640" width="1080" height="700" fill="#3E3A36"/>` + poste(300, 1720, 0.8) + EXT('#3E3A36') + `</g>`;
+  scenes.push(v); }
+// S4b — o mapa: de cidade em cidade (26.9–29.45)
+{ let v = `<g id="s4b" class="scene"><rect width="1080" height="2300" fill="#2A1E18"/><g transform="translate(540 1040) rotate(-2)"><rect x="-470" y="-520" width="940" height="1040" fill="#D8C8A0" stroke="#8A7A56" stroke-width="5"/>
+    <path d="M-470 -200 Q-200 -260 0 -150 T470 -120 M-300 -520 Q-260 0 -380 520 M200 -520 Q150 0 280 520" stroke="#B8A47C" stroke-width="6" fill="none"/>
+    <path d="M60 -470 Q260 -440 380 -380 Q300 -320 120 -330 Q40 -380 60 -470Z" fill="#9AB8C8" stroke="#6A8898" stroke-width="4"/>
+    <path id="s4b-rota" d="M-280 330 L-200 120 L60 -60 L250 -380" stroke="${VERM}" stroke-width="12" fill="none" stroke-dasharray="1200" stroke-dashoffset="1200" stroke-linecap="round"/>
+    ${[[-280, 330, 'CINCINNATI'], [-200, 120, 'INDIANÁPOLIS'], [60, -60, 'DETROIT'], [250, -380, 'TORONTO']].map(([x, y, n], i) => `<g id="s4b-c${i}"><circle cx="${x}" cy="${y}" r="20" fill="${VERM}" stroke="${T}" stroke-width="5"/><text class="maq" x="${x + 34}" y="${y + 12}" font-size="38" fill="${T}">${n}</text></g>`).join('')}
+    </g></g>`;
+  scenes.push(v); }
+// S5 — Boston: Holmes é preso (29.45–32.75)
+{ let v = `<g id="s5" class="scene">` + ceuNoite({ lua: [880, 520], seed: 31 }) + silhuetaCidade(1250, '#0E1524', 32);
+  v += fachada(-60, 1660, 520, 1120, { cor: '#4A3E3A', placa: 'HOTEL' }) + fachada(460, 1660, 660, 1050, { cor: '#52443A' });
+  v += rua(1660, 300) + poste(500, 1740, 0.9) + nevoa(1900) + EXT('url(#parale)') + `</g>`;
+  scenes.push(v); }
+// S6a — o detetive: hotel por hotel (32.75–36.45)
+{ let v = `<g id="s6a" class="scene">` + ceuNoite({ lua: null, seed: 41 }) + silhuetaCidade(1250, '#0E1524', 42);
+  v += fachada(-40, 1660, 380, 1150, { cor: '#4E4038', placa: 'HOTEL' }) + fachada(340, 1660, 380, 1050, { cor: '#5A4A3E', placa: 'HOTEL' }) + fachada(720, 1660, 400, 1180, { cor: '#4A3E36', placa: 'HOTEL' });
+  v += rua(1660, 300) + nevoa(1900) + EXT('url(#parale)') + `</g>`;
+  scenes.push(v); }
+// S6b — casa alugada por casa alugada (36.45–38.15)
+{ let v = `<g id="s6b" class="scene">` + ceuNoite({ lua: [900, 500], seed: 43 }) + silhuetaCidade(1300, '#0E1524', 44);
+  [[-30, '#5A5048'], [350, '#4E5A50'], [730, '#5A4E44']].forEach(([x, c]) => { v += `<path d="M${x} 1100 L${x + 175} 900 L${x + 350} 1100Z" fill="#2A2E3A" stroke="${T}" stroke-width="6"/>` + fachada(x, 1660, 350, 560, { cor: c, luz: false }) + `<g transform="translate(${x + 175} 1260) rotate(-4)"><rect x="-110" y="-34" width="220" height="68" fill="${PAPEL}" stroke="${T}" stroke-width="4"/><text x="0" y="20" font-size="48" fill="${VERM}" text-anchor="middle">ALUGA-SE</text></g>`; });
+  v += rua(1660, 300) + nevoa(1900) + EXT('url(#parale)') + `</g>`;
+  scenes.push(v); }
+// S6c — Toronto: a casa onde a resposta estava (38.15–41.15)
+{ let v = `<g id="s6c" class="scene">` + ceuNoite({ lua: [820, 560], seed: 45, estrelas: 20 }) + silhuetaCidade(1300, '#0E1524', 46);
+  v += `<path d="M380 1060 L700 820 L1020 1060Z" fill="#22262E" stroke="${T}" stroke-width="6"/>` + fachada(380, 1660, 640, 640, { cor: '#3E3A36', luz: false });
+  v += `<rect x="0" y="1660" width="1080" height="700" fill="#2E3A2A"/><rect x="0" y="1660" width="1080" height="14" fill="#3E4A36" stroke="${T}" stroke-width="3"/>` + EXT('#2E3A2A');
+  v += `<rect id="s6c-cinza" width="1080" height="2300" fill="#1A2030" opacity="0" style="mix-blend-mode:saturation"/><rect id="s6c-escuro" width="1080" height="2300" fill="#000" opacity="0"/></g>`;
+  scenes.push(v); }
+// S7 — a polícia entra no Castelo (41.15–44.7)
+{ let v = `<g id="s7" class="scene">` + ceuNoite({ lua: [860, 420], seed: 51 }) + silhuetaCidade(1250, '#0E1524', 52) + nevoa(1300);
+  v += castelo({ x: 90, base: 1640, w: 900, h: 1080, id: 's7c', luzes: false }) + rua(1640, 300) + poste(1010, 1720, 0.95) + nevoa(1900) + EXT('url(#parale)') + `</g>`;
+  scenes.push(v); }
+// S8 — o Castelo pega fogo (44.7–48.45)
+{ let v = `<g id="s8" class="scene"><rect width="1080" height="2300" fill="#1A0E0A"/><rect width="1080" height="1300" fill="#5A1E0E" opacity=".6"/>` + silhuetaCidade(1250, '#120A08', 54);
+  v += castelo({ x: 90, base: 1640, w: 900, h: 1080, id: 's8c', luzes: false });
+  v += fumaca('s8-fum1', 300, 560) + fumaca('s8-fum2', 760, 520);
+  v += [[180, 640, 1.1], [420, 600, 0.9], [640, 620, 1.2], [880, 640, 1.0], [300, 960, 0.6], [740, 1000, 0.7], [520, 1300, 0.6]].map(([x, y, k], i) => fogo(`s8-f${i}`, x, y, k)).join('');
+  v += `<rect width="1080" height="2300" fill="#FF6A1A" opacity=".12"/>` + rua(1640, 300) + EXT('url(#parale)') + `</g>`;
+  scenes.push(v); }
+// S9 — a confissão: 27 mortes (48.45–52.25)
+{ let v = `<g id="s9" class="scene"><rect width="1080" height="2300" fill="url(#tabua)"/><rect width="1080" height="2300" fill="#000" opacity=".45"/>` + arandela(540, 400);
+  v += `<g transform="translate(540 1150)"><rect x="-470" y="-560" width="940" height="1120" fill="${PAPEL}" stroke="#9A8A66" stroke-width="4"/><text class="maq" x="0" y="-480" font-size="46" fill="${T}" text-anchor="middle">CONFISSÃO DE H. H. HOLMES</text><path d="M-420 -450 H420" stroke="${T}" stroke-width="3"/>`;
+  for (let k = 0; k < 27; k++) { const c = k % 7, r = Math.floor(k / 7), x = -330 + c * 110, y = -300 + r * 200;
+    v += `<g class="vit" id="s9-v${k}" transform="translate(${x} ${y})">${silhueta(0, 30, 1.2)}<g class="viva" opacity="0"><circle cx="0" cy="-30" r="56" fill="none" stroke="#2EA84A" stroke-width="10"/></g></g>`; }
+  v += `</g></g>`;
+  scenes.push(v); }
+// S10 — a prisão, maio de 1896 (52.25–54.6)
+{ let v = `<g id="s10" class="scene"><rect width="1080" height="2300" fill="#E08A4A"/><rect width="1080" height="1100" fill="#F2B45A" opacity=".7"/><circle cx="820" cy="1150" r="140" fill="#FFE2A0" opacity=".9"/>`;
+  v += `<rect x="60" y="760" width="960" height="900" fill="#6A5A50" stroke="${T}" stroke-width="6"/><rect x="60" y="760" width="960" height="900" fill="url(#pedra)" opacity=".5"/>`;
+  [60, 380, 700].forEach(x => { v += `<rect x="${x}" y="560" width="320" height="220" fill="#5A4A42" stroke="${T}" stroke-width="6"/>` + [0, 1, 2, 3].map(k => `<rect x="${x + k * 90}" y="520" width="50" height="50" fill="#5A4A42" stroke="${T}" stroke-width="5"/>`).join('') + `<rect x="${x + 140}" y="620" width="40" height="110" fill="#1A1410"/>`; });
+  v += `<path d="M420 1660 V1340 Q540 1220 660 1340 V1660Z" fill="#1A1410" stroke="${T}" stroke-width="6"/>` + `<g transform="translate(540 1300)">${grade(-110, 0, 220, 360, 5)}</g>`;
+  v += `<rect x="0" y="1660" width="1080" height="700" fill="#4A3A30"/>` + EXT('#4A3A30') + `<rect width="1080" height="2300" fill="#2A1A10" opacity=".25"/></g>`;
+  scenes.push(v); }
+// S10b — o túmulo de concreto (54.6–56.95)
+{ let v = `<g id="s10b" class="scene">` + ceuNoite({ lua: [860, 520], seed: 61 }) + silhuetaCidade(1300, '#0E1524', 62);
+  v += [[120, 1240], [900, 1260], [300, 1220]].map(([x, y]) => `<path d="M${x - 50} ${y + 140} V${y + 20} Q${x} ${y - 40} ${x + 50} ${y + 20} V${y + 140}Z" fill="#6A6C74" stroke="${T}" stroke-width="5"/><path d="M${x} ${y + 20} V${y + 90} M${x - 24} ${y + 44} H${x + 24}" stroke="#3A3C44" stroke-width="7"/>`).join('');
+  v += `<rect x="0" y="1360" width="1080" height="960" fill="#2E2A22"/><rect x="0" y="1360" width="1080" height="16" fill="#3E4A30"/>`;
+  v += `<rect x="260" y="1480" width="560" height="340" fill="#140E0A" stroke="${T}" stroke-width="6"/>`;
+  v += `<g><path d="M300 1720 H780 L760 1800 H320Z" fill="#5A341E" stroke="${T}" stroke-width="5"/><path d="M300 1720 L330 1690 H750 L780 1720" fill="#7A4A2A" stroke="${T}" stroke-width="5"/></g>`;
+  v += `<clipPath id="covaClip"><rect x="266" y="1486" width="548" height="328"/></clipPath><g clip-path="url(#covaClip)"><rect id="s10b-concreto" x="266" y="1830" width="548" height="340" fill="#9A9CA4"/><rect id="s10b-conc2" x="266" y="1830" width="548" height="16" fill="#B8BAC2"/></g>`;
+  v += `<g id="s10b-balde"><path d="M680 1380 L760 1300 L860 1330 L800 1420Z" fill="#6A6C74" stroke="${T}" stroke-width="6"/><path id="s10b-jato" d="M690 1400 Q660 1460 640 1600" stroke="#9A9CA4" stroke-width="40" fill="none" stroke-linecap="round" opacity="0"/></g>`;
+  v += EXT('#2E2A22') + `</g>`;
+  scenes.push(v); }
+// S11 — até hoje… quantas foram? (56.95–fim)
+{ let v = `<g id="s11" class="scene"><rect width="1080" height="2300" fill="#06070C"/><g opacity=".25">` + castelo({ x: 90, base: 1700, w: 900, h: 1080, id: 's11c', placa: false, luzes: false }) + `</g><rect y="1300" width="1080" height="1000" fill="url(#nevoa)" opacity=".4"/>`;
+  v += `<circle cx="540" cy="1120" r="560" fill="url(#brilhoVerm)" id="s11-glow" opacity="0"/></g>`;
+  scenes.push(v); }
+$('#scenes').innerHTML = scenes.join('');
+fg.push(`<g id="fg-s2"><g id="fg-s2-in">${grade(-40, 0, 1160, 2300, 6)}</g></g>`);
+$('#fgs').innerHTML = fg.join('');
+
+// textos (coordenadas de TELA: o mundo está 320 px acima; legenda em y≈1530)
+$('#textos').innerHTML = `<g id="t-capa"><rect width="1080" height="1060" fill="url(#capaFundo)"/>
+    ${etiqueta('t-casoreal', 540, 170, 'CASO REAL', { fs: 58, rot: -3, cor: '#FFFFFF', fundo: VERM })}
+    ${titulo('t-capa1', 540, 330, 'O 1º SERIAL', { fs: 150, cor: '#FFFFFF', rot: -2 })}
+    ${titulo('t-capa2', 540, 520, 'KILLER', { fs: 210, cor: VERM, rot: -2 })}
+    ${titulo('t-capa3', 540, 720, 'DOS EUA?', { fs: 150, cor: '#FFFFFF', rot: -2 })}
+    ${carimbo('t-parte2', 540, 930, 'PARTE 2', { fs: 96, rot: -7 })}</g>` + [
+  etiqueta('t-stl', 540, 420, 'ST. LOUIS, 1894', { fs: 52, rot: -2 }),
+  carimbo('t-golpe', 540, 640, 'GOLPE PEQUENO', { fs: 78, rot: -7 }),
+  balao('t-psst', 320, 620, ['PSSST…'], { fs: 64, ponta: [40, 170] }),
+  etiqueta('t-hedge', 640, 300, 'MARION HEDGEPETH', { fs: 44, rot: 2 }),
+  etiqueta('t-hedge2', 640, 390, 'ASSALTANTE DE TRENS', { fs: 34, rot: 2 }),
+  balao('t-pago', 330, 600, ['TE PAGO', '500 DÓLARES!'], { fs: 62, ponta: [-20, 190] }),
+  carimbo('t-naopagou', 540, 560, 'NÃO PAGOU', { fs: 100, rot: -8 }),
+  etiqueta('t-policia', 640, 380, 'CONTOU TUDO À POLÍCIA', { fs: 44, rot: -2 }),
+  carimbo('t-naogolpe', 540, 1180, 'NÃO ERA GOLPE', { fs: 84, rot: -8 }),
+  titulo('t-verdade', 540, 1300, 'ERA DE VERDADE', { fs: 120, cor: VERM, rot: -4 }),
+  etiqueta('t-filhos', 540, 400, 'ALICE, NELLIE E HOWARD', { fs: 46, rot: -2 }),
+  carimbo('t-desap', 540, 1300, 'NUNCA MAIS VISTOS', { fs: 80, rot: -6 }),
+  etiqueta('t-boston', 540, 420, 'BOSTON, NOVEMBRO DE 1894', { fs: 44, rot: -2 }),
+  titulo('t-prova', 540, 700, 'E A PROVA?', { fs: 150, cor: '#FFFFFF', rot: -3 }),
+  etiqueta('t-geyer', 540, 400, 'DETETIVE FRANK GEYER', { fs: 48, rot: -2 }),
+  titulo('t-hotel', 540, 640, 'HOTEL POR HOTEL', { fs: 120, cor: '#FFFFFF', rot: -2 }),
+  titulo('t-casa', 540, 640, 'CASA POR CASA', { fs: 120, cor: '#FFFFFF', rot: -2 }),
+  etiqueta('t-toronto', 540, 400, 'TORONTO, 1895', { fs: 52, rot: 2 }),
+  titulo('t-triste', 540, 640, 'SEM FINAL FELIZ', { fs: 120, cor: VERM, rot: -3 }),
+  etiqueta('t-policiaentra', 540, 400, 'A POLÍCIA ENTRA NO CASTELO', { fs: 42, rot: -2 }),
+  etiqueta('t-agosto', 540, 400, 'AGOSTO DE 1895', { fs: 52, rot: -2 }),
+  titulo('t-quem', 540, 640, 'QUEM ATEOU?', { fs: 150, cor: '#FFFFFF', rot: -3 }),
+  titulo('t-27', 540, 1300, '27 MORTES', { fs: 130, cor: VERM, rot: -3 }),
+  etiqueta('t-vivas', 540, 1300, 'ALGUMAS ESTAVAM VIVAS', { fs: 50, rot: 2 }),
+  etiqueta('t-1896', 540, 380, '7 DE MAIO DE 1896', { fs: 52, rot: -2 }),
+  carimbo('t-enforcado', 540, 560, 'ENFORCADO', { fs: 100, rot: -8 }),
+  titulo('t-concreto', 540, 560, 'DEBAIXO DE CONCRETO', { fs: 100, cor: '#FFFFFF', rot: -2 }),
+  etiqueta('t-medo', 540, 720, 'MEDO DE ROUBAREM O CORPO', { fs: 40, rot: 2 }),
+  titulo('t-atehoje', 540, 380, 'ATÉ HOJE…', { fs: 130, cor: '#FFFFFF', rot: -2 }),
+  titulo('t-quantas', 540, 760, 'QUANTAS FORAM?', { fs: 150, cor: VERM, rot: -3 }),
+  etiqueta('t-comenta', 540, 1080, 'COMENTA AÍ ↓', { fs: 64, rot: 2, cor: '#FFFFFF', fundo: VERM }),
+].join('') + `
+  <g id="t-seguro" transform="translate(760 560) rotate(4)"><rect x="-180" y="-230" width="360" height="460" fill="${PAPEL}" stroke="#9A8A66" stroke-width="3"/><text class="maq" x="0" y="-170" font-size="34" fill="${T}" text-anchor="middle">SEGURO DE VIDA</text><path d="M-150 -145 H150" stroke="${T}" stroke-width="3"/>${[0, 1, 2, 3].map(k => `<path d="M-140 ${-110 + k * 34} H${100 - k * 20}" stroke="#8A7A56" stroke-width="7"/>`).join('')}<text x="0" y="100" font-size="88" fill="#2E7A3A" text-anchor="middle">$10.000</text><path d="M-120 190 Q-60 150 0 190 T120 180" stroke="${T}" stroke-width="5" fill="none"/></g>
+  ${foto('t-pitezel', 300, 560, -5, 'BENJAMIN PITEZEL')}
+  <g id="t-jornal">${jornal('t-jornal-in', 540, 800, -3, 'HOMEM ACHADO|MORTO', 'FILADÉLFIA, SETEMBRO DE 1894')}</g>
+  <g id="t-fotos">${foto('t-k1', 240, 740, -6, 'ALICE')}${foto('t-k2', 540, 700, 3, 'NELLIE')}${foto('t-k3', 840, 750, -3, 'HOWARD')}</g>
+  <g id="t-jornais">${jornal('t-j1', 330, 760, -8, 'CASTELO|DOS HORRORES', 'CHICAGO, JULHO DE 1895', { w: 560, h: 700 })}${jornal('t-j2', 760, 860, 6, 'CHOQUE|NO PAÍS', 'QUARTOS SECRETOS', { w: 520, h: 640 })}</g>
+  <g id="t-interroga" transform="translate(540 1050)"><text x="0" y="0" font-size="260" fill="${VERM}" stroke="${T}" stroke-width="16" paint-order="stroke" text-anchor="middle">?</text></g>`;
+
+// ===================== ATORES =====================
+const ATORES = [];
+function ator(camada, escala, janelas, opts = {}) {
+  const g = document.createElementNS(NS, 'g'); $(camada).appendChild(g);
+  const b = new Boneco(g, { escala, seed: 4 + ATORES.length * 7, ...opts });
+  ATORES.push({ b, g, janelas }); return b;
+}
+const HOLMES = 'holmes';
+// S0 — Holmes na frente do Castelo
+const H0 = ator('#atores', 0.62, [[0, 4.7]], { figurino: HOLMES });
+H0.base(0, 4.7, 'parado', { x: 540, y: 1730, vista: 'frente' }); H0.expressao(0, 4.7, 'desconfiado'); H0.braco('ambos', 0.2, 4.7, 'cintura');
+// S1 — o policial leva Holmes
+const H1 = ator('#atores', 0.8, [[4.7, 8.4]], { figurino: HOLMES });
+H1.base(4.7, 7.6, 'andar', { de: [-100, 1760], ate: [520, 1760] }); H1.base(7.6, 8.4, 'parado', { x: 520, y: 1760, vista: 'frente' });
+H1.expressao(4.7, 8.4, 'serio'); H1.braco('ambos', 4.7, 8.4, 'pose', { o: 10, c: -40 }); H1.cabeca(7.6, 8.4, { gesto: 'nao' });
+const pol1 = ator('#atores', 0.82, [[4.7, 8.4]], { figurino: 'policial' });
+pol1.base(4.7, 7.6, 'andar', { de: [-260, 1770], ate: [360, 1770] }); pol1.base(7.6, 8.4, 'parado', { x: 360, y: 1770, vista: 'perfil', dir: 1 });
+pol1.braco('d', 4.7, 8.4, 'alcancar', { alvo: [470, 1380] }); pol1.expressao(4.7, 8.4, 'serio');
+// S2 — Holmes e o bandido na cela
+const H2 = ator('#atores', 0.82, [[8.4, 19.1]], { figurino: { preset: 'presidiario', bigode: true } });
+H2.base(8.4, 19.1, 'sentar', { x: 290, y: 1420, chao: 1660, dir: 1 });
+H2.cabeca(9.2, 10.4, { inclinar: 12, virar: 0.9 }); H2.braco('e', 9.2, 10.4, 'pose', { o: -60, c: -110 }); H2.expressao(8.4, 15.0, 'desconfiado');
+H2.braco('d', 11.2, 14.8, 'explicar'); H2.expressao(15.0, 16.8, 'feliz'); H2.braco('d', 15.2, 16.6, 'joinha');
+H2.expressao(16.8, 19.1, 'desconfiado'); H2.cabeca(16.9, 19.1, { virar: 0.2 });
+const band = ator('#atores', 0.86, [[8.4, 19.1]], { figurino: { preset: 'presidiario', cor: '#D8D2C0', barba: true, cabelo: 'medio', corCabelo: '#1E1612' } });
+band.base(8.4, 17.5, 'sentar', { x: 600, y: 1420, chao: 1660, dir: -1 });
+band.cabeca(9.2, 15.0, { virar: -0.8 }); band.expressao(8.4, 12.5, 'serio'); band.expressao(12.5, 15.0, 'pensando'); band.braco('e', 12.5, 15.0, 'queixo');
+band.expressao(15.0, 16.8, 'feliz'); band.expressao(16.8, 19.1, 'bravo');
+band.base(17.5, 17.9, 'parado', { x: 640, y: 1660, vista: 'perfil', dir: 1, transicao: 0.4 });
+band.base(17.9, 18.8, 'andar', { de: [640, 1660], ate: [860, 1660] }); band.base(18.8, 19.1, 'parado', { x: 860, y: 1660, vista: 'perfil', dir: 1 });
+band.braco('d', 18.6, 19.1, 'estender');
+// S4 — Holmes e as três crianças na estação
+const H4 = ator('#atores', 0.8, [[23.5, 26.9]], { figurino: HOLMES });
+H4.base(23.5, 26.9, 'andar', { de: [-60, 1720], ate: [560, 1720] }); H4.expressao(23.5, 26.9, 'feliz');
+const kAlice = ator('#atores', 0.62, [[23.5, 26.9]], { figurino: 'menina1890' });
+kAlice.base(23.5, 26.9, 'andar', { de: [-260, 1740], ate: [360, 1740] }); kAlice.expressao(23.5, 26.9, 'preocupado');
+const kNellie = ator('#atores', 0.52, [[23.5, 26.9]], { figurino: { preset: 'menina1890', cor: '#4A6A5A', corCabelo: '#3A2418' } });
+kNellie.base(23.5, 26.9, 'andar', { de: [-420, 1760], ate: [200, 1760] }); kNellie.expressao(23.5, 26.9, 'normal');
+const kHoward = ator('#atores', 0.44, [[23.5, 26.9]], { figurino: 'menino1890' });
+kHoward.base(23.5, 26.9, 'andar', { de: [-560, 1775], ate: [60, 1775] }); kHoward.expressao(23.5, 26.9, 'normal');
+// S5 — preso em Boston
+const H5 = ator('#atores', 0.82, [[29.45, 32.75]], { figurino: HOLMES });
+H5.base(29.45, 32.75, 'parado', { x: 620, y: 1760, vista: 'perfil', dir: 1 });
+H5.expressao(29.45, 30.3, 'feliz'); H5.expressao(30.3, 31.4, 'susto'); H5.cabeca(30.3, 31.4, { virar: -0.9 }); H5.braco('ambos', 30.5, 32.75, 'cima');
+H5.expressao(31.4, 32.75, 'desconfiado'); H5.cabeca(31.5, 32.75, { virar: 0 });
+const pol5 = ator('#atores', 0.84, [[29.45, 32.75]], { figurino: 'policial' });
+pol5.base(29.45, 30.4, 'andar', { de: [-120, 1770], ate: [420, 1770] }); pol5.base(30.4, 32.75, 'parado', { x: 420, y: 1770, vista: 'perfil', dir: 1 });
+pol5.braco('d', 30.3, 32.75, 'apontar'); pol5.expressao(29.45, 32.75, 'determinado');
+const pol5b = ator('#atoresFundo', 0.6, [[29.45, 32.75]], { figurino: { preset: 'policial', corChapeu: '#141A30' } });
+pol5b.base(29.45, 30.6, 'andar', { de: [1200, 1680], ate: [880, 1680] }); pol5b.base(30.6, 32.75, 'parado', { x: 880, y: 1680, vista: 'perfil', dir: -1 });
+// S6 — o detetive Geyer
+const G1 = ator('#atores', 0.84, [[32.75, 36.45]], { figurino: 'detetive' });
+G1.base(32.75, 36.45, 'andar', { de: [-120, 1760], ate: [760, 1760] }); G1.expressao(32.75, 36.45, 'determinado');
+const G2 = ator('#atores', 0.84, [[36.45, 38.15]], { figurino: 'detetive' });
+G2.base(36.45, 38.15, 'andar', { de: [-120, 1760], ate: [560, 1760] }); G2.expressao(36.45, 38.15, 'serio'); G2.cabeca(36.6, 38.15, { virar: 0.7, baixar: -6 });
+const G3 = ator('#atores', 0.84, [[38.15, 41.15]], { figurino: 'detetive' });
+G3.base(38.15, 39.5, 'andar', { de: [-80, 1760], ate: [500, 1760] }); G3.base(39.5, 41.15, 'parado', { x: 500, y: 1760, vista: 'frente' });
+G3.expressao(38.15, 39.6, 'serio'); G3.expressao(39.6, 41.15, 'triste'); G3.cabeca(39.7, 41.15, { baixar: 16 }); G3.braco('d', 39.8, 41.15, 'pose', { o: 20, c: -20 });
+// S7 — policiais entram no Castelo
+const p7a = ator('#atores', 0.5, [[41.15, 42.9]], { figurino: 'policial' });
+p7a.base(41.15, 42.9, 'andar', { de: [-80, 1700], ate: [500, 1650] });
+const p7b = ator('#atores', 0.5, [[41.15, 43.6]], { figurino: { preset: 'policial', corChapeu: '#141A30' } });
+p7b.base(41.15, 41.6, 'parado', { x: -200, y: 1700, vista: 'perfil', dir: 1 }); p7b.base(41.6, 43.6, 'andar', { de: [-200, 1700], ate: [480, 1650] });
+const G7 = ator('#atores', 0.52, [[41.15, 44.7]], { figurino: 'detetive' });
+G7.base(41.15, 44.7, 'parado', { x: 820, y: 1700, vista: 'perfil', dir: -1 }); G7.expressao(41.15, 44.7, 'serio');
+// S10 — Holmes atrás da grade da prisão
+const H10 = ator('#atoresFundo', 0.42, [[52.25, 54.6]], { figurino: { preset: 'presidiario', bigode: true } });
+H10.base(52.25, 54.6, 'parado', { x: 540, y: 1650, vista: 'frente' }); H10.expressao(52.25, 54.6, 'desconfiado');
+
+$('#props').innerHTML = `<g id="p-lanterna"><g transform="translate(0 40)"><path d="M0 -40 V-20" stroke="${T}" stroke-width="4"/><rect x="-14" y="-20" width="28" height="36" rx="4" fill="#FFE2A0" stroke="${T}" stroke-width="4"/><circle cx="0" cy="0" r="60" fill="url(#brilho)"/></g></g><g id="p-lupa"><circle cx="0" cy="-10" r="22" fill="#CFE8FF" fill-opacity=".5" stroke="#8A6A3A" stroke-width="7"/><path d="M14 6 L30 26" stroke="${T}" stroke-width="8" stroke-linecap="round"/></g>`;
+const PROPS = [
+  { el: $('#p-lanterna'), ator: p7a, mao: 'd', janelas: [[41.15, 42.9]], escala: 0.6 },
+  { el: $('#p-lupa'), ator: G1, mao: 'e', janelas: [[32.75, 36.45]], escala: 1 },
+];
+// ===================== TIMELINE =====================
+const tl = gsap.timeline({ paused: true, defaults: { ease: 'power2.inOut' } });
+const FADE = 0.22;
+$$('.scene').forEach(s => gsap.set(s, { autoAlpha: 0 }));
+$$('#fgs > g').forEach(s => gsap.set(s, { autoAlpha: 0 }));
+$$('#textos > g').forEach(s => gsap.set(s, { autoAlpha: 0 }));
+function show(sel, t0, t1) {
+  if (t0 === 0) { gsap.set(sel, { autoAlpha: 1 }); if (t1 != null) tl.to(sel, { autoAlpha: 0, duration: FADE, ease: 'none' }, t1); return; }   // 1º quadro = capa do vídeo
+  tl.fromTo(sel, { autoAlpha: 0 }, { autoAlpha: 1, duration: t0 === 0 ? 0.01 : FADE, ease: 'none', immediateRender: false }, t0);
+  if (t1 != null) tl.to(sel, { autoAlpha: 0, duration: FADE, ease: 'none' }, t1);
+}
+function pop(sel, t, d = 0.4, ease = 'back.out(2.2)') {
+  tl.fromTo(sel, { autoAlpha: 0, scale: 0.3, transformOrigin: '50% 50%' }, { autoAlpha: 1, scale: 1, duration: d, ease, immediateRender: false }, t);
+}
+function bater(sel, t) {   // carimbo: cai grande e bate
+  tl.fromTo(sel, { autoAlpha: 0, scale: 2.4, transformOrigin: '50% 50%' }, { autoAlpha: 1, scale: 1, duration: 0.22, ease: 'power4.in', immediateRender: false }, t);
+}
+function hide(sel, t, d = 0.2) { tl.to(sel, { autoAlpha: 0, duration: d, ease: 'power1.in' }, t); }
+function camera(t0, t1, de, ate, origem = '540 960') {
+  tl.fromTo('#cam', { scale: de, svgOrigin: origem }, { scale: ate, svgOrigin: origem, duration: t1 - t0, ease: 'sine.inOut', immediateRender: false }, t0);
+}
+function tremer(sel, t, dur, forca = 6) { tl.to(sel, { x: `+=${forca}`, duration: 0.05, repeat: Math.round(dur / 0.05), yoyo: true, ease: 'none' }, t).set(sel, { x: 0 }, t + dur + 0.06); }
+function relampago(t) { tl.to('#flash', { opacity: 0.85, duration: 0.05, ease: 'none' }, t).to('#flash', { opacity: 0.1, duration: 0.08 }, t + 0.06).to('#flash', { opacity: 0.6, duration: 0.05 }, t + 0.16).to('#flash', { opacity: 0, duration: 0.5, ease: 'power2.out' }, t + 0.22); }
+
+// S0 — capa + recapitulação
+show('#s0', 0, 4.7); camera(0, 4.7, 1.0, 1.08, '540 1150');
+gsap.set('#t-capa', { autoAlpha: 1 });
+tl.fromTo('#t-capa2', { scale: 1, transformOrigin: '50% 50%' }, { scale: 1.07, duration: 0.45, repeat: 7, yoyo: true, ease: 'sine.inOut', immediateRender: false }, 0.3);
+tl.to('#t-capa', { autoAlpha: 0, y: -60, duration: 0.3, ease: 'power2.in' }, 4.35);
+const jan0 = $$('#s0c .luz'); jan0.forEach((el, i) => tl.to(el, { opacity: 0, duration: 0.06, ease: 'none' }, 3.5 + ((i * 7) % jan0.length) * 0.02));
+// S1 — St. Louis
+show('#s1', 4.7, 8.4); camera(4.7, 8.4, 1.0, 1.05, '540 1300');
+pop('#t-stl', 4.95); hide('#t-stl', 7.3); bater('#t-golpe', 7.5); hide('#t-golpe', 8.3);
+// S2 — a cela
+show('#s2', 8.4, 19.1); show('#fg-s2', 8.4, 19.1); camera(8.4, 19.1, 1.08, 1.0, '540 1300');
+gsap.set('#fg-s2-in', { opacity: 0 }); tl.fromTo('#fg-s2-in', { opacity: 0, scale: 1.25, svgOrigin: '540 1100' }, { opacity: 0.9, scale: 1, duration: 0.8, ease: 'power2.out', immediateRender: false }, 17.7);
+pop('#t-psst', 9.3); hide('#t-psst', 10.0);
+pop('#t-hedge', 10.15); pop('#t-hedge2', 10.4); hide('#t-hedge', 11.1); hide('#t-hedge2', 11.1);
+pop('#t-seguro', 11.25, 0.45); pop('#t-pitezel', 12.6, 0.45); hide('#t-seguro', 15.0); hide('#t-pitezel', 15.0);
+pop('#t-pago', 15.2); hide('#t-pago', 16.8);
+bater('#t-naopagou', 17.0); hide('#t-naopagou', 17.9);
+pop('#t-policia', 18.1); hide('#t-policia', 19.0);
+// S3 — o jornal
+show('#s3', 19.1, 23.5); camera(19.1, 23.5, 1.0, 1.0);
+tl.fromTo('#t-jornal', { autoAlpha: 0, scale: 0.1, rotation: -540, svgOrigin: '540 800' }, { autoAlpha: 1, scale: 1, rotation: 0, duration: 0.7, ease: 'power3.out', immediateRender: false }, 19.2);
+tl.to('#t-jornal', { scale: 1.06, svgOrigin: '540 800', duration: 3.4, ease: 'sine.inOut' }, 19.9); hide('#t-jornal', 23.35);
+bater('#t-naogolpe', 21.5); hide('#t-naogolpe', 22.4); pop('#t-verdade', 22.5, 0.35, 'back.out(3)'); hide('#t-verdade', 23.35);
+// S4 — estação
+show('#s4', 23.5, 26.9); camera(23.5, 26.9, 1.0, 1.05, '540 1300');
+$$('#s4-vapor .vap').forEach((c, i) => tl.fromTo(c, { y: 0, opacity: 0.35 }, { y: -260, opacity: 0, duration: 1.4, repeat: 1, ease: 'power1.out', immediateRender: false }, 23.5 + i * 0.4));
+pop('#t-filhos', 24.6); hide('#t-filhos', 26.7);
+// S4b — mapa
+show('#s4b', 26.9, 29.45); camera(26.9, 29.45, 1.0, 1.04);
+tl.to('#s4b-rota', { attr: { 'stroke-dashoffset': 0 }, duration: 1.4, ease: 'none' }, 27.1);
+[0, 1, 2, 3].forEach(i => pop(`#s4b-c${i}`, 27.05 + i * 0.4, 0.3));
+pop('#t-fotos', 28.4, 0.35); bater('#t-desap', 28.75); hide('#t-fotos', 29.35); hide('#t-desap', 29.35);
+// S5 — Boston
+show('#s5', 29.45, 32.75); camera(29.45, 32.75, 1.0, 1.06, '600 1300');
+pop('#t-boston', 29.6); hide('#t-boston', 31.3); pop('#t-prova', 31.45, 0.4, 'back.out(2.6)'); hide('#t-prova', 32.6);
+// S6 — Geyer
+show('#s6a', 32.75, 36.45); camera(32.75, 36.45, 1.0, 1.04, '540 1300');
+pop('#t-geyer', 33.1); hide('#t-geyer', 35.2); pop('#t-hotel', 35.4); hide('#t-hotel', 36.35);
+show('#s6b', 36.45, 38.15); camera(36.45, 38.15, 1.0, 1.04, '540 1300');
+pop('#t-casa', 36.55); hide('#t-casa', 38.05);
+show('#s6c', 38.15, 41.15); camera(38.15, 41.15, 1.0, 1.1, '540 1300');
+pop('#t-toronto', 38.3); hide('#t-toronto', 39.5);
+tl.to('#s6c-cinza', { opacity: 1, duration: 0.8 }, 39.7).to('#s6c-escuro', { opacity: 0.35, duration: 0.8 }, 39.7);
+pop('#t-triste', 40.0); hide('#t-triste', 41.0);
+// S7 — polícia no Castelo + jornais
+show('#s7', 41.15, 44.7); camera(41.15, 44.7, 1.0, 1.06, '540 1250');
+pop('#t-policiaentra', 41.3); hide('#t-policiaentra', 42.8);
+tl.fromTo('#t-j1', { autoAlpha: 0, scale: 0.2, rotation: -200, transformOrigin: '50% 50%' }, { autoAlpha: 1, scale: 1, rotation: 0, duration: 0.45, ease: 'power3.out', immediateRender: false }, 42.95);
+tl.fromTo('#t-j2', { autoAlpha: 0, scale: 0.2, rotation: 200, transformOrigin: '50% 50%' }, { autoAlpha: 1, scale: 1, rotation: 0, duration: 0.45, ease: 'power3.out', immediateRender: false }, 43.6);
+gsap.set('#t-jornais', { autoAlpha: 1 }); gsap.set(['#t-j1', '#t-j2'], { autoAlpha: 0 }); gsap.set('#s9 .vit', { autoAlpha: 0 }); hide('#t-j1', 44.6); hide('#t-j2', 44.6);
+// S8 — fogo
+show('#s8', 44.7, 48.45); camera(44.7, 48.45, 1.05, 1.0, '540 1100');
+$$('#s8 .chama').forEach((c, i) => tl.fromTo(c, { scaleY: 0.85, scaleX: 1.05, transformOrigin: '50% 100%' }, { scaleY: 1.15, scaleX: 0.92, duration: 0.18 + (i % 3) * 0.05, repeat: Math.round(3.7 / (0.18 + (i % 3) * 0.05)), yoyo: true, ease: 'sine.inOut', immediateRender: false }, 44.7));
+$$('#s8 .fum').forEach((c, i) => tl.fromTo(c, { y: 0 }, { y: -160, x: 30, duration: 3.7, ease: 'none', immediateRender: false }, 44.7));
+pop('#t-agosto', 44.9); hide('#t-agosto', 46.7); pop('#t-quem', 46.9, 0.4, 'back.out(2.6)'); pop('#t-interroga', 47.1, 0.35); hide('#t-quem', 48.35); hide('#t-interroga', 48.35);
+// S9 — 27 mortes
+show('#s9', 48.45, 52.25); camera(48.45, 52.25, 1.0, 1.05, '540 1150');
+$$('#s9 .vit').forEach((v, i) => tl.fromTo(v, { autoAlpha: 0, scale: 0.2, transformOrigin: '50% 50%' }, { autoAlpha: 1, scale: 1, duration: 0.2, ease: 'back.out(2)', immediateRender: false }, 48.6 + i * 0.03));
+pop('#t-27', 49.35, 0.35, 'back.out(3)'); hide('#t-27', 50.45);
+[3, 11, 20].forEach((k, j) => tl.to(`#s9-v${k} .viva`, { opacity: 1, duration: 0.2 }, 50.7 + j * 0.25));
+pop('#t-vivas', 51.0); hide('#t-vivas', 52.15);
+// S10 — prisão e túmulo
+show('#s10', 52.25, 54.6); camera(52.25, 54.6, 1.0, 1.06, '540 1300');
+pop('#t-1896', 52.4); bater('#t-enforcado', 52.6); hide('#t-1896', 54.45); hide('#t-enforcado', 54.45);
+show('#s10b', 54.6, 56.95); camera(54.6, 56.95, 1.0, 1.05, '540 1500');
+tl.to('#s10b-balde', { rotation: -25, svgOrigin: '760 1360', duration: 0.4 }, 54.9).to('#s10b-jato', { opacity: 1, duration: 0.15 }, 55.2);
+tl.to('#s10b-concreto', { attr: { y: 1500 }, duration: 1.5, ease: 'power1.inOut' }, 55.3).to('#s10b-conc2', { attr: { y: 1500 }, duration: 1.5, ease: 'power1.inOut' }, 55.3);
+tl.to('#s10b-jato', { opacity: 0, duration: 0.2 }, 56.7);
+pop('#t-concreto', 55.2); pop('#t-medo', 55.8); hide('#t-concreto', 56.85); hide('#t-medo', 56.85);
+// S11 — final
+show('#s11', 56.95); camera(56.95, END, 1.0, 1.06, '540 1100');
+tl.to('#s11-glow', { opacity: 1, duration: 1.0 }, 57.2);
+pop('#t-atehoje', 57.05); pop('#t-quantas', 59.6, 0.45, 'back.out(2.6)'); pop('#t-comenta', 61.4);
+tl.to('#t-quantas', { scale: 1.05, transformOrigin: '50% 50%', duration: 0.5, repeat: 4, yoyo: true, ease: 'sine.inOut' }, 60.2);
+tl.to('#t-comenta', { scale: 1.08, transformOrigin: '50% 50%', duration: 0.4, repeat: 4, yoyo: true, ease: 'sine.inOut' }, 61.9);
+tl.set({}, {}, END);
+
+// ===================== LEGENDA (Anton branca, palavra falada em vermelho) — EMBAIXO, sobre o chão =====================
+const leg = Legenda($('#legenda'), window.PALAVRAS || [], { y: 1530, fs: 70, destaque: '#FF2A3A', fonte: "'Anton', 'DejaVu Sans', sans-serif", enfase: ['CASTELO', 'MORTO', 'VERDADE', 'FOGO', 'VIVAS', 'CONCRETO'] });
+// ===================== API DO RENDER =====================
+function opacidade(t, janelas) {
+  let o = 0;
+  for (const [a, b] of janelas) {
+    if (t < a || t > b + FADE) continue;
+    const ent = a === 0 ? 1 : Math.min(1, (t - a) / FADE), sai = t <= b ? 1 : 1 - (t - b) / FADE;
+    o = Math.max(o, Math.min(ent, sai));
+  }
+  return o;
+}
+function desenharAtores(t) {
+  for (const A of ATORES) {
+    const o = opacidade(t, A.janelas);
+    A.g.style.display = o > 0 ? '' : 'none';
+    A.g.setAttribute('opacity', o.toFixed(3));
+    if (o > 0) A.b.desenhar(t);
+  }
+  for (const P of PROPS) {
+    const o = opacidade(t, P.janelas);
+    if (o <= 0) { P.el.style.display = 'none'; continue; }
+    const [x, y] = P.ator.mao(P.mao);
+    P.el.style.display = '';
+    P.el.setAttribute('opacity', o.toFixed(3));
+    P.el.setAttribute('transform', `translate(${x.toFixed(1)} ${y.toFixed(1)}) scale(${P.escala})`);
+  }
+}
+window.__timeline = tl;
+window.__duration = END;
+window.__seek = t => { tl.seek(t, false); desenharAtores(t); leg.seek(t); };
+window.__seek(0);
+if (!navigator.webdriver) {
+  tl.eventCallback('onUpdate', () => { const t = tl.time(); desenharAtores(t); leg.seek(t); });
+  document.addEventListener('click', () => tl.paused() ? tl.play() : tl.pause());
+}
+</script>
+</body>
+</html>
