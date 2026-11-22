@@ -76,14 +76,14 @@
     </pattern>
     <clipPath id="obraClip"><rect id="obraRect" x="0" y="1360" width="1080" height="1000"/></clipPath>
   </defs>
-  <g id="cam">
+  <g id="cam"><g id="mundo" transform="translate(0 -320)">
     <g id="scenes"></g>
     <g id="atoresFundo"></g>
     <g id="meio"></g>
     <g id="atores"></g>
     <g id="props"></g>
     <g id="fgs"></g>
-  </g>
+  </g></g>
   <g id="textos"></g>
   <rect id="apagao" width="1080" height="1920" fill="#000" opacity="0"/>
   <rect width="1080" height="1920" fill="url(#vinheta)" pointer-events="none"/>
@@ -285,7 +285,7 @@ const fg = [];
   v += rua(1640, 300) + poste(70, 1720, 0.95) + poste(1010, 1720, 0.95);
   v += `<g id="s1-sombra" opacity="0"><path d="M0 0" /></g>`;
   v += `<g id="s1-silh" opacity="0"><rect x="0" y="0" width="1" height="1" fill="none"/></g>`;
-  v += nevoa(1900) + `</g>`;
+  v += nevoa(1900) + `<rect x="-200" y="1910" width="2600" height="420" fill="url(#parale)"/><rect x="-200" y="1910" width="2600" height="420" fill="#000" opacity=".45"/></g>`;
   scenes.push(v); }
 // S2 — o quadro de investigação: quem era ele (5.15–14.85)
 { let v = `<g id="s2" class="scene"><rect width="1080" height="1920" fill="#2A1E18"/>`;
@@ -296,7 +296,7 @@ const fg = [];
   v += `<g stroke="${VERM}" stroke-width="4" fill="none" opacity=".9"><path d="M150 470 Q540 560 880 510"/><path d="M150 470 Q300 900 170 1230"/><path d="M880 510 Q760 900 900 1210"/></g>`;
   v += arandela(540, 300) + `<rect y="1500" width="1080" height="420" fill="#1E1410"/><rect y="1500" width="1080" height="420" fill="url(#escuroBaixo)"/>`;
   v += `<ellipse id="s2-sombraH" cx="560" cy="1060" rx="230" ry="420" fill="#000" opacity="0"/>`;
-  v += `<rect id="s2-verm" width="1080" height="1920" fill="${VERM}" opacity="0" style="mix-blend-mode:multiply"/></g>`;
+  v += `<rect id="s2-verm" width="1080" height="1920" fill="${VERM}" opacity="0" style="mix-blend-mode:multiply"/><rect x="-200" y="1910" width="2600" height="420" fill="#1E1410"/><rect x="-200" y="1910" width="2600" height="420" fill="#000" opacity=".45"/></g>`;
   scenes.push(v); }
 // S3 — a farmácia da viúva (14.85–24.6)
 { let v = `<g id="s3" class="scene">` + interior({ papel: 'papelVerde', piso: 1600, rodape: 1340 });
@@ -305,7 +305,7 @@ const fg = [];
   v += `<rect x="470" y="560" width="580" height="80" fill="#1A1410" stroke="${T}" stroke-width="5"/><g id="s3-placa1"><text x="760" y="622" font-size="58" fill="#F2C266" text-anchor="middle" letter-spacing="8">FARMÁCIA</text></g>`;
   v += `<g id="s3-placa2" opacity="0"><rect x="470" y="560" width="580" height="80" fill="#1A1410" stroke="${T}" stroke-width="5"/><text x="760" y="622" font-size="50" fill="#F2C266" text-anchor="middle" letter-spacing="4">FARMÁCIA HOLMES</text></g>`;
   v += relogio(250, 520, 70, 's3r') + arandela(130, 860) + arandela(980, 380);
-  v += `<g id="s3-luz"><rect width="1080" height="1920" fill="#000" opacity="0" id="s3-pisca"/></g></g>`;
+  v += `<g id="s3-luz"><rect width="1080" height="1920" fill="#000" opacity="0" id="s3-pisca"/></g><rect x="-200" y="1910" width="2600" height="420" fill="url(#tabua)"/><rect x="-200" y="1910" width="2600" height="420" fill="#000" opacity=".45"/></g>`;
   scenes.push(v);
   fg.push(`<g id="fg-s3"><rect x="480" y="1330" width="600" height="60" fill="#6A4228" stroke="${T}" stroke-width="5"/><rect x="500" y="1390" width="560" height="250" fill="#4A2C1A" stroke="${T}" stroke-width="5"/>${[0, 1, 2].map(k => `<rect x="${530 + k * 180}" y="1420" width="140" height="190" fill="none" stroke="#2A180E" stroke-width="5"/>`).join('')}${frasco(620, 1330, 0.8, '#8A2A2A')}${frasco(960, 1330, 0.7, '#2A4A8A')}<rect x="760" y="1300" width="90" height="30" fill="#C9A24A" stroke="${T}" stroke-width="4"/></g>`); }
 // S4 — do outro lado da rua: o Castelo sobe (24.6–30.0)
@@ -314,14 +314,14 @@ const fg = [];
   v += `<g clip-path="url(#obraClip)">` + castelo({ x: 130, base: 1500, w: 820, h: 1000, id: 's4c', placa: false }) + `</g>`;
   v += rua(1500, 420) + `<rect x="0" y="1680" width="1080" height="240" fill="#3A3C44"/><rect x="0" y="1680" width="1080" height="12" fill="#6A6C74" stroke="${T}" stroke-width="3"/>`;
   v += poste(1000, 1700, 0.9) + `<g transform="translate(-30 0)"><rect x="0" y="1180" width="300" height="500" fill="#4A3A2E" stroke="${T}" stroke-width="6"/><rect x="20" y="1200" width="260" height="70" fill="#1A1410" stroke="${T}" stroke-width="4"/><text x="150" y="1250" font-size="34" fill="#F2C266" text-anchor="middle">FARMÁCIA HOLMES</text><rect x="40" y="1300" width="160" height="180" fill="#E8B865" opacity=".8" stroke="${T}" stroke-width="4"/></g>`;
-  v += nevoa(1900) + `</g>`;
+  v += nevoa(1900) + `<rect x="-200" y="1910" width="2600" height="420" fill="#3A3C44"/><rect x="-200" y="1910" width="2600" height="420" fill="#000" opacity=".45"/></g>`;
   scenes.push(v); }
 // S5a — corredor sem saída (30.0–32.15)
 { let v = `<g id="s5a" class="scene">` + interior({ piso: 1620, rodape: 1400 });
   [140, 420].forEach(x => { v += `<rect x="${x}" y="1000" width="170" height="620" fill="#3A2016" stroke="${T}" stroke-width="6"/><rect x="${x + 20}" y="1030" width="130" height="250" fill="#2A160E"/><rect x="${x + 20}" y="1310" width="130" height="280" fill="#2A160E"/><circle cx="${x + 145}" cy="1320" r="10" fill="#C9A24A" stroke="${T}" stroke-width="3"/>`; });
   v += arandela(330, 700) + arandela(640, 700);
   v += `<rect x="840" y="80" width="240" height="1540" fill="url(#tijolo)" stroke="${T}" stroke-width="8"/><rect x="840" y="80" width="40" height="1540" fill="#000" opacity=".35"/>`;
-  v += `<g id="s5a-x" opacity="0"><path d="M880 1050 L1040 1250 M1040 1050 L880 1250" stroke="${VERM}" stroke-width="26" stroke-linecap="round"/></g></g>`;
+  v += `<g id="s5a-x" opacity="0"><path d="M880 1050 L1040 1250 M1040 1050 L880 1250" stroke="${VERM}" stroke-width="26" stroke-linecap="round"/></g><rect x="-200" y="1910" width="2600" height="420" fill="url(#tabua)"/><rect x="-200" y="1910" width="2600" height="420" fill="#000" opacity=".45"/></g>`;
   scenes.push(v); }
 // S5b — porta que só abre por fora (32.15–33.8)
 { let v = `<g id="s5b" class="scene">` + interior({ piso: 1640, rodape: 1400 });
@@ -329,7 +329,7 @@ const fg = [];
   v += `<rect x="620" y="830" width="260" height="330" fill="none" stroke="#3A2012" stroke-width="8"/><rect x="620" y="1200" width="260" height="400" fill="none" stroke="#3A2012" stroke-width="8"/>`;
   v += `<g id="s5b-buraco"><circle cx="870" cy="1240" r="16" fill="#0A0604" stroke="#8A6A3A" stroke-width="5"/><rect x="866" y="1250" width="8" height="20" fill="#0A0604"/></g>`;
   v += `<g id="s5b-semMac"><circle cx="870" cy="1180" r="30" fill="none" stroke="${VERM}" stroke-width="8" stroke-dasharray="10 8"/></g>`;
-  v += arandela(280, 680) + `<rect x="0" y="0" width="1080" height="1920" fill="#000" opacity=".15"/></g>`;
+  v += arandela(280, 680) + `<rect x="0" y="0" width="1080" height="1920" fill="#000" opacity=".15"/><rect x="-200" y="1910" width="2600" height="420" fill="url(#tabua)"/><rect x="-200" y="1910" width="2600" height="420" fill="#000" opacity=".45"/></g>`;
   scenes.push(v); }
 // S5c — escada para a parede (33.8–35.55)
 const DEG = { x0: 300, w: 80, h: 62, n: 7, base: 1660 };
@@ -338,7 +338,7 @@ const chaoEscada = x => { const k = Math.floor((x - DEG.x0) / DEG.w); return x <
   for (let k = 0; k < DEG.n; k++) { const x = DEG.x0 + k * DEG.w, y = DEG.base - DEG.h * (k + 1); v += `<rect x="${x}" y="${y}" width="${1080 - x}" height="${DEG.h}" fill="#5A3A26" stroke="${T}" stroke-width="4"/><rect x="${x}" y="${y}" width="${DEG.w}" height="10" fill="#7A5236"/>`; }
   v += `<path d="M${DEG.x0} ${DEG.base - 200} L${DEG.x0 + DEG.n * DEG.w} ${DEG.base - DEG.h * DEG.n - 200}" stroke="#3A2012" stroke-width="12"/>`;
   v += `<rect x="0" y="0" width="1080" height="${DEG.base - DEG.h * DEG.n - 300}" fill="url(#tijolo)" stroke="${T}" stroke-width="8"/><rect x="0" y="${DEG.base - DEG.h * DEG.n - 320}" width="1080" height="24" fill="#3A2016" stroke="${T}" stroke-width="5"/>`;
-  v += arandela(160, 1120) + `<g id="s5c-x" opacity="0"><path d="M720 640 L880 820 M880 640 L720 820" stroke="${VERM}" stroke-width="26" stroke-linecap="round"/></g></g>`;
+  v += arandela(160, 1120) + `<g id="s5c-x" opacity="0"><path d="M720 640 L880 820 M880 640 L720 820" stroke="${VERM}" stroke-width="26" stroke-linecap="round"/></g><rect x="-200" y="1910" width="2600" height="420" fill="url(#tabua)"/><rect x="-200" y="1910" width="2600" height="420" fill="#000" opacity=".45"/></g>`;
   scenes.push(v); }
 // S5d — o prédio em corte: labirinto, pedreiros trocados, a planta rasgada (35.55–39.7)
 { let v = `<g id="s5d" class="scene">` + ceuNoite({ lua: null, seed: 9 }) + silhuetaCidade(1500, '#0E1524', 11);
@@ -353,7 +353,7 @@ const chaoEscada = x => { const k = Math.floor((x - DEG.x0) / DEG.w); return x <
       if (r() < 0.6) v += `<rect x="${x + w / 5 - 14}" y="${y + h / 3 - 140}" width="16" height="120" fill="#1A100A"/>`;
       if (r() < 0.35) v += `<path d="M${x + 20} ${y + h / 3 - 22} l30 -30 h30 l30 -30 h30" stroke="#7A5236" stroke-width="10" fill="none"/>`;
       if (r() < 0.3) v += `<text x="${x + w / 10}" y="${y + h / 6 + 20}" font-size="60" fill="${VERM}" text-anchor="middle" opacity=".85">?</text>`; } }
-  v += `<rect x="0" y="1620" width="1080" height="300" fill="#3A3C44"/><rect x="0" y="1620" width="1080" height="12" fill="#6A6C74" stroke="${T}" stroke-width="3"/></g>`;
+  v += `<rect x="0" y="1620" width="1080" height="300" fill="#3A3C44"/><rect x="0" y="1620" width="1080" height="12" fill="#6A6C74" stroke="${T}" stroke-width="3"/><rect x="-200" y="1910" width="2600" height="420" fill="#3A3C44"/><rect x="-200" y="1910" width="2600" height="420" fill="#000" opacity=".45"/></g>`;
   scenes.push(v); }
 // S6 — a Feira Mundial e, a poucos quarteirões, o hotel (39.7–44.75)
 { let v = `<g id="s6" class="scene"><g id="s6-pan">` + ceuNoite({ lua: [1900, 300], seed: 15, estrelas: 70 });
@@ -366,21 +366,21 @@ const chaoEscada = x => { const k = Math.floor((x - DEG.x0) / DEG.w); return x <
   v += castelo({ x: 1240, base: 1640, w: 820, h: 1000, id: 's6c' });
   v += rua(1640, 300).replace(/x="0"/g, 'x="1100"') + poste(1180, 1720, 0.9) + poste(2140, 1720, 0.9);
   v += `<g id="s6-pino"><path d="M1650 380 C1590 380 1560 430 1560 470 C1560 540 1650 620 1650 620 C1650 620 1740 540 1740 470 C1740 430 1710 380 1650 380Z" fill="${VERM}" stroke="${T}" stroke-width="7"/><circle cx="1650" cy="470" r="30" fill="${PAPEL}" stroke="${T}" stroke-width="5"/></g>`;
-  v += `</g></g>`;
+  v += `</g><rect x="-200" y="1910" width="2600" height="420" fill="url(#parale)"/><rect x="-200" y="1910" width="2600" height="420" fill="#000" opacity=".45"/></g>`;
   scenes.push(v); }
 // S7a — a recepção do hotel (44.75–47.35)
 { let v = `<g id="s7a" class="scene">` + interior({ piso: 1620, rodape: 1380 });
   v += `<rect x="560" y="640" width="440" height="380" fill="#3A2214" stroke="${T}" stroke-width="6"/>` + [...Array(12)].map((_, k) => `<g transform="translate(${600 + (k % 6) * 66} ${700 + Math.floor(k / 6) * 150})"><rect x="-22" y="-20" width="44" height="100" fill="#24140C" stroke="${T}" stroke-width="3"/><path d="M0 0 V30" stroke="#C9A24A" stroke-width="5"/><circle cx="0" cy="40" r="9" fill="#C9A24A"/></g>`).join('');
   v += `<rect x="600" y="580" width="360" height="56" fill="#1A1410" stroke="${T}" stroke-width="4"/><text class="maq" x="780" y="620" font-size="34" fill="#F2C266" text-anchor="middle">RECEPÇÃO</text>`;
   v += arandela(120, 700) + arandela(400, 520) + `<rect x="100" y="760" width="200" height="420" fill="#120C08" stroke="${T}" stroke-width="6"/><path d="M110 770 h180 v400 h-180z" fill="none" stroke="#3A2012" stroke-width="4"/>`;
-  v += `<g id="s7a-mala" opacity="0">${mala(380, 1700, 0.8)}</g></g>`;
+  v += `<g id="s7a-mala" opacity="0">${mala(380, 1700, 0.8)}</g><rect x="-200" y="1910" width="2600" height="420" fill="url(#tabua)"/><rect x="-200" y="1910" width="2600" height="420" fill="#000" opacity=".45"/></g>`;
   scenes.push(v);
   fg.push(`<g id="fg-s7a"><rect x="520" y="1330" width="560" height="56" fill="#6A4228" stroke="${T}" stroke-width="5"/><rect x="540" y="1386" width="520" height="250" fill="#4A2C1A" stroke="${T}" stroke-width="5"/>${[0, 1].map(k => `<rect x="${570 + k * 250}" y="1416" width="210" height="190" fill="none" stroke="#2A180E" stroke-width="5"/>`).join('')}<rect x="600" y="1300" width="150" height="34" fill="#E8DCC0" stroke="${T}" stroke-width="3"/><path d="M620 1312 h110 M620 1322 h80" stroke="#8A7A56" stroke-width="3"/><g transform="translate(930 1330)"><path d="M-30 0 Q-30 -36 0 -40 Q30 -36 30 0Z" fill="#C9A24A" stroke="${T}" stroke-width="4"/><circle cx="0" cy="-44" r="6" fill="#C9A24A" stroke="${T}" stroke-width="3"/></g></g>`); }
 // S7b — o mural das desaparecidas (47.35–51.9)
 { let v = `<g id="s7b" class="scene"><g id="s7b-zoom"><rect width="1080" height="1920" fill="url(#tijolo)"/><rect width="1080" height="1920" fill="#000" opacity=".35"/>`;
   v += poste(540, 1960, 1.15).replace('translate(540 1960)', 'translate(540 1960)');
   v += cartaz(270, 760, 400, 560, 1, 'A SECRETÁRIA', 's7b-c1', -4) + cartaz(790, 900, 420, 580, 2, 'MÃE E FILHA', 's7b-c2', 3) + cartaz(400, 1400, 440, 580, 2, 'DUAS IRMÃS', 's7b-c3', -2);
-  v += `</g><rect width="1080" height="1920" fill="url(#escuroBaixo)" opacity=".6"/></g>`;
+  v += `</g><rect width="1080" height="1920" fill="url(#escuroBaixo)" opacity=".6"/><rect x="-200" y="1910" width="2600" height="420" fill="url(#tijolo)"/><rect x="-200" y="1910" width="2600" height="420" fill="#000" opacity=".45"/></g>`;
   scenes.push(v); }
 // S8 — a cela em St. Louis (51.9–55.95)
 { let v = `<g id="s8" class="scene"><rect width="1080" height="1920" fill="url(#pedra)"/><rect width="1080" height="1920" fill="#0A1020" opacity=".35"/>`;
@@ -388,9 +388,9 @@ const chaoEscada = x => { const k = Math.floor((x - DEG.x0) / DEG.w); return x <
   v += `<path d="M400 620 L120 1640 H960 L680 620Z" fill="#B8C8E8" opacity=".08"/>`;
   v += `<rect x="0" y="1640" width="1080" height="280" fill="#2E3038"/><rect x="0" y="1640" width="1080" height="12" fill="#4A4C56"/>`;
   v += `<rect x="200" y="1400" width="680" height="40" fill="#5A3A22" stroke="${T}" stroke-width="5"/><rect x="230" y="1440" width="26" height="200" fill="#3A2414" stroke="${T}" stroke-width="4"/><rect x="824" y="1440" width="26" height="200" fill="#3A2414" stroke="${T}" stroke-width="4"/>`;
-  v += `<rect id="s8-verm" width="1080" height="1920" fill="#B3121F" opacity="0" style="mix-blend-mode:multiply"/></g>`;
+  v += `<rect id="s8-verm" width="1080" height="1920" fill="#B3121F" opacity="0" style="mix-blend-mode:multiply"/><rect x="-200" y="1910" width="2600" height="420" fill="#2E3038"/><rect x="-200" y="1910" width="2600" height="420" fill="#000" opacity=".45"/></g>`;
   scenes.push(v);
-  fg.push(`<g id="fg-s8"><g id="fg-s8-in">${grade(-40, 0, 1160, 1920, 6)}</g></g>`); }
+  fg.push(`<g id="fg-s8"><g id="fg-s8-in">${grade(-40, 0, 1160, 2300, 6)}</g></g>`); }
 // S9 — o segredo… (55.95–fim)
 { let v = `<g id="s9" class="scene"><rect width="1080" height="1920" fill="#06070C"/><rect y="1000" width="1080" height="920" fill="url(#nevoa)" opacity=".4"/>`;
   v += `<g id="s9-env" transform="translate(540 1050)"><g id="s9-envi"><rect x="-260" y="-170" width="520" height="340" fill="${PAPEL}" stroke="${T}" stroke-width="8"/><path d="M-260 -170 L0 40 L260 -170" fill="#D8CCAE" stroke="${T}" stroke-width="8"/><path d="M-260 170 L-60 -10 M260 170 L60 -10" stroke="#B9A882" stroke-width="5"/>
@@ -403,35 +403,35 @@ $('#fgs').innerHTML = fg.join('');
 
 // textos por cima (fora da câmera)
 $('#textos').innerHTML = [
-  etiqueta('t-1893', 540, 1210, 'CHICAGO, 1893', { fs: 58, rot: -3 }),
-  carimbo('t-checkout', 540, 1150, 'CHECK-OUT: NUNCA', { fs: 92, rot: -9 }),
-  etiqueta('t-nome', 540, 560, 'NOME REAL: HERMAN MUDGETT', { fs: 44, rot: 2 }),
-  titulo('t-dr', 540, 760, 'DR. H. H. HOLMES', { fs: 128, cor: '#FFFFFF', rot: -2 }),
-  carimbo('t-bonito', 230, 1000, 'BONITO', { fs: 66, rot: -10 }), carimbo('t-educado', 860, 1080, 'EDUCADO', { fs: 66, rot: 8 }), carimbo('t-simpatico', 250, 1260, 'SIMPÁTICO', { fs: 66, rot: -5 }),
-  etiqueta('t-viuva', 780, 980, 'A VIÚVA', { fs: 44, rot: 3 }),
-  titulo('t-sumiu', 780, 1150, 'SUMIU', { fs: 150, cor: VERM, rot: -6 }),
-  balao('t-calif', 470, 860, ['ELA SE MUDOU', 'PRA CALIFÓRNIA!'], { fs: 62, ponta: [-110, 190] }),
-  etiqueta('t-outro', 600, 470, 'DO OUTRO LADO DA RUA', { fs: 42, rot: -2 }),
-  titulo('t-castelo', 540, 560, 'O CASTELO', { fs: 190, cor: VERM, rot: -3 }),
-  etiqueta('t-corr', 470, 560, 'CORREDOR SEM SAÍDA', { fs: 50, rot: -3 }),
-  etiqueta('t-porta', 540, 560, 'SÓ ABRE POR FORA', { fs: 54, rot: 2 }),
-  etiqueta('t-escada', 540, 470, 'ESCADA PARA A PAREDE', { fs: 48, rot: -2 }),
-  etiqueta('t-pedreiros', 540, 470, 'PEDREIROS TROCADOS O TEMPO TODO', { fs: 38, rot: -2 }),
-  titulo('t-planta', 540, 1440, 'NINGUÉM VIA A PLANTA', { fs: 92, cor: '#FFFFFF', rot: -2, sub: 'INTEIRA' }),
-  titulo('t-feira', 540, 1240, 'FEIRA MUNDIAL', { fs: 140, cor: '#FFFFFF', rot: -3 }),
-  etiqueta('t-milhoes', 540, 1420, '27 MILHÕES DE VISITANTES', { fs: 46, rot: 2 }),
-  etiqueta('t-pertinho', 540, 1380, 'BEM PERTINHO DA FEIRA', { fs: 46, rot: -2 }),
-  carimbo('t-ninguem', 540, 1760, 'NINGUÉM DESCONFIOU', { fs: 78, rot: -6 }),
-  balao('t-psst', 300, 1000, ['PSSST…'], { fs: 64, ponta: [60, 170] }),
-  etiqueta('t-errada', 760, 700, 'A PESSOA ERRADA', { fs: 50, rot: 3 }),
-  etiqueta('t-stl', 540, 1800, 'PRISÃO DE ST. LOUIS, 1894', { fs: 42, rot: -2 }),
-  titulo('t-segredo', 540, 640, 'ESSE SEGREDO…', { fs: 120, cor: '#FFFFFF', rot: -2 }),
-  titulo('t-parte2', 540, 1500, 'PARTE 2', { fs: 210, cor: VERM, rot: -4 }),
-  etiqueta('t-siga', 540, 1720, 'SIGA A PÁGINA PRA NÃO PERDER', { fs: 40, rot: 1 }),
-].join('') + `<g id="t-planta-g" transform="translate(540 1000)">${planta('pl')}</g>
-  <g id="t-troca" transform="translate(540 1120)"><path d="M-120 -30 H100 l-30 -30 M120 30 H-100 l30 30" stroke="${PAPEL}" stroke-width="16" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g>
-  <g id="t-env" transform="translate(540 820)"><rect x="-80" y="-54" width="160" height="108" fill="${PAPEL}" stroke="${T}" stroke-width="6"/><path d="M-80 -54 L0 14 L80 -54" fill="none" stroke="${T}" stroke-width="6"/><circle cx="0" cy="12" r="20" fill="#9E0E1E" stroke="${T}" stroke-width="4"/></g>
-  <g id="t-quest" transform="translate(780 1300)"><text x="0" y="0" font-size="240" fill="${VERM}" stroke="${T}" stroke-width="16" paint-order="stroke" text-anchor="middle">?</text></g>`;
+  etiqueta('t-1893', 540, 900, 'CHICAGO, 1893', { fs: 58, rot: -3 }),
+  carimbo('t-checkout', 540, 850, 'CHECK-OUT: NUNCA', { fs: 92, rot: -9 }),
+  etiqueta('t-nome', 540, 420, 'NOME REAL: HERMAN MUDGETT', { fs: 44, rot: 2 }),
+  titulo('t-dr', 540, 620, 'DR. H. H. HOLMES', { fs: 128, cor: '#FFFFFF', rot: -2 }),
+  carimbo('t-bonito', 230, 700, 'BONITO', { fs: 66, rot: -10 }), carimbo('t-educado', 860, 800, 'EDUCADO', { fs: 66, rot: 8 }), carimbo('t-simpatico', 250, 960, 'SIMPÁTICO', { fs: 66, rot: -5 }),
+  etiqueta('t-viuva', 780, 680, 'A VIÚVA', { fs: 44, rot: 3 }),
+  titulo('t-sumiu', 780, 880, 'SUMIU', { fs: 150, cor: VERM, rot: -6 }),
+  balao('t-calif', 470, 560, ['ELA SE MUDOU', 'PRA CALIFÓRNIA!'], { fs: 62, ponta: [-110, 190] }),
+  etiqueta('t-outro', 600, 400, 'DO OUTRO LADO DA RUA', { fs: 42, rot: -2 }),
+  titulo('t-castelo', 540, 420, 'O CASTELO', { fs: 190, cor: VERM, rot: -3 }),
+  etiqueta('t-corr', 470, 420, 'CORREDOR SEM SAÍDA', { fs: 50, rot: -3 }),
+  etiqueta('t-porta', 540, 420, 'SÓ ABRE POR FORA', { fs: 54, rot: 2 }),
+  etiqueta('t-escada', 540, 380, 'ESCADA PARA A PAREDE', { fs: 48, rot: -2 }),
+  etiqueta('t-pedreiros', 540, 380, 'PEDREIROS TROCADOS O TEMPO TODO', { fs: 38, rot: -2 }),
+  titulo('t-planta', 540, 1100, 'NINGUÉM VIA A PLANTA', { fs: 92, cor: '#FFFFFF', rot: -2, sub: 'INTEIRA' }),
+  titulo('t-feira', 540, 960, 'FEIRA MUNDIAL', { fs: 140, cor: '#FFFFFF', rot: -3 }),
+  etiqueta('t-milhoes', 540, 1120, '27 MILHÕES DE VISITANTES', { fs: 46, rot: 2 }),
+  etiqueta('t-pertinho', 540, 1080, 'BEM PERTINHO DA FEIRA', { fs: 46, rot: -2 }),
+  carimbo('t-ninguem', 540, 1300, 'NINGUÉM DESCONFIOU', { fs: 78, rot: -6 }),
+  balao('t-psst', 300, 700, ['PSSST…'], { fs: 64, ponta: [60, 170] }),
+  etiqueta('t-errada', 760, 420, 'A PESSOA ERRADA', { fs: 50, rot: 3 }),
+  etiqueta('t-stl', 540, 1300, 'PRISÃO DE ST. LOUIS, 1894', { fs: 42, rot: -2 }),
+  titulo('t-segredo', 540, 480, 'ESSE SEGREDO…', { fs: 120, cor: '#FFFFFF', rot: -2 }),
+  titulo('t-parte2', 540, 1150, 'PARTE 2', { fs: 210, cor: VERM, rot: -4 }),
+  etiqueta('t-siga', 540, 1330, 'SIGA A PÁGINA PRA NÃO PERDER', { fs: 40, rot: 1 }),
+].join('') + `<g id="t-planta-g" transform="translate(540 720)">${planta('pl')}</g>
+  <g id="t-troca" transform="translate(540 800)"><path d="M-120 -30 H100 l-30 -30 M120 30 H-100 l30 30" stroke="${PAPEL}" stroke-width="16" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g>
+  <g id="t-env" transform="translate(540 520)"><rect x="-80" y="-54" width="160" height="108" fill="${PAPEL}" stroke="${T}" stroke-width="6"/><path d="M-80 -54 L0 14 L80 -54" fill="none" stroke="${T}" stroke-width="6"/><circle cx="0" cy="12" r="20" fill="#9E0E1E" stroke="${T}" stroke-width="4"/></g>
+  <g id="t-quest" transform="translate(780 1000)"><text x="0" y="0" font-size="240" fill="${VERM}" stroke="${T}" stroke-width="16" paint-order="stroke" text-anchor="middle">?</text></g>`;
 
 // ===================== ATORES =====================
 const ATORES = [];
@@ -457,10 +457,10 @@ H2.expressao(8.9, 13.9, 'feliz'); H2.braco('d', 9.2, 10.3, 'acenar');
 H2.braco('e', 10.8, 13.0, 'cintura'); H2.braco('d', 11.6, 13.0, 'explicar');
 H2.expressao(14.0, 14.85, 'desconfiado'); H2.cabeca(14.0, 14.85, { inclinar: -6, olhar: [4, 0] });
 const fan1 = ator('#atores', 0.86, [[13.0, 14.85]], { figurino: 'dama' });
-fan1.base(13.0, 13.8, 'andar', { de: [-140, 1800], ate: [140, 1800] }); fan1.base(13.8, 14.85, 'parado', { x: 140, y: 1800, vista: 'frente' });
+fan1.base(13.0, 13.8, 'andar', { de: [-140, 1770], ate: [140, 1770] }); fan1.base(13.8, 14.85, 'parado', { x: 140, y: 1770, vista: 'frente' });
 fan1.expressao(13.0, 14.85, 'alegre'); fan1.braco('d', 13.8, 14.85, 'acenar');
 const fan2 = ator('#atores', 0.88, [[13.0, 14.85]], { figurino: 'cavalheiro' });
-fan2.base(13.0, 13.8, 'andar', { de: [1220, 1800], ate: [940, 1800] }); fan2.base(13.8, 14.85, 'parado', { x: 940, y: 1800, vista: 'frente' });
+fan2.base(13.0, 13.8, 'andar', { de: [1220, 1770], ate: [940, 1770] }); fan2.base(13.8, 14.85, 'parado', { x: 940, y: 1770, vista: 'frente' });
 fan2.expressao(13.0, 14.85, 'feliz'); fan2.braco('e', 13.8, 14.85, 'joinha');
 // S3 — a viúva e Holmes na farmácia
 const viuva = ator('#atoresFundo', 0.82, [[14.85, 19.95]], { figurino: 'viuva' });
@@ -477,8 +477,8 @@ H3.expressao(20.6, 23.2, 'feliz'); H3.braco('d', 21.0, 23.0, 'explicar'); H3.cab
 H3.expressao(23.3, 24.6, 'desconfiado'); H3.braco('e', 23.3, 24.6, 'cintura'); H3.cabeca(23.3, 24.6, { virar: 0.4, inclinar: -5 });
 // S4 — Holmes olha o Castelo subir
 const H4 = ator('#atores', 0.82, [[24.6, 30.0]], { figurino: HOLMES });
-H4.base(24.6, 25.8, 'andar', { de: [80, 1800], ate: [330, 1800] });
-H4.base(25.8, 30.0, 'parado', { x: 330, y: 1800, vista: 'perfil', dir: 1 });
+H4.base(24.6, 25.8, 'andar', { de: [80, 1770], ate: [330, 1770] });
+H4.base(25.8, 30.0, 'parado', { x: 330, y: 1770, vista: 'perfil', dir: 1 });
 H4.cabeca(25.9, 30.0, { baixar: -14, olhar: [3, -6] }); H4.braco('ambos', 26.2, 30.0, 'cintura');
 H4.expressao(24.6, 28.6, 'feliz'); H4.expressao(28.6, 30.0, 'desconfiado');
 const ped1 = ator('#atores', 0.6, [[24.6, 28.0]], { figurino: 'operario' });
@@ -637,8 +637,9 @@ tl.to('#t-parte2', { scale: 1.05, transformOrigin: '50% 50%', duration: 0.5, rep
 tl.to('#s9-glow', { opacity: 0.5, duration: 0.5, repeat: 3, yoyo: true }, 58.0);
 tl.set({}, {}, END);
 
-// ===================== LEGENDA (Anton branca, palavra falada em vermelho) =====================
-const leg = Legenda($('#legenda'), window.PALAVRAS || [], { y: 300, fs: 70, destaque: '#FF2A3A', fonte: "'Anton', 'DejaVu Sans', sans-serif", enfase: ['NUNCA', 'CASTELO', 'SUMIU', 'DESAPARECIAM', 'SEGREDO', 'ERRADA'] })
+// ===================== LEGENDA (Anton branca, palavra falada em vermelho) — EMBAIXO, sobre o chão =====================
+// pedido do usuário: legenda sempre embaixo; o mundo sobe 320 px (#mundo) para o chão ocupar a faixa de baixo
+const leg = Legenda($('#legenda'), window.PALAVRAS || [], { y: 1530, fs: 70, destaque: '#FF2A3A', fonte: "'Anton', 'DejaVu Sans', sans-serif", enfase: ['NUNCA', 'CASTELO', 'SUMIU', 'DESAPARECIAM', 'SEGREDO', 'ERRADA'] })
   .esconder([[57.6, 999]]);
 
 // ===================== API DO RENDER =====================

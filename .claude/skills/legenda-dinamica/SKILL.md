@@ -36,6 +36,11 @@ Corrija a transcrição antes (palavras erradas: "festas" → "frestas"), porque
    — ali nos nossos cenários só tem teto, céu ou toldo. O usuário reprovou a faixa do meio-baixo
    (tampava os bonecos e coisas importantes). Nunca nos 420 px de baixo (botões, nome, música)
    nem na lateral direita (ícones). Palavras de impacto e balões ficam de y ≈ 420 para baixo.
+5b. **Página de crimes reais (bonecos de palito, ex.: `videos/holmes-p1`) — legenda EMBAIXO.** Pedido do usuário:
+   a legenda fica sempre na parte de baixo (`y ≈ 1530`, fonte Anton, palavra falada em vermelho `#FF2A3A`), e o
+   cenário é montado com o **chão mais alto**: o mundo inteiro sobe ~320 px (`<g id="mundo" transform="translate(0 -320)">`
+   dentro da câmera) e o chão de cada cena é prolongado até a borda de baixo, para a legenda ficar sobre o chão,
+   sem tampar os personagens (pés até y ≈ 1450 na tela). Textos de impacto ficam acima da faixa da legenda.
 6. **Sem briga com os textos de impacto**: esconda nos cartões e na tela final; se uma palavra de
    impacto grande estiver no mesmo lugar, mova a legenda (`mover`) ou mova o impacto.
 7. Mantém a regra da `identidade-visual`: textos em português, só a fonte e as cores da marca.
