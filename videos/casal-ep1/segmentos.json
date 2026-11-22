@@ -1,0 +1,100 @@
+[
+ {
+  "id": "N01",
+  "quem": "narrador",
+  "texto": "Sua mulher chega, cruza os braços e fala:",
+  "de": 0.2,
+  "ate": 2.95
+ },
+ {
+  "id": "P01",
+  "quem": "ela",
+  "texto": "Tá tudo bem.",
+  "de": 3.17,
+  "ate": 3.84
+ },
+ {
+  "id": "N02",
+  "quem": "narrador",
+  "texto": "Pronto. Agora você tem quarenta e oito horas pra descobrir o que você fez.",
+  "de": 4.06,
+  "ate": 8.245
+ },
+ {
+  "id": "P02",
+  "quem": "ele",
+  "texto": "Amor... tem certeza?",
+  "de": 8.465,
+  "ate": 11.498
+ },
+ {
+  "id": "P03",
+  "quem": "ela",
+  "texto": "Tenho.",
+  "de": 11.718,
+  "ate": 12.442
+ },
+ {
+  "id": "N03",
+  "quem": "narrador",
+  "texto": "Você revisa a semana inteira. Lavou a louça? Lavou. Lembrou do aniversário da sogra? Lembrou. Respondeu a mensagem dela? Respondeu... com \"kkk\".",
+  "de": 12.812,
+  "ate": 23.922
+ },
+ {
+  "id": "N04",
+  "quem": "narrador",
+  "texto": "Mas não era isso. Três dias depois, ela solta:",
+  "de": 24.322,
+  "ate": 27.475
+ },
+ {
+  "id": "P04",
+  "quem": "ela",
+  "texto": "Eu sonhei que você beijou a vizinha!",
+  "de": 27.695,
+  "ate": 30.456
+ },
+ {
+  "id": "P05",
+  "quem": "ele",
+  "texto": "Mas... foi um sonho!",
+  "de": 30.676,
+  "ate": 33.246
+ },
+ {
+  "id": "P06",
+  "quem": "ela",
+  "texto": "E no sonho você nem pediu desculpa!",
+  "de": 33.466,
+  "ate": 36.456
+ },
+ {
+  "id": "N05",
+  "quem": "narrador",
+  "texto": "Agora você tá pedindo desculpa por uma coisa que aconteceu na cabeça dela.",
+  "de": 36.976,
+  "ate": 40.513
+ },
+ {
+  "id": "P07",
+  "quem": "ele",
+  "texto": "Desculpa, amor.",
+  "de": 40.733,
+  "ate": 41.783
+ },
+ {
+  "id": "P08",
+  "quem": "ela",
+  "texto": "Vou pensar.",
+  "de": 42.003,
+  "ate": 43.319
+ },
+ {
+  "id": "N06",
+  "quem": "narrador",
+  "texto": "Comenta aí o problema mais sem sentido que sua mulher já inventou.",
+  "de": 43.889,
+  "ate": 47.18
+ }
+]

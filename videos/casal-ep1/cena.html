@@ -1,0 +1,311 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+  @font-face { font-family: 'Luckiest Guy'; src: url(fontes/luckiest-guy.woff2); }
+  @font-face { font-family: 'Anton'; src: url(fontes/anton.woff2); }
+  html, body { margin: 0; background: #FAF6EE; }
+  svg { display: block; }
+</style>
+<script src="legenda.js"></script>
+<script src="legenda-dados.js"></script>
+<script src="bocas.js"></script>
+</head><body>
+<svg id="s" width="1080" height="1920" viewBox="0 0 1080 1920" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1080" height="1920" fill="#FAF6EE"/>
+  <g id="cam"><g id="mundo"></g></g>
+  <g id="hud"></g>
+  <g id="legenda"></g>
+</svg>
+<script>
+// ====== Coisas de Casal — Ep. 1 "Tá tudo bem" — bonecos de palito, tudo calculado por quadro (seek determinístico) ======
+const $ = s => document.querySelector(s);
+const PRETO = '#111111', LARANJA = '#FF7A00', PAPEL = '#FAF6EE', CINZA = '#C9C1B3', VERMELHO = '#E5322D';
+const SEG = {}; (window.SEGMENTOS || []).forEach(s => SEG[s.id] = s);
+const PAL = window.PALAVRAS || [];
+const W = (seg, n) => { const ps = PAL.filter(p => p.seg === seg); return (ps[n] || ps[ps.length - 1]).start; };
+const END = SEG.N06.ate + 1.6;
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const u = (t, a, b) => clamp((t - a) / (b - a), 0, 1);
+const io = x => x < .5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2;
+const back = x => { const c1 = 1.7, c3 = c1 + 1; return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2); };
+const lerp = (a, b, k) => a + (b - a) * k;
+const mix = (A, B, k) => { const o = {}; for (const key in A) o[key] = Array.isArray(A[key]) ? A[key].map((v, i) => lerp(v, B[key][i], k)) : (typeof A[key] === 'number' ? lerp(A[key], B[key], k) : (k < .5 ? A[key] : B[key])); return o; };
+const f = n => n.toFixed(1);
+const R = d => d * Math.PI / 180;
+const fr = t => Math.floor(t * 30);
+const boca = (q, t) => { const s = (window.BOCAS || {})[q]; if (!s) return 0; const c = s[fr(t)]; return c && c !== '-' ? +c : 0; };
+
+// ---------- poses (ângulos absolutos em graus, 0 = para baixo, + = para a frente do boneco) ----------
+const P = {
+  em_pe:    { ba: [-8, -4],  bf: [8, 4],    pa: [-4, 0], pf: [4, 0],   incl: 0,  cab: 0 },
+  cruzado:  { ba: [-20, 95], bf: [20, -95], pa: [-6, 0], pf: [7, 0],   incl: -3, cab: -6 },
+  apontar:  { ba: [-10, -5], bf: [70, 85],  pa: [-6, 0], pf: [8, 0],   incl: 4,  cab: 4 },
+  maos_cima:{ ba: [-140, -170], bf: [140, 170], pa: [-6, 0], pf: [6, 0], incl: -4, cab: -4 },
+  cabeca:   { ba: [-150, 60], bf: [150, -60], pa: [-5, 0], pf: [5, 0], incl: 0, cab: 0 },
+  medo:     { ba: [-25, 30], bf: [25, 120],  pa: [-10, 0], pf: [10, 0], incl: -6, cab: -4 },
+  prancheta:{ ba: [-5, 0],   bf: [30, 100],  pa: [-5, 0], pf: [6, 0],  incl: 2,  cab: 8 },
+  oferece:  { ba: [-10, -5], bf: [75, 80],   pa: [80, 0], pf: [95, 0], incl: 5, cab: -6, ajoelha: 1 },
+  geladeira:{ ba: [-8, -4],  bf: [80, 80],   pa: [-4, 0], pf: [6, 0],  incl: 3,  cab: 0 },
+  ponta_pe: { ba: [-40, 30], bf: [40, 120],  pa: [-18, 10], pf: [20, -10], incl: 8, cab: 4 },
+};
+P.anda1 = { ...P.em_pe, pa: [-22, 8], pf: [22, 10], ba: [20, 30], bf: [-20, -10] };
+P.anda2 = { ...P.em_pe, pa: [22, 10], pf: [-22, 8], ba: [-20, -10], bf: [20, 30] };
+
+// ---------- boneco de palito ----------
+// o = { x, chao, s, dir(1 direita / -1 esquerda), pose, cara, boca(0-3), quem:'ele'|'ela', vermelho(0-1), pulo }
+function boneco(o) {
+  const s = o.s || 1, d = o.dir || 1, p = o.pose, lw = 13;
+  const TH = 150, SH = 150, TORSO = 230, UP = 120, LO = 115, HR = 72;
+  const pt = (x, y, a, l) => [x + Math.sin(R(a)) * l * d, y + Math.cos(R(a)) * l];
+  // pernas a partir do quadril (0,0)
+  let joel, pe;
+  const pernas = [p.pa, p.pf].map(([a1, a2], i) => {
+    let j = pt(0, 0, a1, TH), q;
+    if (p.ajoelha && i === 0) { j = pt(0, 0, 175, 10); j = [-d * 20, TH]; q = [-d * (20 + SH), TH]; }      // joelho no chão, canela para trás
+    else if (p.ajoelha) { j = [d * 110, TH * 0.15]; q = [d * 110, TH * 0.15 + SH]; }                       // perna da frente dobrada 90°
+    else q = pt(j[0], j[1], a1 + a2, SH);
+    return [j, q];
+  });
+  const baixo = Math.max(...pernas.map(([j, q]) => Math.max(j[1], q[1])));
+  const quadril = [0, -baixo];
+  const inc = R(p.incl || 0) * d;
+  const pesc = [quadril[0] + Math.sin(inc) * TORSO, quadril[1] - Math.cos(inc) * TORSO];
+  const omb = [lerp(quadril[0], pesc[0], .9), lerp(quadril[1], pesc[1], .9)];
+  const cab = [pesc[0] + Math.sin(inc) * (HR + 12), pesc[1] - (HR + 12)];
+  const braco = ([a1, a2]) => { const c = pt(omb[0], omb[1], a1, UP); return [c, pt(c[0], c[1], a2, LO)]; };
+  const bA = braco(p.ba), bF = braco(p.bf);
+  const L = (pts, w = lw, c = PRETO) => `<polyline points="${pts.map(q => f(q[0]) + ',' + f(q[1])).join(' ')}" fill="none" stroke="${c}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round"/>`;
+  const sh = (q) => [q[0], q[1] + quadril[1]];
+  let g = '';
+  // braço de trás e perna de trás um pouco mais claros (profundidade)
+  g += L([omb, ...bA], lw, '#3a3a3a');
+  g += L([quadril, ...pernas[0].map(sh)], lw, '#3a3a3a');
+  // corpo
+  if (o.quem === 'ela') {
+    const cx = lerp(quadril[0], pesc[0], .25), cy = lerp(quadril[1], pesc[1], .25);
+    g += L([pesc, quadril]);
+    g += `<path d="M${f(omb[0] - d * 10)},${f(omb[1] + 20)} L${f(cx - 70)},${f(quadril[1] + 40)} Q${f(cx)},${f(quadril[1] + 60)} ${f(cx + 70)},${f(quadril[1] + 40)} Z" fill="#B58BD6" stroke="${PRETO}" stroke-width="10" stroke-linejoin="round"/>`;
+  } else g += L([pesc, quadril]);
+  g += L([quadril, ...pernas[1].map(sh)]);
+  // pés
+  [pernas[0], pernas[1]].forEach(([j, q], i) => { const a = sh(q); if (p.ajoelha && i === 0) return; g += L([a, [a[0] + d * 26, a[1]]], lw, i ? PRETO : '#3a3a3a'); });
+  // cabeça
+  const [hx, hy] = cab, tilt = (p.cab || 0) * d;
+  let h = '';
+  if (o.quem === 'ela') {   // rabo de cavalo atrás
+    h += `<path d="M${f(-d * 50)},${f(-50)} Q${f(-d * 135)},${f(-40)} ${f(-d * 120)},${f(60)} Q${f(-d * 100)},${f(10)} ${f(-d * 62)},${f(-20)} Z" fill="${PRETO}"/>`;
+    h += `<circle cx="${f(-d * 66)}" cy="-42" r="13" fill="${LARANJA === '' ? '' : '#E8467C'}" stroke="${PRETO}" stroke-width="5"/>`;
+  }
+  const verm = o.vermelho || 0;
+  h += `<circle r="${HR}" fill="${verm ? `rgb(${Math.round(lerp(250, 240, verm))},${Math.round(lerp(246, 110, verm))},${Math.round(lerp(238, 100, verm))})` : PAPEL}" stroke="${PRETO}" stroke-width="${lw}"/>`;
+  if (o.quem === 'ela') h += `<path d="M${-HR + 4},-10 Q${-HR + 6},${-HR - 10} 0,${-HR - 6} Q${HR - 6},${-HR - 10} ${HR - 4},-10 Q${f(d * 20)},-58 ${-HR + 4},-10 Z" fill="${PRETO}"/>`;
+  else h += `<path d="M${-HR + 2},-28 Q0,${-HR - 40} ${HR - 2},-28 Z" fill="${LARANJA}" stroke="${PRETO}" stroke-width="10" stroke-linejoin="round"/><path d="M${f(d * 20)},-30 L${f(d * 108)},-26" stroke="${PRETO}" stroke-width="16" stroke-linecap="round"/><path d="M${f(d * 22)},-30 L${f(d * 104)},-27" stroke="${LARANJA}" stroke-width="7" stroke-linecap="round"/>`;
+  // rosto (virado para dir)
+  const ex = d * 22, cara = o.cara || 'normal';
+  const olho = (x) => cara === 'medo' || cara === 'confuso' ? `<circle cx="${f(x)}" cy="4" r="11" fill="#fff" stroke="${PRETO}" stroke-width="5"/><circle cx="${f(x + d * 3)}" cy="5" r="5" fill="${PRETO}"/>` : cara === 'feliz' ? `<path d="M${f(x - 9)},8 Q${f(x)},-4 ${f(x + 9)},8" fill="none" stroke="${PRETO}" stroke-width="6" stroke-linecap="round"/>` : `<circle cx="${f(x)}" cy="5" r="7" fill="${PRETO}"/>`;
+  h += olho(ex - 18) + olho(ex + 18);
+  if (o.quem === 'ela' && cara !== 'brava') h += `<path d="M${f(ex + 26)},-4 l${f(d * 9)},-6 M${f(ex - 10)},-4 l${f(d * 9)},-6" stroke="${PRETO}" stroke-width="4" stroke-linecap="round"/>`;
+  const sob = { brava: [[-28, -14, -6, -4], [6, -4, 28, -14]].map(a => a), emburrada: [[-28, -14, -6, -8], [6, -8, 28, -14]], medo: [[-28, -10, -8, -18], [8, -18, 28, -10]], confuso: [[-28, -16, -8, -20], [8, -12, 28, -10]] }[cara];
+  if (sob) sob.forEach(([a, b, c, e]) => h += `<path d="M${f(ex + a)},${b - 4} L${f(ex + c)},${e - 4}" stroke="${PRETO}" stroke-width="7" stroke-linecap="round"/>`);
+  const bo = o.boca || 0, mx = ex + d * 4;
+  if (bo > 0) h += `<ellipse cx="${f(mx)}" cy="38" rx="${13 + bo * 2}" ry="${4 + bo * 5}" fill="#5a1616" stroke="${PRETO}" stroke-width="5"/>`;
+  else if (cara === 'feliz') h += `<path d="M${f(mx - 18)},32 Q${f(mx)},52 ${f(mx + 18)},32" fill="none" stroke="${PRETO}" stroke-width="6" stroke-linecap="round"/>`;
+  else if (cara === 'brava' || cara === 'emburrada' || cara === 'triste') h += `<path d="M${f(mx - 16)},44 Q${f(mx)},30 ${f(mx + 16)},44" fill="none" stroke="${PRETO}" stroke-width="6" stroke-linecap="round"/>`;
+  else if (cara === 'medo') h += `<path d="M${f(mx - 18)},40 q6,-6 12,0 t12,0 t12,0" fill="none" stroke="${PRETO}" stroke-width="5" stroke-linecap="round"/>`;
+  else h += `<path d="M${f(mx - 14)},38 L${f(mx + 14)},38" stroke="${PRETO}" stroke-width="6" stroke-linecap="round"/>`;
+  if (o.suor) h += `<path d="M${f(-d * 60)},${-40} q-12,22 0,30 q12,-8 0,-30 Z" fill="#7EC8F2" stroke="${PRETO}" stroke-width="4" transform="translate(0 ${f(o.suor * 30)})" opacity="${f(1 - o.suor * .6)}"/>`;
+  g += `<g transform="translate(${f(hx)} ${f(hy)}) rotate(${f(tilt)})">${h}</g>`;
+  // braço da frente por cima
+  g += L([omb, ...bF]);
+  const mao = [bF[1][0], bF[1][1]];
+  const pulo = o.pulo || 0;
+  return { svg: `<g transform="translate(${f(o.x)} ${f(o.chao - pulo)}) scale(${s})">${g}${o.naMao ? `<g transform="translate(${f(mao[0])} ${f(mao[1])}) scale(${d} 1)">${o.naMao}</g>` : ''}</g>`, cabeca: [o.x + hx * s, o.chao - pulo + hy * s] };
+}
+
+// ---------- objetos ----------
+const sala = (extra = '') => `
+  <rect x="0" y="0" width="1080" height="1920" fill="${PAPEL}"/>
+  <line x1="-200" y1="1460" x2="1280" y2="1460" stroke="${PRETO}" stroke-width="8"/>
+  <g stroke="${CINZA}" stroke-width="6" fill="none" stroke-linecap="round">
+    <rect x="120" y="720" width="190" height="150" rx="6"/><path d="M140 850 L195 780 L230 820 L260 790 L290 850"/>
+    <path d="M880 1460 L880 900 M820 900 L940 900 L910 820 L850 820 Z"/>
+    <path d="M-20 1300 L60 1300 M500 1520 L620 1520 M200 1560 L260 1560"/>
+  </g>${extra}`;
+const cozinha = (porta) => `
+  <rect x="0" y="0" width="1080" height="1920" fill="${PAPEL}"/>
+  <line x1="-200" y1="1460" x2="1280" y2="1460" stroke="${PRETO}" stroke-width="8"/>
+  <g stroke="${CINZA}" stroke-width="6" fill="none"><rect x="60" y="1100" width="360" height="360"/><line x1="60" y1="1180" x2="420" y2="1180"/><rect x="90" y="700" width="300" height="180"/></g>
+  <g transform="translate(760 780)">
+    <rect x="0" y="0" width="290" height="680" rx="22" fill="#fff" stroke="${PRETO}" stroke-width="10"/>
+    <line x1="0" y1="250" x2="290" y2="250" stroke="${PRETO}" stroke-width="8"/>
+    <rect x="26" y="300" width="16" height="140" rx="8" fill="${PRETO}"/><rect x="26" y="120" width="16" height="90" rx="8" fill="${PRETO}"/>
+    ${porta}
+  </g>`;
+const flores = `<g><path d="M0,0 L-10,-110 M0,0 L18,-104 M0,0 L-30,-96" stroke="#3F8F3A" stroke-width="7" stroke-linecap="round"/>
+  ${[[-10, -118, '#E8467C'], [20, -112, LARANJA], [-32, -102, '#F2C230']].map(([x, y, c]) => `<circle cx="${x}" cy="${y}" r="20" fill="${c}" stroke="${PRETO}" stroke-width="5"/><circle cx="${x}" cy="${y}" r="6" fill="${PRETO}"/>`).join('')}
+  <path d="M-22,-30 L22,-30 L8,10 L-8,10 Z" fill="#fff" stroke="${PRETO}" stroke-width="5"/></g>`;
+const prancheta = `<g transform="rotate(-20)"><rect x="-10" y="-120" width="110" height="150" rx="8" fill="#D9A066" stroke="${PRETO}" stroke-width="6"/><rect x="5" y="-100" width="80" height="115" fill="#fff" stroke="${PRETO}" stroke-width="3"/></g>`;
+const txt = (x, y, s, fs, o = {}) => `<text x="${x}" y="${y}" font-family="'Luckiest Guy'" font-size="${fs}" text-anchor="middle" dominant-baseline="middle" fill="${o.cor || PRETO}" stroke="${o.contorno || 'none'}" stroke-width="${o.sw || 0}" paint-order="stroke" stroke-linejoin="round" ${o.extra || ''}>${s}</text>`;
+const pop = (t, a, b = 1e9) => t < a || t > b ? 0 : back(u(t, a, a + .3));
+const nuvem = (cx, cy, w, h) => { let d = ''; const n = 9; for (let i = 0; i < n; i++) { const a = i / n * Math.PI * 2; d += `<circle cx="${f(cx + Math.cos(a) * w * .42)}" cy="${f(cy + Math.sin(a) * h * .38)}" r="${f(h * .28)}"/>`; } return `<g fill="#fff" stroke="${PRETO}" stroke-width="10">${d}</g><ellipse cx="${cx}" cy="${cy}" rx="${w * .44}" ry="${h * .38}" fill="#fff"/>`; };
+const andar = (t, ta, tb) => { if (t < ta || t > tb) return null; const fz = (t - ta) / 0.32; const k = (Math.sin(fz * Math.PI) + 1) / 2; return { pose: mix(P.anda1, P.anda2, k), quique: Math.abs(Math.sin(fz * Math.PI)) * 10 }; };
+
+// ---------- tempos das cenas ----------
+const T = {
+  c1: [0, SEG.N02.de], c2: [SEG.N02.de, SEG.P02.de - 0.05], c3: [SEG.P02.de - 0.05, SEG.N03.de], c4: [SEG.N03.de, SEG.N04.de],
+  c5: [SEG.N04.de, SEG.P05.de], c6: [SEG.P05.de, SEG.N05.de], c7: [SEG.N05.de, SEG.N06.de], c8: [SEG.N06.de, END],
+};
+const em = (t, c) => t >= T[c][0] && t < T[c][1];
+const BAM = W('P03', 0) + 0.12;
+const CHK = [W('N03', 7), W('N03', 13), W('N03', 19)];  // "Lavou." / "Lembrou." / "Respondeu…" (o segundo)
+const KKK = W('N03', 21);
+const ESC_SONHO = W('P04', 1);
+const CARIMBO = W('P06', 6);
+const ACEITA = W('P08', 0);
+
+// ---------- câmera ----------
+function camera(t) {
+  let s = 1, cx = 540, cy = 1100, sx = 0, sy = 0;
+  if (em(t, 'c2')) { const k = io(u(t, T.c2[0], T.c2[0] + 0.6)); s = lerp(1, 1.35, k); cx = lerp(540, 420, k); cy = lerp(1100, 940, k); }
+  if (em(t, 'c7')) { const k = io(u(t, T.c7[0], T.c7[1])); s = lerp(1, 1.12, k); }
+  const tremor = (a, dur, amp) => { if (t >= a && t < a + dur) { const k = 1 - (t - a) / dur; sx += Math.sin(t * 90) * amp * k; sy += Math.cos(t * 77) * amp * k; } };
+  tremor(BAM, 0.45, 26); tremor(CARIMBO, 0.35, 18); tremor(KKK + 0.35, 0.3, 14);
+  return `translate(${f(540 + sx)} ${f(1100 + sy)}) scale(${s}) translate(${f(-cx)} ${f(-1100 + (1100 - cy))})`;
+}
+
+// ---------- desenho por quadro ----------
+function cena(t) {
+  let g = '', hud = '';
+  const bE = boca('ele', t), bL = boca('ela', t);
+  // transição: piscada de papel entre cenas
+  if (em(t, 'c1')) {
+    g += sala();
+    const w = andar(t, 0, 1.3);
+    const xL = lerp(1200, 720, io(u(t, 0, 1.3)));
+    const cruz = io(u(t, W('N01', 3), W('N01', 3) + 0.45));
+    let pL = w ? w.pose : mix(P.em_pe, P.cruzado, cruz);
+    const vira = t > SEG.P01.de - 0.1;
+    g += boneco({ x: 330, chao: 1460, dir: 1, pose: P.em_pe, cara: t > SEG.P01.ate ? 'medo' : 'normal', quem: 'ele', boca: bE }).svg;
+    g += boneco({ x: xL, chao: 1460 - (w ? w.quique : 0), dir: vira ? 1 : -1, pose: vira ? P.cruzado : pL, cara: t > W('N01', 3) ? 'brava' : 'normal', quem: 'ela', boca: bL }).svg;
+    if (false) { const k = pop(t, SEG.P01.de); hud += `<g transform="translate(800 520) scale(${f(k)})">${txt(0, 0, 'TÁ TUDO BEM.', 92, { cor: '#fff', contorno: PRETO, sw: 18 })}</g>`; }
+    // selo da série
+    const ks = pop(t, 0.3, T.c1[1]);
+    hud += `<g transform="translate(540 1640) scale(${f(ks)})"><rect x="-300" y="-55" width="600" height="110" rx="55" fill="${PRETO}"/>${txt(0, 4, 'COISAS DE CASAL · EP. 1', 52, { cor: LARANJA })}</g>`;
+  }
+  if (em(t, 'c2')) {
+    g += sala();
+    g += boneco({ x: 330, chao: 1460, dir: 1, pose: mix(P.em_pe, P.medo, io(u(t, T.c2[0] + .3, T.c2[0] + .8))), cara: 'medo', quem: 'ele', boca: 0, suor: ((t - T.c2[0]) % 1.2) / 1.2 }).svg;
+    g += boneco({ x: 900, chao: 1460, dir: 1, pose: P.cruzado, cara: 'brava', quem: 'ela' }).svg;
+    // cronômetro
+    const k = pop(t, W('N02', 3));
+    const rest = 48 * 3600 - Math.max(0, t - W('N02', 3)) * 3600 * 1.7;
+    const hh = Math.floor(rest / 3600), mm = Math.floor(rest % 3600 / 60), ss = Math.floor(rest % 60);
+    const z = n => String(n).padStart(2, '0');
+    hud += `<g transform="translate(540 560) scale(${f(k)})"><rect x="-330" y="-95" width="660" height="190" rx="30" fill="${PRETO}"/><rect x="-310" y="-75" width="620" height="150" rx="20" fill="#2A0D0D"/>
+      <text x="0" y="8" font-family="'Anton'" font-size="130" fill="${VERMELHO}" text-anchor="middle" dominant-baseline="middle" letter-spacing="6">${z(hh)}:${z(mm)}:${z(ss)}</text></g>`;
+    hud += `<g opacity="${f(pop(t, W('N02', 9)))}">${txt(540, 730, 'O QUE EU FIZ?!', 70, { cor: LARANJA, contorno: PRETO, sw: 14 })}</g>`;
+  }
+  if (em(t, 'c3')) {
+    const fecha = io(u(t, BAM - .18, BAM));
+    const larg = lerp(-230, 0, fecha);
+    const porta = fecha < 1 ? `<rect x="${f(290 + Math.min(0, larg))}" y="0" width="${f(Math.abs(larg) + 4)}" height="680" fill="#fff" stroke="${PRETO}" stroke-width="10" transform="translate(${f(-larg * 0)} 0)"/>` : '';
+    g += cozinha(fecha < 1 ? '' : '') + (fecha < 1 ? `<g transform="translate(760 780)"><path d="M290,0 L${f(290 - 230 * (1 - fecha))},${f(-40 * (1 - fecha))} L${f(290 - 230 * (1 - fecha))},${f(720 * 1)} L290,680 Z" fill="#E9F4FF" stroke="${PRETO}" stroke-width="10" stroke-linejoin="round"/></g>` : '');
+    const w = andar(t, T.c3[0], T.c3[0] + 1.6);
+    const xE = lerp(-150, 330, io(u(t, T.c3[0], T.c3[0] + 1.6)));
+    const susto = t > BAM && t < BAM + .5 ? Math.sin(u(t, BAM, BAM + .5) * Math.PI) * 60 : 0;
+    g += boneco({ x: xE, chao: 1460 - (w ? w.quique : 0), dir: 1, pose: w ? mix(w.pose, P.ponta_pe, .5) : (t > BAM ? P.maos_cima : P.ponta_pe), cara: t > BAM ? 'medo' : 'confuso', quem: 'ele', boca: bE, pulo: susto }).svg;
+    const virada = t > BAM - .2 && t > SEG.P03.de - .1;
+    g += boneco({ x: 650, chao: 1460, dir: virada ? -1 : 1, pose: t < BAM ? P.geladeira : P.cruzado, cara: 'brava', quem: 'ela', boca: bL }).svg;
+    if (t > BAM) { const k = pop(t, BAM); hud += `<g transform="translate(860 640) rotate(-12) scale(${f(k)})">${txt(0, 0, 'BAM!', 150, { cor: LARANJA, contorno: PRETO, sw: 22 })}</g>`;
+      for (let i = 0; i < 3; i++) { const y = lerp(820 + i * 70, 1450, io(u(t, BAM + i * .05, BAM + .5 + i * .05))); g += `<rect x="${830 + i * 70}" y="${f(y)}" width="40" height="40" rx="8" fill="${['#E8467C', '#F2C230', '#5BB0E8'][i]}" stroke="${PRETO}" stroke-width="5" transform="rotate(${f(i * 20 + y / 10)} ${850 + i * 70} ${f(y + 20)})"/>`; } }
+  }
+  if (em(t, 'c4')) {
+    g += sala();
+    g += boneco({ x: 820, chao: 1460, dir: -1, pose: P.prancheta, cara: t > KKK + .2 ? 'medo' : 'normal', quem: 'ele', boca: 0, naMao: prancheta, suor: t > KKK + .2 ? ((t - KKK) % 1) : 0 }).svg;
+    // lista gigante
+    const k = pop(t, T.c4[0] + .1);
+    const itens = ['LAVOU A LOUÇA', 'NIVER DA SOGRA', 'RESPONDEU ELA'];
+    let L2 = `<rect x="-300" y="-300" width="600" height="640" rx="24" fill="#fff" stroke="${PRETO}" stroke-width="10" transform="rotate(-2)"/>${txt(0, -220, 'A SEMANA', 64, { cor: LARANJA, contorno: PRETO, sw: 10 })}`;
+    itens.forEach((s, i) => {
+      const y = -100 + i * 150, on = t > CHK[i] - .4;
+      if (!on) return;
+      L2 += `<rect x="-260" y="${y - 40}" width="80" height="80" rx="10" fill="#fff" stroke="${PRETO}" stroke-width="8"/>` + txt(60, y + 4, s, 46);
+      if (i < 2 && t > CHK[i]) L2 += `<path d="M-250,${y} l25,28 l50,-60" fill="none" stroke="#2F9E44" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" transform="translate(-220 ${y}) scale(${f(pop(t, CHK[i]))}) translate(220 ${-y})"/>`;
+      if (i === 2 && t > KKK) L2 += `<g transform="translate(60 ${y + 62}) scale(${f(pop(t, KKK))})">${txt(0, 0, '“KKK”', 54, { cor: '#666' })}</g>`;
+      if (i === 2 && t > KKK + .35) { const kx = pop(t, KKK + .35); L2 += `<g transform="translate(-220 ${y}) scale(${f(kx)})" stroke="${VERMELHO}" stroke-width="20" stroke-linecap="round"><path d="M-34,-34 L34,34 M34,-34 L-34,34"/></g>`; }
+    });
+    hud += `<g transform="translate(400 880) scale(${f(k * .95)})">${L2}</g>`;
+  }
+  if (em(t, 'c5')) {
+    const card = W('N04', 4) - 0.1, fimCard = W('N04', 7) + 0.2;
+    if (t < fimCard && t > card) {
+      g += `<rect width="1080" height="1920" fill="${PRETO}"/>`;
+      const k = pop(t, card);
+      hud += `<g transform="translate(540 960) scale(${f(k)})">${txt(0, -40, '3 DIAS', 170, { cor: LARANJA })}${txt(0, 120, 'DEPOIS...', 110, { cor: '#fff' })}</g>`;
+    } else {
+      g += sala();
+      const pE = t > SEG.P04.de ? P.apontar : P.cruzado;
+      g += boneco({ x: 300, chao: 1460, dir: 1, pose: P.em_pe, cara: t > SEG.P04.de + 1 ? 'confuso' : 'normal', quem: 'ele', boca: bE }).svg;
+      const ela = boneco({ x: 760, chao: 1460, dir: -1, pose: pE, cara: 'brava', quem: 'ela', boca: bL });
+      g += ela.svg;
+      if (t > ESC_SONHO) {   // balão do sonho
+        const k = pop(t, ESC_SONHO);
+        const cx = 500, cy = 565;
+        let s = `<circle cx="${700}" cy="${800}" r="16" fill="#fff" stroke="${PRETO}" stroke-width="8"/><circle cx="${650}" cy="${760}" r="24" fill="#fff" stroke="${PRETO}" stroke-width="8"/>` + nuvem(cx, cy, 680, 300);
+        const kiss = io(u(t, ESC_SONHO + .3, W('P04', 4)));
+        const mE = boneco({ x: cx - 120 + kiss * 30, chao: cy + 115, s: .32, dir: 1, pose: P.em_pe, cara: 'feliz', quem: 'ele' }).svg;
+        const mV = boneco({ x: cx + 120 - kiss * 30, chao: cy + 115, s: .32, dir: -1, pose: P.em_pe, cara: 'feliz', quem: 'ela' }).svg.replace(/#B58BD6/g, '#F2C230');
+        s += mE + mV;
+        if (t > W('P04', 4)) for (let i = 0; i < 3; i++) { const a = u(t, W('P04', 4) + i * .2, W('P04', 4) + 1.2 + i * .2); if (a <= 0) continue; s += `<text x="${cx + (i - 1) * 50}" y="${f(cy - 50 - a * 160)}" font-size="${f(60 * back(Math.min(1, a * 2)))}" text-anchor="middle" opacity="${f(1 - a)}">❤️</text>`; }
+        s += txt(cx + 215, cy - 20, 'VIZINHA', 34, { cor: '#666' });
+        hud += `<g transform="translate(${cx} ${cy}) scale(${f(k)}) translate(${-cx} ${-cy})">${s}</g>`;
+      }
+    }
+  }
+  if (em(t, 'c6')) {
+    g += sala();
+    g += boneco({ x: 300, chao: 1460, dir: 1, pose: t < SEG.P05.ate ? P.maos_cima : P.medo, cara: t < SEG.P05.ate ? 'confuso' : 'medo', quem: 'ele', boca: bE }).svg;
+    const raiva = u(t, SEG.P06.de, SEG.P06.de + 1.2);
+    const ela = boneco({ x: 760, chao: 1460 - (t > SEG.P06.de ? Math.abs(Math.sin(t * 14)) * 8 : 0), dir: -1, pose: P.apontar, cara: 'brava', quem: 'ela', boca: bL, vermelho: raiva });
+    g += ela.svg;
+    if (raiva > 0) { const [hx, hy] = ela.cabeca; for (let i = 0; i < 2; i++) { const ph = ((t * 1.6 + i * .5) % 1); g += `<g opacity="${f((1 - ph) * .9)}"><path d="M${f(hx - 50 + i * 100)},${f(hy - 80 - ph * 140)} q-20,-25 0,-50 q20,-25 0,-50" fill="none" stroke="#999" stroke-width="12" stroke-linecap="round"/></g>`; } }
+    if (false) { const k = 0; if (k) hud += `<g transform="translate(330 640) scale(${f(k)})">${txt(0, 0, 'FOI UM SONHO!', 80, { cor: '#fff', contorno: PRETO, sw: 16 })}</g>`; }
+    if (t > CARIMBO) { const k = u(t, CARIMBO, CARIMBO + .18); const sc = lerp(2.6, 1, io(k));
+      hud += `<g transform="translate(540 560) rotate(-9) scale(${f(sc)})" opacity="${f(k)}"><rect x="-420" y="-120" width="840" height="240" rx="20" fill="none" stroke="${VERMELHO}" stroke-width="16"/>${txt(0, -30, 'NEM PEDIU', 96, { cor: VERMELHO })}${txt(0, 62, 'DESCULPA!', 96, { cor: VERMELHO })}</g>`; }
+  }
+  if (em(t, 'c7')) {
+    g += sala();
+    const pegou = t > ACEITA + .2;
+    const aj = io(u(t, T.c7[0], T.c7[0] + .7));
+    g += boneco({ x: 340, chao: 1460, dir: 1, pose: aj > .5 ? P.oferece : P.em_pe, cara: t > SEG.P07.ate ? 'medo' : 'triste', quem: 'ele', boca: bE, naMao: pegou ? '' : `<g transform="scale(-1 1) rotate(-80)">${flores}</g>` }).svg;
+    const virar = t > SEG.P07.ate;
+    g += boneco({ x: 760, chao: 1460, dir: virar && !pegou ? 1 : -1, pose: pegou ? { ...P.cruzado, bf: [60, 60] } : P.cruzado, cara: 'emburrada', quem: 'ela', boca: bL, naMao: pegou ? flores : '' }).svg;
+    // medidor de perdão
+    if (t > ACEITA) {
+      const k = pop(t, ACEITA), v = io(u(t, ACEITA + .2, ACEITA + 1.1)) * 0.6;
+      hud += `<g transform="translate(540 640) scale(${f(k)})">${txt(0, -90, 'PERDÃO', 70, { cor: PRETO })}<rect x="-330" y="-35" width="660" height="70" rx="35" fill="#fff" stroke="${PRETO}" stroke-width="10"/><rect x="-318" y="-23" width="${f(636 * v)}" height="46" rx="23" fill="${LARANJA}"/>${txt(0, 4, Math.round(v * 100) + '%', 52, { cor: PRETO })}</g>`;
+    }
+  }
+  if (em(t, 'c8')) {
+    g += `<rect width="1080" height="1920" fill="${LARANJA}"/>`;
+    const k1 = pop(t, T.c8[0] + .05), k2 = pop(t, T.c8[0] + .5), k3 = pop(t, T.c8[0] + 1.2);
+    hud += `<g transform="translate(540 600) scale(${f(k1)})">${txt(0, 0, 'COMENTA AÍ', 120, { cor: '#fff', contorno: PRETO, sw: 20 })}</g>`;
+    hud += `<g transform="translate(540 790) scale(${f(k2)})">${txt(0, 0, 'O PROBLEMA MAIS', 70, { cor: PRETO })}${txt(0, 90, 'SEM SENTIDO', 70, { cor: PRETO })}${txt(0, 180, 'QUE ELA JÁ INVENTOU', 70, { cor: PRETO })}</g>`;
+    const pula = Math.abs(Math.sin(t * 5)) * 30;
+    hud += `<g transform="translate(540 ${f(1240 + pula)}) scale(${f(k3)})">${txt(0, 0, '👇', 150)}</g>`;
+    g += boneco({ x: 200, chao: 1480, s: .6, dir: 1, pose: P.maos_cima, cara: 'medo', quem: 'ele' }).svg;
+    g += boneco({ x: 880, chao: 1480, s: .6, dir: -1, pose: P.cruzado, cara: 'emburrada', quem: 'ela', naMao: '' }).svg;
+  }
+  // flash de troca de cena
+  for (const c of ['c2', 'c3', 'c4', 'c5', 'c6', 'c7', 'c8']) { const a = T[c][0]; if (t >= a && t < a + .12) hud += `<rect width="1080" height="1920" fill="#fff" opacity="${f(1 - (t - a) / .12)}"/>`; }
+  $('#mundo').innerHTML = g; $('#hud').innerHTML = hud; $('#cam').setAttribute('transform', camera(t));
+}
+
+const leg = Legenda($('#legenda'), PAL, { y: 330, fs: 74, enfase: ['BEM', 'QUARENTA', 'OITO', 'TENHO', 'KKK', 'VIZINHA', 'SONHO', 'DESCULPA', 'PENSAR'] })
+  .esconder([[W('N04', 4) - 0.1, W('N04', 7) + 0.2], [T.c8[0], 999]]);
+window.__duration = END;
+window.__seek = t => { cena(t); leg.seek(t); };
+document.fonts.ready.then(() => window.__seek(0));
+window.__seek(0);
+</script>
+</body></html>
