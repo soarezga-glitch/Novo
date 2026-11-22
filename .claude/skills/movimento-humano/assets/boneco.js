@@ -205,6 +205,7 @@
       this.el.boca = mk('path', { fill: this.tinta, stroke: this.tinta, 'stroke-width': sw6, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, this.el.rosto);
       this.el.dentes = mk('path', { fill: '#FFFFFF', stroke: 'none' }, this.el.rosto);
       this.el.lingua = mk('path', { fill: '#FF6B5B', stroke: 'none' }, this.el.rosto);
+      this.el.bigode = mk('path', { fill: F.corCabelo || '#3A2A20', stroke: this.tinta, 'stroke-width': 2.5 * this.s, 'stroke-linejoin': 'round' }, this.el.rosto);   // bigode (figurino bigode: true)
       this.el.extras = mk('g', {}, parent);   // fora do filtro de contorno: traços finos ficam nítidos
       this.el.suor = mk('path', { fill: '#8FD3FF', stroke: this.tinta, 'stroke-width': 3 * this.s }, this.el.extras);
       this.el.lagrimas = [0, 1].map(() => mk('path', { fill: '#8FD3FF', stroke: this.tinta, 'stroke-width': 3 * this.s }, this.el.extras));
@@ -769,6 +770,11 @@
         if (this.fig.tronco === 'armadura') this.el.detalhe.setAttribute('stroke', '#5A5A62');
         const temAvental = (this.fig.extras || []).includes('avental');
         this.el.avental.setAttribute('d', temAvental ? `M${f(P_(c0, c1, 0.18))} L${f(P_(c0, c1, 0.82))} L${f(P_(b0, b1, 0.86))} L${f(P_(b0, b1, 0.14))}Z` : '');
+        // terno (anos 1890): camisa branca em V no peito + gravata; listras: uniforme de presidiário
+        if (this.fig.terno && !this._costas) { const v0 = P_(o0, o1, 0.26), v1 = P_(o0, o1, 0.74), vb = P_(top, H, 0.5), w = vista === 'frente' ? 1 : 0.5;
+          this.el.avental.setAttribute('d', `M${f(P_(top, v0, w))} L${f(P_(top, v1, w))} L${f(vb)}Z`); this.el.avental.setAttribute('fill', '#F2EBDA');
+          this.el.detalhe.setAttribute('d', `M${f(P_(top, vb, 0.12))} L${f(P_(top, vb, 0.85))}`); this.el.detalhe.setAttribute('stroke', this.fig.cor2 || '#8E1B1B'); this.el.detalhe.setAttribute('stroke-width', 9 * s); }
+        if (this.fig.listras) { this.el.detalhe.setAttribute('d', [0.18, 0.36, 0.54, 0.72, 0.9].map(u => `M${f(P_(o0, b0, u))} L${f(P_(o1, b1, u))}`).join(' ')); this.el.detalhe.setAttribute('stroke', this.fig.cor2 || '#1A1A1E'); this.el.detalhe.setAttribute('stroke-width', 12 * s); this.el.detalhe.setAttribute('stroke-linecap', 'butt'); }
         // colete aberto (sem camisa por baixo): um "V" de peito à mostra do pescoço até a cintura, com as bordas do couro
         if (this.fig.colete && this._costas) { this.el.avental.setAttribute('d', ''); this.el.detalhe.setAttribute('d', ''); }
         else if (this.fig.colete) { const v0 = P_(o0, o1, 0.36), v1 = P_(o0, o1, 0.64), vb = P_(c0, c1, 0.5), w = vista === 'frente' ? 1 : 0.45;
@@ -948,6 +954,12 @@
         const f = n => n.toFixed(1), lat = 0.72, rr = r * 1.07;
         const pts = []; for (let k = 0; k <= 20; k++) { const lon = -Math.PI / 2 + Math.PI * k / 20, x = C[0] + rr * Math.cos(lat) * Math.sin(lon + TH) * 1.0, y = C[1] - rr * Math.sin(lat) - Math.cos(lon) * r * 0.12; if (Math.cos(lon + TH) > -0.2) pts.push(f(x) + ' ' + f(y)); }
         if (pts.length > 1) h = `<path d="M${pts.join(' L')}" fill="none" stroke="${T}" stroke-width="${13 * s}" stroke-linecap="round"/><path d="M${pts.join(' L')}" fill="none" stroke="${cc}" stroke-width="${8 * s}" stroke-linecap="round"/>`;
+      } else if (ch === 'coco') {           // chapéu-coco (anos 1890): copa redonda + aba curta curvada + fita
+        const cx = C[0] - giroX * r * 0.06, f = n => n.toFixed(1), yb = C[1] - r * 0.6;
+        h = `<path d="M${f(cx - r * 1.3)} ${f(yb + r * 0.05)} Q${f(cx)} ${f(yb + r * 0.32)} ${f(cx + r * 1.3)} ${f(yb + r * 0.05)} Q${f(cx + r * 1.2)} ${f(yb - r * 0.18)} ${f(cx)} ${f(yb - r * 0.1)} Q${f(cx - r * 1.2)} ${f(yb - r * 0.18)} ${f(cx - r * 1.3)} ${f(yb + r * 0.05)}Z" fill="${cc}" stroke="${T}" stroke-width="${4 * s}"/>`;
+        h += `<path d="M${f(cx - r * 0.88)} ${f(yb)} Q${f(cx - r * 0.95)} ${f(C[1] - r * 1.62)} ${f(cx)} ${f(C[1] - r * 1.62)} Q${f(cx + r * 0.95)} ${f(C[1] - r * 1.62)} ${f(cx + r * 0.88)} ${f(yb)}Z" fill="${cc}" stroke="${T}" stroke-width="${4 * s}"/>`;
+        h += `<path d="M${f(cx - r * 0.9)} ${f(yb - r * 0.16)} Q${f(cx)} ${f(yb - r * 0.05)} ${f(cx + r * 0.9)} ${f(yb - r * 0.16)}" stroke="${F.corFita || '#0E0E12'}" stroke-width="${10 * s}" fill="none"/>`;
+        h += `<path d="M${f(cx - r * 0.45)} ${f(C[1] - r * 1.4)} Q${f(cx - r * 0.2)} ${f(C[1] - r * 1.55)} ${f(cx + r * 0.1)} ${f(C[1] - r * 1.5)}" stroke="#FFFFFF" stroke-opacity=".25" stroke-width="${5 * s}" fill="none" stroke-linecap="round"/>`;
       } else if (ch === 'chapeu') {
         h = `<ellipse cx="${C[0]}" cy="${C[1] - r * 0.6}" rx="${r * 1.6}" ry="${r * 0.22}" fill="${cc}" stroke="${T}" stroke-width="${4 * s}"/><path d="M${C[0] - r * 0.75} ${C[1] - r * 0.6} L${C[0] - r * 0.6} ${C[1] - r * 1.45} H${C[0] + r * 0.6} L${C[0] + r * 0.75} ${C[1] - r * 0.6}Z" fill="${cc}" stroke="${T}" stroke-width="${4 * s}"/>`;
       }
@@ -1086,6 +1098,10 @@
       const W = 18 * s * Math.max(0.62, face(0)) * num('bocaLarg', 0);
       { const b = borda(26, 5); if (Math.abs(bx - C[0]) + W > b) bx = C[0] + Math.sign(bx - C[0]) * Math.max(0, b - W); }
       const B = el.boca, D = el.dentes, Lg = el.lingua;
+      if (this.fig.bigode && face(0) > 0.05) {   // bigode de guidão (anos 1890): duas asas com as pontas viradas para cima
+        const mx = bx, my = by - 12 * s, mw = 36 * s * Math.max(0.55, face(0)), f1 = n => n.toFixed(1);
+        el.bigode.setAttribute('d', `M${f1(mx)} ${f1(my - 5 * s)} Q${f1(mx - mw * 0.6)} ${f1(my - 9 * s)} ${f1(mx - mw)} ${f1(my + 2 * s)} Q${f1(mx - mw * 1.15)} ${f1(my - 8 * s)} ${f1(mx - mw * 1.05)} ${f1(my - 12 * s)} Q${f1(mx - mw * 0.9)} ${f1(my + 10 * s)} ${f1(mx)} ${f1(my + 3 * s)} Q${f1(mx + mw * 0.9)} ${f1(my + 10 * s)} ${f1(mx + mw * 1.05)} ${f1(my - 12 * s)} Q${f1(mx + mw * 1.15)} ${f1(my - 8 * s)} ${f1(mx + mw)} ${f1(my + 2 * s)} Q${f1(mx + mw * 0.6)} ${f1(my - 9 * s)} ${f1(mx)} ${f1(my - 5 * s)}Z`);
+      } else el.bigode.setAttribute('d', '');
       D.setAttribute('d', ''); Lg.setAttribute('d', '');
       const formaFala = disc('fala');
       if (abre != null && abre > 0) {
@@ -1172,6 +1188,7 @@
     armadura:    { desce: 52, barra: 60, ombro: 1.1 },
     camiseta:    { desce: 14, barra: 50, cinto: false },
     moletom:     { desce: 22, barra: 54, cinto: false },
+    paleto:      { desce: 70, barra: 56, cinto: false },     // paletó/sobrecasaca (anos 1890)
     moletomLargo:{ desce: 26, barra: 66, cinto: false, ombro: 1.3 },   // corpo mais largo (Pedrão)
     subligaculo: { desce: 40, barra: 46, cintura: true }      // tanga de gladiador (peito de fora)
   };
@@ -1212,6 +1229,13 @@
     'vulto':         { tronco: 'camiseta', cor: '#15161C', mangas: 'curta', pernas: 'calca', corPernas: '#101116', pes: 'descalco', cabelo: 'zumbi', corCabelo: '#0C0C10', semBochecha: true, zumbi: true },   // zumbi no escuro: silhueta curvada, farrapos, braços tortos
     'dimas':         { tronco: 'camiseta', cor: '#16161A', cor2: '#3A3A42', mangas: 'nenhuma', pernas: 'calca', corPernas: '#1C1C22', pes: 'bota', corPes: '#0E0E10', cabelo: 'medio', corCabelo: '#2A2018', cinto: '#2A2A30', rasgos: true, barba: true, colete: true, semBochecha: true },   // o sobrevivente da moto: colete preto de couro sem manga (roqueiro), braços de fora, calça e bota pretas
     'aluno':         { tronco: 'camiseta', cor: '#5A7A9A', mangas: 'curta', pernas: 'calca', corPernas: '#2E3A4A', pes: 'tenis', corPes: '#F2F2F2', corPes2: '#5A5A60', cabelo: 'curto', corCabelo: '#2A1E16', semBochecha: true },
+    // --- ANOS 1890 (página de crimes reais) ---
+    'holmes':        { tronco: 'paleto', cor: '#2B2D3A', cor2: '#8E1B1B', terno: true, mangas: 'longa', pernas: 'calca', corPernas: '#24252F', pes: 'sapato', corPes: '#141418', cabelo: 'curto', corCabelo: '#3A2618', bigode: true, chapeu: 'coco', corChapeu: '#1A1A20', semBochecha: true },
+    'cavalheiro':    { tronco: 'paleto', cor: '#4A3E34', cor2: '#2A2A30', terno: true, mangas: 'longa', pernas: 'calca', corPernas: '#3A322A', pes: 'sapato', corPes: '#1E1612', cabelo: 'curto', corCabelo: '#5A4030', chapeu: 'coco', corChapeu: '#3A2E24', semBochecha: true },
+    'dama':          { tronco: 'estola', cor: '#5E3A4E', cor2: '#E8DCC4', mangas: 'longa', pes: 'sapato', corPes: '#1E1612', cabelo: 'coque', corCabelo: '#3A2418', cinto: '#2A1E1E', semBochecha: true },
+    'viuva':         { tronco: 'estola', cor: '#1E1E24', mangas: 'longa', pes: 'sapato', corPes: '#101012', cabelo: 'coque', corCabelo: '#7A7268', cinto: '#0E0E12', semBochecha: true },
+    'operario':      { tronco: 'camiseta', cor: '#8A7458', mangas: 'longa', pernas: 'calca', corPernas: '#3E4A5A', pes: 'bota', corPes: '#3A2618', cabelo: 'curto', corCabelo: '#2A1E16', chapeu: 'bone', corChapeu: '#5A5048', cinto: '#2A1E14', semBochecha: true },
+    'presidiario':   { tronco: 'paleto', cor: '#E8E2D0', cor2: '#1A1A1E', listras: true, mangas: 'longa', pernas: 'calca', corPernas: '#C8C2B0', pes: 'sapato', corPes: '#1A1A1E', cabelo: 'curto', corCabelo: '#3A2618', semBochecha: true },
     // --- SOBREVIVENTE: personagem oficial (skill personagem-sobrevivente) ---
     'sobrevivente':  { tronco: 'camiseta', cor: '#FFFFFF', mangas: 'curta', pernas: 'calca', corPernas: '#26262B', cargo: true, pes: 'tenis', corPes: '#FF7A00', corPes2: '#111111', cabelo: 'militar', corCabelo: '#111111', extras: ['cachecol', 'mochila'], luvas: true, semBochecha: true, cinto: 'none' }
   };
