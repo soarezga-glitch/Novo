@@ -46,6 +46,7 @@
     <linearGradient id="ceuNoite" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#070A14"/><stop offset=".6" stop-color="#162036"/><stop offset="1" stop-color="#2A3550"/></linearGradient>
     <linearGradient id="nevoa" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8EA0C0" stop-opacity="0"/><stop offset="1" stop-color="#8EA0C0" stop-opacity=".35"/></linearGradient>
     <linearGradient id="escuroBaixo" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".6"/></linearGradient>
+    <linearGradient id="capaFundo" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#000" stop-opacity=".75"/><stop offset=".7" stop-color="#000" stop-opacity=".5"/><stop offset="1" stop-color="#000" stop-opacity="0"/></linearGradient>
     <pattern id="tijolo" width="64" height="32" patternUnits="userSpaceOnUse">
       <rect width="64" height="32" fill="#6E3A2E"/>
       <rect x="1" y="1" width="62" height="14" fill="#7C4536"/><rect x="-31" y="17" width="62" height="14" fill="#74402F"/><rect x="33" y="17" width="62" height="14" fill="#80493A"/>
@@ -428,7 +429,12 @@ $('#textos').innerHTML = [
   titulo('t-segredo', 540, 480, 'ESSE SEGREDO…', { fs: 120, cor: '#FFFFFF', rot: -2 }),
   titulo('t-parte2', 540, 1150, 'PARTE 2', { fs: 210, cor: VERM, rot: -4 }),
   etiqueta('t-siga', 540, 1330, 'SIGA A PÁGINA PRA NÃO PERDER', { fs: 40, rot: 1 }),
-].join('') + `<g id="t-planta-g" transform="translate(540 720)">${planta('pl')}</g>
+].join('') + `<g id="t-capa"><rect width="1080" height="980" fill="url(#capaFundo)"/>
+    ${etiqueta('t-casoreal', 540, 170, 'CASO REAL', { fs: 58, rot: -3, cor: '#FFFFFF', fundo: VERM })}
+    ${titulo('t-capa1', 540, 330, 'O 1º SERIAL', { fs: 150, cor: '#FFFFFF', rot: -2 })}
+    ${titulo('t-capa2', 540, 520, 'KILLER', { fs: 210, cor: VERM, rot: -2 })}
+    ${titulo('t-capa3', 540, 720, 'DOS EUA?', { fs: 150, cor: '#FFFFFF', rot: -2 })}</g>
+  <g id="t-planta-g" transform="translate(540 720)">${planta('pl')}</g>
   <g id="t-troca" transform="translate(540 800)"><path d="M-120 -30 H100 l-30 -30 M120 30 H-100 l30 30" stroke="${PAPEL}" stroke-width="16" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g>
   <g id="t-env" transform="translate(540 520)"><rect x="-80" y="-54" width="160" height="108" fill="${PAPEL}" stroke="${T}" stroke-width="6"/><path d="M-80 -54 L0 14 L80 -54" fill="none" stroke="${T}" stroke-width="6"/><circle cx="0" cy="12" r="20" fill="#9E0E1E" stroke="${T}" stroke-width="4"/></g>
   <g id="t-quest" transform="translate(780 1000)"><text x="0" y="0" font-size="240" fill="${VERM}" stroke="${T}" stroke-width="16" paint-order="stroke" text-anchor="middle">?</text></g>`;
@@ -537,6 +543,7 @@ $$('.scene').forEach(s => gsap.set(s, { autoAlpha: 0 }));
 $$('#fgs > g').forEach(s => gsap.set(s, { autoAlpha: 0 }));
 $$('#textos > g').forEach(s => gsap.set(s, { autoAlpha: 0 }));
 function show(sel, t0, t1) {
+  if (t0 === 0) { gsap.set(sel, { autoAlpha: 1 }); if (t1 != null) tl.to(sel, { autoAlpha: 0, duration: FADE, ease: 'none' }, t1); return; }   // 1º quadro = capa do vídeo
   tl.fromTo(sel, { autoAlpha: 0 }, { autoAlpha: 1, duration: t0 === 0 ? 0.01 : FADE, ease: 'none', immediateRender: false }, t0);
   if (t1 != null) tl.to(sel, { autoAlpha: 0, duration: FADE, ease: 'none' }, t1);
 }
@@ -555,6 +562,9 @@ function relampago(t) { tl.to('#flash', { opacity: 0.85, duration: 0.05, ease: '
 
 // S1 — hotel
 show('#s1', 0, 5.15); camera(0, 5.15, 1.0, 1.12, '540 1150');
+gsap.set('#t-capa', { autoAlpha: 1 });
+tl.fromTo('#t-capa2', { scale: 1, transformOrigin: '50% 50%' }, { scale: 1.07, duration: 0.45, repeat: 7, yoyo: true, ease: 'sine.inOut', immediateRender: false }, 0.3);
+tl.to('#t-capa', { autoAlpha: 0, y: -60, duration: 0.3, ease: 'power2.in' }, 4.1);
 pop('#t-1893', 0.35); hide('#t-1893', 2.9);
 tl.to('#s1c-folha', { scaleX: 0.15, svgOrigin: '470 0', duration: 0.5 }, 1.9).to('#s1c-folha', { scaleX: 1, duration: 0.5 }, 3.7);
 // as janelas apagam uma a uma no "nunca fizeram check-out"
